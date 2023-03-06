@@ -3557,16 +3557,8 @@ function GetWindMajorBreakdown() {
                     let bdType = "";
                     var allTimes = [];
 
-                    for (var i = 0; i < result.length; i++) {
-                        //let total_time = "";
-                        //let no_of_wtg = 0;
-                        //let bd_type = "";
-                        //let total_time = "";
-                       // let total_time = toHoursAndMinutes(result[i].total_stop.totalSeconds);
-                                           
+                    for (var i = 0; i < result.length; i++) {                                           
                         if (result[i].bd_type_id == 1 || result[i].bd_type_id == 2) {
-                           
-                           
                             if (result[i].total_stop > "04:00:00") {
                                 tbl += '<tr>';
                                 tbl += '<td class="text-left">' + result[i].date + '</td>';
@@ -3577,10 +3569,6 @@ function GetWindMajorBreakdown() {
                                 tbl += '<td class="text-left">' + result[i].error_description + '</td>';
                                 tbl += '</tr>';
                             }
-                            else {
-
-                            }
-
                         }
                         else {
                             date1 = result[i].date;
@@ -3590,10 +3578,7 @@ function GetWindMajorBreakdown() {
                             var date = "";
                             var stopfrom = "";
                             var stopto = "";
-                            var sumDone = false;
                             var count = 0;
-                           
-                            let totalstop;
                             if (i == 0 && i < result.length) {
                                 count = i + 1;
                             } else {
@@ -3608,14 +3593,8 @@ function GetWindMajorBreakdown() {
                                     WTG_count += 1;
                                     allTimes.push(result[i].total_stop);
                                 }
-                            }
-                            
-                        }
-
-
-                            
-
-                           
+                            }   
+                        }   
                     }
                     allTimes.forEach(time => sum = sumUp(sum, time));
                     console.log(parseSum(sum));
@@ -3627,12 +3606,10 @@ function GetWindMajorBreakdown() {
                     tbl += '<td class="text-left">' + parseSum(sum) + '</td>';
                     tbl += '<td class="text-left">' + errorDesc + '</td>';
                     tbl += '</tr>';
-                   
                 }
                 else {
                     console.log("Data not available");
                 }
-
                 tbl += '</tbody></table>';
                 //$("#majorBreakdown").html(tbl);
                 $("#majorBreakdown").html("").html(tbl);
