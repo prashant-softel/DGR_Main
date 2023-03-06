@@ -29,9 +29,9 @@ namespace DGRAPIs.Models
      
         public double plf { get; set; }
         public double plf_afterlineloss { get; set; }
-        public float grid_hrs { get; set; }     
-        public float lull_hrs { get; set; }      
-        public float production_hrs { get; set; }
+        public double grid_hrs { get; set; }     
+        public double lull_hrs { get; set; }      
+        public double production_hrs { get; set; }
         public dynamic unschedule_hrs { get; set; }
         public dynamic unschedule_num { get; set; }
         public dynamic schedule_hrs { get; set; }
