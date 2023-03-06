@@ -8532,51 +8532,93 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 tb += "<th>Action Taken</th></tr></thead>";
 
 
-                if (data2.Count > 0)
-                {
-                
+            if (data2.Count > 0)
+            {
+                string date1 = "";
+                string site1 = "";
+                string errorDesc = "";
+                string bdType = "";
+                int WTG_count = 0;
+                double totalTimeAdd = 0;
+                string actionTaken = "";
+
                 for (var i = 0; i < data2.Count; i++)
                     {
                     var totalTime = data2[i].total_stop;
                     result = Convert.ToDateTime(totalTime.ToString());
                     Get_Time = result.TimeOfDay;
                     //Get_Time = Final_USMH_Time * 24;
-                  
-                        total_time = Get_Time.TotalDays * 24;
 
-                        if ((data2[i].bd_type_id == 1 || data2[i].bd_type_id == 2) && +total_time >= 4.0)
+                    total_time = Get_Time.TotalDays * 24;
+
+                    if ((data2[i].bd_type_id == 1 || data2[i].bd_type_id == 2) && total_time >= 4.0)
+                    {
+                        tb += "<tr>";
+                        tb += "<td class='text-left'>" + data2[i].date + "</td>";
+                        tb += "<td class='text-left'>" + data2[i].site_name + "</td>";
+                        tb += "<td class='text-left'>" + data2[i].wtg + "</td>";
+                        tb += "<td class='text-left'>" + data2[i].bd_type + "</td>";
+                        tb += "<td class='text-left'>" + Math.Round(total_time, 2) + "</td>";
+                        tb += "<td class='text-left'>" + data2[i].error_description + "</td>";
+                        tb += "<td class='text-left'>" + data2[i].action_taken + "</td>";
+                        tb += "</tr>";
+                    }
+                    else
+                    {
+                        date1 = data2[i].date;
+                        site1 = data2[i].site_name;
+                        errorDesc = data2[i].error_description;
+                        bdType = data2[i].bd_type;
+                        actionTaken = data2[i].action_taken;
+
+                        string date = "";
+                        string stopfrom = "";
+                        string stopto = "";
+                        int count = 0;
+
+                        if (i == 0 && i < data2.Count)
                         {
-                            tb += "<tr>";
-                            tb += "<td class='text-left'>" + data2[i].date + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].site_name + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].wtg + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].bd_type + "</td>";
-                            tb += "<td class='text-left'>" + Math.Round(total_time, 2) + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].error_description + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].action_taken + "</td>";
-                            tb += "</tr>";
+                            count = i + 1;
                         }
-                        if ((data2[i].bd_type_id != 1 && data2[i].bd_type_id != 2) && +total_time >= 1.0)
+                        else
                         {
-                            tb += "<tr>";
-                            tb += "<td class='text-left'>" + data2[i].date + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].site_name + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].wtg + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].bd_type + "</td>";
-                            tb += "<td class='text-left'>" + Math.Round(total_time, 2) + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].error_description + "</td>";
-                            tb += "<td class='text-left'>" + data2[i].action_taken + "</td>";
-                            tb += "</tr>";
+                            count = i;
+                        }
+                        if (data2[i].site_id == data2[count].site_id)
+                        {
+                            if (i > 0)
+                            {
+                                date = data2[i].date.ToString();
+                                stopfrom = data2[i].stop_from.ToString();
+                                stopto = data2[i].stop_to.ToString();
+                            }
+                            if (total_time >= 1.0 && date == data2[i].date && stopfrom == data2[i].stop_from && stopto == data2[i].stop_to)
+                            {
+                                WTG_count += 1;
+                                totalTimeAdd += total_time;
+                            }
                         }
 
                     }
-                }
-                else
-                {
-                    tb += "<tr style='text-align: center; ><b>Data Not Present<b></tr>";
 
                 }
-                tb += "</tbody></table>";
+                tb += "<tr>";
+                tb += "<td class='text-left'>" + date1 + "</td>";
+                tb += "<td class='text-left'>" + site1 + "</td>";
+                tb += "<td class='text-left'>" + WTG_count + " WTGs </td>";
+                tb += "<td class='text-left'>" + bdType + "</td>";
+                tb += "<td class='text-left'>" + totalTimeAdd + "</td>";
+                tb += "<td class='text-left'>" + errorDesc + "</td>";
+                tb += "<td class='text-left'>" + actionTaken + "</td>";
+                tb += "</tr>";
+
+            }
+            else
+            {
+                tb += "<tr style='text-align: center; ><b>Data Not Present<b></tr>";
+
+            }
+            tb += "</tbody></table>";
 
             
             await MailDailySend(tb, title);
@@ -8929,6 +8971,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             if (data2.Count > 0)
             {
+                string bdType = "";
+                string errorDesc = "";
+                string site1 = "";
+                string date1 = "";
+                int ICR_count = 0;
+                double totalTime = 0;
+                string action_taken1 = "";
 
                 for (var i = 0; i < data2.Count; i++)
                 {
@@ -8936,7 +8985,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     Get_Time = data2[i].total_bd * 24;
                     total_time_s = Get_Time.TotalDays;
 
-                    if (total_time_s >= 0.50)
+                    if ((data2[i].bd_type_id == 1 || data2[i].bd_type_id == 2) && total_time_s >= 0.50)
                     {
                         tb += "<tr>";
                         tb += "<td class='text-left'>" + data2[i].date + "</td>";
@@ -8959,8 +9008,61 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         //    tb += "<td class='text-left'>" + data2[i].action_taken + "</td>";
                         //    tb += "</tr>";
                     }
+                    else
+                    {
+                        if (total_time_s >= 0.50)
+                        {
+                            date1 = data2[i].date;
+                            site1 = data2[i].site;
+                            errorDesc = data2[i].bd_remarks;
+                            bdType = data2[i].bd_type;
+                            action_taken1 = data2[i].action_taken;
+
+                            string date = "";
+                            string stopfrom = "";
+                            string stopto = "";
+                            int count = 0;
+
+                            if (i == 0 && i < data2.Count)
+                            {
+                                count = i + 1;
+                            }
+                            else
+                            {
+                                count = i;
+                            }
+                            if (data2[i].site_id == data2[count].site_id)
+                            {
+                                if (i >= 0)
+                                {
+                                    date = data2[i].date.ToString();
+                                    stopfrom = data2[i].from_bd.ToString();
+                                    stopto = data2[i].to_bd.ToString();
+                                }
+                                if (i >= 0)
+                                {
+                                    // if (isGreaterThanThirty && date == result[i].date && stopfrom == result[i].from_bd && stopto == result[i].to_bd)
+                                    if (total_time_s >= 0.50 && date == data2[i].date.ToString() && stopfrom == data2[i].from_bd.ToString())
+                                    {
+                                        ICR_count += 1;
+                                        totalTime += total_time_s;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                 }
+                tb += "<tr>";
+                tb += "<td class='text-left'>" + date1 + "</td>";
+                tb += "<td class='text-left'>" + site1 + "</td>";
+                tb += "<td class='text-left'>" + ICR_count + " ICR/INV </td>";
+                tb += "<td class='text-left'>" + ICR_count + " ICR/INV </td>";
+                tb += "<td class='text-left'>" + bdType + "</td>";
+                tb += "<td class='text-left'>" + totalTime + "</td>";
+                tb += "<td class='text-left'>" + errorDesc + "</td>";
+                tb += "<td class='text-left'>" + action_taken1 + "</td>";
+                tb += "</tr>";
             }
             tb += "</tbody></table>";
 
