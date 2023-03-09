@@ -10,7 +10,7 @@ namespace DGRAPIs.Models
         public int daily_gen_summary_solar_id { get; set; }
         public string state { get; set; }
         public string site { get; set; }
-        public string date { get; set; }
+        public dynamic date { get; set; }
         public string location_name { get; set; }
         public int total_strings { get; set; }
         public double ghi { get; set; }
@@ -33,7 +33,7 @@ namespace DGRAPIs.Models
  
             public double plant_plf_dc { get; set; }
  
-            public string pi { get; set; }
+            public double pi { get; set; }
   
             public double prod_hrs { get; set; }
    
