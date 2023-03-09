@@ -8,7 +8,7 @@ namespace DGRAPIs.Models
     public class WindViewDailyLoadShedding
     {
         public string Site { get; set; }
-        public DateTime Date { get; set; }
+        public dynamic Date { get; set; }
         public string Start_Time { get; set; }
         public string End_Time { get; set; }
         public string Total_Time { get; set; }

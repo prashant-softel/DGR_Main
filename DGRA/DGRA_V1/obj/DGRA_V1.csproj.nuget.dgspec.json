@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "G:\\solarproject\\Finalcode\\DGR_Projects\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
+    "C:\\Users\\tanvi kinjale\\Downloads\\dgrmain2\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
   },
   "projects": {
-    "G:\\solarproject\\Finalcode\\DGR_Projects\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
+    "C:\\Users\\tanvi kinjale\\Downloads\\dgrmain2\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\solarproject\\Finalcode\\DGR_Projects\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "projectUniqueName": "C:\\Users\\tanvi kinjale\\Downloads\\dgrmain2\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
         "projectName": "DGRA_V1",
-        "projectPath": "G:\\solarproject\\Finalcode\\DGR_Projects\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
-        "packagesPath": "C:\\Users\\sujit\\.nuget\\packages\\",
-        "outputPath": "G:\\solarproject\\Finalcode\\DGR_Projects\\DGRA\\DGRA_V1\\obj\\",
+        "projectPath": "C:\\Users\\tanvi kinjale\\Downloads\\dgrmain2\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "packagesPath": "C:\\Users\\tanvi kinjale\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\tanvi kinjale\\Downloads\\dgrmain2\\DGR_Main\\DGRA\\DGRA_V1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\sujit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\tanvi kinjale\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -111,7 +111,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.412\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
         }
       }
     }

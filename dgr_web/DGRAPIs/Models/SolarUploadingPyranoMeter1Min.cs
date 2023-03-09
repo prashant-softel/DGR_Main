@@ -25,7 +25,7 @@ namespace DGRAPIs.Models
     }
     public class SolarUploadingPyranoMeter1Min_1
     {
-        public DateTime date_time { get; set; }
+        public dynamic date_time { get; set; }
         public int site_id { get; set; }
         public string site { get; set; }
         public dynamic ghi_1 { get; set; }
