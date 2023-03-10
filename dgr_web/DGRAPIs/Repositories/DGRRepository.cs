@@ -5906,7 +5906,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             qry1 += values;
-            string qry3 = "delete from daily_gen_summary  where date='"+ _importedData[0].date + "' and site_id=" + _importedData[0].site_id + " ;";
+            string qry3 = "delete from daily_gen_summary  where date='"+ _importedData[0].date.ToString("yyyy/MM/dd")  + "' and site_id=" + _importedData[0].site_id + " ;";
             try
             {
                 await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
@@ -5957,7 +5957,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             qry1 += values;
-            string qry3 = "delete from daily_gen_summary_solar  where date='" + _importedData[0].date + "' and site_id=" + _importedData[0].site_id + " ;";
+            string qry3 = "delete from daily_gen_summary_solar  where date='" + _importedData[0].date.ToString("yyyy/MM/dd")  + "' and site_id=" + _importedData[0].site_id + " ;";
 
             try
             {
