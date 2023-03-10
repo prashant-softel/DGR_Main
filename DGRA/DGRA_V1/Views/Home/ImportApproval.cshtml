@@ -260,7 +260,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-
+<script src="~/Content/theme/dist/js/comman.js"></script>
 
 <script type="text/javascript">
 
@@ -970,9 +970,9 @@
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].site + '</td>';
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].wtg + '</td>';
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].bd_type_name + '</td>';
-                        tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].stop_from['totalHours'].toFixed(2) + '</td>';
-                        tbl2 += '<td style="font-size: 12px; text-align: center;">' + result1[j].stop_to['totalHours'].toFixed(2) + '</td>';
-                        tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].total_stop['totalHours'].toFixed(2) + '</td>';
+                        tbl2 += '<td style="font-size: 12px;text-align: center;">' + toHoursAndMinutes(result1[j].stop_from.totalSeconds) + '</td>';
+                        tbl2 += '<td style="font-size: 12px; text-align: center;">' + toHoursAndMinutes(result1[j].stop_to.totalSeconds) + '</td>';
+                        tbl2 += '<td style="font-size: 12px;text-align: center;">' + toHoursAndMinutes(result1[j].total_stop.totalSeconds) + '</td>';
                         tbl2 += '<td style="font-size: 12px;">' + result1[j].error_description + '</td>';
                         tbl2 += '<td style="font-size: 12px;">' + result1[j].action_taken + '</td>';
                         tbl2 += '</tr>';

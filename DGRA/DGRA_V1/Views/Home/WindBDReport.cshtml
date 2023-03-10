@@ -177,7 +177,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-
+<script src="~/Content/theme/dist/js/comman.js"></script>
 
 <script type="text/javascript">
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
@@ -436,9 +436,9 @@
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + result[i].wtg + '</td>';
                         tbl += '<td class="text-left">' + result[i].bd_type + '</td>';
-                        tbl += '<td class="text-right">' + result[i].stop_from['totalHours'].toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].stop_to['totalHours'].toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_stop['totalHours'].toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + toHoursAndMinutes(result[i].stop_from.totalSeconds) + '</td>';
+                        tbl += '<td class="text-right">' + toHoursAndMinutes(result[i].stop_to.totalSeconds) + '</td>';
+                        tbl += '<td class="text-right">' + toHoursAndMinutes(result[i].total_stop.totalSeconds) + '</td>';
                         tbl += '<td class="text-left">' + result[i].error_description + '</td>';
                         tbl += '<td class="text-left">' + result[i].action_taken + '</td>';
                         tbl += '</tr>';
