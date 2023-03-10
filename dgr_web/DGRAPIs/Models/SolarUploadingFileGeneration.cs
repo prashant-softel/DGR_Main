@@ -46,7 +46,7 @@ namespace DGRAPIs.Models
         public double plant_plf_ac { get; set; }
         public double plant_plf_afterloss { get; set; }
         public double plant_plf_dc { get; set; }
-        public string pi { get; set; }
+        public dynamic pi { get; set; }
         public double prod_hrs { get; set; }
         public double lull_hrs_bd { get; set; }
         public double usmh_bd { get; set; }
