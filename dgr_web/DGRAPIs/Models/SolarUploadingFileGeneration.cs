@@ -24,7 +24,7 @@ namespace DGRAPIs.Models
         public string state { get; set; }
         public string site { get; set; }
         public int site_id { get; set; }
-        public string date { get; set; }
+        public dynamic date { get; set; }
        
         public string inverter { get; set; }
         public double ghi { get; set; }
