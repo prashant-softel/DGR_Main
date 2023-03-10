@@ -188,7 +188,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>PLF (%)</th>';
                 tbl += '<th>Grid_hrs</th>';
                 tbl += '<th>Lull_hrs</th>';
@@ -218,6 +220,8 @@
                         tbl += '<td  class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].plf.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';

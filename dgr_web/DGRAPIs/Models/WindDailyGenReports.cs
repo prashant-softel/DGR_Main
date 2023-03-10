@@ -23,6 +23,9 @@ namespace DGRAPIs.Models
         public double ma_contractual { get; set; }
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
+
         public double grid_hrs { get; set; }
         public double lull_hrs { get; set; }
         public double production_hrs { get; set; }

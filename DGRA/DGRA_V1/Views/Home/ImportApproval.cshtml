@@ -198,13 +198,14 @@
                 <br>
                 @if (@HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
                 {
-                   
-            <div class="row" id="approvebtn" style="display:none">
-                <div class="col-md-2"><button type="button" id="btndsable" class="btn btn-block btn-success" onclick="DataApproved(1)">Approved</button></div>
-                <div class="col-md-2"><button type="button" class="btn btn-block btn-danger" onclick="DataApproved(2)">Reject</button></div>
-                <!--<div class="col-md-2"><button type="button" class="btn btn-block btn-info" onclick="ExportToExcel()">Export Selected Data</button></div>-->
-                <div class="col-md-2"></div>
-            </div>
+
+                    <div class="row" id="approvebtn" style="display:none">
+                        <div class="col-md-2"><button type="button" class="btn btn-block btn-success" onclick="DataApproved(1)">Approve</button></div>
+                        <div class="col-md-2"><button type="button" class="btn btn-block btn-danger" onclick="DataApproved(2)">Reject</button></div>
+                        <!--<div class="col-md-2"><button type="button" class="btn btn-block btn-info" onclick="ExportToExcel()">Export Selected Data</button></div>-->
+                        <div class="col-md-2"></div>
+                    </div>
+                    <div id="loader" class="loader " style="display:none; margin-left:50%; "></div>
                 }
                 <hr>
                 <div id="LogData"></div>
@@ -768,6 +769,12 @@
     //   Approved Data
     function DataApproved(actionType) {
         var values = '';
+        //console.log("you clicked approved or reject")
+        var a = document.getElementById("loader");
+        console.log(a);
+        console.log(a.style.display);
+        a.style.display = "flex";
+
         $.each($("input[class='form-check-input']:checked"), function () {
             if (values == '') {
                 values = $(this).attr('data-id');
@@ -815,9 +822,13 @@
             success: function (result, status, xhr) {
                 if (result > 0) {
                     if (actionType == 1) {
+                        var a = document.getElementById("loader");
+                        a.style.display = "none";
                         alert("Data Approved Successfully !");
                     }
                     if (actionType == 2) {
+                        var a = document.getElementById("loader");
+                        a.style.display = "none";
                         alert("Data Rejected Successfully !");
                     }
 

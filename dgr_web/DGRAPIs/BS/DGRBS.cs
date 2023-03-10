@@ -61,6 +61,8 @@ namespace DGRAPIs.BS
         Task<List<SolarDailyBreakdownReport>> GetSolarDailyBreakdownReport(string fromDate, string toDate, string country, string state, string spv, string site, string inv);
         Task<bool> CalculateDailyWindKPI(string fromDate, string toDate, string site);
         Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName);
+        Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string logFileName);
+        Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType);
         Task<int> InsertDailyTargetKPI(List<WindDailyTargetKPI> set);
         Task<int> InsertMonthlyTargetKPI(List<WindMonthlyTargetKPI> set);
         Task<int> InsertMonthlyUploadingLineLosses(List<WindMonthlyUploadingLineLosses> set);
@@ -76,6 +78,9 @@ namespace DGRAPIs.BS
         Task<int> InsertSolarJMR(List<SolarMonthlyJMR> set);
         Task<int> InsertSolarDailyLoadShedding(List<SolarDailyLoadShedding> set);
         Task<int> InsertSolarInvAcDcCapacity(List<SolarInvAcDcCapacity> set);
+        Task<int> InsertSolarTrackerLoss(List<InsertSolarTrackerLoss> set);
+        Task<int> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> set);
+        Task<int> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> set);
         Task<int> InsertSolarDailyBDloss(List<SolarDailyBDloss> set);
         Task<int> InsertSolarUploadingPyranoMeter1Min(List<SolarUploadingPyranoMeter1Min> set, int batchId);
         Task<int> InsertSolarUploadingPyranoMeter15Min(List<SolarUploadingPyranoMeter15Min> set, int batchId);
@@ -780,6 +785,35 @@ namespace DGRAPIs.BS
             }
         }
 
+        public async Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string logFileName)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.PowerExpected(site, fromDate, toDate, logFileName, "", "");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetSolarExpectedReport(site, fromDate, toDate, prType);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
 
         public async Task<int> InsertWindSiteMaster(List<WindSiteMaster> set)
         {
@@ -1070,6 +1104,55 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+
+        public async Task<int> InsertSolarTrackerLoss(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarTrackerLoss(InsertSolarTrackerLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<int> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> InsertSolarSoilingLoss)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarSoilingLoss(InsertSolarSoilingLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertSolarPVSystLoss
+        public async Task<int> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> InsertSolarPVSystLoss)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarPVSystLoss(InsertSolarPVSystLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<int> InsertSolarDailyBDloss(List<SolarDailyBDloss> solarDailyBDloss)
         {
             try

@@ -39,6 +39,8 @@ namespace DGRAPIs.Models
 
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double prod_hrs { get; set; }
         public double usmh { get; set; }
         public double smh { get; set; }
@@ -94,6 +96,8 @@ namespace DGRAPIs.Models
 
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double gen_hrs { get; set; }
         public double usmh { get; set; }
         public double smh { get; set; }
@@ -148,6 +152,8 @@ namespace DGRAPIs.Models
 
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double prod_hrs { get; set; }
         public double usmh { get; set; }
         public double smh { get; set; }

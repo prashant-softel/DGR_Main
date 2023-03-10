@@ -797,6 +797,40 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("PowerExpected")]
+        [HttpGet]
+        public async Task<IActionResult> PowerExpected(string site, string fromDate, string toDate, string logFileName)
+        {
+            try
+            {
+                var data = await _dgrBs.PowerExpected(site, fromDate, toDate, logFileName);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("SolarExpectedReport")]
+        [HttpGet]
+        public async Task<IActionResult> SolarExpectedReport(string site, string fromDate, string toDate, string prType)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarExpectedReport(site, fromDate, toDate, prType);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [Route("CalculateDailyWindKPI")]
         [HttpGet]
@@ -1024,6 +1058,76 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("InsertSolarTrackerLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarTrackerLoss(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarTrackerLoss(InsertSolarTrackerLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //CalculateTrackerLosses
+        //[Route("CalculateTrackerLosses")]
+        //[HttpPost]
+        //public async Task<IActionResult> CalculateTrackerLosses(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        //{
+        //    try
+        //    {
+        //        var data = await _dgrBs.CalculateTrackerLosses(InsertSolarTrackerLoss);
+        //        return Ok(data);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+
+        //InsertSolarSoilingLoss
+        [Route("InsertSolarSoilingLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> InsertSolarSoilingLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarSoilingLoss(InsertSolarSoilingLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertSolarPVSystLoss
+        [Route("InsertSolarPVSystLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> InsertSolarPVSystLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarPVSystLoss(InsertSolarPVSystLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         [Route("InsertSolarDailyBDloss")]
         [HttpPost]

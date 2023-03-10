@@ -123,13 +123,14 @@
                                 <label class="custom-file-label" for="customFile">Choose file</label>
                             </div>
                         </div>
-                        <div class="col-md-2"><button type="submit" class="btn btn-block btn-success">Upload</button></div>
+                        <div class="col-md-2"><button type="submit" class="btn btn-block btn-success" onclick="onSubmit();">Upload</button></div>
                         <div class="col-md-2"><button type="button" class="btn btn-block btn-danger">Cancel</button></div>
                     </div>
                 </div>
                 
             </form>
             <div class="col-md-12">
+                <div id="loader" class="loader center" style="display:none; "></div>
                 <h3>Templates</h3>
             </div>
             <hr>
@@ -208,5 +209,19 @@
 <script>
     $(function () {
         bsCustomFileInput.init();
-    });</script>
+    });
+
+    function onSubmit() {
+        console.log("You clicked upload button....!");
+        var a = document.getElementById("loader")
+        console.log(a);
+        console.log(a.style.display);
+        if (a.style.display == "none") {
+            a.style.display = "flex";
+        }
+        if (a.style.display == "flex") {
+            a.style.display = "flex";
+        }
+    }
+</script>
 <!-- /.content-wrapper -->

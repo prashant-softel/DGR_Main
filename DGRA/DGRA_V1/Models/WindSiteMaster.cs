@@ -5,6 +5,7 @@
         public int site_master_id { get; set; }
         public string country { get; set; }
         public string site { get; set; }
+        public dynamic doc { get; set; }
         public string spv { get; set; }
         public string state { get; set; }
         public string model { get; set; }
