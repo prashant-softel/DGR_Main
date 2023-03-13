@@ -8175,7 +8175,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             //add column called kwh_afterlineloss and plf_afterlineloss in dailygensummary and uploadgentable
 
-            string title = "Wind Daily Report";
             //string month = (fromDate);
             DateTime dt = DateTime.Parse(fromDate);
             string month = dt.ToString("yyyy-MM");
@@ -8188,11 +8187,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string ytodate = years + "-12-31";
             DateTime ltodate = dt.AddDays(-1);
             string lastDay = ltodate.ToString("yyyy-MM-dd");
-            string info = "Wind Daily Reports";
+            string title = "Wind Daily Report " + (dt.ToString("dd-MMM-yyyy"));
 
 
 
-            string tb = "<h3 style='text-align: center;'><b>" + info + "<b/></h3>";
+            string tb = "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<br>";
             //tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; background-color:#f7f5f0'>";
             tb += "<table id = 'emailTable' class='table table-bordered table-striped' style='width: 100%; background-color: #f7f5f0; margin-left: auto; margin-right: auto;' border='1' cellspacing='0' cellpadding='0'>";
@@ -8348,20 +8347,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
               
-                tb += "<td class='text-left'>" + yearlypr[i].site + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].total_mw, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].tar_kwh, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;' style='padding:0.5rem;'>" + yearlypr[i].site + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].total_mw, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].tar_kwh, 2) + "</td>";
                 
-                tb += "<td class='text-right'>" + Math.Round(tar_mu_yr, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].act_jmr_kwh_mu, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(jmr_var_yr, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].tar_wind, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].act_Wind, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(wind_var_yr, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].act_plf, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].act_ma, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].act_iga, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].act_ega, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(tar_mu_yr, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_jmr_kwh_mu, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(jmr_var_yr, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].tar_wind, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_Wind, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(wind_var_yr, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_plf, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_ma, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_iga, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_ega, 2) + "</td>";
                 bool monthlyRecordFound = false;
                for(var j=0; j< monthlypr.Count; j++)
                 {
@@ -8388,17 +8387,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             wind_var_mn = ((monthlypr[j].act_Wind - monthlypr[j].tar_wind) / monthlypr[j].tar_wind) * 100;
                         }
                         monthlyRecordFound = true;
-                        //tb += "<td class='text-right'>" + Math.Round(monthlypr[j].tar_kwh, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(tar_mu_mn, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].act_jmr_kwh_mu, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(jmr_var_mn, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].tar_wind, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].act_Wind, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(wind_var_mn, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].act_plf, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].act_ma, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].act_iga, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].act_ega, 2) + "</td>";
+                        //tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_kwh, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(tar_mu_mn, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_jmr_kwh_mu, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(jmr_var_mn, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_wind, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_Wind, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(wind_var_mn, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_plf, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_ma, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_iga, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_ega, 2) + "</td>";
                     }
 
                 }
@@ -8406,18 +8405,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     
                    
-                    //tb += "<td class='text-right'>0.0</td>";
-                   // tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
+                    //tb += "<td style='padding:0.5rem;'>0.0</td>";
+                   // tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
 
                 }
                 bool dailyRecordFound = false;
@@ -8447,33 +8446,33 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             wind_var_lastday = ((lastdaypr[k].act_Wind - lastdaypr[k].tar_wind) / lastdaypr[k].tar_wind) * 100;
                         }
-                        //tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].tar_kwh, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(tar_mu_lastday, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_jmr_kwh_mu, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(jmr_var_lastday, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].tar_wind, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_Wind, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(wind_var_lastday, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_plf, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_ma, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_iga, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_ega, 2) + "</td>";
+                        //tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].tar_kwh, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(tar_mu_lastday, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_jmr_kwh_mu, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(jmr_var_lastday, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].tar_wind, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_Wind, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(wind_var_lastday, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_plf, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_ma, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_iga, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_ega, 2) + "</td>";
                     }
                 }
                 if(dailyRecordFound == false)
                 {
-                   // tb += "<td class='text-right'>0.0</td>";
-                    //tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
+                   // tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    //tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
                 }
                 tb += "</tr>";
             }
@@ -8533,41 +8532,41 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             //}
             tb += "</tbody><tfoot><tr>";
-            tb += "<td class='text-left'><b>Grand Total</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_capacity_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(0.00, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_tar_mu_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_act_jmr_kwh_mu_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_jmr_var_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_tar_wind_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_wind_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_wind_var_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_plf_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ma_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_iga_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ega_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>Grand Total</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_capacity_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(0.00, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_mu_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_jmr_kwh_mu_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_jmr_var_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_tar_wind_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_wind_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_wind_var_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_plf_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ma_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_iga_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ega_yr, 2) + "</b></td>";
 
-            tb += "<td class='text-right'><b>" + Math.Round(total_tar_mu_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_act_jmr_kwh_mu_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_jmr_var_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_tar_wind_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_wind_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_wind_var_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_plf_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ma_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_iga_mn, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ega_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_mu_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_jmr_kwh_mu_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_jmr_var_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_tar_wind_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_wind_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_wind_var_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_plf_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ma_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_iga_mn, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ega_mn, 2) + "</b></td>";
 
-            tb += "<td class='text-right'><b>" + Math.Round(total_tar_mu_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_act_jmr_kwh_mu_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_jmr_var_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_tar_wind_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_wind_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_wind_var_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_plf_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ma_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_iga_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ega_ld, 2) + "</b></td></tr>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_mu_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_jmr_kwh_mu_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_jmr_var_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_tar_wind_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_wind_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_wind_var_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_plf_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ma_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_iga_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ega_ld, 2) + "</b></td></tr>";
             
             tb += "</tfoot></table>";
            //return tb;
@@ -8607,32 +8606,33 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     result = Convert.ToDateTime(totalTime.ToString());
                     Get_Time = result.TimeOfDay;
                     //Get_Time = Final_USMH_Time * 24;
-
+                    string bdDate = "";
+                    bdDate = data2[i].date.ToString("dd/MM/yyyy"); 
                     total_time = Get_Time.TotalDays * 24;
 
                     if ((data2[i].bd_type_id == 1 || data2[i].bd_type_id == 2) && total_time >= 4.0)
                     {
                         tb += "<tr>";
-                        tb += "<td class='text-left'>" + data2[i].date + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].site_name + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].wtg + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].bd_type + "</td>";
-                        tb += "<td class='text-left'>" + Math.Round(total_time, 2) + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].error_description + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].action_taken + "</td>";
+                        tb += "<td style='padding:0.5rem; width: 10%;'>" + bdDate + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].site_name + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].wtg + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].bd_type + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(total_time, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].error_description + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].action_taken + "</td>";
                         tb += "</tr>";
                     }
                     else
                     {
-                        date1 = data2[i].date;
+                        date1 = bdDate;
                         site1 = data2[i].site_name;
                         errorDesc = data2[i].error_description;
                         bdType = data2[i].bd_type;
                         actionTaken = data2[i].action_taken;
 
                         string date = "";
-                        string stopfrom = "";
-                        string stopto = "";
+                        TimeSpan stopfrom = new TimeSpan();
+                        TimeSpan stopto = new TimeSpan();
                         int count = 0;
 
                         if (i == 0 && i < data2.Count)
@@ -8647,11 +8647,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             if (i > 0)
                             {
-                                date = data2[i].date.ToString();
-                                stopfrom = data2[i].stop_from.ToString();
-                                stopto = data2[i].stop_to.ToString();
+                                date = bdDate;
+                                stopfrom = data2[i].stop_from;
+                                stopto = data2[i].stop_to;
                             }
-                            if (total_time >= 1.0 && date == data2[i].date && stopfrom == data2[i].stop_from && stopto == data2[i].stop_to)
+                            if (total_time >= 1.0 && date == bdDate && stopfrom == data2[i].stop_from && stopto == data2[i].stop_to)
                             {
                                 WTG_count += 1;
                                 totalTimeAdd += total_time;
@@ -8662,13 +8662,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 }
                 tb += "<tr>";
-                tb += "<td class='text-left'>" + date1 + "</td>";
-                tb += "<td class='text-left'>" + site1 + "</td>";
-                tb += "<td class='text-left'>" + WTG_count + " WTGs </td>";
-                tb += "<td class='text-left'>" + bdType + "</td>";
-                tb += "<td class='text-left'>" + totalTimeAdd + "</td>";
-                tb += "<td class='text-left'>" + errorDesc + "</td>";
-                tb += "<td class='text-left'>" + actionTaken + "</td>";
+                tb += "<td style='padding:0.5rem;width: 10%;'>" + date1 + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + site1 + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + WTG_count + " WTGs </td>";
+                tb += "<td style='padding:0.5rem;'>" + bdType + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(totalTimeAdd ,2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + errorDesc + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + actionTaken + "</td>";
                 tb += "</tr>";
 
             }
@@ -8688,7 +8688,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             //add column called kwh_afterlineloss and plf_afterlineloss in dailygensummary and uploadgentable
 
-            string title = "Solar Daily Report";
             //string month = (fromDate);
             DateTime dt = DateTime.Parse("2022-12-04");
             string month = dt.ToString("yyyy-MM");
@@ -8701,11 +8700,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string ytodate = years + "-12-31";
             DateTime ltodate = dt.AddDays(-1);
             string lastDay = ltodate.ToString("yyyy-MM-dd");
-            string info = "Solar Daily Reports";
+            string title = "Solar Daily Report " + (dt.ToString("dd-MMM-yyyy"));
 
 
-
-            string tb = "<h2 style='text - align: center;'><b>"+ info + "<b/></h2>";
+            string tb = " < h2 style = 'text-align: center;' >< b > " + title + " < b /></ h2 > ";
             tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; '  border='1' cellspacing='0' cellpadding='0'>";
             tb += "<thead class='tb-head'><tr>";
             tb += "<th rowspan='2'  style='width: 10%; background-color:#31576D' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D' >Total Target</th>";
@@ -8825,13 +8823,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 total_tar_kwh_yr += yearlypr[i].tar_kwh;
                 total_act_kwh_yr += yearlypr[i].act_kwh;
 
-                tb += "<td class='text-left'>" + yearlypr[i].site + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].capacity, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].expected_kwh, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + yearlypr[i].site + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].capacity, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].expected_kwh, 2) + "</td>";
                   
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].tar_kwh, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(yearlypr[i].act_kwh, 2) + "</td>";
-                tb += "<td class='text-right'>" + Math.Round(t_var_yr, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].tar_kwh, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_kwh, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(t_var_yr, 2) + "</td>";
                 bool monthlyRecordFound = false;
                 for (var j = 0; j < monthlypr.Count; j++)
                 {
@@ -8864,16 +8862,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                         monthlyRecordFound = true;
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].tar_kwh, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(monthlypr[j].act_kwh, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(t_var_mn, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_kwh, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_kwh, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(t_var_mn, 2) + "</td>";
                     }
                 }
                 if (monthlyRecordFound == false)
                 {
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
                 }
                 bool dailyRecordFound = false;
                 for (var k = 0; k < lastdaypr.Count; k++)
@@ -8914,38 +8912,38 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         total_capActPr_ld += lastdaypr[k].act_pr * lastdaypr[k].capacity;
 
 
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].tar_kwh, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_kwh, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(t_var_yr, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].tar_poa, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[k].act_poa, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(poa_var_ld, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].tar_kwh, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_kwh, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(t_var_yr, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].tar_poa, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[k].act_poa, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(poa_var_ld, 2) + "</td>";
 
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[1].act_ma, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[i].act_iga, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[i].act_ega, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[i].act_plf, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(lastdaypr[i].tar_pr, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(act_prval_ld, 2) + "</td>";
-                        tb += "<td class='text-right'>" + Math.Round(pr_var_ld, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[1].act_ma, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[i].act_iga, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[i].act_ega, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[i].act_plf, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(lastdaypr[i].tar_pr, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(act_prval_ld, 2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(pr_var_ld, 2) + "</td>";
 
                     }
                 }
                 if (dailyRecordFound == false)
                 {
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
-                    tb += "<td class='text-right'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
+                    tb += "<td style='padding:0.5rem;'>0.0</td>";
                 }
 
 
@@ -8981,28 +8979,28 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             //return tb;
              tb += "</tbody>";
-            tb += "<tfoot><tr><td class='text-left'><b>Grand Total</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_capacity_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(0.00, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_tar_kwh_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_act_kwh_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_solar_var_yr, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_tar_kwh_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_act_kwh_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_solar_var_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_tar_kwh_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(total_act_kwh_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_solar_var_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_tar_IR_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_IR_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_IR_var_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ma_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_iga_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_ega_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_plf_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_tar_pr_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_act_pr_ld, 2) + "</b></td>";
-            tb += "<td class='text-right'><b>" + Math.Round(avg_pr_var_ld, 2) + "</b></td></tr>";
+            tb += "<tfoot><tr><td style='padding:0.5rem;'><b>Grand Total</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_capacity_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(0.00, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_kwh_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_kwh_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_solar_var_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_kwh_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_kwh_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_solar_var_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_kwh_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_kwh_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_solar_var_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_tar_IR_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_IR_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_IR_var_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ma_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_iga_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_ega_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_plf_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_tar_pr_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_act_pr_ld, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_pr_var_ld, 2) + "</b></td></tr>";
 
            
             tb += "</tfoot></table>";
@@ -9043,18 +9041,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     
                     Get_Time = data2[i].total_bd * 24;
                     total_time_s = Get_Time.TotalDays;
+                    string bdDate = "";
+                    bdDate = data2[i].date.ToString("dd/MM/yyyy"); 
 
                     if ((data2[i].bd_type_id == 1 || data2[i].bd_type_id == 2) && total_time_s >= 0.50)
                     {
                         tb += "<tr>";
-                        tb += "<td class='text-left'>" + data2[i].date + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].site + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].icr + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].inv + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].bd_type + "</td>";
-                        tb += "<td class='text-left'>" + Math.Round(total_time_s,2) + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].bd_remarks + "</td>";
-                        tb += "<td class='text-left'>" + data2[i].action_taken + "</td>";
+                        tb += "<td style='padding:0.5rem; width: 10%;'>" + bdDate + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].site + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].icr + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].inv + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].bd_type + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + Math.Round(total_time_s,2) + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].bd_remarks + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].action_taken + "</td>";
                         tb += "</tr>";
                         //}
                         //if ((data2[i].bd_type_id != 1 && data2[i].bd_type_id != 2) && +total_time.split(":")[0] >= 4)
@@ -9071,15 +9071,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         if (total_time_s >= 0.50)
                         {
-                            date1 = data2[i].date;
+                            date1 = bdDate;
                             site1 = data2[i].site;
                             errorDesc = data2[i].bd_remarks;
                             bdType = data2[i].bd_type;
                             action_taken1 = data2[i].action_taken;
 
                             string date = "";
-                            string stopfrom = "";
-                            string stopto = "";
+                            TimeSpan stopfrom = new TimeSpan();
+                            TimeSpan stopto = new TimeSpan();
                             int count = 0;
 
                             if (i == 0 && i < data2.Count)
@@ -9094,14 +9094,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             {
                                 if (i >= 0)
                                 {
-                                    date = data2[i].date.ToString();
-                                    stopfrom = data2[i].from_bd.ToString();
-                                    stopto = data2[i].to_bd.ToString();
+                                    date = bdDate;
+                                    stopfrom = data2[i].from_bd;
+                                    stopto = data2[i].to_bd;
                                 }
                                 if (i >= 0)
                                 {
                                     // if (isGreaterThanThirty && date == result[i].date && stopfrom == result[i].from_bd && stopto == result[i].to_bd)
-                                    if (total_time_s >= 0.50 && date == data2[i].date.ToString() && stopfrom == data2[i].from_bd.ToString())
+                                    if (total_time_s >= 0.50 && date == bdDate && stopfrom == data2[i].from_bd)
                                     {
                                         ICR_count += 1;
                                         totalTime += total_time_s;
@@ -9113,14 +9113,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 }
                 tb += "<tr>";
-                tb += "<td class='text-left'>" + date1 + "</td>";
-                tb += "<td class='text-left'>" + site1 + "</td>";
-                tb += "<td class='text-left'>" + ICR_count + " ICR/INV </td>";
-                tb += "<td class='text-left'>" + ICR_count + " ICR/INV </td>";
-                tb += "<td class='text-left'>" + bdType + "</td>";
-                tb += "<td class='text-left'>" + totalTime + "</td>";
-                tb += "<td class='text-left'>" + errorDesc + "</td>";
-                tb += "<td class='text-left'>" + action_taken1 + "</td>";
+                tb += "<td style='padding:0.5rem; width: 10%;'>" + date1 + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + site1 + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + ICR_count + " ICR/INV </td>";
+                tb += "<td style='padding:0.5rem;'>" + ICR_count + " ICR/INV </td>";
+                tb += "<td style='padding:0.5rem;'>" + bdType + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + totalTime + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + errorDesc + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + action_taken1 + "</td>";
                 tb += "</tr>";
             }
             tb += "</tbody></table>";
