@@ -3565,32 +3565,31 @@ bd_remarks, action_taken
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
 
+        internal async Task<int> DeleteBreakdownDataFromUploading(dynamic date, int id)
+        {
+            string delqry = "delete from uploading_file_breakdown_solar where date = '" + date + "' and site_id=" + id + ";";
+            int result1;
+            int temp;
+            try
+            {
+                result1 = await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
+                temp = 1;
+            }
+            catch (Exception e)
+            {
+                string errMsg = e.Message;
+                temp = 0;
+                throw;
+            }
+            return temp;
+        }
+
         internal async Task<int> InsertSolarUploadingFileBreakDown(List<SolarUploadingFileBreakDown> set, int batchId)
         {//Updated
-            bool isDeleted = false;
             int result = 0;
-            async Task<int> Delete()
-            {
-                string delqry = "delete from uploading_file_breakdown_solar where date = '" + set[0].date + "' and site_id=" + set[0].site_id + ";";
-                int result1;
-                int temp;
-                try
-                {
-                    result1 = await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
-                    temp = 1;
-
-                }
-                catch (Exception e)
-                {
-                    string errMsg = e.Message;
-                    temp = 0;
-                    throw;
-                }
-                isDeleted = true;
-
-                return temp;
-            }
-            int temp = await Delete();
+            dynamic date = set[0].date;
+            int id = set[0].site_id;
+            int temp = await DeleteBreakdownDataFromUploading(date, id);
             if (temp == 1)
             { 
                 string qry = " insert into uploading_file_breakdown_solar (date, site, site_id, ext_int_bd, igbd, icr, inv, smb, strings, from_bd, to_bd, total_bd, bd_remarks, bd_type, bd_type_id, action_taken, import_batch_id) values";
@@ -3601,8 +3600,15 @@ bd_remarks, action_taken
                     values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.ext_int_bd + "','" + unit.igbd + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.from_bd + "','" + unit.to_bd + "','" + unit.total_bd + "','" + unit.bd_remarks + "','" + unit.bd_type + "','" + unit.bd_type_id + "','" + unit.action_taken + "','" + batchId + "'),";
                 }
                 qry += values;
-
-                result = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                string tempQry = qry.Substring(0, (qry.Length - 1)) + ";";
+                try
+                {
+                    result = await Context.ExecuteNonQry<int>(tempQry).ConfigureAwait(false);
+                }catch (Exception e)
+                {
+                    string msg = e.Message;
+                    throw;
+                }
             }
             return result;
 
@@ -3701,16 +3707,36 @@ bd_remarks, action_taken
                 throw;
             }
         }
-        
+
+
+        async Task<int> DeleteFromSolarDailyGenSummary(int id)
+        {
+            int temp;
+            try
+            {
+                string qry6 = "delete from daily_gen_summary_solar where import_batch_id = " + id + ";";
+                await Context.ExecuteNonQry<int>(qry6).ConfigureAwait(false);
+                //solarDailyGenSummary = true;
+                temp = 1;
+            }
+            catch (Exception e)
+            {
+                string errMsg = e.Message;
+                temp = 0;
+                throw;
+            }
+            return temp;
+        }
         internal async Task<int> DeleteRecordsAfterFailure(int batchId, int siteType)
         {
-            //for solar 0, wind 1;
+            //for solar 0, wind 1, other 2;
             if (siteType == 0)
             {
-                bool fileBreakdown = false;
-                bool fileGeneration = false;
-                bool pyranometerOne = false;
-                bool pyranometerFifteen = false;
+                bool solarFileBreakdown = false;
+                bool solarFileGeneration = false;
+                bool solarPyranometerOne = false;
+                bool solarPyranometerFifteen = false;
+                bool solarDailyGenSummary = false;
                 bool importBatch = false;
                 bool fileSummery = false;
 
@@ -3718,35 +3744,47 @@ bd_remarks, action_taken
                 {
                     string qry2 = "delete from uploading_file_generation_solar where import_batch_id =" + batchId ;
                     await Context.ExecuteNonQry<int>(qry2).ConfigureAwait(false);
-                    fileGeneration = true;
+                    solarFileGeneration = true;
                 }
                 catch (Exception e)
                 {
                     string a = e.Message;
-                    fileGeneration = true;
+                    solarFileGeneration = true;
                     throw;
                 }
                 string qry3 = "delete from uploading_pyranometer_1_min_solar where import_batch_id =" + batchId + ";";
                 int temp1 = await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
-                pyranometerOne = true;
+                solarPyranometerOne = true;
 
                 string qry4 = "delete from uploading_pyranometer_15_min_solar where import_batch_id =" + batchId + ";";
                 await Context.ExecuteNonQry<int>(qry4).ConfigureAwait(false);
-                pyranometerFifteen = true;
+                solarPyranometerFifteen = true;
 
                 string qry1 = "delete from uploading_file_breakdown_solar where import_batch_id =" + batchId + ";";
                 await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
-                fileBreakdown = true;
+                solarFileBreakdown = true;
 
-                string qry6 = "delete from daily_gen_summary_solar where import_batch_id =" + batchId + ";";
-                await Context.ExecuteNonQry<int>(qry6).ConfigureAwait(false);
-                fileSummery = true;
+                //daily_gen_summary_solar await Task.Delay(10000);
+                //if (solarFileGeneration && solarFileBreakdown && solarPyranometerOne && solarPyranometerFifteen)
+                /*{
+                    string qry6 = "delete from daily_gen_summary_solar where import_batch_id =" + batchId + ";";
+                    await Context.ExecuteNonQry<int>(qry6).ConfigureAwait(false);
+                    solarDailyGenSummary = true;
+                }*/
 
-                string qry5 = "delete from import_batches where import_batch_id =" + batchId + ";";
-                await Context.ExecuteNonQry<int>(qry5).ConfigureAwait(false);
-                importBatch = true;
+                int del = await DeleteFromSolarDailyGenSummary(batchId);
+                if(del == 1)
+                {
+                    solarDailyGenSummary = true;
+                }
 
-                if (fileGeneration && fileBreakdown && pyranometerOne && pyranometerFifteen && importBatch && fileSummery)
+                if (solarFileGeneration && solarFileBreakdown && solarPyranometerOne && solarPyranometerFifteen && solarDailyGenSummary)
+                {
+                    string qry5 = "delete from import_batches where import_batch_id =" + batchId + ";";
+                    await Context.ExecuteNonQry<int>(qry5).ConfigureAwait(false);
+                    importBatch = true;
+                }
+                if (solarFileGeneration && solarFileBreakdown && solarPyranometerOne && solarPyranometerFifteen && solarDailyGenSummary && importBatch)
                 {
                     return 1;
                 }
@@ -3756,31 +3794,35 @@ bd_remarks, action_taken
                 }
             }
 
+            //for solar 0, wind 1, other 2;
             if (siteType == 1)
             {
-                bool fileBreakdown = false;
-                bool fileGeneration = false;
+                bool windFileBreakdown = false;
+                bool windFileGeneration = false;
+                bool windDailyGenSummary = false;
                 bool importBatch = false;
                 bool fileSummery = false;
 
                 string qry1 = "delete from uploading_file_breakdown where import_batch_id =" + batchId + "";
                 await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
-                fileBreakdown = true;
+                windFileBreakdown = true;
 
                 string qry2 = "delete from uploading_file_generation where import_batch_id =" + batchId + "";
                 await Context.ExecuteNonQry<int>(qry2).ConfigureAwait(false);
-                fileGeneration = true;
+                windFileGeneration = true;
 
-                string qry6 = "delete from daily_gen_summary where import_batch_id =" + batchId + ";";
-                await Context.ExecuteNonQry<int>(qry6).ConfigureAwait(false);
-                fileSummery = true;
+                //daily_gen_summary
+                string qry4 = "delete from daily_gen_summary where import_batch_id =" + batchId + "";
+                await Context.ExecuteNonQry<int>(qry4).ConfigureAwait(false);
+                windDailyGenSummary = true;
 
-
-                string qry3 = "delete from import_batches where import_batch_id =" + batchId + "";
-                await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
-                importBatch = true;
-               
-                if (fileBreakdown && fileGeneration && importBatch && fileSummery)
+                if (windFileBreakdown && windFileGeneration && windDailyGenSummary)
+                {
+                    string qry3 = "delete from import_batches where import_batch_id =" + batchId + "";
+                    await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
+                    importBatch = true;
+                }
+                if (windFileBreakdown && windFileGeneration && windDailyGenSummary && importBatch)
                 {
                     return 1;
                 }
@@ -3789,6 +3831,23 @@ bd_remarks, action_taken
                     return 0;
                 }
 
+            }
+
+            //for solar 0, wind 1, other 2;
+            if(siteType == 2)
+            {
+                bool importBatch = false;
+                string qry3 = "delete from import_batches where import_batch_id =" + batchId + "";
+                await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
+                importBatch = true;
+                if (importBatch)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
             }
             else
             {
@@ -6495,7 +6554,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 //string qryFileBreakdown = "SELECT fd.site_id,fd.bd_type,fd.wtg,bd.bd_type_name, SEC_TO_TIME(SUM(TIME_TO_SEC( fd.`total_stop` ) ) ) AS totalTime FROM `uploading_file_breakdown` as fd join bd_type as bd on bd.bd_type_id=fd.bd_type where site_id = " + site_id + " AND`date` = '" + fromDate + "' group by fd.wtg, fd.bd_type";
                 string qry = @"SELECT date,t1.site_id,t1.wtg,t1.bd_type_id,t1.bd_type,SEC_TO_TIME(SUM(TIME_TO_SEC(total_stop)))  AS total_stop FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type ";
-               
+                API_InformationLog("CalculateDailyWindKPI: GetBreakdown query<" + qry + ">");
                 int iBreakdownCount = 0;
                 filter = "";
                 int chkfilter = 0;
