@@ -1486,7 +1486,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             catch (Exception e)
             {
                 //developer errorlog
-                m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarPyranoMeter1Min");
+                m_ErrorLog.SetError(",Exception in Function: InsertSolarPyranoMeter1Min on line " + rowNumber);
                 ErrorLog(",Exception Occurred In Function: InsertSolarPyranoMeter1Min: " + e.Message);
             }
             return responseCode;
@@ -1597,7 +1597,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             catch (Exception e)
             {
-                m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarPyranoMeter15Min");
+                m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarPyranoMeter15Min " + rowNumber);
                 ErrorLog(",Exception Occurred In Function: InsertSolarPyranoMeter15Min: " + e.Message);
             }
             return responseCode;
@@ -1705,7 +1705,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
                     catch (Exception e)
                     {
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyJMR");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyJMR " + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarMonthlyJMR: " + e.Message);
                         errorCount++;
                     }
@@ -1935,7 +1935,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyLineLoss,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyLineLoss," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarMonthlyLineLoss: " + e.Message);
                     }
                 }
@@ -2028,7 +2028,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindMonthlyLineLoss,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindMonthlyLineLoss," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertWindMonthlyLineLoss: " + e.Message);
                         errorCount++;
                     }
@@ -2148,7 +2148,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
                     catch (Exception e)
                     {
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyTargetKPI,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyTargetKPI," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarMonthlyTargetKPI: " + e.Message + ",");
                     }
                 }
@@ -2249,7 +2249,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
                     catch (Exception e)
                     {
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindMonthlyTargetKPI,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindMonthlyTargetKPI," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertWindMonthlyTargetKPI: " + e.Message + ",");
                         errorCount++;
                     }
@@ -2347,7 +2347,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarDailyLoadShedding,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarDailyLoadShedding," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarDailyLoadShedding: " + e.Message);
                         errorCount++;
                     }
@@ -2444,7 +2444,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindDailyLoadShedding,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindDailyLoadShedding," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertWindDailyLoadShedding: " + e.Message + ",");
                         errorCount++;
                     }
@@ -2549,7 +2549,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarDailyTargetKPI");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarDailyTargetKPI" + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarDailyTargetKPI: " + e.Message);
                     }
                 }
@@ -2649,7 +2649,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindDailyTargetKPI,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindDailyTargetKPI," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertWindDailyTargetKPI: " + e.Message + ",");
                         errorCount++;
                     }
@@ -2743,7 +2743,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarSiteMaster");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarSiteMaster" + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarSiteMaster: " + e.Message);
                         errorCount++;
                     }
@@ -2856,7 +2856,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindSiteMaster,");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindSiteMaster," + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertWindSiteMaster: " + e.Message + ",");
                         errorCount++;
                     }
@@ -2988,7 +2988,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarLocationMaster");
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarLocationMaster"+ rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarLocationMaster: " + e.Message);
                         errorCount++;
                     }
@@ -3219,8 +3219,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 var response = await client.PostAsync(url, data);
                 if (response.IsSuccessStatusCode)
                 {
-                    status = "Batch Id Created Successfully";
-                    m_ErrorLog.SetInformation("," + status + ":");
+                    //status = "Batch Id Created Successfully";
+                    //m_ErrorLog.SetInformation("," + status + ":");
                     responseCode = (int)response.StatusCode;
                 }
                 else
