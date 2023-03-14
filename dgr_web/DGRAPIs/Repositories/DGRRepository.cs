@@ -140,7 +140,7 @@ namespace DGRAPIs.Repositories
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
             foreach (WindDashboardData _windData in _WindDashboardData)
             {
-                _windData.tar_date = _windData.Date.Date.ToString("yyyy-MM-dd");
+                _windData.tar_date = _windData.Date;//.Date.ToString("yyyy-MM-dd");
                 foreach (WindDashboardData _windData2 in _WindDashboardData2)
                 {
                     if (monthly == true && _windData.month == _windData2.month)

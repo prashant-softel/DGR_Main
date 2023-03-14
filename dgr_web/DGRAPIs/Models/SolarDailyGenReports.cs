@@ -9,7 +9,7 @@ namespace DGRAPIs.Models
     {
         public int year { get; set; }
         public string month { get; set; }
-        public string date { get; set; }
+        public dynamic date { get; set; }
         public string country { get; set; }
         public string state { get; set; }
 
@@ -64,7 +64,7 @@ namespace DGRAPIs.Models
     {
         public int year { get; set; }
         public string month { get; set; }
-        public string date { get; set; }
+        public dynamic date { get; set; }
         public string country { get; set; }
         public string state { get; set; }
 
@@ -118,7 +118,7 @@ namespace DGRAPIs.Models
     {
         public long year { get; set; }
         public string month { get; set; }
-        public string date { get; set; }
+        public dynamic date { get; set; }
         public string country { get; set; }
         public string state { get; set; }
 

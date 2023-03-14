@@ -19,7 +19,7 @@ namespace DGRAPIs.Models
         public double jmrkwh { get; set; }
         public double tarkwh { get; set; }
         public double tarwind { get; set; }
-        public string tar_date { get; set; }
+        public dynamic tar_date { get; set; }
     }
     public class WindDashboardData1
     {
