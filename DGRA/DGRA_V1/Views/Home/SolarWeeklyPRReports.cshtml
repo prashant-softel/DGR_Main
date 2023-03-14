@@ -2209,6 +2209,8 @@ pres.addSlide().addImage({
 
                     for (var i = 0; i < result.length; i++) {
                        // console.log(result[i].from_bd.totalSeconds);
+                        var bdDate = "";
+                        bdDate = result[i].date.split('T');
                         var start_time = toHoursAndMinutes(result[i].from_bd.totalSeconds);
                         var stop_time = toHoursAndMinutes(result[i].to_bd.totalSeconds);
                         var total_time = toHoursAndMinutes(result[i].total_bd.totalSeconds);
@@ -2222,7 +2224,7 @@ pres.addSlide().addImage({
                         if (result[i].bd_type_id == 1 || result[i].bd_type_id == 2) {
                             if (total_time > "00:30:00") {
                                 tbl += '<tr>';
-                                tbl += '<td class="text-left">' + result[i].date + '</td>';
+                                tbl += '<td class="text-left">' + bdDate[0] + '</td>';
                                 tbl += '<td class="text-left">' + result[i].site + '</td>';
                                 location_name = "Plant Shutdown";
                                 
@@ -2243,7 +2245,7 @@ pres.addSlide().addImage({
 
                             if (total_time > "00:30:00") {
 
-                                date1 = result[i].date;
+                                date1 = bdDate[0];
                                 site = result[i].site;
                                 errorDesc = result[i].bd_remarks;
                                 bdType = result[i].bd_type;
@@ -2259,14 +2261,14 @@ pres.addSlide().addImage({
                                 }
                                 if (result[i].site_id == result[count].site_id) {
                                     if (i > 0) {
-                                        date = result[i].date;
+                                        date = bdDate[0];
                                         stopfrom = result[i].from_bd;
                                         stopto = result[i].to_bd;
                                        
                                     }
                                     if (i >= 0) {
-                                       // if (isGreaterThanThirty && date == result[i].date && stopfrom == result[i].from_bd && stopto == result[i].to_bd)
-                                            if (isGreaterThanThirty && date == result[i].date && stopfrom == result[i].from_bd ){
+                                       // if (isGreaterThanThirty && date == bdDate[0] && stopfrom == result[i].from_bd && stopto == result[i].to_bd)
+                                            if (isGreaterThanThirty && date == bdDate[0] && stopfrom == result[i].from_bd ){
                                             ICR_count += 1;
                                             hours += Number((total_time.split(":")[0]).toString());
                                             minutes += Number((total_time.split(":")[1]).toString());
@@ -2290,7 +2292,7 @@ pres.addSlide().addImage({
                         if (total_time.split(":")[1] >= 30 ) {
                             
                         }
-                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        //var formattedDate = moment(bdDate[0], 'YYYY/MM/DD').format('DD-MM-YYYY');
                         
                     }
                     allTimes.forEach(time => sum = sumUp(sum, time));
