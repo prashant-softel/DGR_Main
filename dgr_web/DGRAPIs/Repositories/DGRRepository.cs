@@ -9248,7 +9248,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             catch (Exception e)
             {
                 string msg = e.Message;
-                //Pending: error log failed mail
+                //Pending: error log failed mail log
             }
             return 1;
         }
