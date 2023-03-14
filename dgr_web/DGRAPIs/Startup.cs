@@ -51,7 +51,8 @@ namespace DGRAPIs
                 c.CronExpression = @"0 0 * * MON";  // every monday 
                 //c.CronExpression = @"* * * * *";
             });
-            
+
+            services.AddHostedService<SchedulerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2943,6 +2943,7 @@ bd_remarks, action_taken
         }
         internal async Task<int> MailSend(string fname)
         {
+            API_InformationLog("Mail sendinfg part invoked at :- " + DateTime.Now);
             //MAILING FUNCTIONALITY
             MailSettings _settings = new MailSettings();
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -2998,21 +2999,42 @@ bd_remarks, action_taken
             }
 
 
-
-            AddTo.Add("sujitkumar0304@gmail.com");
-            AddTo.Add("prashant@softeltech.in");
-            request.Subject = "Wind Weekly Reports";
+		
+            request.ToEmail = AddTo;
+            request.CcEmail = AddCc;
+            string subject = "";
+            if (fname.Contains("Solar"))
+            {
+                subject = "Solar Weekly Reports";
+            }
+            else
+            {
+                subject = "Wind Weekly Reports";
+			}
+			request.Subject = subject;
             request.Body = Msg;
 
             //var file = "/Users/sanketkar/Downloads/WeeklyReport_2023-01-04.pptx";
             //var file = "C:\\Users\\sujit\\Downloads\\" + fname+".pptx";
-            var file = "C:\\Users\\DGR\\Downloads\\" + fname+".pptx";
+            //var file = "C:\\Users\\DGR\\Downloads\\" + fname+".pptx";
+            var file = "C:\\inetpub\\wwwroot\\DGRA_Web\\pptupload\\" + fname + ".pptx";
+            API_ErrorLog("Reading file path:- " + file);
+            try { 
             using var stream = new MemoryStream(System.IO.File.ReadAllBytes(file).ToArray());
+
             var formFile = new FormFile(stream, 0, stream.Length, "streamFile", file.Split(@"/").Last());
-            List<IFormFile> list = new List<IFormFile>();
+                List<IFormFile> list = new List<IFormFile>();
+                list.Add(formFile);
+                request.Attachments = list;
+            }
+            catch(Exception ex)
+            {
+                API_ErrorLog(ex.Message);
+            }
+
             //formFile.ContentType = "application/octet-stream";
-            list.Add(formFile);
-            request.Attachments = list;
+        
+
             /*using (var stream = System.IO.File.OpenRead(@"/Users/sanketkar/file.txt"))
             {
                 await request.Attachments.CopyToAsync(stream);
@@ -3024,6 +3046,7 @@ bd_remarks, action_taken
             catch (Exception e)
             {
                 string msg = e.Message;
+                API_ErrorLog(e.Message);
                 //Pending: error log failed mail
             }
             return 1;
@@ -3032,15 +3055,15 @@ bd_remarks, action_taken
         internal async Task<int> PPTCreate(string fy, string startDate, string endDate, string type)
         {
             //string AppSetting_Key;
-
-            var psi = new ProcessStartInfo
-            {
-                //FileName = "https://localhost:5001/Home/"+type+"WeeklyPRReports?28/12/2022",
-                FileName = "https://localhost:44378/Home/WindWeeklyPRReports?" + endDate,
+            API_InformationLog("PPT genration method called.");
+            //var psi = new ProcessStartInfo
+            //{
+            //    //FileName = "https://localhost:5001/Home/"+type+"WeeklyPRReports?28/12/2022",
+            //    FileName = "https://localhost:44378/Home/WindWeeklyPRReports?" + endDate,
                
-                UseShellExecute = true
-            };
-            Process.Start(psi);
+            //    UseShellExecute = true
+            //};
+            //Process.Start(psi);
             //var psi1 = new ProcessStartInfo
             //{
             //    FileName = "https://localhost:5001/Home/SolarWeeklyPRReports?28/06/2022",
@@ -3059,14 +3082,14 @@ bd_remarks, action_taken
         {
             //string AppSetting_Key;
 
-            var psi = new ProcessStartInfo
-            {
-                //FileName = "https://localhost:5001/Home/"+type+"WeeklyPRReports?28/12/2022",
-                FileName = "https://localhost:44378/Home/SolarWeeklyPRReports?" + endDate,
+            //var psi = new ProcessStartInfo
+            //{
+            //    //FileName = "https://localhost:5001/Home/"+type+"WeeklyPRReports?28/12/2022",
+            //    FileName = "https://localhost:44378/Home/SolarWeeklyPRReports?" + endDate,
 
-                UseShellExecute = true
-            };
-            Process.Start(psi);
+            //    UseShellExecute = true
+            //};
+            //Process.Start(psi);
             //var psi1 = new ProcessStartInfo
             //{
             //    FileName = "https://localhost:5001/Home/SolarWeeklyPRReports?28/06/2022",

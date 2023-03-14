@@ -25,29 +25,30 @@ namespace DGRAPIs.Helper
             _iconfiguration = iconfiguration;
         }
 
-        //public Task StartAsync(CancellationToken stoppingToken)
-        //{
-        //    _timerNotification = new Timer(RunJob, null, TimeSpan.Zero,
-        //      TimeSpan.FromMinutes(3)); /*Set Interval time here*/
-        //    API_ErrorLog("Scheduler started at :- " + DateTime.Now);
-        //    return Task.CompletedTask;
-        //}
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            // Calculate the time until the next 7:30 PM
-            DateTime now = DateTime.Now;
-            DateTime next730PM = now.Date.AddDays(1).AddHours(19).AddMinutes(30);
-            if (now > next730PM)
-            {
-                next730PM = next730PM.AddDays(1);
-            }
-            TimeSpan initialDelay = next730PM - now;
 
-            // Set up the timer with a 24-hour interval
-            _timerNotification = new Timer(RunJob, null, initialDelay, TimeSpan.FromHours(24));
-
+            _timerNotification = new Timer(RunJob, null, TimeSpan.Zero,
+              TimeSpan.FromMinutes(1)); /*Set Interval time here*/
+            API_ErrorLog("Scheduler started at :- " + DateTime.Now);
             return Task.CompletedTask;
         }
+        //public Task StartAsync(CancellationToken stoppingToken)
+        //{
+        //    // Calculate the time until the next 7:30 PM
+        //    DateTime now = DateTime.Now;
+        //    DateTime next730PM = now.Date.AddDays(1).AddHours(19).AddMinutes(30);
+        //    if (now > next730PM)
+        //    {
+        //        next730PM = next730PM.AddDays(1);
+        //    }
+        //    TimeSpan initialDelay = next730PM - now;
+
+        //    // Set up the timer with a 24-hour interval
+        //    _timerNotification = new Timer(RunJob, null, initialDelay, TimeSpan.FromHours(24));
+
+        //    return Task.CompletedTask;
+        //}
 
 
         private void RunJob(object state)
@@ -92,9 +93,16 @@ namespace DGRAPIs.Helper
 
                     repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                     repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
+                    var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                    string time = MyConfig.GetValue<string>("Timer:WeeklyReport");
+                    string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
 
-                    repo.PPTCreate(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
-                    repo.PPTCreate_Solar(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
+                    if (DateTime.Now.ToString("HH:mm") == time && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
+                    {
+
+                        repo.PPTCreate(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
+                        repo.PPTCreate_Solar(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
+                    }
 
                     //repo.EmailSolarReport(fy, "2022-12-31", "");
                     //API_ErrorLog("Scheduler method EmailWindReport calling at :- " + DateTime.Now);
@@ -106,6 +114,8 @@ namespace DGRAPIs.Helper
                 catch (Exception ex)
                 {
 
+                    string msg = ex.Message+  " exception at :-  " + DateTime.Now;
+                    API_ErrorLog(msg);
                 }
                 Interlocked.Increment(ref executionCount);
             }
