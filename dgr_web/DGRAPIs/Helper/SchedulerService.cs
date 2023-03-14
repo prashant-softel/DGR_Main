@@ -90,7 +90,7 @@ namespace DGRAPIs.Helper
                         fy = datetimenow.AddYears(-1).Year.ToString() + "-" + datetimenow.Year.ToString().Substring(2, 2);
                     }
 
-					//daily
+					//daily mail
                     repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                     repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                     var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();

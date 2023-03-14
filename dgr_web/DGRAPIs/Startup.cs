@@ -51,7 +51,7 @@ namespace DGRAPIs
                 c.CronExpression = @"0 0 * * MON";  // every monday 
                 //c.CronExpression = @"* * * * *";
             });
-			// hosting service
+			
             services.AddHostedService<SchedulerService>();
         }
 
