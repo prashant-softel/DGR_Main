@@ -2407,25 +2407,62 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
 		 internal async Task<List<SolarUploadingFileBreakDown>> GetSolarMajorBreakdownData(string fromDate, string toDate, string site)
         {
             string filter = "";
-           // fromDate = "2022-04-22";
-            //toDate = "2022-04-28";
-            if (!string.IsNullOrEmpty(fromDate))
-            {
-                filter += " date>='" + fromDate + "' ";
-            }
-            if (!string.IsNullOrEmpty(fromDate))
-            {
-                filter += " and date<='" + toDate + "' ";
-            }
+            string filter2 = "";
             if (!string.IsNullOrEmpty(site))
             {
-                filter += " and site_id in (" + site + ")";
+                filter += "AND site_id in (" + site + ")";
+                filter2 += "site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + toDate + "'";
             }
-            //filter += " and smb='Nil' and strings='Nil' ";
-            filter += " and smb='Nil' and strings='Nil' and MINUTE(total_bd) >= MINUTE('00:30') ";
-           
-            //string query = " select date, site, icr, inv,bd_type,from_bd,to_bd ,total_bd, bd_remarks from uploading_file_breakdown_solar where " + filter+ "";
-            string query = " select * from uploading_file_breakdown_solar where " + filter + "";
+            filter += " AND date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+            filter2 = " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+
+
+            string qry = "SELECT date, site ,bd_type_id, bd_type , bd_remarks ,icr , inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd  FROM uploading_file_breakdown_solar WHERE `bd_type_id` in (1,2) AND `total_bd` > '00:30:00'" + filter;
+
+            string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, count(icr) as icr_cnt, count(if(inv = 'Nil',NULL,inv)) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date; ";
+            //string qry = "Select date, site_name, SEC_TO_TIME(sum(TIME_TO_SEC(total_stop))) as total_stop,count(wtg_id) as wtg_cnt,wtg,bd_type,bd_type_id,error_description,action_taken from uploading_file_breakdown";
+
+            List<SolarUploadingFileBreakDown>_bdData = new List<SolarUploadingFileBreakDown>();
+            _bdData = await Context.GetData<SolarUploadingFileBreakDown>(qry).ConfigureAwait(false);
+
+            List<SolarUploadingFileBreakDown> _bdData2 = new List<SolarUploadingFileBreakDown>();
+            try
+            {
+                _bdData2 = await Context.GetData<SolarUploadingFileBreakDown>(qry2).ConfigureAwait(false);
+
+            }catch (Exception e)
+            {
+                string excpMsg = e.Message;
+            }
+
+            // List<WindUploadingFileBreakDown> _bdData3 = new List<WindUploadingFileBreakDown>();
+            _bdData.AddRange(_bdData2); ;
+
+
+            //  return await Context.GetData<WindUploadingFileBreakDown>(qry + filter).ConfigureAwait(false);
+            return _bdData;
+
+
+            // string filter = "";
+            //// fromDate = "2022-04-22";
+            // //toDate = "2022-04-28";
+            // if (!string.IsNullOrEmpty(fromDate))
+            // {
+            //     filter += " date>='" + fromDate + "' ";
+            // }
+            // if (!string.IsNullOrEmpty(fromDate))
+            // {
+            //     filter += " and date<='" + toDate + "' ";
+            // }
+            // if (!string.IsNullOrEmpty(site))
+            // {
+            //     filter += " and site_id in (" + site + ")";
+            // }
+            // //filter += " and smb='Nil' and strings='Nil' ";
+            // filter += " and smb='Nil' and strings='Nil' and MINUTE(total_bd) >= MINUTE('00:30') ";
+
+            // //string query = " select date, site, icr, inv,bd_type,from_bd,to_bd ,total_bd, bd_remarks from uploading_file_breakdown_solar where " + filter+ "";
+            // string query = " select * from uploading_file_breakdown_solar where " + filter + "";
 
             //string query = "select date, site,icr, count(icr) as icr_cnt,inv, count(inv) as inv_cnt,bd_type,from_bd,to_bd ,SEC_TO_TIME(sum(TIME_TO_SEC(total_bd))) as total_bd, bd_remarks from uploading_file_breakdown_solar where "+ filter + " group by site_id,bd_type";
 
@@ -6507,17 +6544,33 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<List<WindUploadingFileBreakDown>> GetWindMajorBreakdown(string fromDate, string toDate,string site)
         {
-            string qry = "Select * from uploading_file_breakdown";
-            //string qry = "Select date, site_name, SEC_TO_TIME(sum(TIME_TO_SEC(total_stop))) as total_stop,count(wtg_id) as wtg_cnt,wtg,bd_type,bd_type_id,error_description,action_taken from uploading_file_breakdown";
-            string filter = " where ";
+            //string qry = "Select * from uploading_file_breakdown";
+          
+            string filter = "";
+            string filter2 = "";
             if (!string.IsNullOrEmpty(site))
             {
-                filter += " and site_id in (" + site + ")";
+                filter += "AND site_id in (" + site + ")";
+                filter2 += "site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + toDate + "'";
             }
-            filter += " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
-            
+            filter += " AND date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+            filter2 = " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
-            return await Context.GetData<WindUploadingFileBreakDown>(qry + filter).ConfigureAwait(false);
+
+            string qry = "SELECT date,site_name,bd_type_id, bd_type , error_description ,action_taken, wtg ,(HOUR(total_stop) + MINUTE(total_stop) / 60 + SECOND(total_stop) / 3600) as total_stop_num  FROM uploading_file_breakdown WHERE `bd_type_id` in (1,2) AND `total_stop` > '04:00:00'"+ filter ;
+
+            string qry2 = "SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, wtg , (HOUR(total_stop) + MINUTE(total_stop) / 60 + SECOND(total_stop) / 3600) as total_stop from uploading_file_breakdown where `total_stop` > '01:00:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date; ";
+
+            List<WindUploadingFileBreakDown> _bdData = new List<WindUploadingFileBreakDown>();
+             _bdData = await Context.GetData<WindUploadingFileBreakDown>(qry).ConfigureAwait(false);
+
+            List<WindUploadingFileBreakDown> _bdData2 = new List<WindUploadingFileBreakDown>();
+            _bdData2 = await Context.GetData<WindUploadingFileBreakDown>(qry2).ConfigureAwait(false);
+
+           _bdData.AddRange(_bdData2); ;
+
+
+            return _bdData;
         }
         //#region KPI Calculations
         /// <summary>
@@ -8602,104 +8655,45 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<WindUploadingFileBreakDown> data2 = new List<WindUploadingFileBreakDown>();
 
                 data2 = await GetWindMajorBreakdown(lastDay, lastDay, site);
-                TimeSpan Get_Time;
-                double total_time = 0;
-                DateTime result;
-               tb += "<br>";
+               
+                tb += "<br>";
                 tb += "<h3><b><u>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</u></b></h3>";
                 tb += "<br>";
-                tb += "<table id='emailTable2'  class='table table-bordered table-striped' style='width: 80%;'  border='1' cellspacing='0' cellpadding='0'>";
+                tb += "<table id='emailTable2'  class='table table-bordered table-striped' style='width:80%;'  border='1' cellspacing='0' cellpadding='0'>";
                 tb += "<thead class='tbl-head' style=' background-color:#31576D' rowspan='2'><tr>";
-                tb += "<th>Date</th>";
-                tb += "<th>Site</th>";
-                tb += "<th>Location</th>";
-                tb += "<th>BD Type</th>";
-                tb += "<th>TAT</th>";
-                tb += "<th>Error Details</th>";
-                tb += "<th>Action Taken</th></tr></thead>";
+                tb += "<th style='padding:0.5rem;' >Date</th>";
+                tb += "<th style='padding:0.5rem;'>Site</th>";
+                tb += "<th style='padding:0.5rem;'>Location</th>";
+                tb += "<th style='padding:0.5rem;'>BD Type</th>";
+                tb += "<th style='padding:0.5rem;'>TAT</th>";
+                tb += "<th style='padding:0.5rem;'>Error Details</th>";
+               // tb += "<th style='padding:0.5rem;'>Action Taken</th></tr></thead>";
 
 
             if (data2.Count > 0)
             {
-                string date1 = "";
-                string site1 = "";
-                string errorDesc = "";
-                string bdType = "";
-                int WTG_count = 0;
-                double totalTimeAdd = 0;
-                string actionTaken = "";
+              
 
                 for (var i = 0; i < data2.Count; i++)
                     {
-                    var totalTime = data2[i].total_stop;
-                    result = Convert.ToDateTime(totalTime.ToString());
-                    Get_Time = result.TimeOfDay;
-                    //Get_Time = Final_USMH_Time * 24;
-                    string bdDate = "";
-                    bdDate = data2[i].date.ToString("dd/MM/yyyy"); 
-                    total_time = Get_Time.TotalDays * 24;
+                    tb += "<tr>";
+                    tb += "<td style='padding:0.5rem; width:10%;'>" + data2[i].date.ToString("dd/MM/yyyy") + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + data2[i].site_name + "</td>";
 
-                    if ((data2[i].bd_type_id == 1 || data2[i].bd_type_id == 2) && total_time >= 4.0)
+                    if (data2[i].wtg_cnt != 0)
                     {
-                        tb += "<tr>";
-                        tb += "<td style='padding:0.5rem; width: 10%;'>" + bdDate + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].site_name + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].wtg + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].bd_type + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(total_time, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].error_description + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].action_taken + "</td>";
-                        tb += "</tr>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].wtg_cnt + " WTGs</td>";
                     }
                     else
                     {
-                        date1 = bdDate;
-                        site1 = data2[i].site_name;
-                        errorDesc = data2[i].error_description;
-                        bdType = data2[i].bd_type;
-                        actionTaken = data2[i].action_taken;
-
-                        string date = "";
-                        TimeSpan stopfrom = new TimeSpan();
-                        TimeSpan stopto = new TimeSpan();
-                        int count = 0;
-
-                        if (i == 0 && i < data2.Count)
-                        {
-                            count = i + 1;
-                        }
-                        else
-                        {
-                            count = i;
-                        }
-                        if (data2[i].site_id == data2[count].site_id)
-                        {
-                            if (i > 0)
-                            {
-                                date = bdDate;
-                                stopfrom = data2[i].stop_from;
-                                stopto = data2[i].stop_to;
-                            }
-                            if (total_time >= 1.0 && date == bdDate && stopfrom == data2[i].stop_from && stopto == data2[i].stop_to)
-                            {
-                                WTG_count += 1;
-                                totalTimeAdd += total_time;
-                            }
-                        }
-
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].wtg + "</td>";
                     }
-
+                    tb += "<td style='padding:0.5rem;'>" + data2[i].bd_type + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + Math.Round(data2[i].total_stop_num,2)+ "</td>";
+                    tb += "<td style='padding:0.5rem;''>" + data2[i].error_description + "</td>";
+                   // tb += "<td style='padding:0.5rem;''>" + data2[i].action_taken + "</td>";
+                    tb += "</tr>";
                 }
-                tb += "<tr>";
-                tb += "<td style='padding:0.5rem;width: 10%;'>" + date1 + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + site1 + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + WTG_count + " WTGs </td>";
-                tb += "<td style='padding:0.5rem;'>" + bdType + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + Math.Round(totalTimeAdd ,2) + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + errorDesc + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + actionTaken + "</td>";
-                tb += "</tr>";
-
             }
             else
             {
@@ -8732,7 +8726,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string title = "Solar Daily Report " + (dt.ToString("dd-MMM-yyyy"));
 
 
-            string tb = " < h2 style = 'text-align: center;' >< b > " + title + " < b /></ h2 > ";
+            string tb = "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; '  border='1' cellspacing='0' cellpadding='0'>";
             tb += "<thead class='tb-head'><tr>";
             tb += "<th rowspan='2'  style='width: 10%; background-color:#31576D' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D' >Total Target</th>";
@@ -9037,122 +9031,53 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<SolarUploadingFileBreakDown> data2 = new List<SolarUploadingFileBreakDown>();
 
             data2 = await GetSolarMajorBreakdownData(lastDay, fromDate, site);
-            TimeSpan Get_Time;
-            double total_time_s = 0;
 
             tb += "<br>";
             tb += "<h2><b>Major Breakdown dated " + lastDay + "</b></h2>";
             tb += "<br>";
             tb += "<table id='emailTable2' rowspan='2' class='table table-bordered table-striped' style='width: 80%; '  border='1' cellspacing='0' cellpadding='0'>";
-            tb += "<thead class='tbl-head' style='background-color:#31576D'><tr>";
-            tb += "<th>Date</th>";
-            tb += "<th>Site</th>";
-            tb += "<th>ICRs</th>";
-            tb += "<th>INVs</th>";
-            tb += "<th>BD Type</th>";
-            tb += "<th>TAT</th>";
-            tb += "<th>Error Details</th>";
-            tb += "<th>Action Taken</th></tr></thead>";
-
+            tb += "<thead style='background-color:#31576D ; text-color:#ffffff'><tr>";
+            tb += "<th style='padding:0.5rem;'>Date</th>";
+            tb += "<th style='padding:0.5rem;'>Site</th>";
+            tb += "<th style='padding:0.5rem;'>ICRs</th>";
+            tb += "<th style='padding:0.5rem;'>INVs</th>";
+            tb += "<th style='padding:0.5rem;'>BD Type</th>";
+            tb += "<th style='padding:0.5rem;'>Total Stop</th>";
+            tb += "<th style='padding:0.5rem;'>Reason of Breakdown</th>";
+            tb += "</tr></thead>";
 
             if (data2.Count > 0)
             {
-                string bdType = "";
-                string errorDesc = "";
-                string site1 = "";
-                string date1 = "";
-                int ICR_count = 0;
-                double totalTime = 0;
-                string action_taken1 = "";
-
+                //var total_time = "";
                 for (var i = 0; i < data2.Count; i++)
                 {
-                    
-                    Get_Time = data2[i].total_bd * 24;
-                    total_time_s = Get_Time.TotalDays;
-                    string bdDate = "";
-                    bdDate = data2[i].date.ToString("dd/MM/yyyy"); 
 
-                    if ((data2[i].bd_type_id == 1 || data2[i].bd_type_id == 2) && total_time_s >= 0.50)
+                    tb += "<tr>";
+                    tb += "<td style='padding:0.5rem; width:100%;'>" + data2[i].date.ToString("dd/MM/yyyy") + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + data2[i].site + "</td>";
+
+                    if (data2[i].icr_cnt != 0)
                     {
-                        tb += "<tr>";
-                        tb += "<td style='padding:0.5rem; width: 10%;'>" + bdDate + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].site + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].icr + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].inv + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].bd_type + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(total_time_s,2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].bd_remarks + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].action_taken + "</td>";
-                        tb += "</tr>";
-                        //}
-                        //if ((data2[i].bd_type_id != 1 && data2[i].bd_type_id != 2) && +total_time.split(":")[0] >= 4)
-                        //{
-                        //    tb += "<tr>";
-                        //    tb += "<td class='text-left'>" + data2[i].site_name + "</td>";
-                        //    tb += "<td class='text-left'>" + data2[i].wtg + "</td>";
-                        //    tb += "<td class='text-left'>" + total_time + "</td>";
-                        //    tb += "<td class='text-left'>" + data2[i].error_description + "</td>";
-                        //    tb += "<td class='text-left'>" + data2[i].action_taken + "</td>";
-                        //    tb += "</tr>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].icr_cnt + "ICRs </td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].inv_cnt + "INVs</td>";
                     }
                     else
                     {
-                        if (total_time_s >= 0.50)
-                        {
-                            date1 = bdDate;
-                            site1 = data2[i].site;
-                            errorDesc = data2[i].bd_remarks;
-                            bdType = data2[i].bd_type;
-                            action_taken1 = data2[i].action_taken;
-
-                            string date = "";
-                            TimeSpan stopfrom = new TimeSpan();
-                            TimeSpan stopto = new TimeSpan();
-                            int count = 0;
-
-                            if (i == 0 && i < data2.Count)
-                            {
-                                count = i + 1;
-                            }
-                            else
-                            {
-                                count = i;
-                            }
-                            if (data2[i].site_id == data2[count].site_id)
-                            {
-                                if (i >= 0)
-                                {
-                                    date = bdDate;
-                                    stopfrom = data2[i].from_bd;
-                                    stopto = data2[i].to_bd;
-                                }
-                                if (i >= 0)
-                                {
-                                    // if (isGreaterThanThirty && date == result[i].date && stopfrom == result[i].from_bd && stopto == result[i].to_bd)
-                                    if (total_time_s >= 0.50 && date == bdDate && stopfrom == data2[i].from_bd)
-                                    {
-                                        ICR_count += 1;
-                                        totalTime += total_time_s;
-                                    }
-                                }
-                            }
-                        }
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].icr + "</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].inv + "</td>";
                     }
-
+                    tb += "<td style='padding:0.5rem;'>" + data2[i].bd_type + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + Math.Round(data2[i].total_bd,2) + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + data2[i].bd_remarks + "</td>";
                 }
-                tb += "<tr>";
-                tb += "<td style='padding:0.5rem; width: 10%;'>" + date1 + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + site1 + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + ICR_count + " ICR/INV </td>";
-                tb += "<td style='padding:0.5rem;'>" + ICR_count + " ICR/INV </td>";
-                tb += "<td style='padding:0.5rem;'>" + bdType + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + totalTime + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + errorDesc + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + action_taken1 + "</td>";
-                tb += "</tr>";
+
             }
-            tb += "</tbody></table>";
+            else
+            {
+                //console.log("Data not available");
+                // tbl += "<tr><th colspan="12" style="text-align:center">Data Not Available <th></tr>";
+            }
+            tb += "</table>";
 
            await MailDailySend(tb,title);
            // return res;
