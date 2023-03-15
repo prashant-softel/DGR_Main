@@ -2965,7 +2965,7 @@ bd_remarks, action_taken
             List<string> AddCc = new List<string>();
             MailRequest request = new MailRequest();
 
-
+            API_ErrorLog("Reading mail Msg file path:- " + DateTime.Now);
             string qry = "";
             if (fname.Contains("Solar"))
             {
@@ -3019,10 +3019,16 @@ bd_remarks, action_taken
             //var file = "C:\\Users\\DGR\\Downloads\\" + fname+".pptx";
             var file = "C:\\inetpub\\wwwroot\\DGRA_Web\\pptupload\\" + fname + ".pptx";
             API_ErrorLog("Reading file path:- " + file);
-            try { 
-            using var stream = new MemoryStream(System.IO.File.ReadAllBytes(file).ToArray());
+            try {
+                //using var stream = new MemoryStream(System.IO.File.ReadAllBytes(file).ToArray());
 
-            var formFile = new FormFile(stream, 0, stream.Length, "streamFile", file.Split(@"/").Last());
+
+                //var formFile = new FormFile(stream, 0, stream.Length, "streamFile", file.Split(@"/").Last());
+                //    List<IFormFile> list = new List<IFormFile>();
+                //    list.Add(formFile);
+                //    request.Attachments = list;
+
+                var formFile = new FormFile(System.IO.File.OpenRead(file), 0, new FileInfo(file).Length, null, Path.GetFileName(file));
                 List<IFormFile> list = new List<IFormFile>();
                 list.Add(formFile);
                 request.Attachments = list;
