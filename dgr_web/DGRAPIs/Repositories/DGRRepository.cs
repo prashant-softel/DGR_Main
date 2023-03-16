@@ -2466,9 +2466,9 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
 
             //string query = "select date, site,icr, count(icr) as icr_cnt,inv, count(inv) as inv_cnt,bd_type,from_bd,to_bd ,SEC_TO_TIME(sum(TIME_TO_SEC(total_bd))) as total_bd, bd_remarks from uploading_file_breakdown_solar where "+ filter + " group by site_id,bd_type";
 
-            List<SolarUploadingFileBreakDown> data = new List<SolarUploadingFileBreakDown>();
-            data = await Context.GetData<SolarUploadingFileBreakDown>(query).ConfigureAwait(false);
-            return data;
+            //List<SolarUploadingFileBreakDown> data = new List<SolarUploadingFileBreakDown>();
+            //data = await Context.GetData<SolarUploadingFileBreakDown>(query).ConfigureAwait(false);
+            //return data;
         }
         internal async Task<List<SolarPerformanceReports2>> GetSolarPerformanceReportSiteWise_2(string fromDate, string toDate, string site, int cnt)
         {
@@ -2710,37 +2710,62 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             try
             {
                 await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
+                API_InformationLog("GetWindPerformanceReportBySPVWise function Created temp_viewSPV ");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                string st = "temp";
+                string st = e.Message;
+                API_ErrorLog("GetWindPerformanceReportBySPVWise function returned Exception in creating temp_viewSpv " + st);
             }
 
             string qry2 = " select spv, sum(kwh)*100000 as tar_kwh, sum(kwh) as tar_kwh_mu, sum(wind_speed)/count(wind_speed) as tar_wind," +
                 " sum(plf) / count(plf) as tar_plf, sum(ma) / count(ma) as tar_ma, sum(iga) / count(iga) as tar_iga, " +
                 " sum(ega) / count(ega) as tar_ega from temp_viewSPV group by spv  ";
             List<WindPerformanceReports> tempdata = new List<WindPerformanceReports>();
-            tempdata = await Context.GetData<WindPerformanceReports>(qry2).ConfigureAwait(false);
+            try
+            {
+                tempdata = await Context.GetData<WindPerformanceReports>(qry2).ConfigureAwait(false);
+                API_InformationLog("GetWindPerformanceReportBySPVWise function selected data from tempview_SPV");
+            }catch (Exception e)
+            {
+                API_ErrorLog("GetWindPerformanceReportBySPVWise function returned Exception in selecting fromtemp_viewSPV " + e.Message);
+            }
 
             string qry5 = "create or replace view temp_viewSPV2 as SELECT t1.date,t3.site,t3.spv,(t3.total_mw*1000) as capacity,SUM(t1.kwh) as kwh,t2.line_loss,SUM(t1.kwh)-SUM(t1.kwh)*(t2.line_loss/100) as kwh_afterloss,((SUM(t1.kwh)-SUM(t1.kwh)*(t2.line_loss/100))/((t3.total_mw*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) left join site_master as t3 on t3.site_master_id = t1.site_id group by t1.date ,t1.site";
             try
             {
                 await Context.ExecuteNonQry<int>(qry5).ConfigureAwait(false);
+                API_InformationLog("GetWindPerformanceReportBySPVWise function Created tempView_SPV2");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                string st = "temp";
+                string st = e.Message;
+                API_ErrorLog("GetWindPerformanceReportBySPVWise function returned Exception while creating tempview_SPV2 :" + st);
 
             }
             string qry6 = "SELECT spv , sum(kwh_afterloss)/1000000 as act_jmr_kwh_mu, avg(plf_afterloss) as act_plf FROM `temp_viewSPV2` where date between '" + fromDate + "' and '" + todate + "' group by spv";
 
             List<WindPerformanceReports> newdata = new List<WindPerformanceReports>();
-            newdata = await Context.GetData<WindPerformanceReports>(qry6).ConfigureAwait(false);
+            try
+            {
+                newdata = await Context.GetData<WindPerformanceReports>(qry6).ConfigureAwait(false);
+                API_InformationLog("GetWindPerformanceReportBySPVWise function selected from tempview_SPV2");
+
+            }catch(Exception e){
+                API_ErrorLog("GetWindPerformanceReportBySPVWise function returned Exception while selecting from tempView_SPV2 :" + e.Message);
+            }
 
             string qry7 = "select spv,SUM(total_mw)  as total_mw from site_master " + filter2 + " group by spv ";
 
             List<WindPerformanceReports> newdata2 = new List<WindPerformanceReports>();
-            newdata2 = await Context.GetData<WindPerformanceReports>(qry7).ConfigureAwait(false);
+            try
+            {
+                newdata2 = await Context.GetData<WindPerformanceReports>(qry7).ConfigureAwait(false);
+                API_InformationLog("GetWindPerformanceReportBySPVWise function selected data from site_master table");
+            }catch(Exception e)
+            {
+                API_ErrorLog("GetWindPerformanceReportBySPVWise function returned Exception while selecting data from site_master table ");
+            }
 
 
             string qry = @" select  t1.site,t2.spv,
@@ -2761,7 +2786,14 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
  "(sum(ega)/count(*)) as act_ega from daily_gen_summary t1  left join site_master t2 on t1.site=t2.site where   (date >= '" + fromDate + "'  and date<= '" + todate + "') "+ filter + " group by spv";
 
             List<WindPerformanceReports> data = new List<WindPerformanceReports>();
-            data = await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
+            try
+            {
+                data = await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                API_InformationLog("GetWindPerformanceReportBySPVWise function returned Exception while selecting data from daily_gen_summary table :" + e.Message);
+            }
 
             foreach (WindPerformanceReports _dataelement in data)
             {
@@ -2797,6 +2829,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     }
                 }
             }
+            API_InformationLog("GetWindPerformanceReportBySPVWise function returned data successfully. End of function");
 
             return data;// await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
 
@@ -2980,7 +3013,7 @@ bd_remarks, action_taken
         }
         internal async Task<int> MailSend(string fname)
         {
-            API_InformationLog("Mail sendinfg part invoked at :- " + DateTime.Now);
+            API_InformationLog("MailSend function part invoked at :- " + DateTime.Now);
             //MAILING FUNCTIONALITY
             MailSettings _settings = new MailSettings();
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -3006,32 +3039,38 @@ bd_remarks, action_taken
             string qry = "";
             if (fname.Contains("Solar"))
             {
+                API_InformationLog("File contains soalr");
                 qry = "select useremail from login where To_Weekly_Solar = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
                     AddTo.Add(item.useremail);
+                    API_InformationLog("Added to email id :" + item.useremail);
                 }
                 qry = "select useremail from login where Cc_Weekly_Solar = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data3)
                 {
                     AddCc.Add(item.useremail);
+                    API_InformationLog("Added CC email id :" + item.useremail);
                 }
             }
             else
             {
+                API_InformationLog("File contains wind");
                 qry = "select useremail from login where To_Weekly_Wind = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
                     AddTo.Add(item.useremail);
+                    API_InformationLog("Added to email id :"+ item.useremail);
                 }
                 qry = "select useremail from login where Cc_Weekly_Wind = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data3)
                 {
                     AddCc.Add(item.useremail);
+                    API_InformationLog("Added CC email id :" + item.useremail);
                 }
             }
 
@@ -3043,11 +3082,13 @@ bd_remarks, action_taken
             if (fname.Contains("Solar"))
             {
                 subject = "Solar Weekly Reports";
+                API_InformationLog("Subject selected : " + subject);
             }
             else
             {
                 subject = "Wind Weekly Reports";
-			}
+                API_InformationLog("Subject selected : " + subject);
+            }
 			request.Subject = subject;
             request.Body = Msg;
 
@@ -3055,7 +3096,7 @@ bd_remarks, action_taken
             //var file = "C:\\Users\\sujit\\Downloads\\" + fname+".pptx";
             //var file = "C:\\Users\\DGR\\Downloads\\" + fname+".pptx";
             var file = "C:\\inetpub\\wwwroot\\DGRA_Web\\pptupload\\" + fname + ".pptx";
-            API_ErrorLog("Reading file path:- " + file);
+            API_InformationLog("Reading file path:- " + file);
             try {
                 //using var stream = new MemoryStream(System.IO.File.ReadAllBytes(file).ToArray());
 
@@ -3069,10 +3110,11 @@ bd_remarks, action_taken
                 List<IFormFile> list = new List<IFormFile>();
                 list.Add(formFile);
                 request.Attachments = list;
+                API_InformationLog("File opened for reading at path :" + file);
             }
             catch(Exception ex)
             {
-                API_ErrorLog(ex.Message);
+                API_ErrorLog("File read failed exception :" + ex.Message);
             }
 
             //formFile.ContentType = "application/octet-stream";
@@ -3085,20 +3127,21 @@ bd_remarks, action_taken
             try
             {
                 var res = await MailService.SendEmailAsync(request, _settings);
+                API_InformationLog("SendEmailAsync function completed");
             }
             catch (Exception e)
             {
                 string msg = e.Message;
-                API_ErrorLog(e.Message);
+                API_ErrorLog("SendEmailAsync function failed exception :" + e.Message);
                 //Pending: error log failed mail
             }
             return 1;
         }
         
-        internal async Task<int> PPTCreate(string fy, string startDate, string endDate, string type)
+        internal async Task<int> PPTCreate(string fy, string startDate, string endDate, string type) //Email ppt rename fnc
         {
             //string AppSetting_Key;
-            API_InformationLog("PPT genration method called.");
+            API_InformationLog("PPTCreate function method called.");
             //var psi = new ProcessStartInfo
             //{
             //    //FileName = "https://localhost:5001/Home/"+type+"WeeklyPRReports?28/12/2022",
@@ -3117,6 +3160,7 @@ bd_remarks, action_taken
 
             string msg = "WindWeeklyReport_" + DateTime.Now.ToString("yyyy-MM-dd");
             MailSend(msg);
+            API_InformationLog("MailSend function called from PPTCreate functionwith parameter " + msg);
 
             return 1;
         }
@@ -3143,6 +3187,7 @@ bd_remarks, action_taken
 
             string msg = "SolarWeeklyReport_" + DateTime.Now.ToString("yyyy-MM-dd");
             MailSend(msg);
+            API_InformationLog("MailSend function called from PPTCreate_Solar function with parameter " + msg);
 
             return 1;
         }
@@ -4781,9 +4826,10 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
             {
                 await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                string st = "temp";
+                string st = e.Message;
+                API_ErrorLog("" + st);
             }
             string qry2 = " select site, site_id, sum(gen_nos) as tar_kwh," +
                 " sum(ghi)/count(ghi) as tar_ghi, sum(poa)/count(poa) as tar_poa, sum(plf)/count(plf) as tar_plf," +
@@ -8702,13 +8748,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             tb += "</tbody></table>";
 
-            
-            await MailDailySend(tb, title);
+            try
+            {
+                await MailDailySend(tb, title);
+                API_InformationLog("MailDailySend function called from repository for wind");
+
+            }catch (Exception e)
+            {
+                string msg = e.Message;
+                API_InformationLog("MailDailySend function call failed from repository for wind" + msg);
+            }
             return tb;
         }
 
         public async Task<string> EmailSolarReport(string fy, string fromDate, string site)
         {
+            API_InformationLog("EmailSolarReport function Called");
             //add column called kwh_afterlineloss and plf_afterlineloss in dailygensummary and uploadgentable
 
             //string month = (fromDate);
@@ -8754,17 +8809,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th style='background-color:#FFCA5A'>Var (%)</th>";
             tb += "</tr></thead><tbody><tr>";
 
-
-
-
-
             double t_var_yr = 0;
             double tar_mu_yr = 0;
             double poa_var_yr = 0;
             double pr_var_yr = 0;
             double act_prval_yr = 0;
-
-
 
             double t_var_mn = 0;
             double tar_mu_mn = 0;
@@ -8777,7 +8826,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double poa_var_ld = 0;
             double pr_var_ld = 0;
             double act_prval_ld = 0;
-
 
             double total_capacity_yr = 0;
             double total_tar_kwh_yr = 0;
@@ -8814,6 +8862,39 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double avg_act_plf_ld = 0;
 
             List<SolarPerformanceReports1> yearlypr, monthlypr, lastdaypr = new List<SolarPerformanceReports1>();
+            try
+            {
+                yearlypr = await GetSolarPerformanceReportBySiteWise(fy, yfromDate, ytodate, site);
+                API_InformationLog("EmailSolarReport function received data from GetSolarPerformanceReportBySiteWise in yearlypr list");
+
+            }
+            catch(Exception e)
+            {
+                string msg = e.Message;
+                API_ErrorLog("EmailSolarReport function received Exception while receivind data from function GetSolarPerformanceReportBySiteWise in yearlypr list" + msg);
+            }
+            try
+            {
+                monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site);
+                API_InformationLog("EmailSolarReport function received data from GetSolarPerformanceReportBySiteWise in monthlypr list");
+
+            }
+            catch (Exception e)
+            {
+                string msg = e.Message;
+                API_ErrorLog("EmailSolarReport function received Exception while receivind data from function GetSolarPerformanceReportBySiteWise in monthlypr list " + msg);
+            }
+            try
+            {
+                lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, fromDate, site);
+                API_InformationLog("EmailSolarReport function received data from GetSolarPerformanceReportBySiteWise in lastdaypr list");
+
+            }
+            catch (Exception e)
+            {
+                string msg = e.Message;
+                API_ErrorLog("EmailSolarReport function received Exception while receivind data from function GetSolarPerformanceReportBySiteWise in lastdaypr list " + msg);
+            }
             yearlypr = await GetSolarPerformanceReportBySiteWise(fy, yfromDate, ytodate, site);
             monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site);
             lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, fromDate, site);
@@ -9029,8 +9110,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "</tfoot></table>";
             //return tb;
             List<SolarUploadingFileBreakDown> data2 = new List<SolarUploadingFileBreakDown>();
+            try
+            {
+                data2 = await GetSolarMajorBreakdownData(lastDay, fromDate, site);
+                API_InformationLog("EmailSolarReport function received data from GetSolarMajorBreakdownData function in data2 list");
+            }catch (Exception e)
+            {
+                API_ErrorLog("EmailSolarReport function returned exception while receiving data from function getSolarMajorBreakdownData :" + e.Message);
+            }
 
-            data2 = await GetSolarMajorBreakdownData(lastDay, fromDate, site);
 
             tb += "<br>";
             tb += "<h2><b>Major Breakdown dated " + lastDay + "</b></h2>";
@@ -9152,6 +9240,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
+            //AddTo.Add("tanviik28@gmail.com");
 
             // emails.Add("tanviik28@gmail.com");
             request.ToEmail = AddTo;
@@ -9175,10 +9264,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 var res = await MailService.SendEmailAsync(request, _settings);
+                API_InformationLog("Send Email Async function called from repository");
             }
             catch (Exception e)
             {
                 string msg = e.Message;
+                API_ErrorLog("Send Email Async function call failed from repository" + msg);
                 //Pending: error log failed mail
             }
             return 1;
