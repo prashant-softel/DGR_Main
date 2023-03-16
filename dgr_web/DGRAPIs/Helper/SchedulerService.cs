@@ -70,8 +70,8 @@ namespace DGRAPIs.Helper
                     string msg = "Sechduler run at : " + DateTime.Now;
                     API_ErrorLog(msg);
                     
-                    MYSQLDBHelper db = new MYSQLDBHelper("temp");
-                    var repo = new DGRRepository(db);
+                    //MYSQLDBHelper db = new MYSQLDBHelper("temp");
+                    //var repo = new DGRRepository(db);
                     //repo.MailSend("Calling this function  repo.EmailSolarReport(fy, '2023-03-01'   at " + DateTime.Now + "", " Test mail sechduler");
 
                     DateTime datetimenow = DateTime.Now;
@@ -109,12 +109,14 @@ namespace DGRAPIs.Helper
                         async Task<int> EmailFunction()
                         {
                             API_InformationLog("Email Function Called from scheduler");
+                            string hostName = MyConfig.GetValue<string>("Timer:hostName");
+
                             bool SolarMailSuccess = false;
                             bool WindMailSuccess = false;
                             try
                             {
-                                string apiUrlSolar = "http://localhost:23835/api/DGR/EmailSolarReport?fy="+ fy +"&fromDate="+ datetimenow.ToString("yyyy-MM-dd") +"&site=";
-
+                                string apiUrlSolar = hostName+ "/api/DGR/EmailSolarReport?fy=" + fy +"&fromDate="+ datetimenow.ToString("yyyy-MM-dd") +"&site=";
+                                API_InformationLog("API URL " + apiUrlSolar);
                                 CallAPI(apiUrlSolar);
                                // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 SolarMailSuccess = true;
@@ -127,8 +129,10 @@ namespace DGRAPIs.Helper
                             }
                             try
                             {
-                                string apiUrlWind = "http://localhost:23835/api/DGR/EmailWindReport?fy=" + fy + "&fromDate=" + datetimenow.ToString("yyyy-MM-dd") + "&site=";
+                                
+                                string apiUrlWind = hostName + "/api/DGR/EmailWindReport?fy=" + fy + "&fromDate=" + datetimenow.ToString("yyyy-MM-dd") + "&site=";
 
+                                API_InformationLog("API URL "+ apiUrlWind);
                                 CallAPI(apiUrlWind);
                                 // await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 API_InformationLog("Inside try Wind mail send");
@@ -160,8 +164,8 @@ namespace DGRAPIs.Helper
                     if (DateTime.Now.ToString("HH:mm") == weeklyTime && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
                     {
 
-                        repo.PPTCreate(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
-                        repo.PPTCreate_Solar(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
+                        //repo.PPTCreate(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
+                        //repo.PPTCreate_Solar(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
                     }
 
                     //repo.EmailSolarReport(fy, "2022-12-31", "");
