@@ -84,6 +84,14 @@ namespace DGRA_V1
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(60);
             });
+            services.AddSingleton<IHostedService, SchedulerService>();
+            services.AddHostedService<SchedulerService>();
+
+            //require to invoke scheduler for Daily and Weekly reports
+            services.AddHttpClient("MyHttpClient", client =>
+            {
+                client.BaseAddress = new Uri("https://www.google.com/");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

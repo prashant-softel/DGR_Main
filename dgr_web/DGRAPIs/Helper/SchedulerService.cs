@@ -72,8 +72,6 @@ namespace DGRAPIs.Helper
                     var repo = new DGRRepository(db);
                     //repo.MailSend("Calling this function  repo.EmailSolarReport(fy, '2023-03-01'   at " + DateTime.Now + "", " Test mail sechduler");
 
-
-
                     DateTime datetimenow = DateTime.Now;
                     DateTime oneWeekAgo = datetimenow.Date.AddDays(-7);
                     string fy = "";
@@ -90,14 +88,68 @@ namespace DGRAPIs.Helper
                         fy = datetimenow.AddYears(-1).Year.ToString() + "-" + datetimenow.Year.ToString().Substring(2, 2);
                     }
 
-					//daily mail
-                    repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
-                    repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                     var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                    string time = MyConfig.GetValue<string>("Timer:WeeklyReport");
+                    string dailyTime = MyConfig.GetValue<string>("Timer:DailyReportTime");
+                    //daily mail
+
+                    msg = "Current Time : " + DateTime.Now;
+                    API_InformationLog(msg);
+
+                    msg = "Daily time Time : " + dailyTime;
+                    API_InformationLog(msg);
+
+                    if (DateTime.Now.ToString("HH:mm") == dailyTime)
+                    {
+                        API_InformationLog("Inside if where dailytime ="+dailyTime);
+
+                        EmailFunction();
+
+                        async Task<int> EmailFunction()
+                        {
+                            API_InformationLog("Email Function Called from scheduler");
+                            bool SolarMailSuccess = false;
+                            bool WindMailSuccess = false;
+                            try
+                            {
+                                await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
+                                SolarMailSuccess = true;
+                                API_InformationLog("Inside try Solar mail send");
+                            }
+                            catch(Exception e)
+                            {
+                                string msg = e.Message;
+                                API_ErrorLog("Inside catch Solar mail failed"+ msg);
+                            }
+                            try
+                            {
+                                await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
+                                API_InformationLog("Inside try Wind mail send");
+                                WindMailSuccess = true;
+                            }
+                            catch(Exception e)
+                            {
+                                string msg = e.Message;
+                                API_ErrorLog("Inside catch Wind mail failed");
+                            }
+                            if(WindMailSuccess && SolarMailSuccess)
+                            {
+                                API_InformationLog("Solar and Wind Mail Sent"+msg);
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
+
+                        
+                    }
+
+                    //Weekly report mail
+                    string weeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
                     string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
 
-                    if (DateTime.Now.ToString("HH:mm") == time && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
+                    if (DateTime.Now.ToString("HH:mm") == weeklyTime && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
                     {
 
                         repo.PPTCreate(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");

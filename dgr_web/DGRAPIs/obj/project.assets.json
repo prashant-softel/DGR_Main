@@ -7214,11 +7214,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectUniqueName": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\masterbranchfinal\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "projectName": "DGRAPIs",
-      "projectPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\masterbranchfinal\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-      "outputPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
+      "outputPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\masterbranchfinal\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
