@@ -8700,19 +8700,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            //return tb;
             List<WindUploadingFileBreakDown> data2 = new List<WindUploadingFileBreakDown>();
 
-                data2 = await GetWindMajorBreakdown(lastDay, lastDay, site);
+                data2 = await GetWindMajorBreakdown(lastDay, fromDate, site);
                
                 tb += "<br>";
-                tb += "<h3><b><u>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</u></b></h3>";
+                tb += "<h2><b>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</b></h2>";
                 tb += "<br>";
                 tb += "<table id='emailTable2'  class='table table-bordered table-striped' style='width:80%;'  border='1' cellspacing='0' cellpadding='0'>";
-                tb += "<thead class='tbl-head' style=' background-color:#31576D' rowspan='2'><tr>";
+                tb += "<thead class='tbl-head' style=' background-color:#31576D;' rowspan='2'><tr>";
                 tb += "<th style='padding:0.5rem;' >Date</th>";
                 tb += "<th style='padding:0.5rem;'>Site</th>";
                 tb += "<th style='padding:0.5rem;'>Location</th>";
                 tb += "<th style='padding:0.5rem;'>BD Type</th>";
                 tb += "<th style='padding:0.5rem;'>TAT</th>";
-                tb += "<th style='padding:0.5rem;'>Error Details</th>";
+                tb += "<th style='padding:0.5rem;'>Error Details</th></thead>";
                // tb += "<th style='padding:0.5rem;'>Action Taken</th></tr></thead>";
 
 
@@ -8743,7 +8743,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             else
             {
-                tb += "<tr style='text-align: center; ><b>Data Not Present<b></tr>";
+                tb += "<tr><td style='text-align:center;' colspan='6' ><b>Data Not Present<b></td></tr>";
 
             }
             tb += "</tbody></table>";
@@ -8767,7 +8767,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //add column called kwh_afterlineloss and plf_afterlineloss in dailygensummary and uploadgentable
 
             //string month = (fromDate);
-            DateTime dt = DateTime.Parse("2022-12-04");
+            //DateTime dt = DateTime.Parse("2022-12-04");
+            DateTime dt = DateTime.Parse(fromDate);
             string month = dt.ToString("yyyy-MM");
             string years = dt.ToString("yyyy");
             var startDate = new DateTime(dt.Year, dt.Month, 1);
@@ -9112,7 +9113,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<SolarUploadingFileBreakDown> data2 = new List<SolarUploadingFileBreakDown>();
             try
             {
-                data2 = await GetSolarMajorBreakdownData(lastDay, fromDate, site);
+                //ta2 = await GetSolarMajorBreakdownData(fromDate, fromDate, site);
+                data2 = await GetSolarMajorBreakdownData(lastDay,fromDate, site);
+
                 API_InformationLog("EmailSolarReport function received data from GetSolarMajorBreakdownData function in data2 list");
             }catch (Exception e)
             {
@@ -9121,10 +9124,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
             tb += "<br>";
-            tb += "<h2><b>Major Breakdown dated " + lastDay + "</b></h2>";
+            //tb += "<h2><b>Major Breakdown dated " + dt.ToString("dd-MMM-yyyy") + "</b></h2>";
+            tb += "<h2><b>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</b></h2>";
+
             tb += "<br>";
             tb += "<table id='emailTable2' rowspan='2' class='table table-bordered table-striped' style='width: 80%; '  border='1' cellspacing='0' cellpadding='0'>";
-            tb += "<thead style='background-color:#31576D ; text-color:#ffffff'><tr>";
+            tb += "<thead style='background-color:#31576D ;'><tr>";
             tb += "<th style='padding:0.5rem;'>Date</th>";
             tb += "<th style='padding:0.5rem;'>Site</th>";
             tb += "<th style='padding:0.5rem;'>ICRs</th>";
@@ -9164,6 +9169,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 //console.log("Data not available");
                 // tbl += "<tr><th colspan="12" style="text-align:center">Data Not Available <th></tr>";
+                tb += "<tr><td style='text-align:center;' colspan='7' ><b>Data Not Present<b></td></tr>";
+
             }
             tb += "</table>";
 
@@ -9240,7 +9247,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            //AddTo.Add("tanviik28@gmail.com");
+            AddTo.Add("tanviik28@gmail.com");
 
             // emails.Add("tanviik28@gmail.com");
             request.ToEmail = AddTo;
