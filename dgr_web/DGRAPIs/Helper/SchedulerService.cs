@@ -6,6 +6,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DGRAPIs.Repositories;
+using System.Net;
+using System.IO;
 
 namespace DGRAPIs.Helper
 {
@@ -111,7 +113,10 @@ namespace DGRAPIs.Helper
                             bool WindMailSuccess = false;
                             try
                             {
-                                await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
+                                string apiUrlSolar = "http://localhost:23835/api/DGR/EmailSolarReport?fy="+ fy +"&fromDate="+ datetimenow.ToString("yyyy-MM-dd") +"&site=";
+
+                                CallAPI(apiUrlSolar);
+                               // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 SolarMailSuccess = true;
                                 API_InformationLog("Inside try Solar mail send");
                             }
@@ -122,7 +127,10 @@ namespace DGRAPIs.Helper
                             }
                             try
                             {
-                                await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
+                                string apiUrlWind = "http://localhost:23835/api/DGR/EmailWindReport?fy=" + fy + "&fromDate=" + datetimenow.ToString("yyyy-MM-dd") + "&site=";
+
+                                CallAPI(apiUrlWind);
+                                // await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 API_InformationLog("Inside try Wind mail send");
                                 WindMailSuccess = true;
                             }
@@ -173,6 +181,28 @@ namespace DGRAPIs.Helper
             }
         }
 
+        public void CallAPI (string apiUrl)
+        {
+            Uri address = new Uri(apiUrl);
+
+            // Create the web request
+            HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
+
+            // Set type to POST
+            request.Method = "GET";
+            request.ContentType = "text/xml";
+
+            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            {
+                // Get the response stream
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+
+                // Console application output
+                string strOutputXml = reader.ReadToEnd();
+                API_InformationLog(reader.ReadToEnd());
+
+            }
+        }
 
         public Task StopAsync(CancellationToken stoppingToken)
         {

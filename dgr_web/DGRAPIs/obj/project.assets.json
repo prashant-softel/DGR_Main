@@ -7208,24 +7208,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\hp\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\tanvi kinjale\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\masterbranchfinal\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectUniqueName": "C:\\Users\\tanvi kinjale\\Downloads\\15\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "projectName": "DGRAPIs",
-      "projectPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\masterbranchfinal\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
-      "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-      "outputPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\masterbranchfinal\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
+      "projectPath": "C:\\Users\\tanvi kinjale\\Downloads\\15\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "packagesPath": "C:\\Users\\tanvi kinjale\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tanvi kinjale\\Downloads\\15\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\tanvi kinjale\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -7298,6 +7293,24 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[3.1.10, 3.1.10]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x86",
+            "version": "[3.1.25, 3.1.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[3.1.0, 3.1.0]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[3.1.0, 3.1.0]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -7306,7 +7319,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "c:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
       }
     }
   }
