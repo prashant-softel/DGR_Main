@@ -8650,23 +8650,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; background-color:#f7f5f0'>";
             tb += "<table id = 'emailTable' class='table table-bordered table-striped' style='width: 100%; background-color: #f7f5f0; margin-left: auto; margin-right: auto;' border='1' cellspacing='0' cellpadding='0'>";
             tb += "<thead class='tb-head'><tr>";
-            tb += "<th rowspan='2'  style='width:8%; background-color:#31576D;' >Site</th><th  rowspan='2'  style='width: 5%; background-color:#31576D'>Capacity (MW)</th><th rowspan='2' style='width: 5%; background-color:#31576D' >Total Target</th>";
-            tb += "<th colspan='10' class='text-center' style='background-color:#86C466'>YTD</th>";
+            tb += "<th rowspan='2'  style='width:8%; background-color:#31576D;color:#ffffff' >Site</th><th  rowspan='2'  style='width: 5%; background-color:#31576D;color:#ffffff'>Capacity (MW)</th><th rowspan='2' style='width: 5%; background-color:#31576D;color:#ffffff' >Total Target</th>";
+            tb += "<th colspan='10' class='text-center' style='background-color:#86C466;color:#ffffff'>YTD</th>";
 
-            tb += "<th colspan='10' class='text-center' style='background-color:#77CAE7'>MTD</th>";
+            tb += "<th colspan='10' class='text-center' style='background-color:#77CAE7;'>MTD</th>";
 
-            tb += "<th colspan='10' class='text-center' style='background-color:#FFCA5A'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
+            tb += "<th colspan='10' class='text-center' style='background-color:#FFCA5A;'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
 
-            tb += "<tr><th  style='background-color:#86C466'>Tar Gen</th>";
-            tb += "<th style='background-color:#86C466'>Act Gen</th>";
-            tb += "<th  style='background-color:#86C466'>Var (%)</th>";
-            tb += "<th  style='background-color:#86C466'>Tar Wind</th>";
-            tb += "<th  style='background-color:#86C466'>Act Wind</th>";
-            tb += "<th  style='background-color:#86C466'>Var (%)</th>";
-            tb += "<th  style='background-color:#86C466'>PLF</th>";
-            tb += "<th  style='background-color:#86C466'>MA</th>";
-            tb += "<th  style='background-color:#86C466'>IGA</th>";
-            tb += "<th  style='background-color:#86C466'>EGA</th>";
+            tb += "<tr><th  style='background-color:#86C466;color:#ffffff'>Tar Gen</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff''>Act Gen</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff''>Var (%)</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Tar Wind</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Act Wind</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>PLF</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>MA</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>IGA</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>EGA</th>";
 
             tb += "<th  style='background-color:#77CAE7'>Tar Gen</th>";
             tb += "<th style='background-color:#77CAE7'>Act Gen</th>";
@@ -8803,7 +8803,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
               
                 tb += "<td style='padding:0.5rem;' style='padding:0.5rem;'>" + yearlypr[i].site + "</td>";
                 tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].total_mw, 2) + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].tar_kwh, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(tar_mu_yr, 2) + "</td>";
                 
                 tb += "<td style='padding:0.5rem;'>" + Math.Round(tar_mu_yr, 2) + "</td>";
                 tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_jmr_kwh_mu, 2) + "</td>";
@@ -8982,13 +8982,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if (avg_tar_wind_ld != 0)
             {
-                avg_wind_var_mn = ((avg_act_wind_ld - avg_tar_wind_ld) / avg_tar_wind_ld) * 100;
+                avg_wind_var_ld = ((avg_act_wind_ld - avg_tar_wind_ld) / avg_tar_wind_ld) * 100;
             }
             //}
             tb += "</tbody><tfoot><tr>";
             tb += "<td style='padding:0.5rem;'><b>Grand Total</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_capacity_yr, 2) + "</b></td>";
-            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(0.00, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_mu_yr, 2) + "</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_mu_yr, 2) + "</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_jmr_kwh_mu_yr, 2) + "</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_jmr_var_yr, 2) + "</b></td>";
@@ -9033,12 +9033,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 tb += "<br>";
                 tb += "<table id='emailTable2'  class='table table-bordered table-striped' style='width:80%;'  border='1' cellspacing='0' cellpadding='0'>";
                 tb += "<thead class='tbl-head' style=' background-color:#31576D;' rowspan='2'><tr>";
-                tb += "<th style='padding:0.5rem;' >Date</th>";
-                tb += "<th style='padding:0.5rem;'>Site</th>";
-                tb += "<th style='padding:0.5rem;'>Location</th>";
-                tb += "<th style='padding:0.5rem;'>BD Type</th>";
-                tb += "<th style='padding:0.5rem;'>TAT</th>";
-                tb += "<th style='padding:0.5rem;'>Error Details</th></thead>";
+                tb += "<th style='padding:0.5rem;color:#ffffff' >Date</th>";
+                tb += "<th style='padding:0.5rem;color:#ffffff'>Site</th>";
+                tb += "<th style='padding:0.5rem;color:#ffffff'>Location</th>";
+                tb += "<th style='padding:0.5rem;color:#ffffff'>BD Type</th>";
+                tb += "<th style='padding:0.5rem;color:#ffffff'>TAT</th>";
+                tb += "<th style='padding:0.5rem;color:#ffffff'>Error Details</th></thead>";
                // tb += "<th style='padding:0.5rem;'>Action Taken</th></tr></thead>";
 
 
@@ -9111,29 +9111,29 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string tb = "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; '  border='1' cellspacing='0' cellpadding='0'>";
             tb += "<thead class='tb-head'><tr>";
-            tb += "<th rowspan='2'  style='width: 10%; background-color:#31576D' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D' >Total Target</th>";
-            tb += "<th colspan='3' class='text-center' style='background-color:#86C466'>YTD</th>";
-            tb += "<th colspan='3' class='text-center' style='background-color:#77CAE7'>MTD</th>";
-            tb += "<th colspan='13' class='text-center' style='background-color:#FFCA5A'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
-            tb += "<tr><th  style='background-color:#86C466' >Target Gen</th>";
-            tb += "<th style='background-color:#86C466'>Actual Gen</th>";
-            tb += "<th  style='background-color:#86C466'>Var (%)</th>";
-            tb += "<th  style='background-color:#77CAE7'>Target Gen</th>";
-            tb += "<th style='background-color:#77CAE7'>Actual Gen</th>";
-            tb += "<th  style='background-color:#77CAE7'>Var (%)</th>";
-            tb += "<th  style='background-color:#FFCA5A'>Target Gen (MU)</th>";
-            tb += "<th style='background-color:#FFCA5A'>Actual Gen (MU)</th>";
-            tb += "<th  style='background-color:#FFCA5A'>Var (%)</th>";
-            tb += "<th  style='background-color:#FFCA5A'>Target IR</th>";
-            tb += "<th  style='background-color:#FFCA5A'>Actual IR</th>";
-            tb += "<th  style='background-color:#FFCA5A'>Var (%)</th>";
-            tb += "<th  style='background-color:#FFCA5A'>PA (%)</th>";          
-            tb += "<th style='background-color:#FFCA5A'>IGA (%)</th>";
-            tb += "<th style='background-color:#FFCA5A'>EGA (%)</th>";
-            tb += "<th style='background-color:#FFCA5A'>CUF_AC (%)</th>";
-            tb += "<th style='background-color:#FFCA5A'>Target PR (%)</th>";
-            tb += "<th style='background-color:#FFCA5A'>Plant PR (%)</th>";
-            tb += "<th style='background-color:#FFCA5A'>Var (%)</th>";
+            tb += "<th rowspan='2'  style='width: 10%; background-color:#31576D;color:#ffffff' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D;color:#ffffff'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D;color:#ffffff' >Total Target</th>";
+            tb += "<th colspan='3' class='text-center' style='background-color:#86C466;color:#ffffff'>YTD</th>";
+            tb += "<th colspan='3' class='text-center' style='background-color:#77CAE7;'>MTD</th>";
+            tb += "<th colspan='13' class='text-center' style='background-color:#FFCA5A;'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
+            tb += "<tr><th  style='background-color:#86C466;color:#ffffff' >Target Gen</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff'>Actual Gen</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
+            tb += "<th  style='background-color:#77CAE7;'>Target Gen</th>";
+            tb += "<th style='background-color:#77CAE7;'>Actual Gen</th>";
+            tb += "<th  style='background-color:#77CAE7;'>Var (%)</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Target Gen (MU)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>Actual Gen (MU)</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Var (%)</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Target IR</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Actual IR</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Var (%)</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>PA (%)</th>";          
+            tb += "<th style='background-color:#FFCA5A;'>IGA (%)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>EGA (%)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>CUF_AC (%)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>Target PR (%)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>Plant PR (%)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>Var (%)</th>";
             tb += "</tr></thead><tbody><tr>";
 
             double t_var_yr = 0;
@@ -9456,13 +9456,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<br>";
             tb += "<table id='emailTable2' rowspan='2' class='table table-bordered table-striped' style='width: 80%; '  border='1' cellspacing='0' cellpadding='0'>";
             tb += "<thead style='background-color:#31576D ;'><tr>";
-            tb += "<th style='padding:0.5rem;'>Date</th>";
-            tb += "<th style='padding:0.5rem;'>Site</th>";
-            tb += "<th style='padding:0.5rem;'>ICRs</th>";
-            tb += "<th style='padding:0.5rem;'>INVs</th>";
-            tb += "<th style='padding:0.5rem;'>BD Type</th>";
-            tb += "<th style='padding:0.5rem;'>Total Stop</th>";
-            tb += "<th style='padding:0.5rem;'>Reason of Breakdown</th>";
+            tb += "<th style='padding:0.5rem;color:#ffffff'>Date</th>";
+            tb += "<th style='padding:0.5rem;color:#ffffff'>Site</th>";
+            tb += "<th style='padding:0.5rem;color:#ffffff'>ICRs</th>";
+            tb += "<th style='padding:0.5rem;color:#ffffff'>INVs</th>";
+            tb += "<th style='padding:0.5rem;color:#ffffff'>BD Type</th>";
+            tb += "<th style='padding:0.5rem;color:#ffffff'>Total Stop</th>";
+            tb += "<th style='padding:0.5rem;color:#ffffff'>Reason of Breakdown</th>";
             tb += "</tr></thead>";
 
             if (data2.Count > 0)
