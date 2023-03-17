@@ -19,6 +19,7 @@ namespace DGRAPIs.Models
         public double jmrkwh { get; set; }
         public double tarkwh { get; set; }
         public double tarIR { get; set; }
+        public double ac_capacity { get; set; }
 
     }
     public class SolarDashboardData1
@@ -28,6 +29,7 @@ namespace DGRAPIs.Models
         public double inv_kwh { get; set; }
         public double tarkwh { get; set; }
         public double tarIR { get; set; }
+        public double ac_capacity { get; set; }
 
     }
 }
