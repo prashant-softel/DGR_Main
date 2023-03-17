@@ -125,7 +125,7 @@ namespace DGRAPIs.Repositories
             {
                 //
             }
-            string qry2 = " select site, site_id," + selfilter + ", sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view3 group by " + groupby1 +"" ;
+            string qry2 = " select site, site_id," + selfilter + ", sum(kwh) as tarkwh, avg(wind_speed) as tarwind from temp_view3 group by " + groupby1 + "";
             List<WindDashboardData> _WindDashboardData2 = new List<WindDashboardData>();
             _WindDashboardData2 = await Context.GetData<WindDashboardData>(qry2).ConfigureAwait(false);
 
@@ -133,33 +133,11 @@ namespace DGRAPIs.Repositories
             //string qry5 = "SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,avg(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "  group by " + groupby + " order by t1.date asc";
 
 
-            string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh,sum(t1.Wind)/count(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, SUM(t1.kwh) as KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh, sum(t1.wind_speed)/count(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by " + groupby ;
+            string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh,avg(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, SUM(t1.kwh) as KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh, avg(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by " + groupby;
 
 
             List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
-
-            string qry6 = " select site, total_mw from site_master group by site;";
-            string qry7 = "select site, site_id," + selfilter + ",sum(wind_speed)/count(wind_speed) as tarwind from temp_view3 group by " + groupby1 + ",site;";
-            string qry8 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,sum(t1.Wind)/count(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, sum(t1.wind_speed)/count(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by " + groupby + ",site"; 
-
-            List<WindDashboardData> _WindDashboardData6 = new List<WindDashboardData>();
-            _WindDashboardData6 = await Context.GetData<WindDashboardData>(qry6).ConfigureAwait(false);
-            List<WindDashboardData> _WindDashboardData7 = new List<WindDashboardData>();
-            _WindDashboardData7 = await Context.GetData<WindDashboardData>(qry7).ConfigureAwait(false);
-            List<WindDashboardData> _WindDashboardData8 = new List<WindDashboardData>();
-            _WindDashboardData8 = await Context.GetData<WindDashboardData>(qry8).ConfigureAwait(false);
-            
-            double total_capacity = 0;
-            double total_capActWind = 0;
-            double total_capTarWind = 0;
-            //double wspeed = 0;
-            //double wspeed_target = 0;
-            var current = 0;
-            var last= 0;
-            var currentD = "";
-            var lastD = "";
-
             foreach (WindDashboardData _windData in _WindDashboardData)
             {
                 _windData.tar_date = _windData.Date;//.Date.ToString("yyyy-MM-dd");
@@ -168,107 +146,13 @@ namespace DGRAPIs.Repositories
                     if (monthly == true && _windData.month == _windData2.month)
                     {
                         _windData.tarkwh = _windData2.tarkwh;
-                        //_windData.tarwind = _windData2.tarwind;
+                        _windData.tarwind = _windData2.tarwind;
                     }
                     else if (_windData.tar_date == _windData2.tar_date)
                     {
                         _windData.tarkwh = _windData2.tarkwh;
-                        // _windData.tarwind = _windData2.tarwind;
+                        _windData.tarwind = _windData2.tarwind;
                     }
-                }
-
-
-            }
-
-            foreach (WindDashboardData _windData in _WindDashboardData8)
-            {
-                _windData.tar_date = _windData.Date;
-                foreach (WindDashboardData _windData2 in _WindDashboardData6)
-                {
-                    if (_windData.Site == _windData2.Site)
-                    {
-                        _windData.total_mw = _windData2.total_mw;
-                    }
-
-                }
-                foreach (WindDashboardData _windData3 in _WindDashboardData7)
-                {
-                    if ((monthly == true) && (_windData.month == _windData3.month )&& (_windData.Site == _windData3.Site))
-                    {
-                        _windData.tarwind = _windData3.tarwind;
-                    }
-                    else if ((_windData.tar_date == _windData3.tar_date) && (_windData.Site == _windData3.Site))
-                    {
-                        _windData.tarwind = _windData3.tarwind;
-                    }
-                }              
-
-            }
-
-            int cnt = 0;
-
-            foreach (WindDashboardData _windData in  _WindDashboardData8)
-            {
-                _windData.Date= _windData.Date.ToString();
-                if (monthly == true)
-               {
-                    cnt++;
-                    current = _windData.month;
-
-                    if (cnt == 1)
-                    {
-                        last = current;
-                    }
-                    if (current != last || _WindDashboardData8.IndexOf(_windData) == _WindDashboardData8.Count - 1)
-                    {
-                        foreach (WindDashboardData _windData4 in _WindDashboardData)
-                            {
-                                if (last == _windData4.month)
-                                {
-                                    _windData4.tarwind = total_capTarWind / total_capacity;
-                                    _windData4.Wind = total_capActWind / total_capacity;
-                                }
-                            }
-                            total_capacity = 0;
-                            total_capActWind = 0;
-                            total_capTarWind = 0;
-                            last = current;
-
-                    }
-
-                    total_capacity += _windData.total_mw;
-                    total_capActWind += _windData.Wind * _windData.total_mw;
-                    total_capTarWind += _windData.tarwind * _windData.total_mw;
-                }                      
-                else
-                {
-                    cnt++;
-                    currentD = _windData.Date;
-                    if (cnt == 1)
-                    {
-                        lastD = currentD;
-                    }
-                    if (currentD != lastD || _WindDashboardData8.IndexOf(_windData) == _WindDashboardData8.Count - 1)
-                    {
-                        foreach (WindDashboardData _windData4 in _WindDashboardData)
-                        {
-                            if (lastD == _windData4.tar_date.ToString())
-                            {
-                                _windData4.tarwind = total_capTarWind / total_capacity;
-                                _windData4.Wind = total_capActWind / total_capacity;
-                            }
-                        }
-                        total_capacity = 0;
-                        total_capActWind = 0;
-                        total_capTarWind = 0;
-                        lastD = currentD;
-                    }
-
-                    total_capacity += _windData.total_mw;
-                    total_capActWind += _windData.Wind * _windData.total_mw;
-                    total_capTarWind += _windData.tarwind * _windData.total_mw;
-
-                    
                 }
             }
             return _WindDashboardData;
@@ -370,22 +254,17 @@ namespace DGRAPIs.Repositories
             {
                 //
             }
-            string qry2 = " select Site, sum(kwh*1000000) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view_year group by site ";
+            string qry2 = " select Site, sum(kwh*1000000) as tarkwh, avg(wind_speed) as tarwind from temp_view_year group by site ";
             List<WindDashboardData> _WindDashboardData2 = new List<WindDashboardData>();
             _WindDashboardData2 = await Context.GetData<WindDashboardData>(qry2).ConfigureAwait(false);
 
 
 
-            string qry5 = "SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,(sum(t1.wind_speed)/count(t1.wind_speed)) as Wind,(t3.kwh*1000000)as tarkwh, avg(t3.wind_speed) as tarwind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join daily_target_kpi t3 on t3.site_id=t1.site_id and t3.date=t1.date where " + filter + " group by t1.Site,t1.date order by t1.date desc";
+            string qry5 = "SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,avg(t1.wind_speed) as Wind,(t3.kwh*1000000)as tarkwh, avg(t3.wind_speed) as tarwind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join daily_target_kpi t3 on t3.site_id=t1.site_id and t3.date=t1.date where " + filter + " group by t1.Site,t1.date order by t1.date desc";
 
 
             List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
-
-            string qry6 = " select site, total_mw from site_master group by site";
-            List<WindDashboardData> _WindDashboardData6 = new List<WindDashboardData>();
-            _WindDashboardData6 = await Context.GetData<WindDashboardData>(qry6).ConfigureAwait(false);
-
             foreach (WindDashboardData _windData in _WindDashboardData)
             {
                 foreach (WindDashboardData _windData2 in _WindDashboardData2)
@@ -395,14 +274,6 @@ namespace DGRAPIs.Repositories
                         _windData.tarkwh = _windData2.tarkwh;
                         _windData.tarwind = _windData2.tarwind;
                     }
-                }
-                foreach (WindDashboardData _windData2 in _WindDashboardData6)
-                {
-                    if (_windData.Site == _windData2.Site)
-                    {
-                        _windData.total_mw = _windData2.total_mw;
-                    }
-
                 }
             }
 
@@ -474,38 +345,24 @@ namespace DGRAPIs.Repositories
             {
                 //
             }
-            string qry2 = " select site, site_id,MONTH(date) as month, sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view9 group by MONTH(date), site ";
+            string qry2 = " select site, site_id,MONTH(date) as month, sum(kwh) as tarkwh, avg(wind_speed) as tarwind from temp_view9 group by MONTH(date)";
             List<WindDashboardData> _WindDashboardData2 = new List<WindDashboardData>();
             _WindDashboardData2 = await Context.GetData<WindDashboardData>(qry2).ConfigureAwait(false);
 
-            string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh, avg(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, SUM(t1.kwh) as KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh, (sum(wind_speed)/count(wind_speed)) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by MONTH(t1.date), t1.site";
+            string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh,avg(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, SUM(t1.kwh) as KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh, avg(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by  MONTH(t1.date)";
             List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
-
-            string qry6 = " select site, total_mw from site_master group by site";
-            List<WindDashboardData> _WindDashboardData6 = new List<WindDashboardData>();
-            _WindDashboardData6 = await Context.GetData<WindDashboardData>(qry6).ConfigureAwait(false);
-
-
             foreach (WindDashboardData _windData in _WindDashboardData)
             {
-                _windData.tar_date = _windData.Date.ToString("yyyy-MM-dd");
+                _windData.tar_date = _windData.Date.Date.ToString("yyyy-MM-dd");
                 foreach (WindDashboardData _windData2 in _WindDashboardData2)
                 {
-                    if (_windData.month == _windData2.month && _windData.Site == _windData2.Site)
+                    if (_windData.month == _windData2.month)
                     {
                         _windData.tarkwh = _windData2.tarkwh;
                         _windData.tarwind = _windData2.tarwind;
                     }
                     
-                }
-                foreach (WindDashboardData _windData2 in _WindDashboardData6)
-                {
-                    if (_windData.Site == _windData2.Site)
-                    {
-                        _windData.total_mw = _windData2.total_mw;
-                    }
-
                 }
             }
             return _WindDashboardData;
@@ -554,15 +411,15 @@ namespace DGRAPIs.Repositories
             {
                 //
             }
-            string qry2 = " select month(date) as month, Site, sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view_year group by site, month(date), year(date); ";
+            string qry2 = " select month(date) as month, Site, sum(kwh) as tarkwh, avg(wind_speed) as tarwind from temp_view_year group by site, month(date), year(date); ";
             List<WindDashboardData> _WindDashboardData2 = new List<WindDashboardData>();
             _WindDashboardData2 = await Context.GetData<WindDashboardData>(qry2).ConfigureAwait(false);
 
-            string qry5 = "SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,(sum(t1.wind_speed)/count(t1.wind_speed)) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "  group by MONTH(t1.date) ,t1.site";
+            string qry5 = "SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,avg(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "  group by MONTH(t1.date) ,t1.site";
             
                 List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
-
+           
 
             /*string qry = @"  select  t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,  (sum(t1.wind_speed)/count(*))as Wind,
  sum(t1.kwh)as KWH, replace(t2.line_loss,'%','')as line_loss, sum(kwh_afterlineloss) as jmrkwh,
@@ -573,9 +430,6 @@ namespace DGRAPIs.Repositories
 
             List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry).ConfigureAwait(false);*/
-            string qry6 = " select site, total_mw from site_master group by site";
-            List<WindDashboardData> _WindDashboardData6 = new List<WindDashboardData>();
-            _WindDashboardData6 = await Context.GetData<WindDashboardData>(qry6).ConfigureAwait(false);
 
             foreach (WindDashboardData _windData in _WindDashboardData)
             {
@@ -587,15 +441,7 @@ namespace DGRAPIs.Repositories
                         _windData.tarwind = _windData2.tarwind;
                     } 
                 }
-                foreach (WindDashboardData _windData2 in _WindDashboardData6)
-                {
-                    if (_windData.Site == _windData2.Site)
-                    {
-                        _windData.total_mw = _windData2.total_mw;
-                    }
-
-                }
-
+                
             }
             
             return _WindDashboardData;
@@ -669,177 +515,33 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             {
                 string msg = ex.Message;
             }
-            string qry2 = "select Site, site_id, "+ selfilter + " ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from temp_view4 group by "+ groupby1 + "";
+            string qry2 = "select Site, site_id, "+ selfilter + " ,sum(gen_nos)*1000000 as tarkwh, avg(poa) as tarIR from temp_view4 group by "+ groupby1 + "";
             List<SolarDashboardData> tempdata = new List<SolarDashboardData>();
             tempdata = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
-            string qry = @" SELECT t1.date as Date,MONTH(t1.date) as month, t1.site as Site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,sum(t1.poa)/count(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + " group by "+ groupby + " order by t1.date asc ";
+            string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as Site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by "+ groupby + " order by t1.date asc ";
 
 
             List<SolarDashboardData> data = new List<SolarDashboardData>();
             data = await Context.GetData<SolarDashboardData>(qry).ConfigureAwait(false);
 
-            //string qry3 = " select site, ac_capacity from site_master_solar group by site";
-            //List<SolarDashboardData> data3 = new List<SolarDashboardData>();
-            //data3 = await Context.GetData<SolarDashboardData>(qry3).ConfigureAwait(false);
-
             foreach (SolarDashboardData _dataelement in data)
             {
                 foreach (SolarDashboardData _tempdataelement in tempdata)
                 {
-                    try
-                    {
-                       // _tempdataelement.Date.ToString("yyyy-MM-dd");
-                        if (monthly == true && _dataelement.month == _tempdataelement.month)
-                        {
-                            _dataelement.tarkwh = _tempdataelement.tarkwh;
-                            // _dataelement.tarIR = _tempdataelement.tarIR;
-                        }
-                        else if (monthly == false && _dataelement.Date == _tempdataelement.Date.ToString("yyyy-MM-dd"))
-                        {
-                            _dataelement.tarkwh = _tempdataelement.tarkwh;
-                            // _dataelement.tarIR = _tempdataelement.tarIR;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        string msg = ex.Message;
 
+                    if (monthly == true && _dataelement.month == _tempdataelement.month)
+                    {
+                        _dataelement.tarkwh = _tempdataelement.tarkwh;
+                        _dataelement.tarIR = _tempdataelement.tarIR;
+                    }
+                    else if( _dataelement.Date == _tempdataelement.Date)
+                    {
+                        _dataelement.tarkwh = _tempdataelement.tarkwh;
+                        _dataelement.tarIR = _tempdataelement.tarIR;
                     }
 
                 }
-            //    foreach (SolarDashboardData _tempdataelement in data3)
-            //    {
-            //        if (_dataelement.Site == _tempdataelement.Site)
-            //        {
-            //            _dataelement.ac_capacity = _tempdataelement.ac_capacity;
-            //        }
-
-            //    }
             }
-            string qry9 = "create or replace view temp_view4 as select t1.date,t1.site_id, t1.sites as Site , t1.poa, gen_nos from daily_target_kpi_solar t1, daily_gen_summary_solar t2 where t1.date = t2.date and t1.sites = t2.site and "
-               + filter + " group by t1.date, t2.site_id;";
-
-            await Context.ExecuteNonQry<int>(qry9).ConfigureAwait(false);
-            string qry6 = "select site, ac_capacity from site_master_solar group by site;";
-            string qry7 = "select Site, site_id, " + selfilter + " ,sum(poa)/count(poa) as tarIR from temp_view4 group by " + groupby1 +",Site;"; 
-            string qry8 = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as Site , sum(t1.poa)/count(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by " + groupby + ",site order by t1.date asc ";
-           
-            string g = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as Site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,sum(t1.poa)/count(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + " group by " + groupby + " order by t1.date asc ";
-
-            List<SolarDashboardData> _SolarDashboardData6 = new List<SolarDashboardData>();
-            _SolarDashboardData6 = await Context.GetData<SolarDashboardData>(qry6).ConfigureAwait(false);
-            List<SolarDashboardData> _SolarDashboardData7 = new List<SolarDashboardData>();
-            _SolarDashboardData7 = await Context.GetData<SolarDashboardData>(qry7).ConfigureAwait(false);
-            List<SolarDashboardData> _SolarDashboardData8 = new List<SolarDashboardData>();
-            _SolarDashboardData8 = await Context.GetData<SolarDashboardData>(qry8).ConfigureAwait(false);
-
-            double total_capacity = 0;
-            double total_capActIR = 0;
-            double total_capTarIR = 0;
-            //double wspeed = 0;
-            //double wspeed_target = 0;
-            double current = 0;
-            double last = 0;
-            var currentD = "";
-            var lastD = "";
-
-
-            foreach (SolarDashboardData _solarData in _SolarDashboardData8)
-            {
-               // _solarData.Date = _solarData.Date.Date.ToString("yyyy-MM-dd");
-                foreach (SolarDashboardData _solarData2 in _SolarDashboardData6)
-                {
-                    if (_solarData.Site == _solarData2.Site)
-                    {
-                        _solarData.ac_capacity = _solarData2.ac_capacity;
-                    }
-
-                }
-                foreach (SolarDashboardData _solarData3 in _SolarDashboardData7)
-                {
-                    if ((monthly == true) && (_solarData.month == _solarData3.month) && (_solarData.Site == _solarData3.Site))
-                    {
-                        _solarData.tarIR = _solarData3.tarIR;
-                    }
-                    else if ((monthly == false) && (_solarData.Date == _solarData3.Date.ToString("yyyy-MM-dd")) && (_solarData.Site == _solarData3.Site))
-                    {
-                        _solarData.tarIR = _solarData3.tarIR;
-                    }
-                }
-
-            }
-            int cnt = 0;
-            foreach (SolarDashboardData _solarData in _SolarDashboardData8)
-            {
-             _solarData.Date = _solarData.Date.ToString();
-                if (monthly == true)
-                {
-                    cnt++;
-                    current = _solarData.month;
-                    if (cnt == 1)
-                    {
-                        last = current;
-                    }
-                    if (current != last ||_SolarDashboardData8.IndexOf(_solarData) == _SolarDashboardData8.Count - 1)
-                    {
-                        foreach (SolarDashboardData _solarData4 in data)
-                        {
-                            if (last == _solarData4.month )
-                            {
-                                _solarData4.tarIR = total_capTarIR / total_capacity;
-                                _solarData4.IR = total_capActIR / total_capacity;
-                            }
-                        }
-                        total_capacity = 0;
-                        total_capActIR = 0;
-                        total_capTarIR = 0;
-
-                        last = current;
-                    }
-
-                    total_capacity += _solarData.ac_capacity;
-                    total_capActIR += _solarData.IR * _solarData.ac_capacity;
-                    total_capTarIR += _solarData.tarIR * _solarData.ac_capacity;
-
-                   
-                }                
-                else
-                {
-                    cnt++;
-                    currentD = _solarData.Date;
-
-                    if (cnt == 1)
-                    {
-                        lastD = currentD;
-                    }
-                    if (currentD != lastD || _SolarDashboardData8.IndexOf(_solarData) == _SolarDashboardData8.Count - 1)
-                    {
-                        foreach (SolarDashboardData _solarData4 in data)
-                        {
-                            if (lastD == _solarData4.Date)
-                            {
-                                _solarData4.tarIR = total_capTarIR / total_capacity;
-                                _solarData4.IR = total_capActIR / total_capacity;
-                            }
-                        }
-                        total_capacity = 0;
-                        total_capActIR = 0;
-                        total_capTarIR = 0;
-
-                        lastD = currentD;
-                    }
-
-                    total_capacity += _solarData.ac_capacity;
-                    total_capActIR += _solarData.IR * _solarData.ac_capacity;
-                    total_capTarIR += _solarData.tarIR * _solarData.ac_capacity;
-                   
-                  
-                }
-                   
-                
-            }
-
-
             return data;
 
             /* string qry = @"select t1.date,sum(inv_kwh) as inv_kwh,avg(t1.poa) as IR,(t2.gen_nos * 1000000) as tarkwh, avg(t2.poa) as tarIR from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t2.sites = t1.site and t2.date = t1.date where " + filter + " group by t1.date order by t1.date asc";
@@ -924,7 +626,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             {
                 string msg = ex.Message;
             }
-            string qry2 = "select Site, site_id, sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from temp_view5 group by Site";
+            string qry2 = "select Site, site_id, sum(gen_nos)*1000000 as tarkwh, avg(poa) as tarIR from temp_view5 group by Site";
             List<SolarDashboardData> tempdata = new List<SolarDashboardData>();
             tempdata = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
@@ -933,15 +635,11 @@ replace(t2.lineloss,'%','')as line_loss,sum(inv_kwh)-(sum(inv_kwh) * replace(t2.
 (t3.gen_nos*1000000) as tarkwh, avg(t3.poa) as tarIR from daily_gen_summary_solar t1 
 left join monthly_line_loss_solar t2 on t2.site_id=t1.site_id and t2.month_no=MONTH(t1.date) and t2.fy='" + FY + "' left join daily_target_kpi_solar t3 on t3.site_id=t1.site_id and t3.date=t1.date  where " + filter + "  group by t1.site_id,t1.date order by t1.date desc ";*/
 
-            string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as Site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,sum(t1.poa)/count(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by t1.site_id,t1.date order by t1.date desc ";
+            string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as Site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by t1.site_id,t1.date order by t1.date desc ";
 
 
             List<SolarDashboardData> data = new List<SolarDashboardData>();
             data = await Context.GetData<SolarDashboardData>(qry).ConfigureAwait(false);
-
-            string qry3= " select site, ac_capacity from site_master_solar group by site";
-            List<SolarDashboardData> data3 = new List<SolarDashboardData>();
-           data3 = await Context.GetData<SolarDashboardData>(qry3).ConfigureAwait(false);
 
             foreach (SolarDashboardData _dataelement in data)
             {
@@ -1046,7 +744,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month_no=month(t1
             {
                 string msg = ex.Message;
             }
-            string qry2 = "select site, site_id, MONTH(date) as month ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from temp_view6 group by MONTH(date),site";
+            string qry2 = "select site, site_id, MONTH(date) as month ,sum(gen_nos)*1000000 as tarkwh, avg(poa) as tarIR from temp_view6 group by MONTH(date)";
             List<SolarDashboardData> tempdata = new List<SolarDashboardData>();
             tempdata = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
             string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by  MONTH(t1.date)  order by t1.date asc ";
@@ -1055,29 +753,17 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month_no=month(t1
             List<SolarDashboardData> data = new List<SolarDashboardData>();
             data = await Context.GetData<SolarDashboardData>(qry).ConfigureAwait(false);
 
-            string qry3 = " select site, ac_capacity from site_master_solar group by site";
-            List<SolarDashboardData> data3 = new List<SolarDashboardData>();
-            data3 = await Context.GetData<SolarDashboardData>(qry3).ConfigureAwait(false);
-
             foreach (SolarDashboardData _dataelement in data)
             {
                 foreach (SolarDashboardData _tempdataelement in tempdata)
                 {
 
-                    if (_dataelement.month == _tempdataelement.month && _dataelement.Site == _tempdataelement.Site)
+                    if (_dataelement.month == _tempdataelement.month)
                     {
                         _dataelement.tarkwh = _tempdataelement.tarkwh;
                         _dataelement.tarIR = _tempdataelement.tarIR;
                     }
                     
-
-                }
-                foreach (SolarDashboardData _tempdataelement in data3)
-                {
-                    if (_dataelement.Site == _tempdataelement.Site)
-                    {
-                        _dataelement.ac_capacity = _tempdataelement.ac_capacity;
-                    }
 
                 }
             }
@@ -1116,25 +802,21 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
              {
                  string ex = e.Message;
              }
-             string qry2 = " select month(date) as month, sites as Site, sum(gen_nos) as tarkwh, sum(poa)/count(poa) as tarIR from temp_view_year_solar group by month(date), year(date),site_id; ";
+             string qry2 = " select month(date) as month, sites as Site, sum(gen_nos) as tarkwh, avg(poa) as tarIR from temp_view_year_solar group by site_id, month(date), year(date); ";
              List<SolarDashboardData> _SolarDashboardData2 = new List<SolarDashboardData>();
              _SolarDashboardData2 = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
-             string qry = @"  select t1.date,month(t1.date)as month,t1.site,sum(inv_kwh) as inv_kwh,sum(t1.poa)/count(t1.poa) as IR,
+             string qry = @"  select t1.date,month(t1.date)as month,t1.site,sum(inv_kwh) as inv_kwh,avg(t1.poa) as IR,
  replace(t2.LineLoss,'%','') as linLoss,sum(inv_kwh)-(sum(inv_kwh) * replace(t2.LineLoss,'%','') /100) as jmrkwh,
- (t3.gen_nos*1000000) as tarkwh, sum(t3.poa)/count(t3.poa) as tarIR from daily_gen_summary_solar t1 
+ (t3.gen_nos*1000000) as tarkwh, avg(t3.poa) as tarIR from daily_gen_summary_solar t1 
  left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month_no=month(t1.date) and t2.fy='" + FY + "' " +
              " left join daily_target_kpi_solar t3 on t3.sites=t1.site and t3.date=t1.date  where  " + filter +
-             " group by month(t1.date),year(t1.date) , t1.Site order by t1.date desc ";
+             " group by t1.Site,month(t1.date),year(t1.date)  order by t1.date desc ";
 
              //t3 on t3.sites=t1.site and t3.date=t1.date  where t1.approve_status=" + approve_status + " and " + filter + "  group by t1.Site,month(t1.date),year(t1.date)  order by t1.date desc ";
 
              List<SolarDashboardData> _SolarDashboardData = new List<SolarDashboardData>();
              _SolarDashboardData = await Context.GetData<SolarDashboardData>(qry).ConfigureAwait(false);
-
-            string qry3 = " select site, ac_capacity from site_master_solar group by site";
-            List<SolarDashboardData> data3 = new List<SolarDashboardData>();
-            data3 = await Context.GetData<SolarDashboardData>(qry3).ConfigureAwait(false);
 
              foreach (SolarDashboardData _solarData in _SolarDashboardData)
              {
@@ -1146,15 +828,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                          _solarData.tarIR = _solarData2.tarIR;
                      }
                  }
-                foreach (SolarDashboardData _tempdataelement in data3)
-                {
-                    if (_solarData.Site == _tempdataelement.Site)
-                    {
-                        _solarData.ac_capacity = _tempdataelement.ac_capacity;
-                    }
-
-                }
-            }
+             }
 
              return _SolarDashboardData;
 
