@@ -8332,8 +8332,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th colspan='10' class='text-center' style='background-color:#FFCA5A;'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
 
             tb += "<tr><th  style='background-color:#86C466;color:#ffffff'>Tar Gen</th>";
-            tb += "<th style='background-color:#86C466;color:#ffffff''>Act Gen</th>";
-            tb += "<th  style='background-color:#86C466;color:#ffffff''>Var (%)</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff'>Act Gen</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Tar Wind</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Act Wind</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
