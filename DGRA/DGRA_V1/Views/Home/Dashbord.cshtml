@@ -763,7 +763,7 @@
                     //console.log(wind_monthly_wspeed_target);
 
                     if (wind_monthly_energy_target != 0) {
-                        monthly_var_energy = ((wind_monthly_energy.toFixed(1) - wind_monthly_energy_target.toFixed(1)) / wind_monthly_energy_target.toFixed(1))*100;
+                        monthly_var_energy = (((wind_monthly_energy / 1000000).toFixed(1) - (wind_monthly_energy_target / 1000000).toFixed(1)) / (wind_monthly_energy_target / 1000000).toFixed(1))*100;
                     }
                     if (wind_monthly_wspeed_target != 0) {
                         monthly_var_wspeed = ((wind_monthly_wspeed.toFixed(1) - wind_monthly_wspeed_target.toFixed(1)) / wind_monthly_wspeed_target.toFixed(1))* 100;
@@ -848,7 +848,7 @@
                     //console.log(wind_yearly_wspeed_target);
 
                     if (wind_yearly_energy_target != 0) {
-                        yearly_var_energy = ((wind_yearly_energy.toFixed(1) - wind_yearly_energy_target.toFixed(1)) / wind_yearly_energy_target.toFixed(1)) * 100;
+                        yearly_var_energy = (((wind_yearly_energy / 1000000).toFixed(1) - (wind_yearly_energy_target / 1000000).toFixed(1)) / (wind_yearly_energy_target / 1000000).toFixed(1)) * 100;
                     }
                     if (wind_yearly_wspeed_target != 0) {
                         yearly_var_wspeed = ((wind_yearly_wspeed.toFixed(1) - wind_yearly_wspeed_target.toFixed(1)) / wind_yearly_wspeed_target.toFixed(1)) * 100;
@@ -928,7 +928,7 @@
                         lastday_ir_tar = total_capTarIr / total_capacity;
                     }
                     if (lastday_energy_tar != 0) {
-                        lastday_var_energy = ((lastday_energy.toFixed(1) - lastday_energy_tar.toFixed(1)) / lastday_energy_tar.toFixed(1)) * 100;
+                        lastday_var_energy = (((lastday_energy / 1000).toFixed(1) - (lastday_energy_tar / 1000).toFixed(1)) / (lastday_energy_tar / 1000).toFixed(1)) * 100;
                     }
                     if (lastday_ir_tar != 0) {
                         lastday_var_ir = ((lastday_ir.toFixed(1) - lastday_ir_tar.toFixed(1)) / lastday_ir_tar.toFixed(1)) * 100;
@@ -1014,7 +1014,7 @@
                         monthly_ir_tar = total_capTarIr / total_capacity;
                     }
                     if (monthly_energy_tar != 0) {
-                        monthly_var_energy = ((monthly_energy.toFixed(1) - monthly_energy_tar.toFixed(1)) / monthly_energy_tar.toFixed(1)) * 100;
+                        monthly_var_energy = (((monthly_energy / 1000000).toFixed(1) - (monthly_energy_tar / 1000000).toFixed(1)) /(monthly_energy_tar / 1000000).toFixed(1)) * 100;
                     }
                     if (monthly_ir_tar != 0) {
                         monthly_var_ir = ((monthly_ir.toFixed(1) - monthly_ir_tar.toFixed(1)) / monthly_ir_tar.toFixed(1)) * 100;
@@ -1090,7 +1090,7 @@
                         yeary_ir_tar = total_capTarIr / total_capacity;
                     }
                     if (yearly_energy_tar != 0) {
-                        yearly_var_energy = ((yearly_energy.toFixed(1) - yearly_energy_tar.toFixed(1)) / yearly_energy_tar.toFixed(1)) * 100;
+                        yearly_var_energy = (((yearly_energy / 1000000).toFixed(1) - (yearly_energy_tar / 1000000).toFixed(1)) / (yearly_energy_tar / 1000000).toFixed(1)) * 100;
                     }
                     if (yeary_ir_tar != 0) {
                         yearly_var_ir = ((yeary_ir.toFixed(1) - yeary_ir_tar.toFixed(1)) / yeary_ir_tar.toFixed(1)) * 100;

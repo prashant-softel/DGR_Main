@@ -219,6 +219,13 @@ namespace DGRAPIs.Repositories
                     {
                         last = current;
                     }
+                    if (_WindDashboardData8.IndexOf(_windData) == _WindDashboardData8.Count - 1)
+                    {
+                        total_capacity += _windData.total_mw;
+                        total_capActWind += _windData.Wind * _windData.total_mw;
+                        total_capTarWind += _windData.tarwind * _windData.total_mw;
+
+                    }
                     if (current != last || _WindDashboardData8.IndexOf(_windData) == _WindDashboardData8.Count - 1)
                     {
                         foreach (WindDashboardData _windData4 in _WindDashboardData)
@@ -248,11 +255,18 @@ namespace DGRAPIs.Repositories
                     {
                         lastD = currentD;
                     }
+                    if(_WindDashboardData8.IndexOf(_windData) == _WindDashboardData8.Count - 1)
+                    {
+                        total_capacity += _windData.total_mw;
+                        total_capActWind += _windData.Wind * _windData.total_mw;
+                        total_capTarWind += _windData.tarwind * _windData.total_mw;
+
+                    }
                     if (currentD != lastD || _WindDashboardData8.IndexOf(_windData) == _WindDashboardData8.Count - 1)
                     {
                         foreach (WindDashboardData _windData4 in _WindDashboardData)
                         {
-                            if (lastD == _windData4.tar_date.ToString())
+                            if (lastD == _windData4.tar_date.ToString()) 
                             {
                                 _windData4.tarwind = total_capTarWind / total_capacity;
                                 _windData4.Wind = total_capActWind / total_capacity;
@@ -694,7 +708,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                             _dataelement.tarkwh = _tempdataelement.tarkwh;
                             // _dataelement.tarIR = _tempdataelement.tarIR;
                         }
-                        else if (monthly == false && _dataelement.Date == _tempdataelement.Date.ToString("yyyy-MM-dd"))
+                        else if (monthly == false && _dataelement.Date == _tempdataelement.Date)
                         {
                             _dataelement.tarkwh = _tempdataelement.tarkwh;
                             // _dataelement.tarIR = _tempdataelement.tarIR;
@@ -740,8 +754,8 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             //double wspeed_target = 0;
             double current = 0;
             double last = 0;
-            var currentD = "";
-            var lastD = "";
+            DateTime currentD = new DateTime() ;
+            DateTime lastD = new DateTime() ;
 
 
             foreach (SolarDashboardData _solarData in _SolarDashboardData8)
@@ -761,7 +775,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                     {
                         _solarData.tarIR = _solarData3.tarIR;
                     }
-                    else if ((monthly == false) && (_solarData.Date == _solarData3.Date.ToString("yyyy-MM-dd")) && (_solarData.Site == _solarData3.Site))
+                    else if ((monthly == false) && (_solarData.Date == _solarData3.Date) && (_solarData.Site == _solarData3.Site))
                     {
                         _solarData.tarIR = _solarData3.tarIR;
                     }
@@ -771,7 +785,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             int cnt = 0;
             foreach (SolarDashboardData _solarData in _SolarDashboardData8)
             {
-             _solarData.Date = _solarData.Date.ToString();
+            // _solarData.Date = _solarData.Date;//.ToString();
                 if (monthly == true)
                 {
                     cnt++;
@@ -779,6 +793,12 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                     if (cnt == 1)
                     {
                         last = current;
+                    }
+                    if (_SolarDashboardData8.IndexOf(_solarData) == _SolarDashboardData8.Count - 1)
+                    {
+                        total_capacity += _solarData.ac_capacity;
+                        total_capActIR += _solarData.IR * _solarData.ac_capacity;
+                        total_capTarIR += _solarData.tarIR * _solarData.ac_capacity;
                     }
                     if (current != last ||_SolarDashboardData8.IndexOf(_solarData) == _SolarDashboardData8.Count - 1)
                     {
@@ -811,6 +831,12 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                     if (cnt == 1)
                     {
                         lastD = currentD;
+                    }
+                    if (_SolarDashboardData8.IndexOf(_solarData) == _SolarDashboardData8.Count - 1)
+                    {
+                        total_capacity += _solarData.ac_capacity;
+                        total_capActIR += _solarData.IR * _solarData.ac_capacity;
+                        total_capTarIR += _solarData.tarIR * _solarData.ac_capacity;
                     }
                     if (currentD != lastD || _SolarDashboardData8.IndexOf(_solarData) == _SolarDashboardData8.Count - 1)
                     {
@@ -954,6 +980,14 @@ left join monthly_line_loss_solar t2 on t2.site_id=t1.site_id and t2.month_no=MO
                     }
 
                 }
+                foreach (SolarDashboardData _tempdataelement in data3)
+                {
+                    if (_dataelement.Site == _tempdataelement.Site)
+                    {
+                        _dataelement.ac_capacity = _tempdataelement.ac_capacity;
+                    }
+
+                }
             }
             return data;
 
@@ -1049,7 +1083,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month_no=month(t1
             string qry2 = "select site, site_id, MONTH(date) as month ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from temp_view6 group by MONTH(date),site";
             List<SolarDashboardData> tempdata = new List<SolarDashboardData>();
             tempdata = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
-            string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by  MONTH(t1.date)  order by t1.date asc ";
+            string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,sum(t1.poa)/count(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by  MONTH(t1.date),site  order by t1.date asc ";
 
 
             List<SolarDashboardData> data = new List<SolarDashboardData>();
@@ -2792,9 +2826,9 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
 
             //string query = "select date, site,icr, count(icr) as icr_cnt,inv, count(inv) as inv_cnt,bd_type,from_bd,to_bd ,SEC_TO_TIME(sum(TIME_TO_SEC(total_bd))) as total_bd, bd_remarks from uploading_file_breakdown_solar where "+ filter + " group by site_id,bd_type";
 
-            List<SolarUploadingFileBreakDown> data = new List<SolarUploadingFileBreakDown>();
-            data = await Context.GetData<SolarUploadingFileBreakDown>(query).ConfigureAwait(false);
-            return data;
+            //List<SolarUploadingFileBreakDown> data = new List<SolarUploadingFileBreakDown>();
+            //data = await Context.GetData<SolarUploadingFileBreakDown>(query).ConfigureAwait(false);
+            //return data;
         }
         internal async Task<List<SolarPerformanceReports2>> GetSolarPerformanceReportSiteWise_2(string fromDate, string toDate, string site, int cnt)
         {
