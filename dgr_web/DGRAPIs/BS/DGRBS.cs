@@ -114,7 +114,8 @@ namespace DGRAPIs.BS
         Task<int> InsertSolarLocationMaster(List<SolarLocationMaster> set);
         Task<int> InsertSolarSiteMaster(List<SolarSiteMaster> set);
 
-        Task<int> PPTCreate(string fy, string startDate, string endDate, string type);
+        Task<int> PPTCreate();
+        Task<int> PPTCreate_Solar();
         Task<int> MailSend(string fname);
 
 
@@ -855,13 +856,29 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
-        public async Task<int> PPTCreate(string fy, string startDate, string endDate, string type)
+        //public async Task<int> PPTCreate(string fy, string startDate, string endDate, string type)
+        public async Task<int> PPTCreate()
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.PPTCreate(fy, startDate, endDate, type);
+                    return await repos.PPTCreate();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<int> PPTCreate_Solar()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.PPTCreate_Solar();
 
                 }
             }

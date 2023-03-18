@@ -357,7 +357,7 @@ namespace DGRA_V1.Controllers
             TempData["notification"] = "";
             return View();
         }
-        [TypeFilter(typeof(SessionValidation))]
+        //[TypeFilter(typeof(SessionValidation))]
         public IActionResult WindWeeklyPRReports()
         {
             TempData["notification"] = "";
@@ -857,6 +857,15 @@ namespace DGRA_V1.Controllers
         {
             return RedirectToAction("Index", "Home");
         }
-       
+        public IActionResult WindWeeklyPPTReports()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+        public IActionResult SolarWeeklyPPTReports()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
     }
 }

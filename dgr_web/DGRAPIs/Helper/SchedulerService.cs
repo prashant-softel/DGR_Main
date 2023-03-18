@@ -141,7 +141,7 @@ namespace DGRAPIs.Helper
                             catch(Exception e)
                             {
                                 string msg = e.Message;
-                                API_ErrorLog("Inside catch Wind mail failed");
+                                API_ErrorLog("Inside catch Wind mail failed"+ msg);
                             }
                             if(WindMailSuccess && SolarMailSuccess)
                             {
@@ -161,11 +161,64 @@ namespace DGRAPIs.Helper
                     string weeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
                     string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
 
-                    if (DateTime.Now.ToString("HH:mm") == weeklyTime && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
+                    if (DateTime.Now.ToString("HH:mm") == weeklyTime)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
                     {
+                        API_InformationLog("Inside if where dailytime =" + dailyTime);
+
+                        EmailWeeklyFunction();
+
+                        async Task<int> EmailWeeklyFunction()
+                        {
+                            API_InformationLog("Email Weekly Function Called from scheduler");
+                            string hostName = MyConfig.GetValue<string>("Timer:hostName");
+
+                            bool SolarMailSuccess = false;
+                            bool WindMailSuccess = false;
+                            try
+                            {
+                                string apiUrlSolar = hostName + "/api/DGR/PPTCreate";
+                                API_InformationLog("API URL " + apiUrlSolar);
+                                CallAPI(apiUrlSolar);
+                                // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
+                                SolarMailSuccess = true;
+                                API_InformationLog("Inside try Solar mail send");
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.Message;
+                                API_ErrorLog("Inside catch WInd weeekly mail failed" + msg);
+                            }
+                            try
+                            {
+
+                                string apiUrlSolar = hostName + "/api/DGR/PPTCreate_Solar";
+
+                                API_InformationLog("API URL " + apiUrlSolar);
+                                CallAPI(apiUrlSolar);
+                                // await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
+                                API_InformationLog("Inside try Solar mail send");
+                                WindMailSuccess = true;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.Message;
+                                API_ErrorLog("Inside catch Wind mail failed" + msg);
+                            }
+                            if (WindMailSuccess && SolarMailSuccess)
+                            {
+                                API_InformationLog("Solar and Wind Mail Sent" + msg);
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
+
+
 
                         //repo.PPTCreate(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
-                        //repo.PPTCreate_Solar(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
+                        // repo.PPTCreate_Solar(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
                     }
 
                     //repo.EmailSolarReport(fy, "2022-12-31", "");
@@ -188,7 +241,7 @@ namespace DGRAPIs.Helper
         public void CallAPI (string apiUrl)
         {
             Uri address = new Uri(apiUrl);
-
+            API_InformationLog("Api Url :"+ apiUrl);
             // Create the web request
             HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
 

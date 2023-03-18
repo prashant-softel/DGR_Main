@@ -2267,7 +2267,38 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+        [Route("PPTCreate")]
+        [HttpGet]
+        public async Task<IActionResult> PPTCreate()
+        {
+            try
+            {
+                var data = await _dgrBs.PPTCreate();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("PPTCreate_Solar")]
+        [HttpGet]
+        public async Task<IActionResult> PPTCreate_Solar()
+        {
+            try
+            {
+                var data = await _dgrBs.PPTCreate_Solar();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         [Route("eQry/{qry}")]
         [HttpGet]
         public async Task<IActionResult> eQry(string qry)

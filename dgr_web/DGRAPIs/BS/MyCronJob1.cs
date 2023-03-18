@@ -44,8 +44,8 @@ namespace ServiceWorkerCronJobDemo.Services
 
 
             //repo.PPTCreate("2022-23", "3/5/2022", "6/8/2022");
-            repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"),"Wind");
-            repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"), "Solar");
+            //repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"),"Wind");
+            //repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"), "Solar");
             return base.StartAsync(cancellationToken);
         }
 
@@ -75,8 +75,8 @@ namespace ServiceWorkerCronJobDemo.Services
 
 
             //repo.PPTCreate("2022-23", "3/5/2022", "6/8/2022");
-            repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"), "Wind");
-            repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"), "Solar");
+            //repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"), "Wind");
+            //repo.PPTCreate(fy, oneWeekAgo.ToString("dd/MM/yyyy"), datetimenow.ToString("dd/MM/yyyy"), "Solar");
             return Task.CompletedTask;
         }
 

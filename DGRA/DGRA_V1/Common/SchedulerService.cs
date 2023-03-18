@@ -32,15 +32,16 @@ namespace DGRA_V1.Common
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
+            API_ErrorLog("Schedulerstarted web at1   :- " + DateTime.Now);
             _timerNotification = new Timer(RunJob, null, TimeSpan.Zero,
-              TimeSpan.FromMinutes(10)); /*Set Interval time here*/
-            API_ErrorLog("Scheduler started at :- " + DateTime.Now);
+              TimeSpan.FromMinutes(1)); /*Set Interval time here*/
+            API_ErrorLog("Schedulerstarted web at2 :- " + DateTime.Now);
             return Task.CompletedTask;
         }
 
         private async void RunJob(object state)
         {
-
+            API_ErrorLog("Schedulerstarted web at 3:- " + DateTime.Now);
             using (var scrope = _serviceScopeFactory.CreateScope())
             {
                 try
@@ -70,33 +71,61 @@ namespace DGRA_V1.Common
                     string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
 
                     //if (DateTime.Now.ToString("HH:mm") == convertoTime.ToString("HH:mm") && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
-                    {
+                    //{
                         string hostName = MyConfig.GetValue<string>("Timer:hostName");
 
                         //move this to appsetting
                         //string hostName = "https://localhost:44378";
                         //string hostName = "https://cmms.herofutureenergies.com";
                         API_InformationLog("Inside if where time is  =" + convertoTime.ToString() + " hostName :" + hostName);
-                        var psi = new ProcessStartInfo
-                        {
-                            FileName = hostName + "/Home/WindWeeklyPRReports?" + DateTime.Now.ToString("yyyy/MM/dd"),
-                            //FileName = "https://cmms.herofutureenergies.com/Home/WindWeeklyPRReports?" + DateTime.Now.ToString("yyyy/MM/dd"),
+                    //var psi = new ProcessStartInfo
+                    //{
+                        //FileName = hostName + "/Home/WindWeeklyPPTReports",// + DateTime.Now.ToString("dd/MM/yyyy"),
+                    //    //FileName = "https://cmms.herofutureenergies.com/Home/WindWeeklyPRReports?" + DateTime.Now.ToString("yyyy/MM/dd"),
 
-                            UseShellExecute = true,
-                        };
+                       // UseShellExecute = true,
+
+                   // };
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = $"/c start \"\" /b \"{hostName + "/Home/WindWeeklyPPTReports"}\" & pause",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+                    Process.Start(psi);
+
+                    /*var psi = new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = $"/c start \"\" \"{hostName + "/Home/WindWeeklyPPTReports"}\"",
+                        UseShellExecute = true,
+                        CreateNoWindow = false,
+                    };*/
+                    Process.Start(psi);
+
+                    API_InformationLog("Url Web :" + hostName);
                         Process.Start(psi);
-                        API_InformationLog("FileName :" + Process.Start(psi));
+                        API_InformationLog("FileName Web :" + Process.Start(psi));
 
 
-                        var psiSolar = new ProcessStartInfo
-                        {
-                            FileName = hostName + "/Home/SolarWeeklyPRReports?" + DateTime.Now.ToString("yyyy/MM/dd"),
-                            //FileName = "https://cmms.herofutureenergies.com/Home/SolarWeeklyPRReports?" + DateTime.Now.ToString("yyyy/MM/dd"),
-                            UseShellExecute = true
-                        };
-                        Process.Start(psiSolar);
-                        API_InformationLog("FileName :" + Process.Start(psiSolar));
-                    }
+
+                    var psiSolar = new ProcessStartInfo
+                   {
+                    FileName = hostName + "/Home/SolarWeeklyPPTReports",//+ DateTime.Now.ToString("yyyy/MM/dd"),
+                    //FileName = "https://cmms.herofutureenergies.com/Home/SolarWeeklyPRReports?" + DateTime.Now.ToString("yyyy/MM/dd"),
+                    UseShellExecute = true
+                    };
+                    /*var psiSolar = new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = $"/c start \"\" \"{hostName + "/Home/SolarWeeklyPPTReports"}\"",
+                        UseShellExecute = true,
+                        CreateNoWindow = false,
+                    };*/
+                    Process.Start(psiSolar);
+                        API_InformationLog("FileName  Web:" + Process.Start(psiSolar));
+                    //}
                 }
 
                 catch (Exception ex)
