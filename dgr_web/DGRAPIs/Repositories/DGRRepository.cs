@@ -3138,7 +3138,8 @@ bd_remarks, action_taken
             return 1;
         }
         
-        internal async Task<int> PPTCreate(string fy, string startDate, string endDate, string type) //Email ppt rename fnc
+        //internal async Task<int> PPTCreate(string fy, string startDate, string endDate, string type) //Email ppt rename fnc
+        internal async Task<int> PPTCreate()
         {
             //string AppSetting_Key;
             API_InformationLog("PPTCreate function method called.");
@@ -3165,7 +3166,8 @@ bd_remarks, action_taken
             return 1;
         }
 
-        internal async Task<int> PPTCreate_Solar(string fy, string startDate, string endDate, string type)
+        //internal async Task<int> PPTCreate_Solar(string fy, string startDate, string endDate, string type)
+            internal async Task<int> PPTCreate_Solar()
         {
             //string AppSetting_Key;
 
