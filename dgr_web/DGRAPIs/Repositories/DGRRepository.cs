@@ -8632,8 +8632,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string title = "Wind Daily Report " + (dt.ToString("dd-MMM-yyyy"));
 
 
-
-            string tb = "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
+            string tb = "<h4 style='text-align: left;'>Hi Team,</h4><br>";
+            tb += "<h4 style='text-align: left;'>Please find below Performance summary for Wind projects - Dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</h4><br>";
+            tb += "<h4 style='text-align: left;'><b>Note :<b/></h4>";
+            tb += "<h4 style='text-align: left;'>1.Gen in Million units.</h4>";
+            tb += "<h4 style='text-align: left;'>2.Actual Gen is at JMR level.</h4>";
+          //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<br>";
             //tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; background-color:#f7f5f0'>";
             tb += "<table id = 'emailTable' class='table table-bordered table-striped' style='width: 100%; background-color: #f7f5f0; margin-left: auto; margin-right: auto;' border='1' cellspacing='0' cellpadding='0'>";
@@ -9085,8 +9089,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string lastDay = ltodate.ToString("yyyy-MM-dd");
             string title = "Solar Daily Report " + (dt.ToString("dd-MMM-yyyy"));
 
-
-            string tb = "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
+            string tb = "<h4 style='text-align: left;'>Hi Team,</h4><br>";
+            tb += "<h4 style='text-align: left;'>Please find below Performance summary for Solar projects - Dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</h4><br>";
+            tb += "<h4 style='text-align: left;'><b>Note :<b/></h4>";
+            tb += "<h4 style='text-align: left;'>1.Gen in Million units.</h4>";
+            tb += "<h4 style='text-align: left;'>2.Actual Gen is at JMR level.</h4><br>";
+         // tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; '  border='1' cellspacing='0' cellpadding='0'>";
             tb += "<thead class='tb-head'><tr>";
             tb += "<th rowspan='2'  style='width: 10%; background-color:#31576D' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D' >Total Target</th>";
@@ -9509,11 +9517,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             // private MailServiceBS mailService;
             MailRequest request = new MailRequest();
-           
+
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
 
-            // emails.Add("tanviik28@gmail.com");
+            //AddTo.Add("tanvikinjale28@gmail.com");
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
             request.Subject = reportTitle;
