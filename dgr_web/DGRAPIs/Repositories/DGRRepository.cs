@@ -3093,9 +3093,9 @@ bd_remarks, action_taken
             request.Body = Msg;
 
             //var file = "/Users/sanketkar/Downloads/WeeklyReport_2023-01-04.pptx";
-            var file = "C:\\Users\\sujit\\Downloads\\" + fname+".pptx";
+            //var file = "C:\\Users\\sujit\\Downloads\\" + fname+".pptx";
             //var file = "C:\\Users\\DGR\\Downloads\\" + fname+".pptx";
-            //var file = "C:\\inetpub\\wwwroot\\DGRA_Web\\pptupload\\" + fname + ".pptx";
+            var file = "C:\\inetpub\\wwwroot\\DGRA_Web\\pptupload\\" + fname + ".pptx";
             API_InformationLog("Reading file path:- " + file);
             try {
                 //using var stream = new MemoryStream(System.IO.File.ReadAllBytes(file).ToArray());
@@ -8334,8 +8334,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th colspan='10' class='text-center' style='background-color:#FFCA5A;'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
 
             tb += "<tr><th  style='background-color:#86C466;color:#ffffff'>Tar Gen</th>";
-            tb += "<th style='background-color:#86C466;color:#ffffff''>Act Gen</th>";
-            tb += "<th  style='background-color:#86C466;color:#ffffff''>Var (%)</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff'>Act Gen</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Tar Wind</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Act Wind</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
@@ -8344,27 +8344,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th  style='background-color:#86C466;color:#ffffff'>IGA</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>EGA</th>";
 
-            tb += "<th  style='background-color:#77CAE7;'>Tar Gen</th>";
-            tb += "<th style='background-color:#77CAE7;'>Act Gen</th>";
-            tb += "<th  style='background-color:#77CAE7;'>Var (%)</th>";
-            tb += "<th style='background-color:#77CAE7;'>Tar Wind</th>";
-            tb += "<th style='background-color:#77CAE7;'>Act Wind</th>";
-            tb += "<th style='background-color:#77CAE7;'>Var (%)</th>";
-            tb += "<th style='background-color:#77CAE7;'>PLF</th>";
-            tb += "<th style='background-color:#77CAE7;'>MA</th>";
-            tb += "<th style='background-color:#77CAE7;'>IGA</th>";
-            tb += "<th style='background-color:#77CAE7;'>EGA</th>";
+            tb += "<th  style='background-color:#77CAE7'>Tar Gen</th>";
+            tb += "<th style='background-color:#77CAE7'>Act Gen</th>";
+            tb += "<th  style='background-color:#77CAE7'>Var (%)</th>";
+            tb += "<th style='background-color:#77CAE7'>Tar Wind</th>";
+            tb += "<th style='background-color:#77CAE7'>Act Wind</th>";
+            tb += "<th style='background-color:#77CAE7'>Var (%)</th>";
+            tb += "<th style='background-color:#77CAE7'>PLF</th>";
+            tb += "<th style='background-color:#77CAE7'>MA</th>";
+            tb += "<th style='background-color:#77CAE7'>IGA</th>";
+            tb += "<th style='background-color:#77CAE7'>EGA</th>";
 
-            tb += "<th style='background-color:#FFCA5A;'>Tar Gen</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Act Gen</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Var (%)</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Tar Wind</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Act Wind</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Var (%)</th>";
-            tb += "<th style='background-color:#FFCA5A;'>PLF</th>";
-            tb += "<th style='background-color:#FFCA5A;'>MA</th>";
-            tb += "<th style='background-color:#FFCA5A;'>IGA</th>";
-            tb += "<th style='background-color:#FFCA5A;'>EGA</th>";
+            tb += "<th style='background-color:#FFCA5A'>Tar Gen</th>";
+            tb += "<th style='background-color:#FFCA5A'>Act Gen</th>";
+            tb += "<th style='background-color:#FFCA5A'>Var (%)</th>";
+            tb += "<th style='background-color:#FFCA5A'>Tar Wind</th>";
+            tb += "<th style='background-color:#FFCA5A'>Act Wind</th>";
+            tb += "<th style='background-color:#FFCA5A'>Var (%)</th>";
+            tb += "<th style='background-color:#FFCA5A'>PLF</th>";
+            tb += "<th style='background-color:#FFCA5A'>MA</th>";
+            tb += "<th style='background-color:#FFCA5A'>IGA</th>";
+            tb += "<th style='background-color:#FFCA5A'>EGA</th>";
             tb += "</tr></thead><tbody>";
 
 
@@ -8444,9 +8444,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             // List<WindPerformanceReports> data1 = new List<WindPerformanceReports>();
             monthlypr = await GetWindPerformanceReportSiteWise(fy, mfromDate, mtodate, site);
             lastdaypr = await GetWindPerformanceReportSiteWise(fy, lastDay, lastDay, site);
-            
+
             //var j = 0;
-            // var k = 0;
+           // var k = 0;
             for (int i = 0; i < yearlypr.Count; i++)
             {
                 tar_mu_yr = (yearlypr[i].tar_kwh_mu / 1000000);
@@ -8752,7 +8752,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             try
             {
-                //await MailDailySend(tb, title);
+                await MailDailySend(tb, title);
                 API_InformationLog("MailDailySend function called from repository for wind");
 
             }catch (Exception e)
@@ -9176,7 +9176,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             tb += "</table>";
 
-           //await MailDailySend(tb,title);
+           await MailDailySend(tb,title);
            // return res;
             return tb;
         }
@@ -9184,7 +9184,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         internal async Task<int> MailDailySend(string data ,string reportTitle)
         {
-            API_ErrorLog("Sending Eamil");
             //MAILING FUNCTIONALITY
             MailSettings _settings = new MailSettings();
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -9198,12 +9197,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
             //_settings.Port = 587;
             _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
-            API_ErrorLog("Sending Eamil-1");
 
+            
 
-            // string qry = "select useremail from login where Email_To = 1";
-            //List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-
+           // string qry = "select useremail from login where Email_To = 1";
+           //List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+           
             string Msg = "Weekly PR Report Generated";
             List<string> AddTo = new List<string>();
             List<string> AddCc = new List<string>();
@@ -9250,7 +9249,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            AddTo.Add("tanviik28@gmail.com");
+            //AddTo.Add("tanviik28@gmail.com");
 
             // emails.Add("tanviik28@gmail.com");
             request.ToEmail = AddTo;
@@ -9274,7 +9273,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 var res = await MailService.SendEmailAsync(request, _settings);
-                API_InformationLog("Send Email Async function called from repository : "+ res);
+                API_InformationLog("Send Email Async function called from repository");
             }
             catch (Exception e)
             {
