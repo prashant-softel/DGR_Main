@@ -2781,7 +2781,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
 
             string qry = "SELECT date, site ,bd_type_id, bd_type , bd_remarks ,icr , inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd  FROM uploading_file_breakdown_solar WHERE `bd_type_id` in (1,2) AND `total_bd` > '00:30:00'" + filter;
 
-            string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, count(icr) as icr_cnt, count(if(inv = 'Nil',NULL,inv)) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date; ";
+            string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, count(icr) as icr_cnt, count(if(inv = 'Nil',NULL,inv)) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date,site; ";
             //string qry = "Select date, site_name, SEC_TO_TIME(sum(TIME_TO_SEC(total_stop))) as total_stop,count(wtg_id) as wtg_cnt,wtg,bd_type,bd_type_id,error_description,action_taken from uploading_file_breakdown";
 
             List<SolarUploadingFileBreakDown>_bdData = new List<SolarUploadingFileBreakDown>();
@@ -6969,7 +6969,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             string qry = "SELECT date,site_name,bd_type_id, bd_type , error_description ,action_taken, wtg ,(HOUR(total_stop) + MINUTE(total_stop) / 60 + SECOND(total_stop) / 3600) as total_stop_num  FROM uploading_file_breakdown WHERE `bd_type_id` in (1,2) AND `total_stop` > '04:00:00'"+ filter ;
 
-            string qry2 = "SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, wtg , (HOUR(total_stop) + MINUTE(total_stop) / 60 + SECOND(total_stop) / 3600) as total_stop from uploading_file_breakdown where `total_stop` > '01:00:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date; ";
+            string qry2 = "SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, wtg , (HOUR(total_stop) + MINUTE(total_stop) / 60 + SECOND(total_stop) / 3600) as total_stop from uploading_file_breakdown where `total_stop` > '01:00:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date,site_name; ";
 
             List<WindUploadingFileBreakDown> _bdData = new List<WindUploadingFileBreakDown>();
              _bdData = await Context.GetData<WindUploadingFileBreakDown>(qry).ConfigureAwait(false);
