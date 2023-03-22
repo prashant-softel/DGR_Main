@@ -1317,38 +1317,104 @@
         const removedElement = ChartImages.splice(6, 1)[0];
 
 // Insert removed element between positions 12 and 13
-ChartImages.splice(11, 0, removedElement);
-const table1 = document.getElementById("example1");
-  table1.style.width = "150%";
-  const table2Width = document.getElementById("example2");
+        ChartImages.splice(11, 0, removedElement);
+        const table1 = document.getElementById("example1");
+        table1.style.width = "150%";
+        const table2Width = document.getElementById("example2");
         table2Width.style.width = "150%";
+
+        let temp = ChartImages[11]; // Store 11th element in temp variable
+        ChartImages[11] = ChartImages[8]; // Assign 11th element to 5th position
+        ChartImages[8] = temp; 
 
         ChartImages.forEach(function (currentValue, index, arr) {
       
          if(index==1){
-            pres.addSlide().addImage({
-                path: currentValue,
+             console.log(index)
+            //pres.addSlide().addImage({
+            //    path: currentValue,
+            //    x: "0%",
+            //    y: "0%",
+            //    w: "100%",
+            //    h: "23%",
+            //});
+         } else if(index == 2 ) {
+
+             pres.addSlide().addImage({
+                path: ChartImages[index-1],
                 x: "0%",
                 y: "0%",
                 w: "100%",
-                h: "40%",
+                h: "23%",
+            }).addImage({
+                path: ChartImages[index+1],
+                x: "0%",
+                y: "30%",
+                w: "30%",
+                h: "30%",
+            }).addImage({
+                path: ChartImages[index+2],
+                x: "33%",
+                y: "30%",
+                w: "30%",
+                h: "30%",
+            }).addImage({
+                path: ChartImages[index+3],
+                x: "66%",
+                y: "30%",
+                w: "30%",
+                h: "30%",
+            }).addImage({
+                path: ChartImages[index+4],
+                x: "0%",
+                y: "70%",
+                w: "30%",
+                h: "30%",
+            }).addImage({
+                path: ChartImages[index+5],
+                x: "33%",
+                y: "70%",
+                w: "30%",
+                h: "30%",
+            }).addImage({
+                path: ChartImages[index+6],
+                x: "63%",
+                y: "70%",
+                w: "30%",
+                h: "30%",
             });
-         } else if(index > 1 && index <8) {
-            pres.addSlide().addImage({
-                path: currentValue,
-                x: "20%",
-                y: "20%",
-                w: "65%",
-                h: "70%",
+            
+         }
+         else if(index > 2 && index <9 ){
+             console.log(index);
+         }
+         else if (index == 9) {
+              pres.addSlide().addImage({
+                path: ChartImages[index+1],
+                x: "0%",
+                y: "0%",
+                w: "100%",
+                h: "100%",
+            })
+
+         }
+         else if(index == 10){
+                         pres.addSlide().addImage({
+                 path: ChartImages[index+1],
+                 x: "0%",
+                 y: "0%",
+                 w: "100%",
+                 h: "50%",
+             }).addImage({
+                path: ChartImages[index-1],
+                x: "0%",
+                y: "50%",
+                w: "100%",
+                h: "50%",
             });
-         } else if (index == 9 || index == 10|| index == 11) {
-             pres.addSlide().addImage({
-                 path: currentValue,
-                 x: "20%",
-                 y: "20%",
-                 w: "65%",
-                 h: "70%",
-             });
+         }
+         else if(index > 10 && index <12 ){
+             console.log(index);
          }
          else if(index == ChartImages.length-2) {
                 pres.addSlide().addImage({
@@ -1356,7 +1422,7 @@ const table1 = document.getElementById("example1");
                 x: "0%",
                 y: "0%",
                 w: "100%",
-                h: "50%",
+                h: "60%",
             });
          }
          else{
