@@ -31,17 +31,17 @@ namespace DGRA_V1.Common
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
-        {
-            API_ErrorLog("Schedulerstarted web at1   :- " + DateTime.Now);
-            _timerNotification = new Timer(RunJob, null, TimeSpan.Zero,
-              TimeSpan.FromMinutes(1)); /*Set Interval time here*/
-            API_ErrorLog("Schedulerstarted web at2 :- " + DateTime.Now);
+        {   // sceduler not in use this scheduler used by windwos task sceduler 
+            //API_ErrorLog("Schedulerstarted web at1   :- " + DateTime.Now);
+           // _timerNotification = new Timer(RunJob, null, TimeSpan.Zero,   
+              //TimeSpan.FromMinutes(30)); /*Set Interval time here*/
+            //API_ErrorLog("Schedulerstarted web at2 :- " + DateTime.Now);
             return Task.CompletedTask;
         }
 
         private async void RunJob(object state)
         {
-            API_ErrorLog("Schedulerstarted web at 3:- " + DateTime.Now);
+            //API_ErrorLog("Schedulerstarted web at 3:- " + DateTime.Now);
             using (var scrope = _serviceScopeFactory.CreateScope())
             {
                 try
@@ -77,7 +77,7 @@ namespace DGRA_V1.Common
                         //move this to appsetting
                         //string hostName = "https://localhost:44378";
                         //string hostName = "https://cmms.herofutureenergies.com";
-                        API_InformationLog("Inside if where time is  =" + convertoTime.ToString() + " hostName :" + hostName);
+                        //API_InformationLog("Inside if where time is  =" + convertoTime.ToString() + " hostName :" + hostName);
                     //var psi = new ProcessStartInfo
                     //{
                         //FileName = hostName + "/Home/WindWeeklyPPTReports",// + DateTime.Now.ToString("dd/MM/yyyy"),
@@ -104,9 +104,9 @@ namespace DGRA_V1.Common
                     };*/
                     Process.Start(psi);
 
-                    API_InformationLog("Url Web :" + hostName);
+                    ////API_InformationLog("Url Web :" + hostName);
                         Process.Start(psi);
-                        API_InformationLog("FileName Web :" + Process.Start(psi));
+                        //API_InformationLog("FileName Web :" + Process.Start(psi));
 
 
 
@@ -124,7 +124,7 @@ namespace DGRA_V1.Common
                         CreateNoWindow = false,
                     };*/
                     Process.Start(psiSolar);
-                        API_InformationLog("FileName  Web:" + Process.Start(psiSolar));
+                        //API_InformationLog("FileName  Web:" + Process.Start(psiSolar));
                     //}
                 }
 

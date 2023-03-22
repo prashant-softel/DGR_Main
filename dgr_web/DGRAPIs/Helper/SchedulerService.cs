@@ -274,13 +274,27 @@ namespace DGRAPIs.Helper
 
         private void API_ErrorLog(string Message)
         {
+            try
+            {
+                System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Error**:" + Message + "\r\n");
+            }
+            catch (Exception e)
+            {
+            }
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Error**:" + Message + "\r\n");
+            
         }
         private void API_InformationLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
+            try
+            {
+                System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
+            }
+            catch (Exception e)
+            { 
+            }
+           
         }
     }
 }

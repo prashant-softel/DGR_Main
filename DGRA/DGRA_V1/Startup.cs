@@ -85,7 +85,7 @@ namespace DGRA_V1
                 options.IdleTimeout = TimeSpan.FromMinutes(60);
             });
             services.AddSingleton<IHostedService, SchedulerService>();
-            services.AddHostedService<SchedulerService>();
+            //services.AddHostedService<SchedulerService>();
 
             //require to invoke scheduler for Daily and Weekly reports
             services.AddHttpClient("MyHttpClient", client =>
