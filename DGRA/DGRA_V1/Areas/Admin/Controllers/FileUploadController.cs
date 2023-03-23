@@ -29,8 +29,11 @@ namespace DGRA_V1.Areas.admin.Controllers
     [AllowAnonymous]
     [ServiceFilter(typeof(SessionValidation))]
     [TypeFilter(typeof(SessionValidation))]
+
+
     public class FileUploadController : Controller
     {
+        
         ImportBatch objImportBatch = new ImportBatch();
         private IDapperRepository _idapperRepo;
         private IWebHostEnvironment env;

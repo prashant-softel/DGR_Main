@@ -785,6 +785,7 @@
         });
         if (values == "") {
             alert("Please select data");
+            a.style.display = "none";
             return false;
         }
         var approved_by ="@HttpContextAccessor.HttpContext.Session.GetString("userid")";

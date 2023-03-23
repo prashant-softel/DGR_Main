@@ -143,7 +143,7 @@
                 } else {
                     Login();
                 }
-                
+
             }
         }
 
@@ -153,15 +153,19 @@
                 a.type = "text";
             }
         }
+
         function MouseOver() {
             var a = document.getElementById("pass");
             if (a.type == "text") {
                 a.type = "password";
             }
         }
+
         function Login() {
             var username = document.getElementById("username").value;
             var password = document.getElementById("pass").value;
+            var device_id = getDeviceId();
+            console.log("device id from login function " + device_id);
             if (username == "" || password == "") {
                 document.getElementById("msg").style.display = 'block';
                 document.getElementById("msg").innerHTML = 'Please Enter Require Filed';
@@ -177,10 +181,11 @@
                 $("#aSSOLogin")[0].click();
             }
             else {
+
                 $.ajax({
 
                     type: "POST",
-                    url: '@Url.Action("Login", "Home")' + '?username=' + username + '&pass=' + password,
+                    url: '@Url.Action("Login", "Home")' + '?username=' + username + '&pass=' + password + '&device_id=' + device_id,
 
                     // url:"/Home/Login?username=" + username + "&pass=" + password,
                     contentType: "application/json; charset=utf-8",
@@ -192,7 +197,9 @@
                         //console.log(data[0]['status']);
                         if (result == 'Success') {
                             //return RedirectToAction("Dashbord", "Home");
+                            var temp = 12;
 
+                            //Haresh Uncomment this afterwards.
                             window.location.href = "@Url.Action("Dashbord", "Home")";//d"/DGRA_Web/Home/Dashbord"; //Remote server
                             //window.location.href = "/Home/Dashbord"; //Local
                         }
@@ -213,11 +220,13 @@
                 });
             }
         }
+
         $(document).ready(function () {
             setInterval(function () {
                 updateLoginDetails();
             }, 1000 * 60 * 2);
         });
+
 
 
         // updateLoginDetails();
@@ -253,8 +262,106 @@
             });
         }
 
+        window.onload = function () {
+            var deviceID = getDeviceId();
+            console.log("Your device ID is : " + deviceID + " OR " + getDeviceId());
+            //GetUserLoginFromDeviceId
+            GetUserLoginFromDeviceId(deviceID);
+        }
 
+        function GetUserLoginFromDeviceId(deviceID) {
+                $.ajax({
 
+                type: "POST",
+                url: '@Url.Action("GetUserLoginFromDeviceId", "Home")' + '?device_id=' + deviceID,
+
+                // url:"/Home/Login?username=" + username + "&pass=" + password,
+                contentType: "application/json; charset=utf-8",
+                //data: '{"username":"' + username + '","pass":"' + password + '"}',
+                dataType: "html",
+                success: function (result, status, xhr) {
+                    console.log("This is result after success " + result + typeof(result));
+                    var data = JSON.parse(result);
+                    console.log("Parsed data is " + data);
+                    //console.log("User Email is : " + result[0]['useremail'] + "Password is : " + result[0]['password']);
+                    console.log("User Email is : " + data.useremail + "Password is : " + data.password);
+                    var useremail = data.useremail;
+                    var password = data.password;
+
+                    if (result) {
+                        console.log("Inside onload function's if condition");
+                        LoginWithDeviceId(useremail, password, deviceID);
+                    }
+                    else {
+
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                    //$("#dataDiv").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+                }
+
+            });
+            }
+
+        function LoginWithDeviceId(username, password, device_id) {
+            //var device_id = getDeviceId();
+            //if (username.includes('@@herofutureenergies.com')) {
+            if (username.includes('@@kamaleshs48gmail.onmicrosoft.com')) {
+                $("#aSSOLogin")[0].click();
+            }
+            else {
+
+                $.ajax({
+
+                    type: "POST",
+                    url: '@Url.Action("Login", "Home")' + '?username=' + username + '&pass=' + password + '&device_id=' + device_id ,
+
+                    // url:"/Home/Login?username=" + username + "&pass=" + password,
+                    contentType: "application/json; charset=utf-8",
+                    //data: '{"username":"' + username + '","pass":"' + password + '"}',
+                    dataType: "html",
+                    success: function (result, status, xhr) {
+                        console.log("Result from LoginWithDeviceId function..." + result);
+                        //var data = JSON.parse(result);
+                        //console.log("User Email is : " + data[0]['useremail'] + "Password is : "+ data[0]['password']);
+                        if (result == 'Success') {
+                            //Haresh Uncomment this afterwards.
+                            window.location.href = "@Url.Action("Dashbord", "Home")";//d"/DGRA_Web/Home/Dashbord"; //Remote server
+                        }
+                        else {
+                            console.log(result);
+                            timerA = setInterval(function () {
+                                document.getElementById("msg").style.display = 'none';
+                                clearInterval(timerA);
+                            }, 5000);
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        //$("#dataDiv").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+                    }
+
+                });
+            }
+        }
+        $(document).ready(function () {
+            setInterval(function () {
+                updateLoginDetails();
+            }, 1000 * 60 * 2);
+        });
+
+        function getDeviceId() {
+            var userAgent = navigator.userAgent;
+            var hash = 0, i, chr;
+            for (i = 0; i < userAgent.length; i++) {
+                chr = userAgent.charCodeAt(i);
+                hash = ((hash << 5) - hash) + chr;
+                hash |= 0;
+            }
+            return hash.toString();
+        }
     </script>
 </body>
 </html >

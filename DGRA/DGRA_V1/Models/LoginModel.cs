@@ -17,6 +17,7 @@ namespace DGRA_V1.Models
         public DateTime last_accessed { get; set; }
         public int active_user { get; set; }
         public bool islogin { get; set; }
+        public int device_id { get; set; }
 
        
     }
