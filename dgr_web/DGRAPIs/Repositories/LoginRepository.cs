@@ -20,7 +20,7 @@ namespace DGRAPIs.Repositories
         //Login 
 
         //internal async Task<List<UserLogin>> GetUserLogin(string username, string password)
-        internal async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO)
+        internal async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO, int device_id)
         {
             string qry = "";
             /*//qry = "SELECT * FROM `login` where `username`='" + username + "' and `password` ='" + password + "' and `active_user` = 1 ;";
@@ -36,17 +36,56 @@ namespace DGRAPIs.Repositories
            */
             if (isSSO)
             {
-                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin FROM `login` where `useremail`='" + username + "'  and `active_user` = 1 ;";
+                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `useremail`='" + username + "'  and `active_user` = 1 ;";
                
             }
             else {
-                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin FROM `login` where `useremail`='" + username + "' and `password` = md5('" + password + "') and `active_user` = 1 ;";
+                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `useremail`='" + username + "' and (`password` = md5('" + password + "') or password = '"+ password +"') and `active_user` = 1 ;";
+                //qry = "SELECT login_id,username,useremail,user_role,islogin as islogin FROM `login` where `useremail`='" + username + "' and `password` = md5('" + password + "') and `active_user` = 1 ;";
+
+            }
+            try
+            {
+                var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                if (_UserLogin.Count > 0)
+                {
+                    string qry1 = "update login set last_accessed=NOW(),islogin=1, device_id = " + device_id + " where login_id=" + _UserLogin[0].login_id + ";";
+                    await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
+                }
+                return _UserLogin.FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                string msg = e.Message;
+                var _UserLogin1 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                return _UserLogin1.FirstOrDefault();
+            }
+            
+            
+
+        }
+
+        internal async Task<UserLogin> GetUserLoginFromDeviceId(int device_id)
+        {
+            string qry = "";
+            
+            {
+                //SELECT * FROM `login` where `device_id`=1494303526 AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute);
+                qry = "SELECT login_id, username, password, useremail,last_accessed, user_role, islogin as islogin, device_id FROM `login` where `device_id`=" + device_id + " AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute) ;";
             }
             var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
             if (_UserLogin.Count > 0)
             {
-                string qry1 = "update login set last_accessed=NOW(),islogin=1 where login_id=" + _UserLogin[0].login_id + ";";
-                await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
+                string qry1 = "update login set islogin= 0 WHERE login_id = " + _UserLogin[0].login_id + " ;";
+                try
+                {                    
+                    await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
+                    //await GetUserLogin(_UserLogin[0].useremail, _UserLogin[0].password, false);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                }
             }
             return _UserLogin.FirstOrDefault();
 
