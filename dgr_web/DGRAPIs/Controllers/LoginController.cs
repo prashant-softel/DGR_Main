@@ -23,17 +23,35 @@ namespace Login.Controllers
         [Route("UserLogin")]
         [HttpGet]
        // public async Task<IActionResult> UserLogin(string username, string password)
-        public async Task<IActionResult> UserLogin(string username, string password,bool isSSO)
+        public async Task<IActionResult> UserLogin(string username, string password,bool isSSO, int device_id)
         {
            try
             {
               
-                var data =await _loginBs.GetUserLogin(username, password, isSSO);
+                var data =await _loginBs.GetUserLogin(username, password, isSSO, device_id);
                 return Ok(data);
             }
             catch (Exception ex)
             {
                   
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("GetUserLoginFromDeviceId")]
+        [HttpGet]
+        // public async Task<IActionResult> UserLogin(string username, string password)
+        public async Task<IActionResult> GetUserLoginFromDeviceId(int device_id)
+        {
+            try
+            {
+
+                var data = await _loginBs.GetUserLoginFromDeviceId(device_id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
                 return BadRequest(ex.Message);
             }
         }

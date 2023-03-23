@@ -12,7 +12,9 @@ namespace DGRAPIs.BS
     {
         Task<int> eQry(string qry);
         //Task<List<UserLogin>> GetUserLogin(string username, string password);
-        Task<UserLogin> GetUserLogin(string username, string password,bool isSSO);
+        Task<UserLogin> GetUserLogin(string username, string password,bool isSSO, int device_id);
+        Task<UserLogin> GetUserLoginFromDeviceId(int device_id);
+
         Task<int> UpdateLoginStatus(int UserID);
         Task<int> DirectLogOut(int UserID);
         Task<int> WindUserRegistration(string fname, string useremail, string role, string userpass);
@@ -137,13 +139,29 @@ namespace DGRAPIs.BS
             }
         }
         //public async Task<List<UserLogin>> GetUserLogin(string username, string password)
-        public async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO)
+        public async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO, int device_id)
         {
             try
             {
                 using (var repos = new LoginRepository(getDB))
                 {
-                    return await repos.GetUserLogin(username, password, isSSO);
+                    return await repos.GetUserLogin(username, password, isSSO, device_id);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<UserLogin> GetUserLoginFromDeviceId(int device_id)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.GetUserLoginFromDeviceId(device_id);
 
                 }
             }

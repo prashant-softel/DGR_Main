@@ -164,7 +164,7 @@ namespace DGRA_V1.Controllers
             //return RedirectToAction("Index");
         }
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string username, string pass)
+        public async Task<IActionResult> Login(string username, string pass, int device_id)
         {
             string status = "";
             string line = "";
@@ -181,7 +181,7 @@ namespace DGRA_V1.Controllers
                 System.Collections.Generic.Dictionary<string, object>[] map = new System.Collections.Generic.Dictionary<string, object>[1];
                 try
                 {
-                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UserLogin?username=" + username + "&password=" + pass + "&isSSO=false";
+                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UserLogin?username=" + username + "&password=" + pass + "&isSSO=false&device_id=" + device_id ;
                     WebRequest request = WebRequest.Create(url);
                     using (WebResponse response = (HttpWebResponse)request.GetResponse()){
                         Stream receiveStream = response.GetResponseStream();
@@ -235,6 +235,32 @@ namespace DGRA_V1.Controllers
             // return Ok(model);
             //return RedirectToAction("Dashbord", "Home");
             return Content(line, "application/json");
+        }
+
+        public async Task<IActionResult> GetUserLoginFromDeviceId(int device_id)
+        {
+            LoginModel model = new LoginModel();
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/GetUserLoginFromDeviceId?device_id=" + device_id;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                        model = JsonConvert.DeserializeObject<LoginModel>(line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
         }
 
         public IActionResult UpdateLoginStatus(int userID)
