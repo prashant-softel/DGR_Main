@@ -6135,7 +6135,7 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   display: flex;
   -ms-flex-direction: column;
   flex-direction: column;
-  width: 120%;
+  width: 140%;
   pointer-events: auto;
   background-color: #fff;
   background-clip: padding-box;

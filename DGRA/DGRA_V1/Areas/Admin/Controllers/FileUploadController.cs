@@ -118,6 +118,9 @@ namespace DGRA_V1.Areas.admin.Controllers
         public async Task<string> ExcelDataReaderAndUpload(IFormFile file, string fileUploadType)
         {
             var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+            //var UserName = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserName"));
+            //m_ErrorLog.SetImportInformation("Username :" + UserName + " ,");
+
             for (int i = 0; i < usermodel.access_list.Count; i++)
             {
                 if (usermodel.access_list[i].page_type == 3 && usermodel.access_list[i].site_type == 1)
@@ -131,7 +134,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             //windSiteList = HttpContextAccessor.HttpContext.Session.GetString("UserAccess");
             siteUserRole = HttpContext.Session.GetString("role");
+            m_ErrorLog.SetImportInformation("Role :" + siteUserRole + " ,");
             DateTime today = DateTime.Now;
+            m_ErrorLog.SetImportInformation("Date & Time :" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ",");
+            m_ErrorLog.SetImportInformation("File Name :" + file.FileName + " ,");
+            m_ErrorLog.SetImportInformation("File Type :" + fileUploadType + " ,");
+
             // string csvFileName = env.ContentRootPath +@"\LogFile\"+ file.FileName + "_" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ".csv";
             string csvFileName = file.FileName + "_" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ".csv";
             importData[0] = fileUploadType;

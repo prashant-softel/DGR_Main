@@ -31,7 +31,8 @@ namespace DGRA_V1.Models
             {
                 Information,
                 Warning,
-                Error
+                Error,
+                ImportInformation
             }
             messageType m_messageType;
             string m_sMessage;
@@ -58,6 +59,9 @@ namespace DGRA_V1.Models
                         break;
                     case messageType.Error:
                         sMessage = "Error : " + sMessage;
+                        break;
+                    case messageType.ImportInformation:
+                        sMessage = " "+ sMessage;
                         break;
                 }
                 return sMessage;
@@ -102,7 +106,17 @@ namespace DGRA_V1.Models
                 messageArray.Add(objMessage);
             }
         }
-
+        //ImportInformation
+        public void SetImportInformation(string sMsg)
+        {
+            //Pushed or inserted at end of the collection
+            //m_Messages.Add(new CMessage(1, sMsg));
+            if (!(string.IsNullOrEmpty(sMsg)))
+            {
+                cMessage objMessage = new cMessage(cMessage.messageType.ImportInformation, sMsg);
+                messageArray.Add(objMessage);
+            }
+        }
         public void SetWarning(string sMsg)
         {
             //Pushed or inserted at end of the collection
