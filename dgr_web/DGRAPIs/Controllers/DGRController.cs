@@ -435,6 +435,23 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Route("SetReportTimes")]
+        [HttpGet]
+        public async Task<IActionResult> SetReportTimes(string dailyReportTime, string weeklyReportTime, string WeeklyReportDay)
+        {
+            try
+            {
+                var data = await _dgrBs.SetReportTimes(dailyReportTime, weeklyReportTime, WeeklyReportDay);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         #region get wind reports
 
         [Route("GetWindDailyGenSummaryReport1/{fromDate}/{toDate}/{country}/{state}/{spv}/{site}/{wtg}/{month}")]

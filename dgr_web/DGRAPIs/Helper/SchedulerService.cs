@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using DGRAPIs.Repositories;
 using System.Net;
 using System.IO;
+using System.Collections.Generic;
+using DGRAPIs.Controllers;
 
 namespace DGRAPIs.Helper
 {
@@ -19,6 +21,7 @@ namespace DGRAPIs.Helper
         public IConfiguration _iconfiguration;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _env;
+        private MYSQLDBHelper getDB => databaseProvider.SqlInstance();
 
         public SchedulerService(IServiceScopeFactory serviceScopeFactory, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IConfiguration iconfiguration)
         {
@@ -53,7 +56,7 @@ namespace DGRAPIs.Helper
         //}
 
 
-        private void RunJob(object state)
+        private async void RunJob(object state)
         {
 
             using (var scrope = _serviceScopeFactory.CreateScope())
@@ -69,9 +72,11 @@ namespace DGRAPIs.Helper
 
                     string msg = "Sechduler run at : " + DateTime.Now;
                     API_ErrorLog(msg);
-                    
-                    //MYSQLDBHelper db = new MYSQLDBHelper("temp");
-                    //var repo = new DGRRepository(db);
+                    var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                    string connectionstring = MyConfig.GetValue<string>("ConnectionStrings:Con");
+                    MYSQLDBHelper db = new MYSQLDBHelper(connectionstring);
+
+                    var repo = new DGRRepository(db);
                     //repo.MailSend("Calling this function  repo.EmailSolarReport(fy, '2023-03-01'   at " + DateTime.Now + "", " Test mail sechduler");
 
                     DateTime datetimenow = DateTime.Now;
@@ -90,11 +95,23 @@ namespace DGRAPIs.Helper
                         fy = datetimenow.AddYears(-1).Year.ToString() + "-" + datetimenow.Year.ToString().Substring(2, 2);
                     }
 
-                    var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                    string dailyTime = MyConfig.GetValue<string>("Timer:DailyReportTime");
-                    //daily mail
 
-                    msg = "Current Time : " + DateTime.Now;
+                    string dailyTime = MyConfig.GetValue<string>("Timer:DailyReportTime");
+                    string weeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
+                    string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
+                    
+                    List<EmailSchedulingTime> _Timers = new List<EmailSchedulingTime>();
+
+                    _Timers = await repo.getSchedulerTime();
+                    if (_Timers.Count > 0)
+                    {
+                        dailyTime = _Timers[0].dailyReportTime;
+                        weeklyTime = _Timers[0].weeklyReportTime;
+                        WeeklyReportDayOfWeek = _Timers[0].weeklyReportDay;
+                    }
+                     //daily mail
+
+                     msg = "Current Time : " + DateTime.Now;
                     API_InformationLog(msg);
 
                     msg = "Daily time Time : " + dailyTime;
@@ -158,8 +175,7 @@ namespace DGRAPIs.Helper
                     }
 
                     //Weekly report mail
-                    string weeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
-                    string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
+  
 
                     if (DateTime.Now.ToString("HH:mm") == weeklyTime)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
                     {
@@ -240,25 +256,25 @@ namespace DGRAPIs.Helper
 
         public void CallAPI (string apiUrl)
         {
-            Uri address = new Uri(apiUrl);
-            API_InformationLog("Api Url :"+ apiUrl);
-            // Create the web request
-            HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
+            //Uri address = new Uri(apiUrl);
+            //API_InformationLog("Api Url :"+ apiUrl);
+            //// Create the web request
+            //HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
 
-            // Set type to POST
-            request.Method = "GET";
-            request.ContentType = "text/xml";
+            //// Set type to POST
+            //request.Method = "GET";
+            //request.ContentType = "text/xml";
 
-            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-            {
-                // Get the response stream
-                StreamReader reader = new StreamReader(response.GetResponseStream());
+            //using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            //{
+            //    // Get the response stream
+            //    StreamReader reader = new StreamReader(response.GetResponseStream());
 
-                // Console application output
-                string strOutputXml = reader.ReadToEnd();
-                API_InformationLog(reader.ReadToEnd());
+            //    // Console application output
+            //    string strOutputXml = reader.ReadToEnd();
+            //    API_InformationLog(reader.ReadToEnd());
 
-            }
+            //}
         }
 
         public Task StopAsync(CancellationToken stoppingToken)
@@ -282,5 +298,6 @@ namespace DGRAPIs.Helper
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
         }
+
     }
 }

@@ -867,5 +867,43 @@ namespace DGRA_V1.Controllers
             TempData["notification"] = "";
             return View();
         }
+
+
+        public IActionResult SetReportTimes()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+       
+
+        public IActionResult UpdateReportTimes(string dailyReportTime, string weeklyReportTime, string WeeklyReportDay)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetReportTimes?dailyReportTime=" + dailyReportTime+ "&weeklyReportTime="+weeklyReportTime+ "&WeeklyReportDay="+WeeklyReportDay+"";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //TempData["notification"] = "Username and password invalid Please try again !";
+                string message = ex.Message;
+            }
+
+
+            return Content("success", "application/json");
+        }
+
     }
 }

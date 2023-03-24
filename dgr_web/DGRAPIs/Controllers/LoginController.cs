@@ -27,7 +27,8 @@ namespace Login.Controllers
         {
            try
             {
-              
+
+
                 var data =await _loginBs.GetUserLogin(username, password, isSSO);
                 return Ok(data);
             }

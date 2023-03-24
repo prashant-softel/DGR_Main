@@ -9294,6 +9294,28 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
         }
+
+        internal async Task<int> SetReportTimes(string dailyReportTime, string weeklyReportTime, string weeklyReportDay)
+        {
+            string updateQry = "";
+            int val = 0;
+            string updateValues = "";
+            updateQry = "update EmailSchedulingTime set dailyReportTime  = '"+ dailyReportTime + "',weeklyReportTime ='"+ weeklyReportTime + "', weeklyReportDay ='"+ weeklyReportDay + "'";
+            if (!(string.IsNullOrEmpty(updateQry)))
+            {
+                val = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+            }
+            return val;
+        }
+
+        internal async Task<List<EmailSchedulingTime>> getSchedulerTime()
+        {
+            string qry = "select * from EmailSchedulingTime";
+            List<EmailSchedulingTime> _Timers = new List<EmailSchedulingTime>();
+            _Timers = await Context.GetData<EmailSchedulingTime>(qry).ConfigureAwait(false);
+            return _Timers;
+        }
+
         internal class ViewerStatsFormat
         {
         }

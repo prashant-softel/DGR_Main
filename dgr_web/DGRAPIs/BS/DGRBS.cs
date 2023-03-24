@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DGRAPIs.Repositories;
 using DGRAPIs.Models;
+using System.Security.Policy;
 
 namespace DGRAPIs.BS
 {
@@ -160,6 +161,7 @@ namespace DGRAPIs.BS
         Task<int> DeleteWindSite(int siteid);
         Task<int> DeleteSolarSite(int siteid);
         Task<List<SolarOpertionalHead1>> GetTotalMWforDashbord(string w_site, string s_site);
+        Task<int> SetReportTimes(string dailyReportTime, string weeklyReportTime, string weeklyReportDay);
         //Task<WindOpertionalHead> GetOperationHeadData(string site);
     }
     public class DGRBS : IDGRBS
@@ -2232,6 +2234,23 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.EmailSolarReport(fy, fromDate, site);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> SetReportTimes(string dailyReportTime, string weeklyReportTime, string weeklyReportDay)
+        {
+
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.SetReportTimes(dailyReportTime, weeklyReportTime, weeklyReportDay);
 
                 }
             }

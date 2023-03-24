@@ -40,15 +40,26 @@ namespace DGRAPIs.Repositories
                
             }
             else {
-                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin FROM `login` where `useremail`='" + username + "' and `password` = md5('" + password + "') and `active_user` = 1 ;";
+                qry = "SELECT login_id,username,useremail,user_role FROM `login` where `useremail`='" + username + "' and `password` = md5('" + password + "') and `active_user` = 1 ;";
             }
-            var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-            if (_UserLogin.Count > 0)
+
+            try
             {
-                string qry1 = "update login set last_accessed=NOW(),islogin=1 where login_id=" + _UserLogin[0].login_id + ";";
-                await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
+                var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                return _UserLogin.FirstOrDefault();
             }
-            return _UserLogin.FirstOrDefault();
+            catch(Exception ex)
+            {
+                string at = ex.Message;
+                UserLogin a = new UserLogin();
+                return a;
+            }
+            //if (_UserLogin.Count > 0)
+            //{
+            //    string qry1 = "update login set last_accessed=NOW(),islogin=1 where login_id=" + _UserLogin[0].login_id + ";";
+            //    await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
+            //}
+
 
         }
         internal async Task<int> UpdateLoginStatus(int UserID)
