@@ -9637,7 +9637,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     tb += "<td style='padding:0.5rem; width:100%;'>" + data2[i].date.ToString("dd/MM/yyyy") + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + data2[i].site + "</td>";
 
-                    if (data2[i].icr_cnt != 0)
+                    if (!string.IsNullOrEmpty(data2[i].icr_cnt))//!string.IsNullOrEmpty(sites)
                     {
                         tb += "<td style='padding:0.5rem;'>" + data2[i].icr_cnt + "ICRs </td>";
                         tb += "<td style='padding:0.5rem;'>" + data2[i].inv_cnt + "INVs</td>";
