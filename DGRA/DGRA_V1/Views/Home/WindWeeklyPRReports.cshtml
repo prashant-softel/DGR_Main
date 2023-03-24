@@ -3636,7 +3636,7 @@ function GetWindMajorBreakdown() {
                                   tbl += '<td class="text-left">' + result[i].wtg + '</td>';
                                 }
                                 tbl += '<td class="text-left">' + result[i].bd_type +'</td>';
-                                tbl += '<td class="text-left">' + result[i].total_stop_num + '</td>';
+                                tbl += '<td class="text-left">' + result[i].total_stop_num.toFixed(2) + '</td>';
                                 tbl += '<td class="text-left">' + result[i].error_description + '</td>';
                                 tbl += '</tr>';
                             }                  
@@ -3665,14 +3665,14 @@ function GetWindMajorBreakdown() {
                     buttons: [
                         {
                             extend: 'excel',
-                            title: 'Wind Mejor Breakdown Reports',
+                            title: 'Wind Major Breakdown Reports',
                             exportOptions: {
                                 columns: ':visible'
                             }
                         },
                         {
                             extend: 'csv',
-                            title: 'Wind Mejor Breakdown Reports',
+                            title: 'Wind Major Breakdown Reports',
                             exportOptions: {
                                 columns: ':visible'
                             }

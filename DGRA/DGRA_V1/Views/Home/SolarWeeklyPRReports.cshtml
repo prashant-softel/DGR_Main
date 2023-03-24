@@ -2346,7 +2346,7 @@
                             tbl += '<td class="text-left">' + result[i].inv + '</td>';
                         }
                                 tbl += '<td class="text-left">' + result[i].bd_type + '</td>';
-                                tbl += '<td class="text-left">' + result[i].total_bd + '</td>';
+                                tbl += '<td class="text-left">' + result[i].total_bd.toFixed(2) + '</td>';
                                 tbl += '<td class="text-left">' + result[i].bd_remarks + '</td>';
                             }
                           
@@ -2374,14 +2374,14 @@
                     buttons: [
                         {
                             extend: 'excel',
-                            title: 'WTG Wise Monthly Generation Report',
+                            title: 'Solar Major Breakdown Reports',
                             exportOptions: {
                                 columns: ':visible'
                             }
                         },
                         {
                             extend: 'csv',
-                            title: 'WTG Wise Monthly Generation Report',
+                            title: 'Solar Major Breakdown Reports',
                             exportOptions: {
                                 columns: ':visible'
                             }
