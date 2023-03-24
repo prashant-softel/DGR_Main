@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Work\\PPTWORK\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
+    "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
   },
   "projects": {
-    "E:\\Work\\PPTWORK\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
+    "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Work\\PPTWORK\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "projectUniqueName": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
         "projectName": "DGRA_V1",
-        "projectPath": "E:\\Work\\PPTWORK\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
-        "packagesPath": "C:\\Users\\dell\\.nuget\\packages\\",
-        "outputPath": "E:\\Work\\PPTWORK\\DGR_Main\\DGRA\\DGRA_V1\\obj\\",
+        "projectPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
+        "outputPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -99,8 +103,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -112,7 +115,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "c:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     }

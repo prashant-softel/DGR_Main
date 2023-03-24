@@ -7208,19 +7208,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sujit\\.nuget\\packages\\": {}
+    "C:\\Users\\hp\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "G:\\solarproject\\Finalcode\\DGR_Main - Copy\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectUniqueName": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "projectName": "DGRAPIs",
-      "projectPath": "G:\\solarproject\\Finalcode\\DGR_Main - Copy\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
-      "packagesPath": "C:\\Users\\sujit\\.nuget\\packages\\",
-      "outputPath": "G:\\solarproject\\Finalcode\\DGR_Main - Copy\\dgr_web\\DGRAPIs\\obj\\",
+      "projectPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
+      "outputPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\sujit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -7301,7 +7306,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.412\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "c:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
       }
     }
   }

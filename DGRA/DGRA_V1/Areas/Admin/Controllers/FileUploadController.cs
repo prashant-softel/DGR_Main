@@ -1,5 +1,4 @@
-﻿
-using DGRA_V1.Common;
+﻿using DGRA_V1.Common;
 using DGRA_V1.Models;
 using DGRA_V1.Repository.Interface;
 using Microsoft.AspNetCore.Hosting;
@@ -63,9 +62,15 @@ namespace DGRA_V1.Areas.admin.Controllers
         List<int> solarSiteUserAccess = new List<int>();
         List<string> fileSheets = new List<string>();
         List<string> inverterList = new List<string>();
+        List<string> IGBD = new List<string>();
+        List<string> SMBList = new List<string>();
+        List<string> StringsList = new List<string>();
+
+
         ErrorLog m_ErrorLog;
 
         Hashtable equipmentId = new Hashtable();
+        
         Hashtable maxkWhMap_wind = new Hashtable();
         Hashtable breakdownType = new Hashtable();//(B)Gets bdTypeID from bdTypeName: BDType table
         Hashtable siteNameId = new Hashtable(); //(C)Gets siteId from siteName
@@ -1173,17 +1178,31 @@ namespace DGRA_V1.Areas.admin.Controllers
                         objImportBatch.importSiteId = addUnit.site_id;
                         //can be nil:
                         addUnit.ext_int_bd = string.IsNullOrEmpty((string)dr["Ext_BD"]) ? "Nil" : Convert.ToString(dr["Ext_BD"]);
+                        
                         //can be nil:
+                        //addUnit.wtg_id = equipmentId.ContainsKey(addUnit.wtg) ? Convert.ToInt32(equipmentId[addUnit.wtg]) : 0;
                         addUnit.igbd = string.IsNullOrEmpty((string)dr["IGBD"]) ? "Nil" : Convert.ToString(dr["IGBD"]);
+                        if (addUnit.igbd != "Nil")
+                        {
+                            errorFlag.Add(solarIGBDValidation((string)dr["IGBD"], "IGBD", rowNumber));
+                        }
+
                         //can be nil:
                         addUnit.icr = string.IsNullOrEmpty((string)dr["ICR"]) ? "Nil" : Convert.ToString(dr["ICR"]);
                         //can be nil:
                         addUnit.inv = string.IsNullOrEmpty((string)dr["INV"]) ? "Nil" : Convert.ToString(dr["INV"]);
                         //can be nil:
                         addUnit.smb = string.IsNullOrEmpty((string)dr["SMB"]) ? "Nil" : Convert.ToString(dr["SMB"]);
+                        if (addUnit.smb != "Nil")
+                        {
+                            errorFlag.Add(solarSMBValidation((string)dr["SMB"], "SMB", rowNumber));
+                        }
                         //can be nil:
                         addUnit.strings = dr["Strings"] is DBNull || string.IsNullOrEmpty((string)dr["Strings"]) ? "Nil" : Convert.ToString(dr["Strings"]);
-
+                        if (addUnit.strings != "Nil")
+                        {
+                            errorFlag.Add(solarStringsValidation((string)dr["Strings"], "Strings", rowNumber));
+                        }
                         //from_bd and to_bd conversion for validation
                         addUnit.from_bd = dr["From"] is DBNull || string.IsNullOrEmpty((string)dr["From"]) ? "Nil" : Convert.ToDateTime(dr["From"]).ToString("HH:mm:ss");
                         errorFlag.Add(timeValidation(addUnit.from_bd, "From", rowNumber));
@@ -3376,9 +3395,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                 dTable = JsonConvert.DeserializeObject<DataTable>(result);
             }
             inverterList.Clear();
+            IGBD.Clear();
+            SMBList.Clear();
+            StringsList.Clear();
             foreach (DataRow dr in dTable.Rows)
             {
                 inverterList.Add((string)dr["icr_inv"]);
+                IGBD.Add((string)dr["ig"]);
+                SMBList.Add((string)dr["smb"]);
+                StringsList.Add((string)dr["strings"]);
             }
         }
         public void masterHashtable_SiteIdToSiteName()
@@ -3619,10 +3644,14 @@ namespace DGRA_V1.Areas.admin.Controllers
 
         private void ErrorLog(string Message)
         {
-            System.IO.File.AppendAllText(@"C:\LogFile\test.txt", Message);
+            System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "***Validaion ERROR***" + Message);
         }
-        //Validation Functions
+        private void InformationLog(string Message)
+        {
+            System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "*Validaion Information*" + Message);
+        }
 
+        //Validation Functions
         public bool uniqueRecordCheckWtgWise(string value, string columnName, long rowNo, Hashtable equipmentList)
         {
             bool retValue = false;
@@ -3632,7 +3661,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retValue;
         }
-
         public bool uniqueRecordCheckSolarLocationMaster(SolarLocationMaster currentRecord, List<SolarLocationMaster> recordSet, long rowNo)
         {
             bool retVal = false;
@@ -3646,7 +3674,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retVal;
         }
-
         public bool uniqueRecordCheckSolarPerMonthYear_JMR(SolarMonthlyJMR thisRecord, List<SolarMonthlyJMR> tableData, long rowNo)
         {
             bool retValue = false;
@@ -3659,7 +3686,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retValue;
         }
-
         public bool uniqueRecordCheckSolarPerMonthYear_LineLoss(SolarMonthlyUploadingLineLosses thisRecord, List<SolarMonthlyUploadingLineLosses> tableData, long rowNo)
         {
             bool retValue = false;
@@ -3673,7 +3699,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             return retValue;
             //SetInformation instead of error : 
         }
-
         public bool uniqueRecordCheckSolarPerMonthYear_KPI(SolarMonthlyTargetKPI thisRecord, List<SolarMonthlyTargetKPI> tableData, long rowNo)
         {
             bool retValue = false;
@@ -3700,7 +3725,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retVal;
         }
-
         public bool uniqueRecordCheckSolarSiteMaster(SolarSiteMaster currentRecord, List<SolarSiteMaster> recordSet, long rowNo)
         {
             bool retVal = false;
@@ -3726,8 +3750,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retVal;
         }
-
-
         public bool uniformDateValidation(string date, int siteId, dynamic recordSet)
         {
             bool retVal = false;
@@ -3978,7 +4000,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             return retVal;
 
         }
-
         public bool stringNullValidation(string value, string columnName, long rowNo)
         {
             bool retVal = false;
@@ -4078,6 +4099,36 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retValue;
         }
+        public bool solarIGBDValidation(string IGBD_value, string columnName, long rowNo)
+        {
+            bool retValue = false;
+            if (string.IsNullOrEmpty(IGBD_value) || !(inverterList.Contains(IGBD_value)))
+            {
+                retValue = true;
+                m_ErrorLog.SetError(",File row<" + rowNo + "> column<" + columnName + ">: Invalid IGBD value <" + IGBD_value + "> not found in master records,");
+            }
+            return retValue;
+        }
+        public bool solarSMBValidation(string SMB_value, string columnName, long rowNo)
+        {
+            bool retValue = false;
+            if (string.IsNullOrEmpty(SMB_value) || !(inverterList.Contains(SMB_value)))
+            {
+                retValue = true;
+                m_ErrorLog.SetError(",File row<" + rowNo + "> column<" + columnName + ">: Invalid SMB value <" + SMB_value + "> not found in master records,");
+            }
+            return retValue;
+        }
+        public bool solarStringsValidation(string Strings_value, string columnName, long rowNo)
+        {
+            bool retValue = false;
+            if (string.IsNullOrEmpty(Strings_value) || !(inverterList.Contains(Strings_value)))
+            {
+                retValue = true;
+                m_ErrorLog.SetError(",File row<" + rowNo + "> column<" + columnName + ">: Invalid String value <" + Strings_value + "> not found in master records,");
+            }
+            return retValue;
+        }
         public bool countryValidation(string countryValue, string columnName, long rowNo)
         {
             bool retVal = false;
@@ -4088,7 +4139,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retVal;
         }
-		
         bool validateNumeric(string val, string columnName, long rowNo, bool dbNullError, int logErrorFlag, out double importValue)
         {
             bool retValue = false;
@@ -4145,7 +4195,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retValue;
         }
-
         bool validateNumeric(string val, out double importValue)
         {
             bool retValue = false;
@@ -4172,7 +4221,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retValue;
         }
-
         public bool kwhValidation(double kwhValue, double prodHrsValue, string columnName, long rowNo, double kwhMax)
         {
             bool retVal = false;
@@ -4209,7 +4257,6 @@ namespace DGRA_V1.Areas.admin.Controllers
             return retVal;
 
         }
-
         public string Filter(long rowNumber, string colName, string str, List<char> charsToRemove)
         {
             foreach (char c in charsToRemove)
@@ -4227,8 +4274,5 @@ namespace DGRA_V1.Areas.admin.Controllers
             retValue = Filter(rowNumber, colName, sActionTaken, charsToRemove);
             return retValue;
         }
-
-
-
     }
 }
