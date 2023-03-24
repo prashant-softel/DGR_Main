@@ -2779,9 +2779,9 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             filter2 = " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
 
-            string qry = "SELECT date, site ,bd_type_id, bd_type , bd_remarks ,icr , inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd  FROM uploading_file_breakdown_solar WHERE `bd_type_id` in (1,2) AND `total_bd` > '00:30:00'and (((inv='Nil'and smb='Nil' and strings='Nil')) OR (( smb='Nil' or strings='Nil')))" + filter;
+            string qry = "SELECT date, site ,bd_type_id, bd_type , bd_remarks ,icr , inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd  FROM uploading_file_breakdown_solar WHERE `bd_type_id` in (1,2) AND `total_bd` > '00:30:00'and (((inv='Nil'and smb='Nil' and strings='Nil')) OR (( smb='Nil' and strings='Nil')))" + filter;
 
-            string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, if(count(if(icr = 'Nil',NULL,icr)) = 0 ,'All ',count(if(icr = 'Nil',NULL,icr))) as icr_cnt, if(count(if(inv = 'Nil',NULL,inv)) = 0 ,'All ',count(if(inv = 'Nil',NULL,inv))) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00'and NOT bd_type_id in (1, 2) and(( (inv ='Nil'and smb ='Nil' and strings ='Nil')) OR (( smb='Nil' or strings='Nil'))))as custom where" + filter2 + " GROUP BY bd_type_id, date, site ;";
+            string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, if(count(if(icr = 'Nil',NULL,icr)) = 0 ,'All',count(if(icr = 'Nil',NULL,icr))) as icr_cnt, if(count(if(inv = 'Nil',NULL,inv)) = 0 ,'All',count(if(inv = 'Nil',NULL,inv))) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00'and NOT bd_type_id in (1, 2) and(( (inv ='Nil'and smb ='Nil' and strings ='Nil')) OR (( smb='Nil' and strings='Nil'))))as custom where" + filter2 + " GROUP BY bd_type_id, date, site ;";
             
             //string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, count(icr) as icr_cnt, count(if(inv = 'Nil',NULL,inv)) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date; ";
             //string qry = "Select date, site_name, SEC_TO_TIME(sum(TIME_TO_SEC(total_stop))) as total_stop,count(wtg_id) as wtg_cnt,wtg,bd_type,bd_type_id,error_description,action_taken from uploading_file_breakdown";
@@ -8765,20 +8765,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string mtodate = ltodate.ToString("yyyy-MM-dd");
             string yfromDate = lastYear.ToString("yyyy-MM") + "-01";
             string ytodate = ltodate.ToString("yyyy-MM-dd");
-            string title = "Solar Daily Report " + (ltodate.ToString("dd-MMM-yyyy"));
+            string title = "Wind Daily Report " + (ltodate.ToString("dd-MMM-yyyy"));
 
-            string tb = "<h5 style='text-align: left;'>Hi Team,</h5><br>";
-            tb += "<h5 style='text-align: left;'>Please find attached file and below daily performance summary for Wind projects dated" + (ltodate.ToString("dd-MMM-yyyy")) + ".</h5><br>";
+            string tb = "<h5 style='text-align: left;'>Hi Team,</h5>";
+            tb += "<h5 style='text-align: left;'>Please find  below daily performance summary for Wind projects dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</h5>";
             tb += "<h5 style='text-align: left;'><b>Note :<b/></h5>";
-            tb += "<h5 style='text-align: left;'>1.Gen in Million units.</h5>";
-            tb += "<h5 style='text-align: left;'>2.Actual Gen is at JMR level.</h5>";
-             tb += "<br>";
-            tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
+            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;1.Gen in Million units.</h5>";
+            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;2.Actual Gen is at JMR level.</h5>";
             tb += "<br>";
+          //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             //tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; background-color:#f7f5f0'>";
-            tb += "<table id = 'emailTable' class='table table-bordered table-striped' style='width: 100%; background-color: #f7f5f0; border='1' >";
+            tb += "<table id = 'emailTable' class='table table-bordered table-striped' style='width: 100%;' border='1' >";
             tb += "<thead class='tb-head'><tr>";
-            tb += "<th rowspan='2'  style='width:8%; background-color:#31576D;color:#ffffff' >Site</th><th  rowspan='2'  style='width: 5%; background-color:#31576D;color:#ffffff'>Capacity (MW)</th><th rowspan='2' style='width: 5%; background-color:#31576D;color:#ffffff' >Total Target</th>";
+            tb += "<th rowspan='2'  style='width:10%; background-color:#31576D;color:#ffffff' >Site</th><th  rowspan='2'  style='width: 5%; background-color:#31576D;color:#ffffff' >Capacity (MW)</th><th rowspan='2' style='width: 5%; background-color:#31576D;color:#ffffff' >Total Tar</th>";
             tb += "<th colspan='10' class='text-center' style='background-color:#86C466;color:#ffffff'>YTD</th>";
 
             tb += "<th colspan='10' class='text-center' style='background-color:#77CAE7;'>MTD</th>";
@@ -8888,6 +8887,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double avg_act_iga_ld = 0;
             double avg_act_ega_ld = 0;
 
+            double target_yr = 0;
+            double total_target_yr = 0;
+
 
 
 
@@ -8896,6 +8898,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             // List<WindPerformanceReports> data1 = new List<WindPerformanceReports>();
             monthlypr = await GetWindPerformanceReportSiteWise(fy, mfromDate, mtodate, site);
             lastdaypr = await GetWindPerformanceReportSiteWise(fy, lastDay, lastDay, site);
+
+            string qry = "SELECT SUM(kwh/1000000) as tar_kwh, site FROM `daily_target_kpi` where date >= '"+ yfromDate +"' and date <='"+ ytodate +"' group by site_id;";
+            List<WindPerformanceReports> tarData= new List<WindPerformanceReports>();
+            tarData = await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
+
 
             //var j = 0;
            // var k = 0;
@@ -8912,9 +8919,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 total_capActMa_yr += yearlypr[i].act_ma * yearlypr[i].total_mw;
                 total_capActIga_yr += yearlypr[i].act_iga * yearlypr[i].total_mw;
                 total_capActEga_yr += yearlypr[i].act_ega * yearlypr[i].total_mw;
+                // total_target_yr += yearlypr[i].tar_kwh;
 
-               
-
+                foreach (WindPerformanceReports tar in tarData)
+                {
+                    if (yearlypr[i].site == tar.site )
+                    {
+                        yearlypr[i].tar_kwh = tar.tar_kwh;
+                        break;
+                    }
+                }
+                total_target_yr += yearlypr[i].tar_kwh;
 
                 tb += "<tr>";
                
@@ -8931,7 +8946,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
               
                 tb += "<td style='padding:0.5rem; text-align:left'>" + yearlypr[i].site + "</td>";
                 tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].total_mw, 2) + "</td>";
-                tb += "<td style='padding:0.5rem;'>" + Math.Round(tar_mu_yr, 2) + "</td>";
+                tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].tar_kwh, 2) + "</td>";
                 
                 tb += "<td style='padding:0.5rem;'>" + Math.Round(tar_mu_yr, 2) + "</td>";
                 tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_jmr_kwh_mu, 2) + "</td>";
@@ -9116,7 +9131,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "</tbody><tfoot style='font-size: 10px;text-align:center'><tr>";
             tb += "<td style='padding:0.5rem; text-align:left'><b>Grand Total</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_capacity_yr, 2) + "</b></td>";
-            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_mu_yr, 2) + "</b></td>";
+            tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_target_yr, 2) + "</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_mu_yr, 2) + "</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_jmr_kwh_mu_yr, 2) + "</b></td>";
             tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_jmr_var_yr, 2) + "</b></td>";
@@ -9154,10 +9169,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            //return tb;
             List<WindUploadingFileBreakDown> data2 = new List<WindUploadingFileBreakDown>();
 
-                data2 = await GetWindMajorBreakdown(lastDay, fromDate, site);
+                data2 = await GetWindMajorBreakdown(lastDay, lastDay, site);
                
                 tb += "<br>";
-                tb += "<h2><b>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</b></h2>";
+                tb += "<h3><b>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</b></h3>";
                 tb += "<br>";
                 tb += "<table id='emailTable2'  class='table table-bordered table-striped' style='width:80%;'  border='1' cellspacing='0' cellpadding='0'>";
                 tb += "<thead class='tbl-head' style=' background-color:#31576D;' rowspan='2'><tr>";
@@ -9201,6 +9216,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             }
             tb += "</tbody></table>";
+            tb += "</br>";
 
             try
             {
@@ -9237,51 +9253,52 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string title = "Solar Daily Report " + (ltodate.ToString("dd-MMM-yyyy"));
 
 
-            string tb = "<h5 style='text-align: left;'>Hi Team,</h5><br>";
-            tb += "<h5 style='text-align: left;'>Please find attached file and below daily performance summary for Solar projects dated" + (ltodate.ToString("dd-MMM-yyyy")) + ".</h5><br>";
+            string tb = "<h5 style='text-align: left;'>Hi Team,</h5>";
+            tb += "<h5 style='text-align: left;'>Please find  below daily performance summary for Solar projects dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</h5>";
             tb += "<h5 style='text-align: left;'><b>Note :<b/></h5>";
-            tb += "<h5style='text-align: left;'>1.Target & Actual Gen. at Plant metering level.</h5>";          
+            //tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;1.Target & Actual Gen. at Plant metering level. </h5>";
+            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;1.Gen in Million units.</h5>";
+            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;2.Actual Gen is at JMR level.</h5>";
             tb += "<br>";
-            tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
-            tb += "<br>";
+          //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; '  border='1'>";
             tb += "<thead class='tb-head'><tr>";
-            tb += "<th rowspan='2'  style='width: 10%; background-color:#31576D;color:#ffffff' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D;color:#ffffff'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D;color:#ffffff' >Total Target</th>";
+            tb += "<th rowspan='2'  style='width: 9%; background-color:#31576D;color:#ffffff' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D; color:#ffffff'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D;color:#ffffff' >Total Tar</th>";
             tb += "<th colspan='10' class='text-center' style='background-color:#86C466;color:#ffffff'>YTD</th>";
             tb += "<th colspan='10' class='text-center' style='background-color:#77CAE7;'>MTD</th>";
             tb += "<th colspan='13' class='text-center' style='background-color:#FFCA5A;'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
-            tb += "<tr><th  style='background-color:#86C466;color:#ffffff' >Target Gen</th>";
-            tb += "<th style='background-color:#86C466;color:#ffffff'>Actual Gen</th>";
+            tb += "<tr><th  style='background-color:#86C466;color:#ffffff' >Tar Gen</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff'>Act Gen</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>MA (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>IGA (%)</th>";
-            tb += "<th style='background-color:#86C466;color:#ffffff'>EGA(%)</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff'>EGA (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>PLF (%)</th>";
-            tb += "<th  style='background-color:#86C466;color:#ffffff'>Target PR(%)</th>";
-            tb += "<th style='background-color:#86C466;color:#ffffff'>Plant PR (%)</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Tar PR (%)</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff'>Act PR (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
-            tb += "<th  style='background-color:#77CAE7;'>Target Gen</th>";
-            tb += "<th style='background-color:#77CAE7;'>Actual Gen</th>";
+            tb += "<th  style='background-color:#77CAE7;'>Tar Gen</th>";
+            tb += "<th style='background-color:#77CAE7;'>Act Gen</th>";
             tb += "<th  style='background-color:#77CAE7;'>Var (%)</th>";          
             tb += "<th style='background-color:#77CAE7;'>MA (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>IGA (%)</th>";
-            tb += "<th style='background-color:#77CAE7;'>EGA(%)</th>";
+            tb += "<th style='background-color:#77CAE7;'>EGA (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>PLF (%)</th>";
-            tb += "<th  style='background-color:#77CAE7;'>Target PR(%)</th>";
-            tb += "<th style='background-color:#77CAE7;'>Plant PR (%)</th>";
+            tb += "<th  style='background-color:#77CAE7;'>Tar PR (%)</th>";
+            tb += "<th style='background-color:#77CAE7;'>Act PR (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>Var (%)</th>";
-            tb += "<th  style='background-color:#FFCA5A;'>Target Gen (MU)</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Actual Gen (MU)</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Tar Gen (MU)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>Act Gen (MU)</th>";
             tb += "<th  style='background-color:#FFCA5A;'>Var (%)</th>";
-            tb += "<th  style='background-color:#FFCA5A;'>Target IR</th>";
-            tb += "<th  style='background-color:#FFCA5A;'>Actual IR</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Tar IR</th>";
+            tb += "<th  style='background-color:#FFCA5A;'>Act IR</th>";
             tb += "<th  style='background-color:#FFCA5A;'>Var (%)</th>";
             tb += "<th  style='background-color:#FFCA5A;'>PA (%)</th>";          
             tb += "<th style='background-color:#FFCA5A;'>IGA (%)</th>";
             tb += "<th style='background-color:#FFCA5A;'>EGA (%)</th>";
             tb += "<th style='background-color:#FFCA5A;'>CUF_AC (%)</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Target PR (%)</th>";
-            tb += "<th style='background-color:#FFCA5A;'>Plant PR (%)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>Tar PR (%)</th>";
+            tb += "<th style='background-color:#FFCA5A;'>Act PR (%)</th>";
             tb += "<th style='background-color:#FFCA5A;'>Var (%)</th>";
             // tb += "</tr></thead><tbody><tr>";
             tb += "</tr></thead><tbody  style='font-size: 10px;text-align:center'><tr>";
@@ -9688,7 +9705,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 //ta2 = await GetSolarMajorBreakdownData(fromDate, fromDate, site);
-                data2 = await GetSolarMajorBreakdownData(lastDay,fromDate, site);
+                data2 = await GetSolarMajorBreakdownData(lastDay,lastDay, site);
 
                 API_InformationLog("EmailSolarReport function received data from GetSolarMajorBreakdownData function in data2 list");
             }catch (Exception e)
@@ -9699,10 +9716,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             tb += "<br>";
             //tb += "<h2><b>Major Breakdown dated " + dt.ToString("dd-MMM-yyyy") + "</b></h2>";
-            tb += "<h2><b>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</b></h2>";
-
-            tb += "<br>";
-            tb += "<table id='emailTable2' rowspan='2' class='table table-bordered table-striped' style='width: 100%; '  border='1' cellspacing='0' cellpadding='0'>";
+            tb += "<h3><b>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</b></h3>";
+            tb += "</n>";
+            tb += "<table id='emailTable2' rowspan='2' class='table table-bordered table-striped' style='width: 80%; '  border='1' cellspacing='0' cellpadding='0'>";
             tb += "<thead style='background-color:#31576D ;'><tr>";
             tb += "<th style='padding:0.5rem;color:#ffffff'>Date</th>";
             tb += "<th style='padding:0.5rem;color:#ffffff'>Site</th>";
@@ -9720,13 +9736,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
 
                     tb += "<tr>";
-                    tb += "<td style='padding:0.5rem; width:100%;'>" + data2[i].date.ToString("dd/MM/yyyy") + "</td>";
+                    tb += "<td style='padding:0.5rem; width:10%;'>" + data2[i].date.ToString("dd/MM/yyyy") + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + data2[i].site + "</td>";
 
                     if (!string.IsNullOrEmpty(data2[i].icr_cnt))//!string.IsNullOrEmpty(sites)
                     {
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].icr_cnt + "ICRs </td>";
-                        tb += "<td style='padding:0.5rem;'>" + data2[i].inv_cnt + "INVs</td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].icr_cnt + " ICRs </td>";
+                        tb += "<td style='padding:0.5rem;'>" + data2[i].inv_cnt + " INVs</td>";
                     }
                     else
                     {
@@ -9747,6 +9763,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             }
             tb += "</table>";
+
             API_InformationLog("MailDailySend before function call from repository for solar");
 
             await MailDailySend(tb,title);
