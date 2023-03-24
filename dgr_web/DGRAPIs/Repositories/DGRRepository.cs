@@ -7570,6 +7570,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName)
         {
+            DateTime thisTime = new DateTime();
+            thisTime = DateTime.Now;
+            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called.. Code Line No. 7573");
             string filter = "date >= '" + fromDate + "'  and date<= '" + toDate + "' and site_id=" + site;
 
             bool response = false;
@@ -7614,6 +7617,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             try
             {
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called, inside first try.. Code Line No. 7617 ");
+
                 if (string.IsNullOrEmpty(site) || site == "All")
                 {
                     throw new Exception("Invalid site " + site);
@@ -7630,8 +7635,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //string qrySiteFormulas = "SELECT * FROM `wind_site_formulas` where site_id = '" + site_id + "' and site_type ='Solar'";
                 string qrySiteFormulas = "SELECT * FROM `wind_site_formulas` where  site_type ='Solar'";
                 List<SiteFormulas> _SiteFormulas = await Context.GetData<SiteFormulas>(qrySiteFormulas).ConfigureAwait(false);
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function, retrived site formulas in _SiteFormulas list.. Code Line No. 7635");
+                int index = 0;
                 foreach (SiteFormulas SiteFormula in _SiteFormulas)
                 {
+                    
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of siteformulas.. Code Line No. 7639 Iteration/Count :" + index + " / " + _SiteFormulas.Count  );
+                    index++;
+
                     MA_Actual_Formula = SiteFormula.MA_Actual; //(string)reader["MA_Actual"];
                     MA_Contractual_Formula = SiteFormula.MA_Contractual; // (string)reader["MA_Contractual"];
                     IGA_Formula = SiteFormula.IGA; // (string)reader["IGA"];
@@ -7643,6 +7654,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 //get all power devices
                 List<SolarLocationMaster_Calc> _SolarLocationMaster_Calc = await Context.GetData<SolarLocationMaster_Calc>(qryAllDevices).ConfigureAwait(false);
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after getting data in solarLocationMaster_calc list.. Code Line No. 7652");
+
                 //pending : Get GHI and POA
                 double avg_POA = 0;
                 double avg_GHI = 0;
@@ -7651,8 +7664,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string qryGHI_POA = "Select sum(avg_ghi) as avg_ghi, sum(avg_poa) as avg_poa from uploading_pyranometer_1_min_solar where site_id = " + site_id + " and date(date_time) = '" + fromDate + "'";
 
                 List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryGHI_POA).ConfigureAwait(false);
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : After getting data  in solarUploadingPyranometer1Min list .. Code Line No. 7662");
+                int index1 = 0;
                 foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min)
                 {
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of solaruploadingpyranometer1min.. Code Line No. 7666Iteration/Count :" + index1 + " / " + _SiteFormulas.Count);
+                    index1++;
+
                     avg_GHI = SolarPyranoMeterData.avg_ghi / 60000;
                     avg_POA = SolarPyranoMeterData.avg_poa / 60000;
                 }
@@ -7680,12 +7698,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 bool bProcessGen = false;
                 int iBreakdownCount = 0;
                 List<SolarDailyGenSummary> _SolarDailyUploadGen = await Context.GetData<SolarDailyGenSummary>(qry).ConfigureAwait(false);
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after solardailyUploadgen.. Code Line No. 7695");
+
                 //foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                 sLastInv = "";
                 sLastICR_INV = "";
+                int index2 = 0;
                 //for each solar generation device, get the breakdown data
                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                 {
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop solarLocationMaster_calc list.. Code Line No. 7703Iteration/Count :" + index2 + " / " + _SiteFormulas.Count);
+                    index2++;
+
                     iBreakdownCount++;
                     bProcessGen = true;
                     TimeSpan Get_Time;
@@ -7728,10 +7752,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         try
                         {
                             int result = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated data (ghi, poa, expected_kwh, plant_pr, etc) in uploading_file_generation_solar table .. Code Line No. 7747");
+
                         }
                         catch (Exception ex)
                         {
                             string strEx = ex.ToString();
+                            API_ErrorLog("CalculateDailySolarKPI function : exception during updating data in table uploading_file_generation_solar... Code Line No. 7753 exception :" + strEx);
+
                             throw;
 
                         }
@@ -7741,15 +7769,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     FinalCapcity += SolarDevice.capacity;
 
                 }//end of for each
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : End of for loop.. Code Line No. 7765");
 
                 string updateqryCheck = "update uploading_file_generation_solar set inv_pr = NULL, plant_pr = NULL where (inv_pr = 0 or plant_pr = 0) and site_id = " + site_id + " and date = '" + fromDate + "' ";
                 try
                 {
                     int result = await Context.ExecuteNonQry<int>(updateqryCheck).ConfigureAwait(false);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated inv_pr and plant_pr to null in uploading_file_generation_solar table... Code Line No. 7771");
+
                 }
                 catch (Exception ex)
                 {
                     string strEx = ex.ToString();
+                    API_ErrorLog("CalculateDailySolarKPI function : Exception while updating data in uploading_file_generation_solar table.. Code Line No. 7777 exception :" + strEx);
+
                     throw;
 
                 }
@@ -7780,8 +7813,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //qry += "  AND t1.wtg = 'BD-25'";
                 //qry += "  group by t1.icr, t1.inv, t1.smb, t1.strings, t1.bd_type_id";
                 List<SolarFileBreakdownCalcMatrix> _SolarFileBreakdown = await Context.GetData<SolarFileBreakdownCalcMatrix>(qry).ConfigureAwait(false);
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarfilebreakdown data in list.. Code Line No. 7809");
+                int index3 = 0;
                 foreach (SolarFileBreakdownCalcMatrix sBreakdown in _SolarFileBreakdown)
                 {
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of SolarFileBreakdown .. Code Line No. 7813Iteration/Count :" + index3 + " / " + _SiteFormulas.Count);
+                    index3++;
+
                     iBreakdownCount++;
                     TimeSpan Get_Time;
                     int site_id2 = sBreakdown.site_id;
@@ -7804,6 +7842,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                     List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min2 = await Context.GetData<SolarUploadingPyranoMeter1Min>(poaqry).ConfigureAwait(false);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarUploadingPyranometer1Min2 list.. Code Line No. 7836");
 
                     float poa = 0;
                     /*foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min2)
@@ -7842,6 +7881,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     switch (bd_type_id)
                     {
                         case 1:                 //if (bd_type_name.Equals("USMH"))            //Pending : optimise it use bd_type id
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside Switch case 1.. Code Line No. 7876");
                             //Final_USMH_Time = result.TimeOfDay;
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
@@ -7920,6 +7960,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         case 2:                 //else if (bd_type_name.Equals("SMH"))              
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 2.. Code Line No. 7955");
+
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
                                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
@@ -7999,6 +8041,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             {
                                 throw new Exception("EX_BD " + ext_bd + " shoudl be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
                             }*/
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 3 .. Code Line No. 8036");
+
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
                                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
@@ -8103,6 +8147,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                         case 4:     //("EGBD"))                
                             //Final_EGBD_Time = result.TimeOfDay;
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 4 .. Code Line No. 8142");
+
                             string ext_bd = sBreakdown.ext_bd;
                             if (ext_bd != "EGBD")
                             {
@@ -8145,6 +8191,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                         case 5:                 //("Load Shedding"))                
                             //Final_LoadShedding_Time = result.TimeOfDay;
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 5 .. Code Line No. 8186 ");
+
                             ext_bd = sBreakdown.ext_bd;
                             if (ext_bd != "EGBD")
                             {
@@ -8228,6 +8276,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         case 6:                 //("Others Hour"))                
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 6.. Code Line No. 8271");
+
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
                                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
@@ -8301,6 +8351,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         case 7:                 //if (bd_type_name.Equals("LULL"))                
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 7.. Code Line No. 8346");
+
                             if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
                             {
                                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
@@ -8339,6 +8391,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         default:
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch default case .. Code Line No. 8386");
+
                             //Pending : error reporting
                             throw new Exception("Unsupported BD_TYPE " + bd_type_id + " For WTG " + sCurrentInv + " for date " + fromDate);
                             break;
@@ -8372,9 +8426,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 double FinalCapacity = 0;
                 string qryTarget = "select pr from monthly_target_kpi_solar where site_id = " + site_id + " and month_no = month('" + fromDate + "') and year = year('" + fromDate + "') ";
                 List<SolarMonthlyTargetKPI> _SolarPRTarget = await Context.GetData<SolarMonthlyTargetKPI>(qryTarget).ConfigureAwait(false);
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : received data in solarPRTarget list .. Code Line No. 8421");
+                int index4 = 0;
                 double prTarget = 0;
                 foreach (SolarMonthlyTargetKPI pr in _SolarPRTarget)
                 {
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach  solarPRTarget.. Code Line No. 8426 Iteration/Count :" + index4 + " / " + _SiteFormulas.Count);
+                    index4++;
+
                     prTarget = pr.PR;
                     break;
                 }
@@ -8383,8 +8442,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //for each solar generation device, get the breakdown data
                 sLastInv = "";
                 sLastICR_INV = "";
+                int index5 = 0;
                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                 {
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach solarLocationMaster_Calc .. Code Line No. 8438 Iteration/Count :" + index5 + " / " + _SiteFormulas.Count);
+                    index5++;
+
                     iBreakdownCount++;
                     bProcessGen = true;
                     TimeSpan Get_Time;
@@ -8559,14 +8622,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //                if(bProcessGen)
                 //                    CalculateAndUpdateSolarKPIs(site_id, fromDate, sLastInv, solarGeneration, Final_Production_Time, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, Final_LullHour_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
                 //Pending : validation of Total time to be 24
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Last statement of this function.. Code Line No. 8614");
+
             }
             catch (Exception ex)
             {
+                API_ErrorLog("CalculateDailySolarKPI function : Exception caught.. Code Line No. 8619, exception :" + ex.Message );
+
                 string strEx = ex.ToString();
                 response = false;
                 //pending : log error
                 throw new Exception(strEx);
             }
+            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : returning response.. Code Line No. 8626");
+
             return response;
         }
         private async Task<bool> UpdateSolarKPIs(int site_id, string inverter, double downHours, double availableHours,
@@ -8574,6 +8643,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double Final_OthersHour_Loss, double totalLoss, string fromDate, double USMH_Hr, double SMH_Hr, double IGBD_Hr, double EGBD_Hr, double LS_Hr, double Lull_Hr, double O_Hr,
             double MA, double IGA, double EGA, double FinalProductionHrs, double prTarget)
         {
+            API_InformationLog("Inside UpdateSolarKPIs function ");
+
 
             // double MA_percent = 100-(downHours / availableHours * 100);
             if (availableHours + downHours > 12.2 || availableHours + downHours < 11.8)
@@ -8593,9 +8664,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 int result = await Context.ExecuteNonQry<int>(updateQuery).ConfigureAwait(false);
                 int result2 = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
+                API_InformationLog("UpdateSolarKPIs function : Executed update Queries : "+ updateQuery + " _____and____ " + updateqry + " whose resposnse is :" + result + " and " + result2 + " Respectively..");
+
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                API_ErrorLog("UpdateSolarKPIs function : Exception caught while updating solar KPIs, Exception : " + e.Message);
+
                 return false;
             }
             return true;
@@ -8603,13 +8678,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         public async Task<bool> CalculateAndUpdatePLFandKWHAfterLineLossSolar(int site_id, string fromDate, string toDate, double capacity_kw, bool Maintainance=false)
         {
+            API_InformationLog("Inside CalculateAndUpdatePLFandKWHAfterLineLossSolar function : ");
+
             //add column called kwh_afterlineloss and plf_afterlineloss in dailygensummary and uploadgentable
             double lineLoss = await GetLineLoss(site_id, fromDate, 0);
             lineLoss = 1 - (lineLoss / 100);
-            return await CalculateAndUpdatePLFandKWHAfterLineLoss2Solar(site_id, fromDate, toDate, lineLoss, capacity_kw, Maintainance);
+            bool result = await CalculateAndUpdatePLFandKWHAfterLineLoss2Solar(site_id, fromDate, toDate, lineLoss, capacity_kw, Maintainance);
+            return result;
         }
         public async Task<bool> CalculateAndUpdatePLFandKWHAfterLineLoss2Solar(int site_id, string fromDate, string toDate, double lineloss , double capacity_kw, bool Maintainance)
         {
+            API_InformationLog("Inside CalculateAndUpdatePLFandKWHAfterLineLoss2Solar function : ");
+
             //Pending : Add information to log file
             string sLog = "PLF and KWH updated for site id =" + site_id + " fromDate=" + fromDate + " and toDate = " + toDate;
             string myQuery = "";
@@ -8620,6 +8700,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 string genSummaryCheck = "select site from daily_gen_summary_solar where site_id = " + site_id + " and date>='" + fromDate + "' and date<='" + toDate + "' ";
                 List<SolarDailyGenSummary> _SolarCount = await Context.GetData<SolarDailyGenSummary>(genSummaryCheck).ConfigureAwait(false);
+                API_InformationLog("CalculateAndUpdatePLFandKWHAfterLineLoss2Solar function : received data in _solarcount list the list :" + _SolarCount);
+
                 if (_SolarCount.Count > 0)
                     bIsGenSummary = true;
                 if (bIsGenSummary)
@@ -8667,6 +8749,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
       public async Task<string> EmailWindReport(string fy, string fromDate, string site)
         {
+            API_InformationLog("EmailWindReport function called from repository for wind");
+
             //add column called kwh_afterlineloss and plf_afterlineloss in dailygensummary and uploadgentable
 
             //string month = (fromDate);
@@ -9136,6 +9220,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             try
             {
+                API_InformationLog("MailDailySend function before call from repository for wind");
+
                 await MailDailySend(tb, title);
                 API_InformationLog("MailDailySend function called from repository for wind");
 
@@ -9677,15 +9763,21 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             }
             tb += "</table>";
-            tb += "</br>";
-           await MailDailySend(tb,title);
-           // return res;
+
+            API_InformationLog("MailDailySend before function call from repository for solar");
+
+            await MailDailySend(tb,title);
+            API_InformationLog("MailDailySend function called from repository for solar");
+
+            // return res;
             return tb;
         }
 
 
         internal async Task<int> MailDailySend(string data ,string reportTitle)
         {
+            API_InformationLog("Inside MailDailySend function from repository for wind");
+
             //MAILING FUNCTIONALITY
             MailSettings _settings = new MailSettings();
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -9715,32 +9807,43 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry = "";
             if (reportTitle.Contains("Solar"))
             {
+                API_InformationLog("MailDailySend function : Contains solar file");
                 qry = "select useremail from login where To_Daily_Solar = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
                     AddTo.Add(item.useremail);
+                    API_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
+
                 }
                 qry = "select useremail from login where Cc_Daily_Solar = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data3)
                 {
                     AddCc.Add(item.useremail);
+                    API_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
+
                 }
             }
             else
             {
+                API_InformationLog("MailDailySend function : Contains wind file");
+
                 qry = "select useremail from login where to_daily_wind = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
                     AddTo.Add(item.useremail);
+                    API_InformationLog("MailDailySend function : Added wind to email : "+item.useremail);
+
                 }
                 qry = "select useremail from login where Cc_Daily_Wind = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data3)
                 {
                     AddCc.Add(item.useremail);
+                    API_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
+
                 }
             }
 

@@ -811,10 +811,15 @@
                 <div class="modal-content">
                     <div class="modal-header">
 
-                        <h4 class="modal-title">Notification</h4>
+                        <h4 class="modal-title">File Import Validation Report</h4>
                     </div>
                     <div class="modal-body" style="max-height: 300px; overflow: hidden; overflow-y: inherit; word-wrap: break-word;">
-                        <p><div id="divnotification" ></div></p>
+                        <p>
+                            <!-- <div id="headerError" style="display: none; text-align: center; font-size: 20px; font-weight: bold;">Errors</div> -->
+                            <div id="divnotification" style="color: red"></div>
+                            <!-- <div id="headerInfo" style="display: block; text-align: center; font-size: 20px; font-weight: bold;">Information</div> -->
+                            <!-- <div id="divInformation" style="color: green"></div> -->
+                        </p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -862,16 +867,36 @@
     <!--<script src="~/Content/theme/dist/js/pages/dashboard.js"></script>-->
     <script>
         var notification = '@TempData["notification"]';
-        console.log(notification);
+        //console.log(notification);
         if (notification != "") {
             let text = notification;
             const myArray = text.split(",");
             var mydata = "";
+            var finalData = "";
+            var errorData = "";
             for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].includes("Information")) {
+                    finalData += '<p style="color: green; margin: 0 ">' + myArray[i] + "</p>";
+                }
+                if (myArray[i].includes("Error")) {
+                    finalData += '<p style="color: red; margin: 0">' + myArray[i] + "</p>";
+                    //errorData += myArray[i] + "<br>";
+                }
                 mydata += myArray[i] + "<br>";
             }
-            console.log("Mydata" + mydata);
-            $("#divnotification").html(mydata);
+            console.log("Mydata :-" + mydata);
+            console.log("Final Data :-" + finalData);
+            //console.log("Error Data :-" + errorData);
+            //var headingErrorDiv = document.getElementById("headerError");
+            //var headingInfoDiv = document.getElementById("divInformation");
+            /*if (errorData != "") {
+                headingErrorDiv.style.display = "block";
+            }
+            if (informationData != "") {
+                headingInfoDiv.style.display = "block";
+            }*/
+            $("#divnotification").html(finalData);
+            //$("#divInformation").html(informationData);
             $("#submitNotification").click();
         }
 

@@ -14,9 +14,9 @@
 /dgr_web/.vscode
 /dgr_web/.vs
 /DGRA/.vs
-/dgr_web/DGRAPIs/obj/Release/
-/dgr_web/DGRAPIs/obj/Debug/
-/DGRA/DGRA_V1/obj/Release/
-/DGRA/DGRA_V1/obj/Debug/
-/dgr_web/DGRAPIs/Properties/PublishProfiles/
-/DGRA/DGRA_V1/Properties/PublishProfiles/
+/dgr_web/DGRAPIs/obj/Release
+/dgr_web/DGRAPIs/obj/Debug
+/DGRA/DGRA_V1/obj/Release
+/DGRA/DGRA_V1/obj/Debug
+/dgr_web/DGRAPIs/Properties/PublishProfiles
+/DGRA/DGRA_V1/Properties/PublishProfiles
