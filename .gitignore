@@ -20,3 +20,26 @@
 /DGRA/DGRA_V1/obj/Debug
 /dgr_web/DGRAPIs/Properties/PublishProfiles
 /DGRA/DGRA_V1/Properties/PublishProfiles
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# NuGet packages
+packages/
+
+# Other
+Thumbs.db
+*.log
+*.bak
+*.cache
+*.vspscc
+*.vssscc
