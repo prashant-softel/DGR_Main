@@ -61,7 +61,7 @@ namespace DGRA_V1.Models
                         sMessage = "Error : " + sMessage;
                         break;
                     case messageType.ImportInformation:
-                        sMessage = " "+ sMessage;
+                        sMessage = ""+ sMessage;
                         break;
                 }
                 return sMessage;
