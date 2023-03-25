@@ -804,11 +804,11 @@
 
         <button type="button" id="submitNotification" style="display:none" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
 
-        <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal fade" id="myModal" role="dialog" style="top: 50%; left: 37%; transform: translate(-50%, -50%); width: 180%; ">
             <div class="modal-dialog">
 
                 <!-- Modal content-->
-                <div class="modal-content">
+                <div class="modal-content" style="width: 180%;">
                     <div class="modal-header">
 
                         <h4 class="modal-title">File Import Validation Report</h4>
@@ -869,42 +869,26 @@
     <!--<script src="~/Content/theme/dist/js/pages/dashboard.js"></script>-->
     <script>
         var notification = '@TempData["notification"]';
-        //console.log(notification);
         if (notification != "") {
-            //var userName = "Username :"+ @HttpContextAccessor.HttpContext.Session.GetString("DisplayName");
             let text = notification;
             const myArray = text.split(",");
             var mydata = "";
             var finalData = "";
             var userInformation = "";
             var errorData = "";
-            //myArray[0] = userName;
             for (var i = 0; i < myArray.length; i++) {
                 if (myArray[i].includes("Information")) {
                     finalData += '<p style="color: green; margin: 0 ">' + myArray[i] + "</p>";
                 }
                 if (myArray[i].includes("Error")) {
                     finalData += '<p style="color: red; margin: 0">' + myArray[i] + "</p>";
-                    //errorData += myArray[i] + "<br>";
                 }
                 mydata += myArray[i] + "<br>";
             }
-            console.log(myArray)
-            //console.log("Username is :----- " + userName);
-            console.log("Mydata :-" + mydata);
-            console.log("Final Data :-" + finalData);
-            //console.log("Error Data :-" + errorData);
+
             var headingErrorDiv = document.getElementById("headerInfo");
-            //@HttpContextAccessor.HttpContext.Session.GetString("DisplayName") +
             userInformation = '<p style="margin: 0"> <strong> Username : </strong>@HttpContextAccessor.HttpContext.Session.GetString("DisplayName") &nbsp; <strong> Role : </strong>' + myArray[1] + " &nbsp; <strong> Imported on : </strong>" + myArray[2] + "&nbsp;  " + '</p> <p style="margin: 0"> <strong> File Name : </strong>' + myArray[3] + "&nbsp; <strong> Site Type : </strong> " + myArray[4] + "&nbsp; <strong> File Category :</strong> "  + myArray[5] + '</p> <hr>';
 
-            //var headingInfoDiv = document.getElementById("divInformation");
-            /*if (errorData != "") {
-                headingErrorDiv.style.display = "block";
-            }
-            if (informationData != "") {
-                headingInfoDiv.style.display = "block";
-            }*/
             $("#divnotification").html(finalData);
             $("#headerInfo").html(userInformation);
             $("#submitNotification").click();

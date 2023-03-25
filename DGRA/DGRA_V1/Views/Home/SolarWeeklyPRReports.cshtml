@@ -335,8 +335,10 @@
 
 
     function GetOperationWKPR() {
-
-        document.getElementById("loader").style.display = 'flex';
+        var a = document.getElementById("loader");
+        console.log(document.getElementById("loader").style.display);
+        a.style.display = 'flex';
+        console.log(document.getElementById("loader").style.display);
         GetPerformanceBySPV();
         GetPerformanceBySite();
         MajorBreakdown();
@@ -632,7 +634,7 @@
 
         });
         GetOperationMonthlyPR();
-        document.getElementById("loader").style.display = 'none';
+        //document.getElementById("loader").style.display = 'none';
         
     }
 
@@ -904,7 +906,7 @@
                 var_ega_neg.push(ega_negative);
 
                
-
+                //document.getElementById("loader").style.display = 'none';
                 GetOperationYearlyPR();  // Call function for get yearly data
             }
         });
@@ -2339,8 +2341,8 @@
                                 tbl += '<td class="text-left">' + result[i].site + '</td>';
                                 location_name = "Plant Shutdown";
                         if (result[i].icr_cnt ) {
-                            tbl += '<td class="text-left">' + result[i].icr_cnt + 'ICRs </td>';
-                            tbl += '<td class="text-left">' + result[i].inv_cnt + 'INVs</td>';
+                            tbl += '<td class="text-left">' + result[i].icr_cnt + ' ICRs</td>';
+                            tbl += '<td class="text-left">' + result[i].inv_cnt + ' INVs</td>';
                         } else {
                             tbl += '<td class="text-left">' + result[i].icr + '</td>';
                             tbl += '<td class="text-left">' + result[i].inv + '</td>';
@@ -3060,7 +3062,7 @@
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 //$('#example1').removeClass('dataTable');
                 $('#example1').wrap("<div class='scrolledTable'></div>");
-
+                document.getElementById("loader").style.display = 'none';
                 //It will convert div to image of PSPV
                 var divPSPV = document.getElementById('divPSPV');
                 html2canvas(divPSPV).then(function (canvas) {

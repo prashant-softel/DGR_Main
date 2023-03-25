@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
+    "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Most Final\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
   },
   "projects": {
-    "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
+    "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Most Final\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "projectUniqueName": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Most Final\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
         "projectName": "DGRA_V1",
-        "projectPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "projectPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Most Final\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Original\\DGR_Main\\DGRA\\DGRA_V1\\obj\\",
+        "outputPath": "C:\\Data Folder All Data should be here\\DGR\\Git_Repo_code\\Production code\\Most Final\\DGR_Main\\DGRA\\DGRA_V1\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
