@@ -10,4 +10,28 @@
 /DGRA/bin
 /obj
 /DGRA_V1/bin
+/DGRA_V1/obj
 /DGRA_V1/LogFile
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# NuGet packages
+packages/
+
+# Other
+Thumbs.db
+*.log
+*.bak
+*.cache
+*.vspscc
+*.vssscc
