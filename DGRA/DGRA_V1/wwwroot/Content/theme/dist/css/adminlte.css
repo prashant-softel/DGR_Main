@@ -6033,15 +6033,16 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
 }
 
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1050;
-  display: none;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  outline: 0;
+    position: absolute;
+    top: 50%;
+    left: 37%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
+    display: none;
+    width: 180%;
+    height: 100%;
+    overflow: hidden;
+    outline: 0;
 }
 
 .modal-dialog {
@@ -6135,7 +6136,7 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   display: flex;
   -ms-flex-direction: column;
   flex-direction: column;
-  width: 140%;
+  width: 180%;
   pointer-events: auto;
   background-color: #fff;
   background-clip: padding-box;
