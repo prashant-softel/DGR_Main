@@ -960,7 +960,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -988,6 +990,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c + '</td>';
                         tbl += '<td class="text-right">' + result[i].production_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].unschedule_num.toFixed(2) + '</td>';
@@ -1114,7 +1118,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1142,6 +1148,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].unschedule_num.toFixed(2) + '</td>';
@@ -1297,7 +1305,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1326,6 +1336,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';
@@ -1463,7 +1475,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1491,6 +1505,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';
@@ -1641,7 +1657,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1670,6 +1688,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';
@@ -1806,7 +1826,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1835,6 +1857,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';

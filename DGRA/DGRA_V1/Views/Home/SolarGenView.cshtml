@@ -196,7 +196,9 @@
                 tbl += '<th>Plant PR (%)</th>';
                 tbl += '<th>MA (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%)</th>';
+                tbl += '<th>EGA (B) (%)</th>';
+                tbl += '<th>EGA (C) (%)</th>';
                 tbl += '<th>INV PLF AC (%)</th>';
                 tbl += '<th>Plant PLF AC (%)</th>';
                 tbl += '<th>PI</th>';
@@ -239,6 +241,8 @@
                         tbl += '<td class="text-right">' + result[i].ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c + '</td>';
                         tbl += '<td class="text-right">' + result[i].inv_plf_ac.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plant_plf_ac.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].pi + '</td>';

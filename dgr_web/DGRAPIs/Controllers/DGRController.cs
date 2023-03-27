@@ -797,6 +797,40 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("PowerExpected")]
+        [HttpGet]
+        public async Task<IActionResult> PowerExpected(string site, string fromDate, string toDate, string logFileName)
+        {
+            try
+            {
+                var data = await _dgrBs.PowerExpected(site, fromDate, toDate, logFileName);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("SolarExpectedReport")]
+        [HttpGet]
+        public async Task<IActionResult> SolarExpectedReport(string site, string fromDate, string toDate, string prType)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarExpectedReport(site, fromDate, toDate, prType);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [Route("CalculateDailyWindKPI")]
         [HttpGet]
@@ -904,14 +938,14 @@ namespace DGRAPIs.Controllers
             }
         }
 
-
-       /*[Route("InsertDailyJMR")]
+        //InsertWindTMLData
+        [Route("InsertWindTMLData")]
         [HttpPost]
-        public async Task<IActionResult> InsertDailyJMR(List<WindDailyJMR> windDailyJMR)
+        public async Task<IActionResult> InsertWindTMLData(List<InsertWindTMLData> InsertWindTMLData)
         {
             try
             {
-                var data = await _dgrBs.InsertDailyJMR(windDailyJMR);
+                var data = await _dgrBs.InsertWindTMLData(InsertWindTMLData);
                 return Ok(data);
 
             }
@@ -920,7 +954,24 @@ namespace DGRAPIs.Controllers
 
                 return BadRequest(ex.Message);
             }
-        }*/
+        }
+
+        /*[Route("InsertDailyJMR")]
+         [HttpPost]
+         public async Task<IActionResult> InsertDailyJMR(List<WindDailyJMR> windDailyJMR)
+         {
+             try
+             {
+                 var data = await _dgrBs.InsertDailyJMR(windDailyJMR);
+                 return Ok(data);
+
+             }
+             catch (Exception ex)
+             {
+
+                 return BadRequest(ex.Message);
+             }
+         }*/
 
         [Route("InsertSolarDailyTargetKPI")]
         [HttpPost]
@@ -1024,6 +1075,94 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("InsertSolarTrackerLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarTrackerLoss(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarTrackerLoss(InsertSolarTrackerLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //CalculateTrackerLosses
+        //[Route("CalculateTrackerLosses")]
+        //[HttpPost]
+        //public async Task<IActionResult> CalculateTrackerLosses(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        //{
+        //    try
+        //    {
+        //        var data = await _dgrBs.CalculateTrackerLosses(InsertSolarTrackerLoss);
+        //        return Ok(data);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+
+        //InsertSolarSoilingLoss
+        [Route("InsertSolarSoilingLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> InsertSolarSoilingLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarSoilingLoss(InsertSolarSoilingLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertSolarPVSystLoss
+        [Route("InsertSolarPVSystLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> InsertSolarPVSystLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarPVSystLoss(InsertSolarPVSystLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertWindTMR
+        [Route("InsertWindTMR")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindTMR(List<InsertWindTMR> InsertWindTMR)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindTMR(InsertWindTMR);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         [Route("InsertSolarDailyBDloss")]
         [HttpPost]
@@ -2267,13 +2406,13 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Route("PPTCreate")]
+        [Route("GetActualVSExpected")]
         [HttpGet]
-        public async Task<IActionResult> PPTCreate()
+        public async Task<IActionResult> GetActualVSExpected(string fromDate, string toDate, string spv,string site,string pr)
         {
             try
             {
-                var data = await _dgrBs.PPTCreate();
+                var data = await _dgrBs.GetActualVSExpected(fromDate, toDate, spv, site, pr);
                 return Ok(data);
 
             }
@@ -2283,13 +2422,12 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Route("PPTCreate_Solar")]
-        [HttpGet]
-        public async Task<IActionResult> PPTCreate_Solar()
+        [Route("GetActualVSExpectedYearly")]
+        public async Task<IActionResult> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string pr)
         {
             try
             {
-                var data = await _dgrBs.PPTCreate_Solar();
+                var data = await _dgrBs.GetActualVSExpectedYearly(fromDate, toDate, spv, site, pr);
                 return Ok(data);
 
             }

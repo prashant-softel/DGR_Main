@@ -1,7 +1,7 @@
 ﻿@using Newtonsoft.Json;
 @using Microsoft.AspNetCore.Http;
-@inject IHttpContextAccessor HttpContextAccessor
-@model DGRA_V1.Models.DailyGenSummary
+@inject IHttpContextAccessor HttpContextAccessor;
+@model DGRA_V1.Models.DailyGenSummary;
 
 @{
     ViewData["Title"] = "GHI POA 1Min";
@@ -86,7 +86,23 @@
                     </div>
                     <div class="col-md-1"></div>
                 </div>
-               
+                <div class="card" id="wms_comparision" style="display:none">
+                    <div class="card-header border-0">
+                        <h3 class="card-title text-center"> WMS Comparison</h3>
+                        <!-- card tools -->
+                        <div class="card-tools" style=" margin-top: -23px;">
+
+                            <button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse" title="Collapse" style="font-size: 0.6rem;">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <!-- /.card-tools -->
+                    </div>
+                    <div class="col-md-12 card-body " id="chart" style="display:none">
+                        <canvas id="myChart" style="width:100%; max-width:100%"></canvas>
+                    </div>
+
+                </div>
                 <hr>
                 <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>
                 <div id="loader" class="loader  center" style="display:none"></div>
@@ -117,6 +133,7 @@
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
@@ -129,6 +146,11 @@
                 }
             });
     });
+    var ghi_arr = [];
+    var poa_arr = [];
+    var amp_temp_arr = [];
+    var mod_arr_arr = [];
+    var time_arr_arr = [];
     window.onload = function () {
         var state = "";
         var spv = "";
@@ -157,7 +179,7 @@
     }
 
     function getReport() {
-
+        //OneMinChart();
         let site_id = "";
         var site = $('select#site option:selected').each(function () {
             site_id += $(this).val() + ",";
@@ -202,7 +224,29 @@
                 tbl += '<th>Weather Type</th>';
                
                 tbl += '</tr></thead>';
-                
+                time_arr_arr = [];
+                ghi_arr1 = [];
+                ghi_arr2 = [];
+                poa_arr1 = [];
+                poa_arr2 = [];
+                poa_arr3 = [];
+                poa_arr4 = [];
+                poa_arr5 = [];
+                poa_arr6 = [];
+                poa_arr7 = [];
+                amp_temp_arr = [];
+                mod_arr_arr = [];
+                let ghiZeroArr1 = [];
+                let ghiZeroArr2 = [];
+                let poaZeroArr1 = [];
+                let poaZeroArr2 = [];
+                let poaZeroArr3 = [];
+                let poaZeroArr4 = [];
+                let poaZeroArr5 = [];
+                let poaZeroArr6 = [];
+                let poaZeroArr7 = [];
+                let ampTempZeroArr = [];
+                let modZeroArr = [];
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         let weather = "";
@@ -213,32 +257,168 @@
                             weather = result[i].weather_type;
                         }
                         var formattedDate = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm:ss');
-                        tbl += '<tr>';
-                        tbl += '<td  class="text-left">' + formattedDate + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
-                        tbl += '<td class="text-left" >' + weather + '</td>';
-                       
-                        tbl += '</tr>';
-                        console.log("counter :" + i + "> DateTime :" + formattedDate + "Main date  :" + result[i].date_time);
+                        var formattedDate1 = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm');
+                        var formattedtime = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('HH:mm');
+                        if (formattedtime >= "05:00" && formattedtime <= "19:00") {
+                            tbl += '<tr>';
+                            tbl += '<td  class="text-left">' + formattedDate + '</td>';
+                            tbl += '<td  class="text-left">' + result[i].site + '</td>';
+                            tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
+                            tbl += '<td class="text-left" >' + weather + '</td>';
+
+                            tbl += '</tr>';
+                            // console.log("counter :" + i + "> DateTime :" + formattedDate + "Main date  :" + result[i].date_time);
+
+                            /*if (result[i].avg_poa > 0) {
+
+                                time_arr_arr.push(formattedtime);
+                                ghi_arr.push(result[i].avg_ghi.toFixed(1));
+                                poa_arr.push(result[i].avg_poa.toFixed(1));
+                                amp_temp_arr.push(result[i].amb_temp.toFixed(1));
+                                mod_arr_arr.push(result[i].mod_temp.toFixed(1));
+                            }*/
+                            time_arr_arr.push(formattedDate1);
+                            ghi_arr1.push(Number(result[i].ghi_1.toFixed(1)));
+                            ghi_arr2.push(Number(result[i].ghi_1.toFixed(1)));
+                            poa_arr1.push(Number(result[i].poa_1.toFixed(1)));
+                            poa_arr2.push(Number(result[i].poa_2.toFixed(1)));
+                            poa_arr3.push(Number(result[i].poa_3.toFixed(1)));
+                            poa_arr4.push(Number(result[i].poa_4.toFixed(1)));
+                            poa_arr5.push(Number(result[i].poa_5.toFixed(1)));
+                            poa_arr6.push(Number(result[i].poa_6.toFixed(1)));
+                            poa_arr7.push(Number(result[i].poa_7.toFixed(1)));
+                            amp_temp_arr.push(Number(result[i].amb_temp.toFixed(1)));
+                            mod_arr_arr.push(Number(result[i].mod_temp.toFixed(1)));
+
+                            /*
+                            if (result[i].ghi_1 > 0) {
+                                ghi_arr1.push(result[i].ghi_1.toFixed(1));
+                            }
+                            if (result[i].ghi_2 > 0) {
+                                ghi_arr2.push(result[i].ghi_1.toFixed(1));
+                            }
+                            if (result[i].poa_1 > 0) {
+                                poa_arr1.push(result[i].poa_1.toFixed(1));
+                            }
+                            if (result[i].poa_2 > 0) {
+                                poa_arr2.push(result[i].poa_2.toFixed(1));
+                            }
+                            if (result[i].poa_3 > 0) {
+                                poa_arr3.push(result[i].poa_3.toFixed(1));
+                            }
+                            if (result[i].poa_4 > 0) {
+                                poa_arr4.push(result[i].poa_4.toFixed(1));
+                            }
+                            if (result[i].poa_5 > 0) {
+                                poa_arr5.push(result[i].poa_5.toFixed(1));
+                            }
+                            if (result[i].poa_6 > 0) {
+                                poa_arr6.push(result[i].poa_6.toFixed(1));
+                            }
+                            if (result[i].poa_7 > 0) {
+                                poa_arr7.push(result[i].poa_7.toFixed(1));
+                            }
+                            if (result[i].amb_temp > 0) {
+                                amp_temp_arr.push(result[i].amb_temp.toFixed(1));
+                            }
+                            if (result[i].mod_temp > 0) {
+                                mod_arr_arr.push(result[i].mod_temp.toFixed(1));
+                            }
+                            */
+                        }
                     }
+
                 }
                 else {
 
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
+
+                for (var i = 0; i <= ghi_arr1.length; i++) {
+                    if (ghi_arr1[i] === 0) {
+                        ghiZeroArr1.push(i);
+                    }
+                }
+                for (var i = 0; i <= ghi_arr2.length; i++) {
+                    if (ghi_arr2[i] === 0) {
+                        ghiZeroArr2.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr1.length; i++) {
+                    if (poa_arr1[i] === 0) {
+                        poaZeroArr1.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr2.length; i++) {
+                    if (poa_arr2[i] === 0) {
+                        poaZeroArr2.push(i);
+                    }
+
+                }
+                for (var i = 0; i <= poa_arr3.length; i++) {
+                    if (poa_arr3[i] === 0) {
+                        poaZeroArr3.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr4.length; i++) {
+                    if (poa_arr4[i] === 0) {
+                        poaZeroArr4.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr5.length; i++) {
+                    if (poa_arr5[i] === 0) {
+                        poaZeroArr5.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr6.length; i++) {
+                    if (poa_arr6[i] === 0) {
+                        poaZeroArr6.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr7.length; i++) {
+                    if (poa_arr7[i] === 0) {
+                        poaZeroArr7.push(i);
+                    }
+                }
+                for (var i = 0; i <= amp_temp_arr.length; i++) {
+                    if (amp_temp_arr[i] === 0) {
+                        ampTempZeroArr.push(i);
+                    }
+                }
+                for (var i = 0; i <= mod_arr_arr.length; i++) {
+                    if (mod_arr_arr[i] === 0) {
+                        modZeroArr.push(i);
+                    }
+                }
+
+                /*
+                console.log("for GHI ARRAY 1 found zero at index :" + ghiZeroArr1 + "_____" + ghiZeroArr1.length + " number of zeros out of " + ghi_arr1.length);
+                console.log("for GHI ARRAY 2 found zero at index :" + ghiZeroArr2 + "_____" + ghiZeroArr2.length + " number of zeros out of " + ghi_arr2.length);
+                console.log("for POA 1 ARRAY found zero at index :" + poaZeroArr1 + "_____" + poaZeroArr1.length + " number of zeros out of " + poa_arr1.length);
+                console.log("for POA 2 ARRAY found zero at index :" + poaZeroArr2 + "_____" + poaZeroArr2.length + " number of zeros out of " + poa_arr2.length);
+                console.log("for POA 3 ARRAY found zero at index :" + poaZeroArr3 + "_____" + poaZeroArr3.length + " number of zeros out of " + poa_arr3.length);
+                console.log("for POA 4 ARRAY found zero at index :" + poaZeroArr4 + "_____" + poaZeroArr4.length + " number of zeros out of " + poa_arr4.length);
+                console.log("for POA 5 ARRAY found zero at index :" + poaZeroArr5 + "_____" + poaZeroArr5.length + " number of zeros out of " + poa_arr5.length);
+                console.log("for POA 6 ARRAY found zero at index :" + poaZeroArr6 + "_____" + poaZeroArr6.length + " number of zeros out of " + poa_arr6.length);
+                console.log("for POA 7 ARRAY found zero at index :" + poaZeroArr7 + "_____" + poaZeroArr7.length + " number of zeros out of " + poa_arr7.length);
+                console.log("for AMP TEMP ARRAY found zero at index :" + ampTempZeroArr + "_____" + ampTempZeroArr.length + " number of zeros out of " + amp_temp_arr.length);
+                console.log("for MOD ARR ARRAY found zero at index :" + modZeroArr + "_____" + modZeroArr.length + " number of zeros out of " + mod_arr_arr.length);
+                //console.log("ONLY DATE ARRAY :" + date_arr_arr);
+                console.log("DATE AND TIME ARRAY :" + time_arr_arr); */
+               
+                OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr);
                 tbl += '</table>';
                // $("#DailyGenView").html(tbl);
                 $("#DailyGenView").html("").html(tbl);
@@ -278,12 +458,146 @@
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
+                document.getElementById("wms_comparision").style.display = 'block';
                 //$('#example1').removeClass('dataTable');
             }
         });
     }
+    //var xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+    function OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr)
+    {
+        console.log(ghi_arr1);
+        let dataset_arr = [];
+        //let datleble_arr = [
+        if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
+           
+            dataset_arr.push({ label: "GHI 1", data: ghi_arr1, borderColor: "#77CAE7", fill: false });
+        }
+        if (ghi_arr2.length > 0 && ghi_arr2.length != ghiZeroArr2.length) {
+           
+            dataset_arr.push({ label: "GHI 2", data: ghi_arr2, borderColor: "#86C466", fill: false });
+        }
+        if (poa_arr1.length > 0 && poa_arr1.length != poaZeroArr1.length) {
+            dataset_arr.push({ label: "POA 1", data: poa_arr1, borderColor: "#77CAE7", fill: false });
+        }
+        if (poa_arr2.length > 0 && poa_arr2.length != poaZeroArr2.length) {
+            dataset_arr.push({ label: "POA 2", data: poa_arr2, borderColor: "#31576D", fill: false });
+        }
+        if (poa_arr3.length > 0 && poa_arr3.length != poaZeroArr3.length) {
+            dataset_arr.push({ label: "POA 3", data: poa_arr3, borderColor: "#76D7C4", fill: false });
+        }
+        if (poa_arr4.length > 0 && poa_arr4.length != poaZeroArr4.length) {
+            dataset_arr.push({ label: "POA 4", data: poa_arr4, borderColor: "#58D68D", fill: false });
+        }
+        if (poa_arr5.length > 0 && poa_arr5.length != poaZeroArr5.length) {
+            dataset_arr.push({ label: "POA 5", data: poa_arr5, borderColor: "#F39C12", fill: false });
+        }
+        if (poa_arr6.length > 0 && poa_arr6.length != poaZeroArr6.length) {
+            dataset_arr.push({ label: "POA 6", data: poa_arr6, borderColor: "#27F9F3", fill: false });
+        }
+        if (poa_arr7.length > 0 && poa_arr7.length != poaZeroArr7.length) {
+            dataset_arr.push({ label: "POA 7", data: poa_arr7, borderColor: "#F98027", fill: false });
+        }
+        dataset_arr.push({ label: "Amb Temp", data: amp_temp_arr, borderColor: "#FFCA5A", fill: false });
+        dataset_arr.push({ label: "Mod Temp", data: mod_arr_arr, borderColor: "#31576D", fill: false });
+        //console.log("DataLeblets" + datleble_arr);
+        //];
+        new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: time_arr_arr,
+                datasets: dataset_arr,/*[{
+                    label: "GHI 1",
+                    data: ghi_arr1,//[860, 1140, 1060, 1060, 1070, 1110, 1330, 2210, 7830, 2478],
+                    borderColor: "#77CAE7",
+                    fill: false
+                }, {
+                    label: "GHI 2",
+                    data: ghi_arr2,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                    borderColor: "#86C466",
+                    fill: false
+                    },
+                    {
+                        label: "POA 1",
+                        data: poa_arr1,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                        borderColor: "#86C466",
+                        fill: false
+                    },
+                    {
+                        label: "POA 2",
+                        data: poa_arr2,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                        borderColor: "#86C466",
+                        fill: false
+                    },
+                    {
+                        label: "POA 3",
+                        data: poa_arr3,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                        borderColor: "#86C466",
+                        fill: false
+                    },
+                    {
+                        label: "POA 4",
+                        data: poa_arr4,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                        borderColor: "#86C466",
+                        fill: false
+                    },
+                    {
+                        label: "POA 5",
+                        data: poa_arr5,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                        borderColor: "#86C466",
+                        fill: false
+                    },
+                    {
+                        label: "POA 6",
+                        data: poa_arr6,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                        borderColor: "#86C466",
+                        fill: false
+                    },
+                    {
+                        label: "POA 7",
+                        data: poa_arr7,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                        borderColor: "#86C466",
+                        fill: false
+                    },{
+                    label: "Amb Temp",
+                    data: amp_temp_arr, //[300, 700, 2000, 5000, 6000, 4000, 2000, 1000, 200, 100],
+                    borderColor: "#FFCA5A",
+                    fill: false
+                    },
+                    {
+                        label: "Mod Temp",
+                        data: mod_arr_arr, //[300, 700, 2000, 5000, 6000, 4000, 2000, 1000, 200, 100],
+                        borderColor: "#31576D",
+                        fill: false
+                    }
+                ]*/
+            },
+            options: {
+                //legend: { display: false }
+                responsive: true,
+                tooltips: {
+                    mode: 'index'
+                },
+                title: {
+                    display: true,
+                    text: "WMS Comparison"
+                },
 
+                legend: {
+                    display: true,
+                    position: "bottom"
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'WMS Compatison'
+                    }
+                },
 
+            }
+        });
+    }
+    
 
 </script>
 

@@ -1,0 +1,837 @@
+﻿@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@model DGRA_V1.Models.DailyGenSummary
+
+@{
+    ViewData["Title"] = "ExpectedVsActuallosses";
+}
+@{
+    string solarSiteList = "";
+
+    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+
+}
+@for (int i = 0; i < @usermodel.access_list.Count; i++)
+{
+
+    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 2)
+    {
+        solarSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+
+
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+<!-- dropdown search -->
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+
+
+@*<style>
+        .tbodydata {
+            font-size: 12px;
+        }
+
+        .theaddata {
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>*@
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-center">Solar Expected Vs Actual Losses </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="input-group row">
+                            <label class="col-sm-4 col-form-label">Date Range : </label>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control float-right" id="daterange" name="daterange">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-left">SPV : </label>
+                                <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-left">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-left">PR : </label>
+                                <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
+                    </select>-->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style=" width: 5rem;">Search</button>
+                    </div>
+                    <div class="col-md-5"></div>
+                </div>
+                <hr>
+
+                <div class="col-sm-12">
+
+                    <canvas id="monthly_chart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>
+                </div>
+                <div class="col-sm-12">
+
+                    <canvas id="yearly_chart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>
+                </div>
+
+                <hr>
+                <div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>
+                <div id="loader" class="loader  center" style="display:none"></div>
+            </div>
+            </div>
+        
+    </section>
+
+</div>
+<!-- /.content-wrapper -->
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<!--Date Range -->
+<script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src="~/Content/theme/plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
+<script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- DataTables  & Plugins -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/dist/js/comman.js"></script>
+<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+@*------------------------------------------------------------------------------------------------------------------------------------------------*@
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#daterange').daterangepicker(
+        {
+            maxDate: new Date(),
+            locale: {
+                format: 'DD/MM/YYYY',
+            }
+        });
+});
+
+    window.onload = function () {
+        var today = new Date();
+        fyear = getFinancialYear(today);
+        fdate = getFinancialYearDateStartDate(fyear);
+        
+        console.log(fdate);
+        GetSPV();
+   // monthlychart();
+    yearlyChart();
+}
+function GetSPV() {
+    let state = "";
+    $('select#state option:selected').each(function () {
+        state += "'" + $(this).val() + "',";
+    });
+    state = state != "" ? state.slice(0, -1) : state;
+    var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetSPVList", "SolarReport")' + '?state=' + state + '&sitelist=' + site_ids,
+        contentType: "application/json; charset=utf-8",
+        datatype: "html",
+        success: function (result, status, xhr) {
+            var options = "";
+            for (var j = 0; j < result.length; j++) {
+                options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
+            }
+            $("#spv").multipleSelect('destroy');
+            $("#spv").html(options);
+            $('select#spv').multipleSelect({
+                "minimumCountSelected": 2,
+                "placeholder": "Select SPV(s)",
+                filter:true
+            });
+        }
+    });
+    GetSite();
+}
+
+function GetSite() {
+    let state = "";
+    var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+    $('select#state option:selected').each(function () {
+        state += $(this).val() + ",";
+    });
+    let spv = "";
+    $('select#spv option:selected').each(function () {
+        spv += $(this).val() + ",";
+    });
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("GetSiteList", "SolarReport")' + '?state=' + state + '&spv=' + spv + '&sitelist=' + site_ids,
+        contentType: "application/json; charset=utf-8",
+        datatype: "html",
+        success: function (result, status, xhr) {
+            var options = "";
+            for (var k = 0; k < result.length; k++) {
+                options += '<option value="' + result[k].site_master_solar_id + '">' + result[k].site + '</option>';
+            }
+            $("#site").multipleSelect('destroy');
+            $("#site").html(options);
+            $('select#site').multipleSelect({
+                "minimumCountSelected": 2,
+                "placeholder": "Select Site(s)",
+                filter:true
+            });
+        }
+    });
+    // GetPR(false);
+}
+
+/// Get Fiter Data
+function getReport()
+{
+    var data_Array = [];
+    document.getElementById("loader").style.display = 'flex';
+    var daterange = $('#daterange').val();
+    var arr1 = new Array();
+    arr1 = daterange.split("-");
+    var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+    var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+    let site_id = "";
+    let spv_list = "";
+    let pr = "";
+    var spv = $('select#spv option:selected').each(function () {
+        spv_list += $(this).val() + ",";
+    });
+    spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
+    var site = $('select#site option:selected').each(function () {
+        site_id += $(this).val() + ",";
+    });
+    site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("GetActualVSExpected", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id +'&pr='+pr,
+        contentType: "application/json; charset=utf-8",
+        datatype: "html",
+        success: function (result, status, xhr) {
+            //console.log(result);
+            document.getElementById("loader").style.display = 'none';
+            var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 100%;">';
+            tbl += '<thead class="tbl-head"><tr>';
+            tbl += '<th style="width: 12%;">Date</th>';
+            tbl += '<th>Site</th>';
+            tbl += '<th>Target</th>';
+            tbl += '<th>Expected</th>';
+            tbl += '<th>USMH</th>';
+            tbl += '<th>SMH</th>';
+            tbl += '<th>Other</th>';
+            tbl += '<th>Curtaiment</th>';
+            tbl += '<th>PR</th>';
+            tbl += '<th>Actual</th>';
+            tbl += '</tr></thead>';
+            if (result.length > 0) {
+                let total_target = 0;
+                let total_expected = 0;
+                let total_usmh = 0;
+                let total_smh = 0;
+                let total_oh = 0;
+                let total_curtaiment = 0;
+                let total_pr = 0;
+                let avg_pr = 0;
+                let total_actual = 0;
+                var cnt = 0;
+                for (var i = 0; i < result.length; i++) {
+                    var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                    tbl += '<tr>';
+                    tbl += '<td  class="text-left">' + formattedDate + '</td>';
+                    tbl += '<td  class="text-left">' + result[i].site + '</td>';
+                    tbl += '<td  class="text-right">' + result[i].targer_kwh.toFixed(2) + '</td>';
+                    tbl += '<td  class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + result[i].usmh.toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + result[i].smh.toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + result[i].oh.toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">-</td>';
+                    tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
+                    tbl += '</tr>';
+
+                    cnt++;
+                    total_target += result[i].targer_kwh;
+                    total_expected += result[i].expected_kwh;
+                    total_usmh += result[i].usmh;
+                    total_smh += result[i].smh;
+                    total_oh += result[i].oh;
+                    total_actual += result[i].inv_kwh;
+                    total_pr += result[i].plant_pr;
+
+                }
+                avg_pr = (total_pr / cnt);
+                data_Array = [{ label: "Target",Yaxis:0, backgroundColor: "#77CAE7", data: [total_target.toFixed(1)] },
+                    { label: "Expected", Yaxis: 0, backgroundColor: "#31576D", data: [total_expected.toFixed(1)] },
+                    { label: "USMH", backgroundColor: "#86C466", data: [total_usmh.toFixed(1)] },
+                    { label: "SMH", backgroundColor: "#FFCA5A", data: [total_smh.toFixed(1)] },
+                    { label: "Other", backgroundColor: "#76D7C4", data: [total_oh.toFixed(1)] },
+                    { label: "PR", backgroundColor: "#58D68D", data: [avg_pr.toFixed(1)] },
+                    { label: "Actual", backgroundColor: "#F39C12", data: [total_actual.toFixed(1)] }];
+                console.log("Data Array :", data_Array);
+                monthlychart(data_Array);
+            }
+            else {
+            }
+            tbl += '</table>';
+            $("#exp_vs_actual").html("").html(tbl);
+            $('#example1').DataTable({
+                dom: 'Bfrtip',
+                responsive: false,
+                lengthChange: false,
+                autoWidth: true,
+                paging: true,
+                lengthChange: false,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: true,
+                responsive: false,
+                pageLength: 50,
+                buttons: [
+                    {
+                        extend: 'excel',
+                        title: 'Solar Actual vs Expected',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        title: 'Solar Actual vs Expected',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    'colvis'
+                ]
+            });
+            $(".dt-buttons").addClass('btn-group flex-wrap');
+            $(".dt-buttons > button").addClass('btn btn-secondary');
+            $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+            $('#example1').wrap("<div class='scrolledTable'></div>");
+            getYearlyReport();
+        }
+});
+}
+function getYearlyReport()
+{
+    var data_Array1 = [];
+    document.getElementById("loader").style.display = 'flex';
+    var daterange = $('#daterange').val();
+    var arr1 = new Array();
+    arr1 = daterange.split("-");
+    var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+    var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+    let site_id = "";
+    let spv_list = "";
+    let pr = "";
+    var spv = $('select#spv option:selected').each(function () {
+        spv_list += $(this).val() + ",";
+    });
+    spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
+    var site = $('select#site option:selected').each(function () {
+        site_id += $(this).val() + ",";
+    });
+    site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id +'&pr='+pr,
+        contentType: "application/json; charset=utf-8",
+        datatype: "html",
+        success: function (result, status, xhr) {
+            //console.log(result);
+            document.getElementById("loader").style.display = 'none';
+          
+            if (result.length > 0) {
+                let total_target = 0;
+                let total_expected = 0;
+                let total_usmh = 0;
+                let total_smh = 0;
+                let total_oh = 0;
+                let total_curtaiment = 0;
+                let total_pr = 0;
+                let avg_pr = 0;
+                let total_actual = 0;
+                var cnt = 0;
+                for (var i = 0; i < result.length; i++) {
+                    
+
+                    cnt++;
+                    total_target += result[i].targer_kwh;
+                    total_expected += result[i].expected_kwh;
+                    total_usmh += result[i].usmh;
+                    total_smh += result[i].smh;
+                    total_oh += result[i].oh;
+                    total_actual += result[i].inv_kwh;
+                    total_pr += result[i].plant_pr;
+
+                }
+                avg_pr = (total_pr / cnt);
+                data_Array = [{ label: "Target",Yaxis:0, backgroundColor: "#77CAE7", data: [total_target.toFixed(1)] },
+                    { label: "Expected", Yaxis: 0, backgroundColor: "#31576D", data: [total_expected.toFixed(1)] },
+                    { label: "USMH", backgroundColor: "#86C466", data: [total_usmh.toFixed(1)] },
+                    { label: "SMH", backgroundColor: "#FFCA5A", data: [total_smh.toFixed(1)] },
+                    { label: "Other", backgroundColor: "#76D7C4", data: [total_oh.toFixed(1)] },
+                    { label: "PR", backgroundColor: "#58D68D", data: [avg_pr.toFixed(1)] },
+                    { label: "Actual", backgroundColor: "#F39C12", data: [total_actual.toFixed(1)] }];
+                console.log("Data Array :", data_Array);
+                //monthlychart(data_Array);
+            }
+            else {
+            }
+           
+        }
+});
+}
+
+    function monthlychart(data) {
+        console.log(data);
+    let chartStatus = Chart.getChart("monthly_chart"); // <canvas> id
+    if (chartStatus != undefined) {
+        chartStatus.destroy();
+    }
+    new Chart(document.getElementById("monthly_chart"), {
+        type: 'bar',
+        data: {
+            labels: ["Monthly"],
+            datasets: data,
+            datalabels: {
+                anchor: 'center',
+                align: 'top',
+                color: 'white',
+                labels: {
+                    title: {
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
+                },
+            },
+
+            /*datasets: [{
+                        label: "Target",
+                        backgroundColor: "#77CAE7",
+                        data: [4.55],
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        }
+                    }, {
+                        label: "Expected",
+                        backgroundColor: "#31576D",
+                        backgroundColorHover: "#3e95cd",
+                        data: [3.5],
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    }, {
+
+                        label: "USMH",
+                        backgroundColor: "#86C466",
+                        borderColor: "#86C466",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    },
+                    {
+                       label: "SMH",
+                       backgroundColor: "#FFCA5A",
+                       borderColor: "#FFCA5A",
+                       data: [4.5],
+                       fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    },
+                    {
+                        label: "Other",
+                        backgroundColor: "#76D7C4",
+                        borderColor: "#76D7C4",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    },
+                    {
+                        label: "Curtaiment",
+                        backgroundColor: "#F1948A",
+                        borderColor: "#F1948A",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    },
+                    {
+                        label: "PR",
+                        backgroundColor: "#58D68D",
+                        borderColor: "#58D68D",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+
+                    },
+                    {
+                        label: "Actual",
+                        backgroundColor: "#F39C12",
+                        borderColor: "#F39C12",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    }
+                ]*/
+            },
+
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        //text: title
+                         text: ""
+
+                    },
+
+                    legend: {
+                        display: true,
+                        position: "bottom"
+                    }
+
+                },
+
+            }
+        }
+    );
+}
+
+function yearlyChart() {
+    let chartStatus = Chart.getChart("yearly_chart"); // <canvas> id
+    if (chartStatus != undefined) {
+        chartStatus.destroy();
+    }
+    new Chart(document.getElementById("yearly_chart"), {
+            type: 'bar',
+            data: {
+                labels: ["Yearly"],// ["Target", "Expected", "USMH", "SMH", "Other", "Curtaiment", "PR", "Actual"],
+                datasets: [
+                    {
+                        label: "Target",
+                        backgroundColor: "#77CAE7",
+                        data: [4.55],
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        }
+                    }, {
+
+                        label: "Expected",
+                        backgroundColor: "#31576D",
+                        backgroundColorHover: "#3e95cd",
+                        data: [3.5],
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    }, {
+
+                        label: "USMH",
+                        backgroundColor: "#86C466",
+                        borderColor: "#86C466",
+                        data: [4.5],
+                        //order: 0,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+
+
+                    },
+                    {
+                        label: "SMH",
+                        backgroundColor: "#FFCA5A",
+                        borderColor: "#FFCA5A",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+
+                    },
+                    {
+                        label: "Other",
+                        backgroundColor: "#76D7C4",
+                        borderColor: "#76D7C4",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+
+                    },
+                    {
+                        label: "Curtaiment",
+                        backgroundColor: "#F1948A",
+                        borderColor: "#F1948A",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+                    },
+                    {
+                        label: "PR",
+                        backgroundColor: "#58D68D",
+                        borderColor: "#58D68D",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+
+                    },
+                    {
+                        label: "Actual",
+                        backgroundColor: "#F39C12",
+                        borderColor: "#F39C12",
+                        data: [4.5],
+                        fill: false,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        },
+
+                    }
+                ]
+            },
+
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        //text: title
+                        text: ""
+
+                    },
+                    legend: {
+                        display: true,
+                        position: "bottom"
+                    }
+                },
+            }
+    });
+}
+</script>
+
+
+
+

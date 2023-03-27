@@ -23,10 +23,15 @@ namespace DGRA_V1.Common
         public const string Site_Master = "Site_Master";
         public const string Location_Master = "Location_Master";
         public const string Solar_AC_DC_Capacity = "Solar_AC_DC_Capacity";
+        public const string Solar_tracker_loss = "Solar_tracker_loss";
+        public const string Solar_soiling_loss = "Solar_soiling_loss";
+        public const string Solar_PVSyst_loss = "Solar_PVSyst_loss";
+        public const string GKK = "GKK";
+        public const string TML_Data = "TML_Data";
 
         public static List<string> sheetList = new List<string>()
         {
-            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity" 
+            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity", "Solar_tracker_loss", "Solar_soiling_loss", "Solar_PVSyst_loss", "GKK", "TML_Data",
         };
 
         public enum FileImportType
@@ -41,7 +46,12 @@ namespace DGRA_V1.Common
             imporFileType_Daily_Target_KPI,
             imporFileType_Site_Master,
             imporFileType_Location_Master,
-            imporFileType_Solar_AC_DC_Capacity
+            imporFileType_Solar_AC_DC_Capacity,
+            imporFileType_Solar_tracker_loss,
+            imporFileType_Solar_soiling_loss,
+            imporFileType_Solar_PVSyst_loss,
+            imporFileType_GKK,
+            importFileType_TML_Data,
         }
 
         enum uiPageType
