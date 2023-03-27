@@ -3412,11 +3412,17 @@ bd_remarks, action_taken
                     API_InformationLog("Added to email id :" + item.useremail);
                 }
                 qry = "select useremail from login where Cc_Weekly_Solar = 1;";
-                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data3)
+                try
                 {
-                    AddCc.Add(item.useremail);
-                    API_InformationLog("Added CC email id :" + item.useremail);
+                    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data3)
+                    {
+                        AddCc.Add(item.useremail);
+                        API_InformationLog("Added CC email id :" + item.useremail);
+                    }
+                }
+                catch (Exception e)
+                {
                 }
             }
             else
@@ -3427,19 +3433,25 @@ bd_remarks, action_taken
                 foreach (var item in data2)
                 {
                     AddTo.Add(item.useremail);
-                    API_InformationLog("Added to email id :"+ item.useremail);
+                    API_InformationLog("Added to email id :" + item.useremail);
                 }
                 qry = "select useremail from login where Cc_Weekly_Wind = 1;";
-                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data3)
+                try
                 {
-                    AddCc.Add(item.useremail);
-                    API_InformationLog("Added CC email id :" + item.useremail);
+                    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data3)
+                    {
+                        AddCc.Add(item.useremail);
+                        API_InformationLog("Added CC email id :" + item.useremail);
+                    }
+                }
+                catch (Exception e)
+                {
                 }
             }
 
 
-		
+
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
             string subject = "";
@@ -3459,7 +3471,7 @@ bd_remarks, action_taken
             //var file = "/Users/sanketkar/Downloads/WeeklyReport_2023-01-04.pptx";
             //var file = "C:\\Users\\sujit\\Downloads\\" + fname+".pptx";
             //var file = "C:\\Users\\DGR\\Downloads\\" + fname+".pptx";
-            var file = "C:\\inetpub\\wwwroot\\DGRA_Web\\pptupload\\" + fname + ".pptx";
+            var file = "C:\\inetpub\\wwwroot\\DGR_WEB\\pptupload\\" + fname + ".pptx";
             API_InformationLog("Reading file path:- " + file);
             try {
                 //using var stream = new MemoryStream(System.IO.File.ReadAllBytes(file).ToArray());

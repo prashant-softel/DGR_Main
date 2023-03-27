@@ -1098,7 +1098,6 @@ C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Fi
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\DGRA_V1.runtimeconfig.json
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\DGRA_V1.runtimeconfig.dev.json
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\DGRA_V1.dll
-C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\ref\DGRA_V1.dll
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\DGRA_V1.pdb
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\DGRA_V1.Views.dll
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\DGRA_V1.Views.pdb
@@ -1247,7 +1246,6 @@ C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Fi
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\DGRA_V1.RazorAssemblyInfo.cache
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\DGRA_V1.RazorAssemblyInfo.cs
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\staticwebassets\DGRA_V1.StaticWebAssets.Manifest.cache
-C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\staticwebassets\DGRA_V1.StaticWebAssets.xml
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\scopedcss\bundle\DGRA_V1.styles.css
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\DGRA_V1.TagHelpers.input.cache
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\DGRA_V1.TagHelpers.output.cache
@@ -1310,3 +1308,5 @@ C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Fi
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\ref\DGRA_V1.dll
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\DGRA_V1.pdb
 C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\DGRA_V1.genruntimeconfig.cache
+C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\bin\Debug\net5.0\ref\DGRA_V1.dll
+C:\Data Folder All Data should be here\DGR\Git_Repo_code\Production code\Most Final\DGR_Main\DGRA\DGRA_V1\obj\Debug\net5.0\staticwebassets\DGRA_V1.StaticWebAssets.xml
