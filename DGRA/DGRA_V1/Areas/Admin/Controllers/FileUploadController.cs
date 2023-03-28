@@ -532,13 +532,33 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     {
                                         if (fileUploadType == "Solar")
                                         {
-                                            m_ErrorLog.SetInformation(",Importing Solar TML_Data WorkSheet:");
-                                            statusCode = await InsertWindTMLData(status, ds);
+                                            m_ErrorLog.SetError(",TML_Data file cannot be imported for Solar");
+                                            status = "Wrong file upload type selected for TML_Data import";
+                                            //statusCode = await InsertWindTMLData(status, ds);
                                         }
                                         else
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind TML_Data WorkSheet:");
                                             statusCode = await InsertWindTMLData(status, ds);
+                                        }
+                                    }
+                                }
+                                else if (excelSheet == FileSheetType.Power_Curve)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.importFileType_Power_Curve;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if (ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Solar")
+                                        {
+                                            m_ErrorLog.SetError(",TML_Data file cannot be imported for Solar");
+                                            status = "Wrong file upload type selected for Power_Curve import";
+                                            //statusCode = await InsertWindPowerCurve(status, ds);
+                                        }
+                                        else
+                                        {
+                                            m_ErrorLog.SetInformation(",Importing Wind Power_Curve WorkSheet:");
+                                            statusCode = await InsertWindPowerCurve(status, ds);
                                         }
                                     }
                                 }
@@ -568,8 +588,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         string tabName = excelSheet.ToString();
                                         if (fileUploadType == "Solar")
                                         {
-                                            m_ErrorLog.SetInformation(",Reviewing Solar TMR:");
-                                            statusCode = await InsertWindTMR(status, ds, tabName);
+                                            m_ErrorLog.SetError(",GKK file cannot be imported for Solar");
+                                            status = "Wrong file upload type selected for GKK import";
+                                            //statusCode = await InsertWindTMR(status, ds, tabName);
                                         }
                                         else if (fileUploadType == "Wind")
                                         {
@@ -3871,6 +3892,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             if (ds.Tables.Count > 0)
             {
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
+                string previousTime = "00:00:00";
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     InsertWindTMLData addUnit = new InsertWindTMLData();
@@ -3895,8 +3917,31 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("yyyy-MM-dd HH:mm:ss");
                         errorFlag.Add(stringNullValidation(addUnit.timestamp, "Time Stamp", rowNumber));
 
+                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("dd-MMM-yy");
+                        //string temp_date = temp.Substring(0, 10);
+                        if(rowNumber == 2)
+                        {
+                            previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
+                        }
+                        addUnit.from_time = previousTime;
+                        addUnit.to_time = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
 
-                        addUnit.avg_active_power = dr["Actual_Avg_Active_Power_10M"] is DBNull || string.IsNullOrEmpty((string)dr["Actual_Avg_Active_Power_10M"]) ? 0 : Convert.ToDouble(dr["Actual_Avg_Active_Power_10M"]);
+                        previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
+
+                        bool isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Actual_Avg_Active_Power_10M"]) || dr["Actual_Avg_Active_Power_10M"] is DBNull;
+
+                        if (!isActivePowerEmpty)
+                        {
+                            addUnit.avg_active_power = Convert.ToDouble(dr["Actual_Avg_Active_Power_10M"]);
+                            addUnit.status = "Available";
+                            addUnit.status_code = 0;
+                        }
+
+                        if (isActivePowerEmpty)
+                        {
+                            addUnit.status = "Missing";
+                            addUnit.status_code = 1;
+                        }
 
                         addUnit.avg_wind_speed = dr["Actual_Avg_Wind_Speed_10M"] is DBNull || string.IsNullOrEmpty((string)dr["Actual_Avg_Wind_Speed_10M"]) ? 0 : Convert.ToDouble(dr["Actual_Avg_Wind_Speed_10M"]);
 
@@ -4056,6 +4101,106 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     m_ErrorLog.SetError(",Solar PVSyst Loss Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
+
+        //InsertWindPowerCurve
+        private async Task<int> InsertWindPowerCurve(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+
+            if (ds.Tables.Count > 0)
+            {
+                List<InsertWindPowerCurve> addSet = new List<InsertWindPowerCurve>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    InsertWindPowerCurve addUnit = new InsertWindPowerCurve();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
+                        if (addUnit.site == "" || addUnit.site == null)
+                        {
+                            m_ErrorLog.SetError(", Site column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+
+                        addUnit.site_id = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+
+                        if(addUnit.site_id == 0)
+                        {
+                            //m_ErrorLog.SetError("Site name <" + addUnit.site + "> fail to match with data in Location Master at row <" + rowNumber + ">.");
+                            errorCount++;
+                        }
+
+                        objImportBatch.importSiteId = addUnit.site_id;//C
+
+                        addUnit.active_power = dr["Wind Speed (m/s)"] is DBNull || string.IsNullOrEmpty((string)dr["Wind Speed (m/s)"]) ? 0 : Convert.ToDouble(dr["Wind Speed (m/s)"]);
+
+                        addUnit.wind_speed = dr["Active Power (kW)"] is DBNull || string.IsNullOrEmpty((string)dr["Active Power (kW)"]) ? 0 : Convert.ToDouble(dr["Active Power (kW)"]);
+
+                        //errorFlag.Clear();
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        //developer errorlog
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindPowerCurve,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindPowerCurve: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Wind Power Curve Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindPowerCurve";
+                    using (var client = new HttpClient())
+                    {
+                        var response = await client.PostAsync(url, data);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            m_ErrorLog.SetInformation(",Wind Power Curve API SuccessFul,");
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",Wind Power Curve API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else if (deleteStatus == 0)
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", File not uploaded");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Wind TML Data Validation Failed,");
                 }
             }
             return responseCode;

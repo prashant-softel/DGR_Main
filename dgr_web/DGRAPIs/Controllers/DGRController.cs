@@ -956,6 +956,24 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        //InsertWindPowerCurve
+        [Route("InsertWindPowerCurve")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindPowerCurve(List<InsertWindPowerCurve> InsertWindPowerCurve)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindPowerCurve(InsertWindPowerCurve);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         /*[Route("InsertDailyJMR")]
          [HttpPost]
          public async Task<IActionResult> InsertDailyJMR(List<WindDailyJMR> windDailyJMR)

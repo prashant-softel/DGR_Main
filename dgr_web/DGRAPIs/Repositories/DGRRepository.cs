@@ -3762,17 +3762,60 @@ bd_remarks, action_taken
         {
             int val = 0;
             //pending delete qry and code clean up
-            string qry = " insert into uploading_file_tmr_data (WTGs, Time_stamp, avg_active_power, avg_wind_speed, restructive_WTG) values";
+            string qry = " insert into uploading_file_tmr_data (WTGs, Time_stamp, avg_active_power, avg_wind_speed, restructive_WTG, date, from_time, to_time, status, status_code) values";
             string insertValues = "";
-            string deleteValues = "";
+            int counter = 0;
+            string date = "";
             foreach (var unit in set)
             {
-                insertValues += "('" + unit.WTGs + "','" + unit.timestamp + "','" + unit.avg_active_power + "','" + unit.avg_wind_speed + "','" + unit.restructive_WTG + "'),";
+                if (counter == 0)
+                {
+                    date = unit.date;
+                }
+                counter++;
+                if(unit.status_code == 0)
+                {
+                    insertValues += "('" + unit.WTGs + "','" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
+                }
+                if(unit.status_code == 1)
+                {
+                    insertValues += "('" + unit.WTGs + "','" + unit.timestamp + "', NULL, " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
+                }
                 //DELETE FROM uploading_file_pvsyst_loss WHERE site_id IN (3,9) and month In ('Apr','Mar');
-                
+
             }
 
-            string deleteQry = "DELETE FROM uploading_file_tmr_data ;" ;
+            string deleteQry = "DELETE FROM uploading_file_tmr_data WHERE date ='" + date + "' ;" ;
+            qry += insertValues;
+
+            await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            if (!(string.IsNullOrEmpty(insertValues)))
+            {
+                val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+            }
+            return val;
+        }
+
+        //InsertWindPowerCurve
+        internal async Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> set)
+        {
+            int val = 0;
+            string qry = " INSERT INTO power_curve ( site, site_id, wind_speed, active_power ) VALUES";
+            string insertValues = "";
+            int counter = 0;
+            string site = "";
+            int site_id = 0;
+            foreach (var unit in set)
+            {
+                if(counter == 0)
+                {
+                    site = unit.site;
+                    site_id = unit.site_id;
+                }                                           
+                insertValues += "('" + unit.site + "','" + unit.site_id + "', " + unit.wind_speed + ", " + unit.active_power + "),";
+            }
+
+            string deleteQry = "DELETE FROM power_curve WHERE site ='" + site + "' AND site_id =" + site_id + ";";
             qry += insertValues;
 
             await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);

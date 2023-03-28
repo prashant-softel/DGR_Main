@@ -71,6 +71,8 @@ namespace DGRAPIs.BS
         Task<int> InsertWindUploadingFileGeneration(List<WindUploadingFileGeneration> set, int batchId);
         Task<int> InsertWindUploadingFileBreakDown(List<WindUploadingFileBreakDown> set, int batchId);
         Task<int> InsertWindTMLData(List<InsertWindTMLData> set);
+        //InsertWindPowerCurve
+        Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> set);
 
         Task<List<SolarSiteMaster>> GetSolarSiteList(string state, string spvdata, string site);
         //Task<int> InsertDailyJMR(List<WindDailyJMR> set);
@@ -1184,6 +1186,23 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.InsertWindTMLData(InsertWindTMLData);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertWindPowerCurve
+        public async Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> InsertWindPowerCurve)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertWindPowerCurve(InsertWindPowerCurve);
 
                 }
             }
