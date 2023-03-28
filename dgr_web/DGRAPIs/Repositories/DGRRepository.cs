@@ -3809,6 +3809,7 @@ bd_remarks, action_taken
             {
                 if(counter == 0)
                 {
+                    //saving site name and site id on first iteration of loop.
                     site = unit.site;
                     site_id = unit.site_id;
                 }                                           
