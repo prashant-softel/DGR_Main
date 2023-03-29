@@ -20,7 +20,7 @@ namespace DGRAPIs.Repositories
         //Login 
 
         //internal async Task<List<UserLogin>> GetUserLogin(string username, string password)
-        internal async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO, int device_id)
+        internal async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO, string device_id)
         {
             string qry = "";
             /*//qry = "SELECT * FROM `login` where `username`='" + username + "' and `password` ='" + password + "' and `active_user` = 1 ;";
@@ -49,7 +49,7 @@ namespace DGRAPIs.Repositories
                 var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 if (_UserLogin.Count > 0)
                 {
-                    string qry1 = "update login set last_accessed=NOW(),islogin=1, device_id = " + device_id + " where login_id=" + _UserLogin[0].login_id + ";";
+                    string qry1 = "update login set last_accessed=NOW(),islogin=1, device_id = '" + device_id + "' where login_id=" + _UserLogin[0].login_id + ";";
                     await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
                 }
                 return _UserLogin.FirstOrDefault();
@@ -65,13 +65,15 @@ namespace DGRAPIs.Repositories
 
         }
 
-        internal async Task<UserLogin> GetUserLoginFromDeviceId(int device_id)
+        internal async Task<UserLogin> GetUserLoginFromDeviceId(string device_id)
         {
             string qry = "";
-            
+            API_InformationLog("Inside GetUserLoginFromDeviceID function : Device Id is :-"+ device_id);
+
+
             {
                 //SELECT * FROM `login` where `device_id`=1494303526 AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute);
-                qry = "SELECT login_id, username, password, useremail,last_accessed, user_role, islogin as islogin, device_id FROM `login` where `device_id`=" + device_id + " AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute) ;";
+                qry = "SELECT login_id, username, password, useremail,last_accessed, user_role, islogin as islogin, device_id FROM `login` where `device_id`='" + device_id + "' AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute) ;";
             }
             var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
             if (_UserLogin.Count > 0)
@@ -90,6 +92,30 @@ namespace DGRAPIs.Repositories
             return _UserLogin.FirstOrDefault();
 
         }
+        //UpdateLoginLog
+        internal async Task<int> UpdateLoginLog(int UserID, string userRole)
+        {
+            
+            string InsertQry = "";
+            if (userRole == "login")
+            {
+                string selectQry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `login_id`=" + UserID + " AND `active_user` = 1 AND islogin = 1 ;";
+
+                var _UserLogin = await Context.GetData<UserLogin>(selectQry).ConfigureAwait(false);
+
+                InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, login_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', NOW(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', NOW() );";
+            }
+            if(userRole == "logout")
+            {
+                string selectQry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `login_id`=" + UserID + " AND `active_user` = 1 ;";
+
+                var _UserLogin = await Context.GetData<UserLogin>(selectQry).ConfigureAwait(false);
+
+                InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, logout_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', NOW(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', NOW() );";
+            }
+            return await Context.ExecuteNonQry<int>(InsertQry).ConfigureAwait(false);
+
+        }
         internal async Task<int> UpdateLoginStatus(int UserID)
         {
             string qry1 = "Update login set islogin=0 where last_accessed<  date_add(now(),interval -10 minute); update login set last_accessed=NOW(),islogin=1 where login_id=" + UserID + ";";
@@ -98,6 +124,7 @@ namespace DGRAPIs.Repositories
         }
         internal async Task<int> DirectLogOut(int UserID)
         {
+            //Maybe device id should be 0 
             string qry1 = "Update login set islogin=0 where  login_id=" + UserID + ";";
             return await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
 
@@ -364,6 +391,16 @@ namespace DGRAPIs.Repositories
 
         }
 
+        private void API_ErrorLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Error**:" + Message + "\r\n");
+        }
+        private void API_InformationLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
+        }
 
     }
 

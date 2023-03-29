@@ -17,7 +17,7 @@ namespace DGRAPIs.Models
         public DateTime last_accessed { get; set; }
         public int active_user { get; set; }
         public bool islogin { get; set; }
-        public int device_id { get; set; }
+        public string device_id { get; set; }
     }
     public class UserInfomation
     {
@@ -27,7 +27,7 @@ namespace DGRAPIs.Models
         public string user_role { get; set; }
        // public DateTime created_on { get; set; }
         public int active_user { get; set; }
-        public int device_id { get; set; }
+        public string device_id { get; set; }
 
     }
     public class HFEPage

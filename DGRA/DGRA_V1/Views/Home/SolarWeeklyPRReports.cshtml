@@ -1522,7 +1522,7 @@
                  sec3 += '<th>Period</th><th>Energy Gain/Loss (MUs)	</th><th>Revenue(MINR)</th></tr ></thead> ';
                  sec3 += '<tr><td>WK</td><td style="text-align: right;">' + Diff_Mus[0] + '</td><td style="text-align: right;">' + revenue[0].toFixed(1) + '</td></tr>';
                  sec3 += '<tr><td>MTD</td><td style="text-align: right;">' + Diff_Mus[1] + '</td><td style="text-align: right;">' + revenue[1].toFixed(1) + '</td></tr>';
-                 sec3 += '<tr><td>YTD</td><td style="text-align: right;">' + Diff_Mus[2] + '</td><td style="text-align: right;">' + revenue[2] + '</td></tr></table>';
+                 sec3 += '<tr><td>YTD</td><td style="text-align: right;">' + Diff_Mus[2] + '</td><td style="text-align: right;">' + revenue[2].toFixed(1) + '</td></tr></table>';
 
                  $("#wk_head_sec1").html(sec1);
                  $("#wk_head_sec2").html(sec2);
@@ -1816,8 +1816,17 @@
                     data: target_plf,
                     order: 1,
                     datalabels: {
-                        anchor: 'end',
+                        anchor: 'center',
                         align: 'top',
+                        color: 'white',
+                        labels: {
+                            title: {
+                                font: {
+                                    weight: 'bold'
+
+                                }
+                            },
+                        },
                     },
                 }, {
                     yAxisID: 'plf_en',

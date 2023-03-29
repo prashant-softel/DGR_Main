@@ -118,11 +118,14 @@
         <i class=" mr-2"></i>Role Name
         <span class="float-right text-muted text-sm"></span>
     </a>-->
-                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-divider" onclick="clearSession()" ></div>
+                        <div onclick="clearSession()" >
                         <a href="~/Home/Logout" class="dropdown-item text-center">
                             <span class=""> Sign Out</span>
                             
                         </a>
+
+                        </div>
 
                     </div>
                 </li>
@@ -599,7 +602,7 @@
                                     </ul>
                                 </li>
                             }
-                            <li class="nav-item">
+                            <li class="nav-item" onclick="clearSession()" >
                                 <a href="@Url.Action("Logout", "Home"  , new { Area = "" })" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Sign Out</p>
@@ -929,7 +932,29 @@
             updateLoginDetails();
         }, 1000 * 60 * 4);
 
+        function clearSession() {
+            var UserID = getCookie('userid');
+            var userRole = "logout"
+            updateLoginLog(UserID, userRole);
 
+            sessionStorage.clear();
+            //localStorage.clear();
+        }
+
+        function updateLoginLog(UserID, userRole) {
+        console.log("Updating Login Log Id:" + UserID + " role :" + userRole);
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("UpdateLoginLog", "Home")' + '?userId=' + UserID + "&userRole=" + userRole ,
+            //url: "/Dashboard/GetFinacialYear",
+            contentType: "application/json; charset=utf-8",
+            //data: '{"countryname":"' + selcountry + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
+                console.log("Result " + result + " status :" + status);
+            }
+        });
+    }
 
         function getCookie(cname) {
             let name = cname + "=";

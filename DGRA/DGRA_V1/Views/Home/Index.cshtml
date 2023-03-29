@@ -162,7 +162,7 @@
         function Login() {
             var username = document.getElementById("username").value;
             var password = document.getElementById("pass").value;
-            var device_id = getDeviceId();
+            var device_id = getMachineId();
             console.log("device id from login function " + device_id);
             if (username == "" || password == "") {
                 document.getElementById("msg").style.display = 'block';
@@ -196,6 +196,7 @@
                             //return RedirectToAction("Dashbord", "Home");
                             var temp = 12;
 
+                            //updateLoginLog();
                             //Haresh Uncomment this afterwards.
                             window.location.href = "@Url.Action("Dashbord", "Home")";//d"/DGRA_Web/Home/Dashbord"; //Remote server
                             //window.location.href = "/Home/Dashbord"; //Local
@@ -258,10 +259,15 @@
         }
 
         window.onload = function () {
-            var deviceID = getDeviceId();
+            var deviceID = getMachineId();
             console.log("Your device ID is : " + deviceID + " OR " + getDeviceId());
             //GetUserLoginFromDeviceId
             GetUserLoginFromDeviceId(deviceID);
+        }
+
+        function clearSession() {
+            sessionStorage.clear();
+            //localStorage.clear();
         }
 
         function GetUserLoginFromDeviceId(deviceID) {
@@ -356,6 +362,17 @@
                 hash |= 0;
             }
             return hash.toString();
+        }
+        function getMachineId() {
+
+            let machineId = localStorage.getItem('MachineId');
+
+            if (!machineId) {
+                machineId = crypto.randomUUID();
+                localStorage.setItem('MachineId', machineId);
+            }
+
+            return machineId;
         }
     </script>
 </body>
