@@ -357,6 +357,8 @@
 
 <script type="text/javascript">
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    //var userName = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("DisplayName"))";
+    var UserID = getCookie('userid');
     console.log("User Role :::" + userRole);
     var wsite_list = "@Html.Raw(windSiteList.TrimEnd(','))";
     var ssite_list = "@Html.Raw(solarSiteList.TrimEnd(','))";
@@ -368,6 +370,7 @@
     var displaychart = {"wind":false,"solar":false};
     //var tendays = "";
     window.onload = function () {
+        updateLoginLog(UserID, "login");
         getYear();
         var today = new Date();
         fyear = getFinancialYear(today);
@@ -417,7 +420,23 @@
 
 
 
-     }
+    }
+
+    //updateLoginLog()
+    function updateLoginLog(UserID, userRole) {
+        console.log("Updating Login Log Id:" + UserID + " role :" + userRole);
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("UpdateLoginLog", "Home")' + '?userId=' + UserID + "&userRole=" + userRole ,
+            //url: "/Dashboard/GetFinacialYear",
+            contentType: "application/json; charset=utf-8",
+            //data: '{"countryname":"' + selcountry + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
+                consol.log("Result " + result + " status :" + status);
+            }
+        });
+    }
 
     function getYear() {
         $.ajax({
@@ -1570,5 +1589,21 @@
             }
 
         });
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
     }
 </script>

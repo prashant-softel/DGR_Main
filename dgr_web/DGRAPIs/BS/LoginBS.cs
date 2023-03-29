@@ -12,9 +12,9 @@ namespace DGRAPIs.BS
     {
         Task<int> eQry(string qry);
         //Task<List<UserLogin>> GetUserLogin(string username, string password);
-        Task<UserLogin> GetUserLogin(string username, string password,bool isSSO, int device_id);
-        Task<UserLogin> GetUserLoginFromDeviceId(int device_id);
-
+        Task<UserLogin> GetUserLogin(string username, string password,bool isSSO, string device_id);
+        Task<UserLogin> GetUserLoginFromDeviceId(string device_id);
+        Task<int> UpdateLoginLog(int UserID, string userRole);
         Task<int> UpdateLoginStatus(int UserID);
         Task<int> DirectLogOut(int UserID);
         Task<int> WindUserRegistration(string fname, string useremail, string role, string userpass);
@@ -52,6 +52,22 @@ namespace DGRAPIs.BS
                 using (var repos = new LoginRepository(getDB))
                 {
                     return await repos.UpdateLoginStatus(UserID);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> UpdateLoginLog(int UserID, string userRole)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.UpdateLoginLog(UserID, userRole);
 
                 }
             }
@@ -139,7 +155,7 @@ namespace DGRAPIs.BS
             }
         }
         //public async Task<List<UserLogin>> GetUserLogin(string username, string password)
-        public async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO, int device_id)
+        public async Task<UserLogin> GetUserLogin(string username, string password, bool isSSO, string device_id)
         {
             try
             {
@@ -155,7 +171,7 @@ namespace DGRAPIs.BS
             }
         }
 
-        public async Task<UserLogin> GetUserLoginFromDeviceId(int device_id)
+        public async Task<UserLogin> GetUserLoginFromDeviceId(string device_id)
         {
             try
             {

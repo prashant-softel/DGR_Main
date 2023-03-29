@@ -23,7 +23,7 @@ namespace Login.Controllers
         [Route("UserLogin")]
         [HttpGet]
        // public async Task<IActionResult> UserLogin(string username, string password)
-        public async Task<IActionResult> UserLogin(string username, string password,bool isSSO, int device_id)
+        public async Task<IActionResult> UserLogin(string username, string password,bool isSSO, string device_id)
         {
            try
             {
@@ -41,7 +41,7 @@ namespace Login.Controllers
         [Route("GetUserLoginFromDeviceId")]
         [HttpGet]
         // public async Task<IActionResult> UserLogin(string username, string password)
-        public async Task<IActionResult> GetUserLoginFromDeviceId(int device_id)
+        public async Task<IActionResult> GetUserLoginFromDeviceId(string device_id)
         {
             try
             {
@@ -55,7 +55,24 @@ namespace Login.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //UpdateLoginLog
+        [Route("UpdateLoginLog")]
+        [HttpGet]
+        // public async Task<IActionResult> UserLogin(string username, string password)
+        public async Task<IActionResult> UpdateLoginLog(int userID, string userRole)
+        {
+            try
+            {
 
+                var data = await _loginBs.UpdateLoginLog(userID, userRole);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         [Route("UpdateLoginStatus")]
         [HttpGet]
         // public async Task<IActionResult> UserLogin(string username, string password)

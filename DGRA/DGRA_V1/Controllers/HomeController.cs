@@ -164,7 +164,7 @@ namespace DGRA_V1.Controllers
             //return RedirectToAction("Index");
         }
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string username, string pass, int device_id)
+        public async Task<IActionResult> Login(string username, string pass, string device_id)
         {
             string status = "";
             string line = "";
@@ -208,6 +208,7 @@ namespace DGRA_V1.Controllers
                                 HttpContext.Session.SetString("DisplayName", model.username);
                                 HttpContext.Session.SetString("role", model.user_role);
                                 HttpContext.Session.SetString("userid", model.login_id.ToString());
+                                HttpContext.Session.SetString("useremail", model.useremail.ToString());
 
                                 int loginid = model.login_id;
                                 string role = model.user_role;
@@ -237,7 +238,35 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
 
-        public async Task<IActionResult> GetUserLoginFromDeviceId(int device_id)
+        //UpdateLoginLog
+        public async Task<IActionResult> UpdateLoginLog(int userId, string userRole)
+        {
+            LoginModel model = new LoginModel();
+            string line = "";
+
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UpdateLoginLog?userId=" + userId + "&userRole=" + userRole;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                        model = JsonConvert.DeserializeObject<LoginModel>(line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
+
+        public async Task<IActionResult> GetUserLoginFromDeviceId(string device_id)
         {
             LoginModel model = new LoginModel();
             string line = "";
