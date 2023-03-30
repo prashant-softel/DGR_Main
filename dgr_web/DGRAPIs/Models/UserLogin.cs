@@ -25,7 +25,15 @@ namespace DGRAPIs.Models
         public string username { get; set; }
         public string useremail { get; set; }
         public string user_role { get; set; }
-       // public DateTime created_on { get; set; }
+        public int To_Daily_Wind { get; set; }
+        public int Cc_Daily_Wind { get; set; }
+        public int To_Weekly_Wind { get; set; }
+        public int Cc_Weekly_Wind { get; set; }
+        public int To_Daily_Solar { get; set; }
+        public int Cc_Daily_Solar { get; set; }
+        public int To_Weekly_Solar { get; set; }
+        public int Cc_Weekly_Solar { get; set; }
+        // public DateTime created_on { get; set; }
         public int active_user { get; set; }
         public int device_id { get; set; }
 

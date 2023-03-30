@@ -26,7 +26,7 @@ namespace DGRAPIs.BS
         Task<List<UserInfomation>> GetSolarUserInformation(int login_id);
         Task<List<HFEPage>> GetPageList(int login_id, int site_type);
         Task<List<UserAccess>> GetWindUserAccess(int login_id,string role);
-
+        Task<List<UserInfomation>> GetEmailAccess(int login_id, int site, int action, string notifications);
         Task<int> SubmitUserAccess(int login_id, string siteList, string pageList, string reportList, string site_type, int importapproval);
         //GetUserLoginId
         Task<List<UserInfomation>> GetUserLoginId(string username, string useremail);
@@ -297,7 +297,22 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
-     
+        public async Task<List<UserInfomation>> GetEmailAccess(int login_id, int site, int action, string notifications)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.GetEmailAccess(login_id, site, action, notifications);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<int> eQry(string qry)
         {
             try

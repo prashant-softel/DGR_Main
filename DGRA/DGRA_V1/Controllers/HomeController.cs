@@ -624,6 +624,40 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
 
         }
+
+        public async Task<IActionResult> GetEmailAccess(int login_id, int site, int access, string notifications=null, bool actionType = false)
+        {
+            UserInfomation usermodel = new UserInfomation();
+            string line = "";
+            try
+            {
+                //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail="+ useremail + "&site="+ site + "&role="+ role + "&pages="+ pages + "&reports="+ reports + "&read="+ read + "&write="+ write + "";
+                // var url = "http://localhost:23835/api/Login/GetWindUserInformation?login_id="+ login_id;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/GetEmailAccess?login_id=" + login_id + "&site=" + site + "&action=" + access + "&notifications=" + notifications;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                        if (actionType == true)
+                        {
+                            usermodel.access_list = JsonConvert.DeserializeObject<List<UserInfomation>>(line);
+                            HttpContext.Session.SetString("UserAccess", JsonConvert.SerializeObject(usermodel));
+                            // var people = System.Text.Json.JsonSerializer.Deserialize<List<Person>>(line);
+                            // HttpContext.Session.SetString("UserAccess", people.ToString());
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
         //[HttpPost]
         [TypeFilter(typeof(SessionValidation))]
         public async Task<IActionResult> GetUserLoginId(string username, string useremail)

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DGRAPIs.Helper;
 using DGRAPIs.Models;
 using Nancy.Json;
+using System.Text.RegularExpressions;
 
 namespace DGRAPIs.Repositories
 {
@@ -232,6 +233,33 @@ namespace DGRAPIs.Repositories
 
 
         }
+        public async Task<List<HFEPage>> GetEmailList(int login_id, int site_type)
+        {
+            /* string filter = "";
+             if (login_id != 0)
+             {
+                 filter = " where login_id='" + login_id + "'";
+             }*/
+            string qry = "";
+
+            //qry = "SELECT * FROM `hfe_pages` where Visible=1 and site_type=2";
+            if (site_type == 2)
+            {
+                qry = "SELECT * FROM `hfe_pages` where Visible=1 and site_type=2 or site_type = 0";
+            }
+            if (site_type == 1)
+            {
+                qry = "SELECT * FROM `hfe_pages` where Visible=1 and site_type=1 or site_type = 0";
+            }
+            // Console.WriteLine(qry);
+            // var _Userinfo = await Context.GetData<UserInfomation>(qry).ConfigureAwait(false);
+            // return _Userinfo.FirstOrDefault();
+            List<HFEPage> _pagelist = new List<HFEPage>();
+            _pagelist = await Context.GetData<HFEPage>(qry).ConfigureAwait(false);
+            return _pagelist;
+
+
+        }
         public async Task<List<UserAccess>> GetWindUserAccess(int login_id,string role)
         {
             
@@ -246,6 +274,71 @@ namespace DGRAPIs.Repositories
             }
             List<UserAccess> _accesslist = new List<UserAccess>();
             _accesslist = await Context.GetData<UserAccess>(qry).ConfigureAwait(false);
+            return _accesslist;
+
+
+        }
+        public async Task<List<UserInfomation>> GetEmailAccess(int login_id, int site ,int action, string notifications)
+        {
+
+            string qry = "";
+            string delAccess = "";
+            string setAccess = "";
+            //var foos = "Foo1,Foo2,Foo3";
+           // var fooArray = foos.Split(',');  // now you have an array of 3 strings
+           // foos = String.Join(",", fooArray);
+
+            if (action == 1)
+            {
+                if (site == 1)
+                {
+                    qry = "SELECT login_id ,To_Daily_Wind, Cc_Daily_Wind, To_Weekly_Wind, Cc_Weekly_Wind FROM `login` where login_id = '" + login_id + "'";
+                }
+                else
+                {
+                    qry = "SELECT login_id ,To_Daily_Solar, Cc_Daily_Solar, To_Weekly_Solar, Cc_Weekly_Solar FROM `login` where login_id = '" + login_id + "'";
+
+                }
+            }
+            else if(action == 2)
+            {   //var str = 
+                var noti = Regex.Replace(notifications, @"[^0-9a-zA-Z:,]+", " ");
+                var notArray = noti.Split(',');
+                //var notificationList = new JavaScriptSerializer().Deserialize<dynamic>(notifications);
+                if (site == 1) {
+
+                    delAccess = "UPDATE login SET To_Daily_Wind=0, Cc_Daily_Wind=0, To_Weekly_Wind=0, Cc_Weekly_Wind=0 where login_id = '" + login_id + "'";
+                    await Context.ExecuteNonQry<int>(delAccess).ConfigureAwait(false);
+
+                    foreach(var notification in notArray)
+                    {
+                        var col = Regex.Replace(notification, " ", "_");
+                        var col1 = col.Substring(1, col.Length - 2);
+                        setAccess = "UPDATE login SET "+ col1 +" = 1 where login_id = '" + login_id + "'";
+                        await Context.ExecuteNonQry<int>(setAccess).ConfigureAwait(false);
+                    }
+                    //setAccess = "UPDATE login SET To_Daily_Wind = 0, Cc_Daily_Wind=0, To_Weekly_Wind=0, Cc_Weekly_Wind=0 where login_id = '" + login_id + "'";
+                    //await Context.ExecuteNonQry<int>(setAccess).ConfigureAwait(false);
+                }
+                else if(site == 2)
+                {
+            
+                    delAccess = "UPDATE login SET To_Daily_Wind=0, Cc_Daily_Wind=0, To_Weekly_Wind=0, Cc_Weekly_Wind=0 where login_id = '" + login_id + "'";
+                    await Context.ExecuteNonQry<int>(delAccess).ConfigureAwait(false);
+
+                    foreach (var notification in notArray)
+                    {
+                        var col = Regex.Replace(notification, " ", "_");
+                        var col1 = col.Substring(1, col.Length - 2);
+                        setAccess = "UPDATE login SET " + col1 + " = 1 where login_id = '" + login_id + "'";
+                        await Context.ExecuteNonQry<int>(setAccess).ConfigureAwait(false);
+                    }
+                }
+
+
+            }
+            List<UserInfomation> _accesslist = new List<UserInfomation>();
+            _accesslist = await Context.GetData<UserInfomation>(qry).ConfigureAwait(false);
             return _accesslist;
 
 
