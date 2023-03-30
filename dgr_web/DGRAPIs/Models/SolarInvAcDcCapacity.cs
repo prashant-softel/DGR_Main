@@ -15,4 +15,10 @@ namespace DGRAPIs.Models
         public dynamic ac_capacity { get; set; }
           
     }
+    public class SolarInvAcCapacity
+    {
+        public string inverter { get; set; }
+        public dynamic ac_capacity { get; set; }
+
+    }
 }
