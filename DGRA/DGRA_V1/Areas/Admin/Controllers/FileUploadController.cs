@@ -530,9 +530,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                 else
                                                 {
                                                     
-                                                    m_ErrorLog.SetError(",Wind KPI Calculations API Failed:");
                                                     statusCode = (int)response.StatusCode;
+                                                    string errorMsg = response.Content.ReadAsStringAsync().Result;
                                                     status = "Wind KPI Calculation Import API Failed";
+                                                    m_ErrorLog.SetError(",Wind KPI Calculations API Failed. Reason : " + errorMsg);
 
                                                     //for solar 0, wind 1;
                                                     int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 1);
@@ -605,9 +606,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                 }
                                                 else
                                                 {
-                                                    m_ErrorLog.SetError(",SolarKPI Calculations API Failed:");
                                                     statusCode = (int)response.StatusCode;
-                                                    status = "Solar KPI Calculation Import API Failed";
+                                                    string errorMsg = response.Content.ReadAsStringAsync().Result;
+                                                    m_ErrorLog.SetError(",SolarKPI Calculations API Failed. Reason : " + errorMsg);
+                                                    status = "Solar KPI Calculation Import API Failed. Reason : " + errorMsg;
 
                                                     //for solar 0, wind 1;
                                                     int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 0);
