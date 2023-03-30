@@ -256,6 +256,24 @@ namespace Login.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Route("GetEmailAccess")]
+        [HttpGet]
+        public async Task<IActionResult> GetEmailAccess(int login_id, int site, int action, string notifications)
+        {
+            try
+            {
+
+                var data = await _loginBs.GetEmailAccess(login_id, site, action, notifications);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         [Route("SubmitUserAccess")]
         [HttpGet]
         public async Task<IActionResult> SubmitUserAccess(int login_id,string siteList,string pageList, string reportList, string site_type,int importapproval)

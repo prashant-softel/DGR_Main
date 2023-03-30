@@ -7159,9 +7159,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             catch (Exception ex)
             {
-                string strEx = ex.ToString();
                 response = false;
-                //pending : log error
+                string strEx = ex.Message;
+                API_ErrorLog("Exception in CalculateDailyWindKPI function. Reason " + ex.ToString());
                 throw new Exception(strEx);
             }
 
@@ -7662,6 +7662,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     //break;
                 }
 
+                Hashtable acCapacityMap = new Hashtable();
+
+                string plantQryACDC = "select inverter, ac_capacity from solar_ac_dc_capacity where site_id = " + site_id;
+                List<SolarInvAcCapacity> invAC = await Context.GetData<SolarInvAcCapacity>(plantQryACDC).ConfigureAwait(false);
+                foreach (SolarInvAcCapacity InvAcCap in invAC)
+                {
+                    string Inverter = (InvAcCap.inverter);
+                    int acCapacity = (int)Convert.ToInt64(InvAcCap.ac_capacity);
+                    acCapacityMap.Add(Inverter, acCapacity);
+                }
+
                 string qryAllDevices = "Select location_master_solar_id,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity from location_master_solar where site_id='" + site_id + "' ORDER BY icr_inv ";
 
                 //get all power devices
@@ -7716,6 +7727,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 sLastInv = "";
                 sLastICR_INV = "";
                 int index2 = 0;
+                string updateqry = "";
                 //for each solar generation device, get the breakdown data
                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                 {
@@ -7753,28 +7765,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         ///Sanket 
                         // string plantQryACDC = "select ac_capacity from solar_ac_dc_capacity where site_id = " + site_id + " and inverter = '" + sLastInv + "' ";
 
+
+                        //Get invAC from hashtable
+
                         /// change by sujit 
-                        string plantQryACDC = "select ac_capacity from solar_ac_dc_capacity where site_id = " + site_id + " and inverter = '" + sLastICR_INV + "' ";
-                        List<SolarInvAcDcCapacity> invAC = await Context.GetData<SolarInvAcDcCapacity>(plantQryACDC).ConfigureAwait(false);
-
-                        string updateqry = "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) +
-                            ", ma=100, iga=100, ega=100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ", plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) +
-                            ", inv_plf_ac = inv_act/(24*" + invAC[0].ac_capacity + ") * 100, plant_plf_ac = plant_act/(24*" + invAC[0].ac_capacity + ")*100 " + " where site_id = " + site_id + " and inverter ='" + sLastICR_INV + "' and date = '" + fromDate + "'";
-                        
-                        try
+                        //string plantQryACDC = "select ac_capacity from solar_ac_dc_capacity where site_id = " + site_id + " and inverter = '" + sLastICR_INV + "' ";
+                        //List<SolarInvAcDcCapacity> invAC = await Context.GetData<SolarInvAcDcCapacity>(plantQryACDC).ConfigureAwait(false);
+                        double inverterAc = 0;
+                        if (acCapacityMap.ContainsKey(sLastICR_INV))
                         {
-                            int result = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated data (ghi, poa, expected_kwh, plant_pr, etc) in uploading_file_generation_solar table .. Code Line No. 7747");
-
+                            inverterAc = Convert.ToDouble(acCapacityMap[sLastICR_INV]);
                         }
-                        catch (Exception ex)
-                        {
-                            string strEx = ex.ToString();
-                            API_ErrorLog("CalculateDailySolarKPI function : exception during updating data in table uploading_file_generation_solar... Code Line No. 7753 exception :" + strEx);
 
-                            throw;
+                        //optimise this query also
+                        //string updateqry = "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) + ", ma=100, iga=100, ega=100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ", plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + invAC[0].ac_capacity + ") * 100, plant_plf_ac = plant_act/(24*" + invAC[0].ac_capacity + ")*100 " + " where site_id = " + site_id + " and inverter ='" + sLastICR_INV + "' and date = '" + fromDate + "'";
 
-                        }
+                        updateqry += "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) + ", ma=100, iga=100, ega=100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ", plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + inverterAc + ") * 100, plant_plf_ac = plant_act/(24*" + inverterAc + ")*100 " + " where site_id = " + site_id + " and inverter ='" + sLastICR_INV + "' and date = '" + fromDate + "' ;";
+
                         FinalCapcity = 0;
                         sLastICR_INV = sCurrentICR_INV;
                     }
@@ -7782,6 +7789,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 }//end of for each
                     API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : End of for loop.. Code Line No. 7765");
+                try
+                {
+                    int result = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated data (ghi, poa, expected_kwh, plant_pr, etc) after for loop ends in uploading_file_generation_solar table .. Code Line No. 7747");
+
+                }
+                catch (Exception ex)
+                {
+                    string strEx = ex.ToString();
+                    API_ErrorLog("CalculateDailySolarKPI function : exception during updating data in table uploading_file_generation_solar... Code Line No. 7753 exception :" + strEx);
+
+                    throw;
+
+                }
 
                 string updateqryCheck = "update uploading_file_generation_solar set inv_pr = NULL, plant_pr = NULL where (inv_pr = 0 or plant_pr = 0) and site_id = " + site_id + " and date = '" + fromDate + "' ";
                 try
@@ -8639,9 +8660,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             catch (Exception ex)
             {
-                API_ErrorLog("CalculateDailySolarKPI function : Exception caught.. Code Line No. 8619, exception :" + ex.Message );
+                API_ErrorLog("CalculateDailySolarKPI function : Exception caught.. Code Line No. 8619, exception :" + ex.ToString() );
 
-                string strEx = ex.ToString();
+                string strEx = ex.Message;
                 response = false;
                 //pending : log error
                 throw new Exception(strEx);
@@ -9903,12 +9924,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         private void API_ErrorLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Error**:" + Message + "\r\n");
+            System.IO.File.AppendAllText(@"C:\LogFile\dgra_Log.txt", "**Error**:" + Message + "\r\n");
         }
         private void API_InformationLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
+            System.IO.File.AppendAllText(@"C:\LogFile\dgra_Log.txt", "**Info**:" + Message + "\r\n");
         }
         internal class ViewerStatsFormat
         {
