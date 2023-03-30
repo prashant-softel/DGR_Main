@@ -118,10 +118,20 @@
                 </div>
                 <div class="col-sm-5">
                     <div id="reports"></div>
-                   
+
                 </div>
                 <div class="col-sm-1"></div>
             </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-5">
+
+                    <div id="emailReports"></div>
+
+                </div>
+            </div>
+
         </div>
        
         <div class="col-sm-6"></div>
@@ -204,7 +214,7 @@
     }
 
     function getSite() {
-       
+
         var state = "";
         var spv = "";
         var sitelist = "";
@@ -231,7 +241,7 @@
                     return 0;
 
                 });
-              
+
                 options += '<option value="">Select Site</option>';
                 for (var k = 0; k < result.length; k++) {
                     options += '<option value="' + result[k].site_master_solar_id + '">' + result[k].site + '</option>';
@@ -264,6 +274,7 @@
                     var tbl2 = '<table class="table table-bordered table-striped reports-page">';
                     tbl2 += '<tr><th><input type="checkbox" disabled="disabled" class="checkAllR" id="checkAllR" onclick="selectAllR()" style="margin-left:10px"></th>';
                     tbl2 += '<th>Reports</th></tr>';
+
                     for (var i = 0; i < result.length; i++) {
                         if (result[i].page_type == 4) {
                             tbl += '<tr><th style="width:5.4rem"><input type="checkbox"  disabled="disabled" class="form-check-input import-pages" id="import" name="import" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></th>';
@@ -280,7 +291,9 @@
                             tbl2 += '<td>' + result[i].display_name + '</td>';
                             tbl2 += '</tr > ';
                         }
+
                     }
+
                     tbl += '</table > ';
                     $("#importApproval").html(tbl);
                     tbl1 += '</table > ';
@@ -290,9 +303,64 @@
                 }
             }
         });
+
+         $.ajax({
+            type: "POST",
+           // url: "/Home/GetPageList?login_id=" + id,
+             url: '@Url.Action("GetEmailAccess", "Home")' + '?login_id=' + id + '&site=2' +'&access=1',
+            contentType: "application/json; charset=utf-8",
+            // data: '{"state":"' + val + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
+                //console.log(result);
+                $("#emailReports").html();
+                for (var i = 0; i < result.length; i++) {
+                    var tbl3 = '<table class="table table-bordered table-striped ">';
+                    tbl3 += '<th>Notifications</th>';
+                    tbl3 += '<th>To</th>';
+                    tbl3 += '<th>Cc</th></tr>';
+
+                    tbl3 += '<tr><td> Daily Report </td>';
+                    tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailDT  notification" id="emails" name="To_Daily_Solar" style="margin-left: 15px; margin-top: -6px;"></td>';
+                    tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailDC notification" id="emails" name="Cc_Daily_Solar"  style="margin-left: 15px; margin-top: -6px;"></td>';
+                    tbl3 += '</tr > ';
+
+                    tbl3 += '<tr><td> Weekly Report </td>';
+                    tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailWT notification" id="emails" name="To_Weekly_Solar"  style="margin-left: 15px; margin-top: -6px;"></td>';
+                    tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailWC notification" id="emails" name="Cc_Weekly_Solar"  style="margin-left: 15px; margin-top: -6px;"></td>';
+                    tbl3 += '</tr > ';
+                    tbl3 += '</table > ';
+                    $("#emailReports").html(tbl3);
+
+                    if (result[i].to_Daily_Solar == 1) {
+                        $(".emailDT").attr('checked', true);
+                        console.log("if ");
+                    }
+                    if (result[i].cc_Daily_Solar == 1) {
+                        $(".emailDC").attr('checked', true);
+                        console.log("if ");
+
+                    }
+                    if (result[i].to_Weekly_Solar == 1) {
+                        $(".emailWT").attr('checked', true);
+                        console.log("if ");
+
+                    }
+                    if (result[i].cc_Weekly_Solar == 1) {
+                        $(".emailWC").attr('checked', true);
+                        console.log("if ");
+
+                    }
+                }
+                    
+
+            }
+         });
         GetUserAccess(id);
+
     }
-    
+
+
     function selectAllP() {
         var ele = document.getElementsByName('chkP');
         var a = document.getElementById('checkAllP');
@@ -326,7 +394,7 @@
                     ele[i].checked = false;
             }
         }
-    }   
+    }
 
     function GetUserAccess(loginid) {
         $.ajax({
@@ -423,7 +491,7 @@
                     //        $(".checkAllR").attr('checked', false);
                     //    }
                     //});
-                   
+
                     //$("input.view-pages").attr("disabled", true);
                     //$("input.report-pages").attr("disabled", true);
 
@@ -435,7 +503,7 @@
             }
         });
     }
-    
+
     $(".view-pages").change(function () {
         if ($('.view-pages:checked').length == $('.view-pages').length) {
             $(".checkAllP").attr('checked', true);
@@ -453,7 +521,7 @@
             $(".checkAllR").attr('checked', false);
         }
     });
-    
+
 
     function Edit() {
         var a = document.getElementById("Edit").innerHTML;
@@ -472,6 +540,7 @@
         $("input.view-pages").attr("disabled", false);
         $("input.import-pages").attr("disabled", false);
         $("input.report-pages").attr("disabled", false);
+        $("input.notification").attr("disabled", false);
         $("input.checkAllP").attr("disabled", false);
         $("input.checkAllR").attr("disabled", false);
         $("input.delete_btn").attr("disabled", false);
@@ -488,6 +557,7 @@
         $("input.view-pages").attr("disabled", true);
         $("input.import-pages").attr("disabled", true);
         $("input.report-pages").attr("disabled", true);
+        $("input.notification").attr("disabled", true);
         $("input.checkAllP").attr("disabled", true);
         $("input.checkAllR").attr("disabled", true);
         $('.site').prop('disabled', true);
@@ -510,7 +580,7 @@
         row += '<td><input  type="checkbox" class="form-check-input upload_access" id="upload_access1" name="upload_access" value="1" style="margin-left: 25px; margin-top: -6px;"></td>';
         row += '<td><input  type="button" class="btn btn-block btn-danger delete_btn" id="delete_btn" name="button1" value="Delete" style="width: 50%; margin-left: 25px;"></td></tr >';
         $(table).find('tbody').append(row);
-        
+
         //$('.site').prop('disabled', false);
         //$("input.upload_access").attr("disabled", false);
         //document.getElementById("add_site_btn").disabled = false
@@ -563,13 +633,14 @@
     function SubmitDetials() {
 
         let site_arr = {};
-
+           
         $('.site-row').each(function () {
             var sid = $(this).find('.site').val();
             var access = $(this).find('.upload_access').is(":checked");
             site_arr[sid] = access;
         });
         //console.log(site_arr);
+        let email_arr = [];
         let page_arr = {};
         let report_arr = {};
         let import_approval =0;
@@ -591,8 +662,15 @@
                 import_approval = page_id;
             }
         });
+        $('.notification').each(function () {
+            var notification_name = $(this).attr('name');
+            var isSet = $(this).is(":checked");
+            if (isSet == true) {
+                email_arr.push(notification_name);
+            }
+        });
         console.log(import_approval);
-       
+
         $.ajax({
             type: "POST",
             url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + '&site_type=2 &importapproval=' + import_approval,
@@ -609,6 +687,16 @@
                 location.href = '@Url.Action("SiteUserMaster", "Home")';
             }
         });
+
+         $.ajax({
+            type: "POST",
+             url: '@Url.Action("GetEmailAccess", "Home")' + '?login_id=' + id + '&site=2&access=2&notifications=' + JSON.stringify(email_arr),
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+             success: function (result, status, xhr) {
+
+             }
+         });
     }
 
 </script>
