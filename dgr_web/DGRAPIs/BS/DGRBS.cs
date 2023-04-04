@@ -772,11 +772,13 @@ namespace DGRAPIs.BS
             {
                 using (var repos = new DGRRepository(getDB))
                 {
+                    API_InformationLog("CalculateDailySolarKPI  successful ");
                     return await repos.CalculateDailySolarKPI(site, fromDate, toDate, logFileName);
                 }
             }
             catch (Exception ex)
             {
+                API_ErrorLog("Failed CalculateDailySolarKPI" + ex.ToString());
                 throw;
             }
         }
@@ -2239,6 +2241,17 @@ namespace DGRAPIs.BS
             {
                 throw;
             }
+        }
+
+        private void API_ErrorLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "DGRA BS **Error**:" + Message + "\r\n");
+        }
+        private void API_InformationLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "DGRA BS **Info**:" + Message + "\r\n");
         }
     }
 }

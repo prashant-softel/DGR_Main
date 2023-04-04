@@ -787,12 +787,13 @@ namespace DGRAPIs.Controllers
             try
             {
                 var data = await _dgrBs.CalculateDailySolarKPI(site, fromDate, toDate, logFileName);
+                API_InformationLog("Inside CalculateDailySolarKPI Successful :" + data);
                 return Ok(data);
 
             }
             catch (Exception ex)
             {
-
+                API_ErrorLog("Inside CalculateDailySolarKPI failed : Exception caught: "+ ex.ToString());
                 return BadRequest(ex.Message);
             }
         }
@@ -815,7 +816,16 @@ namespace DGRAPIs.Controllers
             }
         }
         #endregion
-
+        private void API_ErrorLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "DGRA Controllers **Error**:" + Message + "\r\n");
+        }
+        private void API_InformationLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "DGRA Controllers **Info**:" + Message + "\r\n");
+        }
         #region inserts
 
         [Route("InsertDailyTargetKPI")]

@@ -8656,7 +8656,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //                    CalculateAndUpdateSolarKPIs(site_id, fromDate, sLastInv, solarGeneration, Final_Production_Time, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, Final_LullHour_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
                 //Pending : validation of Total time to be 24
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Last statement of this function.. Code Line No. 8614");
-
+                response = true;
             }
             catch (Exception ex)
             {
@@ -8667,7 +8667,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //pending : log error
                 throw new Exception(strEx);
             }
-            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : returning response.. Code Line No. 8626");
+            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : returning response.. Code Line No. 8626" + response);
 
             return response;
         }
@@ -9924,12 +9924,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         private void API_ErrorLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\dgra_Log.txt", "**Error**:" + Message + "\r\n");
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Error**:" + Message + "\r\n");
         }
         private void API_InformationLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\dgra_Log.txt", "**Info**:" + Message + "\r\n");
+            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
         }
         internal class ViewerStatsFormat
         {
