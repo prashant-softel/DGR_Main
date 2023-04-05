@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using DGRA_V1.Filters;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace DGRA_V1.Areas.admin.Controllers
 {
@@ -68,7 +69,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
 
         ErrorLog m_ErrorLog;
-
+        
         Hashtable equipmentId = new Hashtable();
         
         Hashtable maxkWhMap_wind = new Hashtable();
@@ -140,6 +141,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             m_ErrorLog.SetImportInformation("" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ",");
             m_ErrorLog.SetImportInformation("" + file.FileName + " ,");
             m_ErrorLog.SetImportInformation("" + fileUploadType + " ,");
+            //InformationLog("UserRole, fileName, fileUploadType, time :" +siteUserRole +", " + file.FileName+ ", " + fileUploadType + ", " + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss"));
 
             // string csvFileName = env.ContentRootPath +@"\LogFile\"+ file.FileName + "_" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ".csv";
             string csvFileName = file.FileName + "_" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ".csv";
@@ -150,6 +152,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             DataSet dataSetMain = new DataSet();
             var allowedExtensions = new[] { ".xlsx", ".xls" };
             var ext = Path.GetExtension(file.FileName);
+            //InformationLog("Extension :"+ext);
 
             if (allowedExtensions.Contains(ext))
             {
@@ -189,6 +192,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         try
                         {
+                            //InformationLog("Inside try block as extension type is .xlsx");
                             /* using (var stream = new FileStream(env.ContentRootPath + @"\TempFile\docupload.xlsx", FileMode.Create))
                              {
                                  file.CopyTo(stream);
@@ -206,6 +210,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (dataSetMain == null)
                             {
                                 m_ErrorLog.SetError(",Unable to extract excel sheet data for importing,");
+                                //ErrorLog("datSetMain is null dataSetMain:" + dataSetMain);
                             }
                             ErrorLog("datSetMain null " + dataSetMain);
 
@@ -232,7 +237,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             FileSheetType.FileImportType fileImportType = FileSheetType.FileImportType.imporFileType_Invalid;
                             foreach (var excelSheet in fileSheets)
                             {
-                               
+                                //InformationLog("Inside foreach loop line number : 238 : Excelsheet name :" +excelSheet);
                                 DataSet ds = new DataSet();
                                 if (excelSheet == FileSheetType.Uploading_File_Generation)
                                 {
@@ -562,32 +567,47 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     if (fileSheets.Contains("Uploading_File_Generation") || fileSheets.Contains("Uploading_File_Breakdown") || fileSheets.Contains("Uploading_PyranoMeter1Min") || fileSheets.Contains("Uploading_PyranoMeter15Min"))
                                     {
-                                        ErrorLog("isGenValidationSuccess" + isGenValidationSuccess);
-                                        ErrorLog("isPyro15ValidationSuccess" + isPyro15ValidationSuccess);
-                                        ErrorLog("isPyro1ValidationSuccess" + isPyro1ValidationSuccess);
-                                        ErrorLog("Before Validation");
+                                        InformationLog("isGenValidationSuccess" + isGenValidationSuccess);
+                                        InformationLog("isPyro15ValidationSuccess" + isPyro15ValidationSuccess);
+                                        InformationLog("isPyro1ValidationSuccess" + isPyro1ValidationSuccess);
+                                        InformationLog("Before Validation");
                                         //pending : instead check the  success flags
                                         if (isGenValidationSuccess && isBreakdownValidationSuccess && isPyro15ValidationSuccess && isPyro1ValidationSuccess)
                                         {
+                                            DateTime dttt = DateTime.Now;
+                                            //InformationLog("ImportMetaData function called from FUCtrl" + dttt);
                                             await importMetaData(fileUploadType, file.FileName, fileImportType);
                                             statusCode = await dgrSolarImport(batchIdDGRAutomation);
                                             //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?fromDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
                                             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
                                             using (var client = new HttpClient())
                                             {
+                                                InformationLog("added timeout to InfiniteTimeSpan");
+                                                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                                                dttt = DateTime.Now;
+                                                InformationLog("CalculateDailysolarKPI API Called." +dttt);
+                                                InformationLog(url);
                                                 var response = await client.GetAsync(url);
+                                                //response.Timeout = TimeSpan.FromSeconds(300); // set the request timeout to 5 minutes
+
+
+
                                                 if (response.IsSuccessStatusCode)
                                                 {
+                                                    dttt = DateTime.Now;
+                                                    //InformationLog("CalculateDailySolarKpI function returned successfully to frontend." + dttt);
                                                     m_ErrorLog.SetInformation(",SolarKPI Calculations Updated Successfully:");
                                                     statusCode = (int)response.StatusCode;
                                                     status = "Successfully Uploaded";
-
+                                                    
                                                     // Added Code auto approved if uploaded by admin
                                                     string userName = HttpContext.Session.GetString("DisplayName");
                                                     int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
                                                     siteUserRole = HttpContext.Session.GetString("role");
+                                                    dttt = DateTime.Now;
                                                     if (siteUserRole == "Admin")
                                                     {
+                                                        //InformationLog("Uploading User is Admin. So SetsolarApprovalFlagForImpoortBatches API call" +dttt);
                                                         var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetSolarApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
                                                         using (var client1 = new HttpClient())
                                                         {
@@ -595,10 +615,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                             var response1 = await client1.GetAsync(url1);
                                                             if (response1.IsSuccessStatusCode)
                                                             {
+                                                                //InformationLog("Approved Data Successfully." + DateTime.Now);
                                                                 //status = "Successfully Data Approved";
                                                             }
                                                             else
                                                             {
+                                                                //ErrorLog("Data not approved"+ DateTime.Now);
                                                                 //status = "Data Not Approved";
                                                             }
                                                         }
@@ -608,7 +630,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                 {
                                                     statusCode = (int)response.StatusCode;
                                                     string errorMsg = response.Content.ReadAsStringAsync().Result;
-                                                    m_ErrorLog.SetError(",SolarKPI Calculations API Failed. Reason : " + errorMsg);
+
+                                                    //m_ErrorLog.SetError(",SolarKPI Calculations API Failed. Reason : " + errorMsg);
                                                     status = "Solar KPI Calculation Import API Failed. Reason : " + errorMsg;
 
                                                     //for solar 0, wind 1;
@@ -780,13 +803,16 @@ namespace DGRA_V1.Areas.admin.Controllers
         {
             //for solar 0, wind 1;
                 int batchId = await GetBatchId(importData);
-
                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/DeleteRecordsAfterFailure?batchId=" + batchId + "&siteType=" + siteType + "";
                 var result = "";
+            DateTime dtt = DateTime.Now;
+            //InformationLog("DeleterecordsAfterFailure API called : "+ dtt);
                 WebRequest request = WebRequest.Create(url);
                 using (var responses = (HttpWebResponse)request.GetResponse())
                 {
                     Stream receiveStream = responses.GetResponseStream();
+                dtt = DateTime.Now;
+                //InformationLog("DeleteRecordsAfterFailure returned to frontend. "+dtt);
                     using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                     {
                         result = readStream.ReadToEnd();
@@ -804,6 +830,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
         private async Task<int> InsertSolarFileGeneration(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarFileGeneration function Called : "+ DateTime.Now);
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
@@ -819,10 +846,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //toDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"], timeCulture);
                 fromDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
                 toDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
+                //InformationLog("InsertSolarfileGeneration from and to Date converted successfully");
             }
             catch (Exception e)
             {
                 //m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format MM-dd-yyyy");
+                //ErrorLog("InsertSolarFileGeneration function exception while date conversion exception :"+e.ToString());
                 m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format dd-MM-yyyy");
                 fromDate = DateTime.MaxValue;
                 toDate = DateTime.MinValue;
@@ -833,10 +862,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 CommonFileValidation commonValidation = new CommonFileValidation(m_ErrorLog, _idapperRepo);
                 SolarUploadingFileValidation solarValidation = new SolarUploadingFileValidation(m_ErrorLog, _idapperRepo);
                 List<SolarUploadingFileGeneration> addSet = new List<SolarUploadingFileGeneration>();
+                int i = 0;
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     try
                     {
+                        //InformationLog("InsertSolarFileGeneration try block : "+ i + " /"+ ds.Tables[0].Rows.Count);
                         SolarUploadingFileGeneration addUnit = new SolarUploadingFileGeneration();
                         rowNumber++;
                         bool skipRow = false;
@@ -925,7 +956,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": function: InsertSolarFileGeneration,");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarFileGeneration: " + e.Message + ",");
+                        //ErrorLog(",Exception Occurred In Function: InsertSolarFileGeneration: " + e.ToString() + ",");
                         errorCount++;
                     }
                 }
@@ -935,6 +966,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     //kpiArgs.Add(minDate);
                     //kpiArgs.Add(maxDate);
                     m_ErrorLog.SetInformation(",Solar Generation Validation Successful");
+                    //InformationLog("InsertSolarFileGeneration function validation completed.");
                     isGenValidationSuccess = true;
                     responseCode = 200;
                     kpiArgs.Add(fromDate);
@@ -946,14 +978,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                 {
                     // add to error log that validation of generation failed
                     m_ErrorLog.SetError(",Solar Generation Validation Failed");
+                    //ErrorLog("InsertSolarFileGeneration function validation failed.");
                     isGenValidationSuccess = false;
                 }
             }
+            //InformationLog("InsertSolarFileGeneration function Returned : " + DateTime.Now);
             return responseCode;
         }
 
         private async Task<int> InsertWindFileGeneration(string status, DataSet ds)
         {
+            //InformationLog("InsertWindFileGeneration function Called : " + DateTime.Now);
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
@@ -1144,12 +1179,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                     isGenValidationSuccess = false;
                 }
             }
+            //InformationLog("InsertWindFileGeneration function Completed : " + DateTime.Now);
 
             return responseCode;
         }
 
         private async Task<int> InsertSolarFileBreakDown(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarFileBreakDown function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -1293,11 +1330,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                     isBreakdownValidationSuccess = false;
                 }
             }
-
+            //InformationLog("InsertSolarFileBreakDown function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindFileBreakDown(string status, DataSet ds)
         {
+            //InformationLog("InsertWindFileBreakDown function Called : " + DateTime.Now);
             WindUploadingFileValidation ValidationObject = new WindUploadingFileValidation(m_ErrorLog, _idapperRepo);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
@@ -1415,12 +1453,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                     isBreakdownValidationSuccess = false;
                 }
             }
-
+            //InformationLog("InsertWindFileBreakDown function Completed : " + DateTime.Now);
             return responseCode;
         }
 
         private async Task<int> InsertSolarPyranoMeter1Min(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarPyranoMeter1Min function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -1528,11 +1567,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                 m_ErrorLog.SetError(",Exception in Function: InsertSolarPyranoMeter1Min on line " + rowNumber);
                 ErrorLog(",Exception Occurred In Function: InsertSolarPyranoMeter1Min: " + e.Message);
             }
+            //InformationLog("InsertSolarPyranoMeter1Min function Completed : " + DateTime.Now);
             return responseCode;
         }
 
         private async Task<int> InsertSolarPyranoMeter15Min(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarPyranoMeter15Min function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -1639,10 +1680,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarPyranoMeter15Min " + rowNumber);
                 ErrorLog(",Exception Occurred In Function: InsertSolarPyranoMeter15Min: " + e.Message);
             }
+            //InformationLog("InsertSolarPyranoMeter15Min function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertSolarMonthlyJMR(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarMonthlyJMR function Called : " + DateTime.Now);
             long rowNumber = 0;
             int errorCount = 0;
             int responseCode = 400;
@@ -1776,11 +1819,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetError(",Solar Monthly JMR Validation Failed");
                 }
             }
+            //InformationLog("InsertSolarMonthlyJMR function Completed : " + DateTime.Now);
             return responseCode;
         }
         //End of all DGR Import functions for both Wind and Solar Upload types
         private async Task<int> InsertWindMonthlyJMR(string status, DataSet ds)
         {
+            //InformationLog("InsertWindMonthlyJMR function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -1910,11 +1955,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetError(",Wind Monthly JMR Validation Failed");
                 }
             }
-
+            //InformationLog("InsertWindMonthlyJMR function Called : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertSolarMonthlyLineLoss(string status, DataSet ds)
         {
+           // InformationLog("InsertSolarMonthlyLineLoss function Called : " + DateTime.Now);
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
             long rowNumber = 1;
@@ -2008,10 +2054,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 m_ErrorLog.SetError(",Solar Monthly Lineloss File Empty,");
             }
+           // InformationLog("InsertSolarMonthlyLineLoss function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindMonthlyLineLoss(string status, DataSet ds)
         {
+           // InformationLog("InsertWindMonthlyLineLoss function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -2106,11 +2154,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                 // add to error log that validation of file failed
                 m_ErrorLog.SetError(",Wind Monthly Line Loss File empty,");
             }
+            //InformationLog("InsertWindMonthlyLineLoss function Completed : " + DateTime.Now);
             return responseCode;
         }
 
         private async Task<int> InsertSolarMonthlyTargetKPI(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarMonthlyTargetKPI function Called : " + DateTime.Now);
             long rowNumber = 1;
             int errorCount = 0;
             List<bool> errorFlag = new List<bool>();
@@ -2221,10 +2271,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 m_ErrorLog.SetError(",Solar Monthly Target KPI File empty,");
             }
+           // InformationLog("InsertSolarMonthlyTargetKPI function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindMonthlyTargetKPI(string status, DataSet ds)
         {
+           // InformationLog("InsertWindMonthlyTargetKPI function Called : " + DateTime.Now);
             long rowNumber = 1;
             int errorCount = 0;
             List<bool> errorFlag = new List<bool>();
@@ -2325,10 +2377,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 m_ErrorLog.SetError(",Wind Monthly Target KPI File empty,");
             }
+           // InformationLog("InsertWindMonthlyTargetKPI function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertSolarDailyLoadShedding(string status, DataSet ds)
         {
+          //  InformationLog("InsertSolarDailyLoadShedding function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -2422,10 +2476,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 m_ErrorLog.SetError(",Solar Daily Load Shedding File empty,");
             }
+            //InformationLog("InsertSolarDailyLoadShedding function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindDailyLoadShedding(string status, DataSet ds)
         {
+            //InformationLog("InsertWindDailyLoadShedding function Called : " + DateTime.Now);
             long rowNumber = 1;
             int errorCount = 0;
             List<bool> errorFlag = new List<bool>();
@@ -2519,10 +2575,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //No data in the file
                 m_ErrorLog.SetError(",Wind Daily Load Shedding File is empty,");
             }
+            //InformationLog("InsertWindDailyLoadShedding function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertSolarDailyTargetKPI(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarDailyTargetKPI function Called : " + DateTime.Now);
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
@@ -2624,10 +2682,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //No data in the file
                 m_ErrorLog.SetError(",Solar Daily Target KPI File is empty,");
             }
+            //InformationLog("InsertSolarDailyTargetKPI function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindDailyTargetKPI(string status, DataSet ds)
         {
+            //InformationLog("InsertWindDailyTargetKPI function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -2724,10 +2784,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //No data in the file
                 m_ErrorLog.SetError(",Wind Daily Target KPI File is empty,");
             }
+           // InformationLog("InsertWindDailyTargetKPI function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertSolarSiteMaster(string status, DataSet ds)
         {
+           // InformationLog("InsertSolarSiteMaster function Called : " + DateTime.Now);
             int responseCode = 400;
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 0;
@@ -2818,10 +2880,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //No data in the file
                 m_ErrorLog.SetError(",Solar Site Master File is empty,");
             }
+            //InformationLog("InsertSolarSiteMaster function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindSiteMaster(string status, DataSet ds)
         {
+            //InformationLog("InsertWindSiteMaster function Called : " + DateTime.Now);
             int errorCount = 0;
             long rowNumber = 1;
             int responseCode = 400;
@@ -2931,11 +2995,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //No data in the file
                 m_ErrorLog.SetError(",Wind Site Master File is empty,");
             }
+            //InformationLog("InsertWindSiteMaster function Completed : " + DateTime.Now);
             return responseCode;
         }
 
         private async Task<int> InsertSolarLocationMaster(string status, DataSet ds)
         {//siteID recorded
+            //InformationLog("InsertSolarLocationMaster function Called : " + DateTime.Now);
             int errorCount = 0;
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -3059,10 +3125,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetError(",Solar Location Master Validation Failed");
                 }
             }
+            //InformationLog("InsertSolarLocationMaster function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindLocationMaster(string status, DataSet ds)
         {
+            //InformationLog("InsertWindLocationMaster function Called : " + DateTime.Now);
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
@@ -3148,11 +3216,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //No data in the file
                 m_ErrorLog.SetError(",Wind Location Master File is emplty,");
             }
+            //InformationLog("InsertWindLocationMaster function Completed" +
+            //    ": " + DateTime.Now);
             return responseCode;
         }
 
         private async Task<int> InsertSolarAcDcCapacity(string status, DataSet ds)
         {
+            //InformationLog("InsertSolarAcDcCapacity function Called : " + DateTime.Now);
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
@@ -3230,28 +3301,36 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetError(",Solar ACDC Validation Failed,");
                 }
             }
+            //InformationLog("InsertSolarAcDcCapacity function Completed : " + DateTime.Now);
             return responseCode;
         }
 
         private async Task importMetaData(string importType, string fileName, FileSheetType.FileImportType fileImportType)
         {
+            //InformationLog("importMetaData function called :");
             int responseCode = 400;
             string status = "";
             objImportBatch.importFilePath = fileName;
             objImportBatch.importLogName = importData[1];
             string userName = HttpContext.Session.GetString("DisplayName");
             int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
+            //InformationLog("importMetaData function : importType is :"+importType);
             if (importType == "Solar")
             {
                 objImportBatch.importType = "2";
+                //InformationLog("importMetaData function : Filetype solar");
+                 
             }
             else if (importType == "Wind")
             {
                 objImportBatch.importType = "1";
+                //InformationLog("importMetaData function : filetype wind");
+
             }
             objImportBatch.importFileType = (int)fileImportType;
             var json = JsonConvert.SerializeObject(objImportBatch);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
+            //InformationLog("importMetaData function : Api Called"+ DateTime.Now);
             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/importMetaData?userName=" + userName + "&userId=" + userId;
             using (var client = new HttpClient())
             {
@@ -3261,17 +3340,20 @@ namespace DGRA_V1.Areas.admin.Controllers
                     //status = "Batch Id Created Successfully";
                     //m_ErrorLog.SetInformation("," + status + ":");
                     responseCode = (int)response.StatusCode;
+                    //InformationLog("importMetaData function : API Call successful :" + DateTime.Now + " ResponseCode "+responseCode); 
                 }
                 else
                 {
                     status = "Batch Id Creation API Failed";
                     m_ErrorLog.SetInformation("," + status + ":");
                     responseCode = (int)response.StatusCode;
+                    //ErrorLog("importMetaData function : API function called failed " + DateTime.Now + " Responsecode : " + responseCode);
                 }
             }
 
             if (fileSheets.Contains("Uploading_File_Generation") || fileSheets.Contains("Uploading_File_Breakdown") || fileSheets.Contains("Uploading_PyranoMeter1Min") || fileSheets.Contains("Uploading_PyranoMeter15Min"))
             {
+                //InformationLog("importMetaData function : Before GetBatchId API call :" + DateTime.Now);
                 var urlGetId = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetBatchId?logFileName=" + importData[1] + "";
                 var result = string.Empty;
                 WebRequest request = WebRequest.Create(urlGetId);
@@ -3288,10 +3370,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                     if (batchIdDGRAutomation == 0)
                     {
                         m_ErrorLog.SetError(",BatchId not returned successfully,");
+                        //ErrorLog("importMetaData function : BatchId Not returned successfully");
                     }
                     else
                     {
                         m_ErrorLog.SetInformation(",BatchId <" + batchIdDGRAutomation + "> created successfully,");
+                        //InformationLog("importMetaData function : BatchId created successfully : BatchId" + batchIdDGRAutomation);
                     }
                 }
             }
@@ -3302,6 +3386,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             //fills a hashtable with key = wtg and value = location_master_id from table : Wind Location Master
             //gets equipmentID from equipmentName in Wind Location Master
             DataTable dTable = new DataTable();
+            //InformationLog("Inside masterHashTable_WTG_TO_WTG_ID function : before API call");
             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindLocationMaster";
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
@@ -3315,7 +3400,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 dTable = JsonConvert.DeserializeObject<DataTable>(result);
             }
-
             foreach (DataRow dr in dTable.Rows)
             {
                 int wtgId = (int)Convert.ToInt64(dr["location_master_id"]);//D
@@ -3323,6 +3407,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 double max_kWh = Convert.ToDouble(dr["max_kwh_day"]);
                 maxkWhMap_wind.Add(wtgId, max_kWh);
             }
+            //InformationLog("masterHashTable_WTG_TO_WTG_ID : received data EquipmentId ...." + equipmentId + " maxKWhMap... " + maxkWhMap_wind);
         }
         public void masterHashtable_BDNameToBDId()
         {
@@ -3330,12 +3415,14 @@ namespace DGRA_V1.Areas.admin.Controllers
             //gets breakdownId from breakdownName in BDType
 
             DataTable dTable = new DataTable();
+            //InformationLog("masterHashtable_BDNameToBDId function Called Before API Call: " + DateTime.Now);
             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetBDType";
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
+                //InformationLog("masterHashtable_BDNameToBDId function Called After API Call: " + DateTime.Now);
                 Stream receiveStream = response.GetResponseStream();
                 using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                 {
@@ -3349,6 +3436,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 int bd_type_id = (int)Convert.ToInt64(dr["bd_type_id"]);//D
                 breakdownType.Add((string)dr["bd_type_name"], bd_type_id);
             }
+            //InformationLog("masterHashtable_BDNameToBDId function Called Data received : " + breakdownType);
         }
         /*
          * this function was causing duplicate API calls to get sitemaster date. Merged into masterHashtable_SiteIdToSiteName
@@ -3402,6 +3490,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         public void masterInverterList()
         {
             DataTable dTable = new DataTable();
+            //InformationLog("Inside masterInverterList function : Before getSolarLocationMaster API call :" + DateTime.Now);
             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarLocationMaster";
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
@@ -3414,6 +3503,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 dTable = JsonConvert.DeserializeObject<DataTable>(result);
             }
+            //InformationLog("Inside masterInverterList function : After getSolarLocationMaster API call :" + DateTime.Now);
             inverterList.Clear();
             IGBD.Clear();
             SMBList.Clear();
@@ -3425,12 +3515,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                 SMBList.Add((string)dr["smb"]);
                 StringsList.Add((string)dr["strings"]);
             }
+            //InformationLog("Inside masterInverterList function : Data Received : Inverter List : " + inverterList + "\n IGBD list " + IGBD + "\n SMBList "+SMBList + "\n StringList "+ StringsList);
         }
         public void masterHashtable_SiteIdToSiteName()
         {
             //fills a hashtable with as key = siteId and value = siteNameId from table : Wind Site Master
             //gets siteName from siteId in Wind Site Master
-
+            //InformationLog("masterHashtable_SiteIdToSiteName function Called Before API Call: " + DateTime.Now);
             siteName.Clear();
             DataTable dTable = new DataTable();
             var url = "";
@@ -3446,6 +3537,8 @@ namespace DGRA_V1.Areas.admin.Controllers
             WebRequest request = WebRequest.Create(url);
             using (var response = (HttpWebResponse)request.GetResponse())
             {
+                //InformationLog("masterHashtable_SiteIdToSiteName function Called After API Call: " + DateTime.Now);
+
                 Stream receiveStream = response.GetResponseStream();
                 using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                 {
@@ -3471,6 +3564,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     siteNameId.Add((string)dr["site"], siteMasterId);
                 }
             }
+            //InformationLog("masterHashtable_SiteIdToSiteName function Data Received : \n Site Name :" + siteName +"\n Site NameId  " +siteNameId );
         }
         public void masterHashtable_WtgToSiteId()
         {
@@ -3478,6 +3572,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             //gets siteId from wtg(equipment) in Wind Location Master
 
             DataTable dTable = new DataTable();
+            //InformationLog("Inside masterHashtable_WtgToSiteId function : before getwindlocationmaster API : "+ DateTime.Now);
             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindLocationMaster";
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
@@ -3491,13 +3586,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 dTable = JsonConvert.DeserializeObject<DataTable>(result);
             }
-
+            //InformationLog("Inside masterHashtable_WtgToSiteId function : after getwindlocationmaster API : " + DateTime.Now);
             eqSiteId.Clear();
             foreach (DataRow dr in dTable.Rows)
             {
                 int siteMasterId = (int)Convert.ToInt64(dr["site_master_id"]);//D
                 eqSiteId.Add((string)dr["wtg"], siteMasterId);
             }
+            //InformationLog("masterHashtable_WtgToSiteId Received data : " + eqSiteId);
         }
         private async Task<bool> UploadFileToImportedFileFolder(IFormFile ufile)
         {
@@ -3518,14 +3614,14 @@ namespace DGRA_V1.Areas.admin.Controllers
 
         public async Task<int> dgrSolarImport(int batchId)
         {
-            ErrorLog("Inside dgrSolarImport<br>\r\n");
+            InformationLog("Inside dgrSolarImport<br>\r\n");
             int responseCodeGen = 0;
             int responseCodeBreak = 0;
             int responseCodePyro1 = 0;
             int responseCodePyro15 = 0;
             var dataGeneration = new StringContent(genJson, Encoding.UTF8, "application/json");
             var urlGeneration = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarUploadingFileGeneration?batchId=" + batchId + "";
-            ErrorLog("Gen Url<br>\r\n" + urlGeneration);
+            //InformationLog("Gen Url<br>\r\n" + urlGeneration);
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlGeneration, dataGeneration);
@@ -3534,7 +3630,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 {
                     responseCodeGen = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Gen Import API Successful");
-                    ErrorLog("InsertSolarUploadingFileGeneration True\r\n");
+                    //InformationLog("InsertSolarUploadingFileGeneration True\r\n");
                 }
                 else
                 {
@@ -3546,13 +3642,13 @@ namespace DGRA_V1.Areas.admin.Controllers
 
             var dataBreakdown = new StringContent(breakJson, Encoding.UTF8, "application/json");
             var urlBreakdown = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarUploadingFileBreakDown?batchId=" + batchId + "";
-            ErrorLog("BreakDown\r\n" + urlBreakdown);
+            //InformationLog("BreakDown\r\n" + urlBreakdown);
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlBreakdown, dataBreakdown);
                 if (response.IsSuccessStatusCode)
                 {
-                    ErrorLog("InsertSolarUploadingFileBreakDown True\r\n");
+                    //InformationLog("InsertSolarUploadingFileBreakDown True\r\n");
                     responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Break Import API Successful");
                 }
@@ -3566,19 +3662,19 @@ namespace DGRA_V1.Areas.admin.Controllers
 
             var dataPyro1Min = new StringContent(pyro1Json, Encoding.UTF8, "application/json");
             var urlPyro1Min = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarUploadingPyranoMeter1Min?batchId=" + batchId + "";
-            ErrorLog("1Min\r\n" + urlPyro1Min);
+            //InformationLog("1Min\r\n" + urlPyro1Min);
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlPyro1Min, dataPyro1Min);
                 if (response.IsSuccessStatusCode)
                 {
-                    ErrorLog("True\r\n");
+                    //InformationLog("dgrSolarImport success\r\n");
                     responseCodePyro1 = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Pyro-1 Import API Successful");
                 }
                 else
                 {
-                    ErrorLog("False\r\n");
+                    //ErrorLog("dgrSolarImport Failed code line: 3668 \r\n");
                     responseCodePyro1 = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Solar Pyro-1 Import API Failed. Error code <" + responseCodePyro1 + ">");
                 }
@@ -3592,13 +3688,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                 var response = await client.PostAsync(urlPyro15Min, dataPyro15Min);
                 if (response.IsSuccessStatusCode)
                 {
-                    ErrorLog("true\r\n");
+                    //InformationLog("InsertSolarUploadingPyranoMeter15Min successful\r\n");
                     responseCodePyro15 = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Pyro-15 Import API Successful");
                 }
                 else
                 {
-                    ErrorLog("False\r\n");
+                    //ErrorLog("InsertSolarUploadingPyranoMeter15Min failed code line : 3688\r\n");
                     responseCodePyro15 = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Solar Pyro-15 Import API Failed. Error code <" + responseCodePyro15 + ">");
                 }
@@ -3629,11 +3725,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                 {
                     responseCodeGen = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Wind Generation Import API Successful");
+                    //InformationLog("InsertWindUploadingFileGeneration success ");
                 }
                 else
                 {
                     responseCodeGen = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Wind Generation Import API Failed. Error code <" + responseCodeGen + ">\r\n");
+                    //InformationLog("InsertWindUploadingFileGeneration failed code line 3725");
+
                 }
             }
             var dataBreakdown = new StringContent(breakJson, Encoding.UTF8, "application/json");
@@ -3645,11 +3744,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                 {
                     responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Wind BreakDown Import API Successful:");
+                   // InformationLog("InsertWindUploadingFileBreakDown success ");
+
                 }
                 else
                 {
                     responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Wind BreakDown Import API Failed. Error code <" + responseCodeBreak + ">\r\n");
+                   // InformationLog("InsertWindUploadingFileBreakDown Failed code line :3745 " + responseCodeBreak);
+
                 }
             }
             if (responseCodeGen != 200 || responseCodeBreak != 200)
@@ -3664,11 +3767,11 @@ namespace DGRA_V1.Areas.admin.Controllers
 
         private void ErrorLog(string Message)
         {
-            System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "***Validaion ERROR***" + Message);
+            System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "***Validaion ERROR***" + Message + "\r\n");
         }
         private void InformationLog(string Message)
         {
-            System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "*Validaion Information*" + Message);
+            System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "*Validaion Information*" + Message + "\r\n");
         }
 
         //Validation Functions
