@@ -2441,11 +2441,11 @@ namespace DGRAPIs.Controllers
             }
         }
         [Route("GetActualVSExpectedYearly")]
-        public async Task<IActionResult> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string pr)
+        public async Task<IActionResult> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType)
         {
             try
             {
-                var data = await _dgrBs.GetActualVSExpectedYearly(fromDate, toDate, spv, site, pr);
+                var data = await _dgrBs.GetActualVSExpectedYearly(fromDate, toDate, spv, site, prType);
                 return Ok(data);
 
             }

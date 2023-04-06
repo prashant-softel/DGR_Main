@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DGRAPIs.Models
+namespace DGRA_V1.Models
 {
     public class SolarExpectedvsActual
     {
 
         public int site_id { get; set; }
         public string site { get; set; }
-        public dynamic date { get; set; }
+        public string date { get; set; }
         public string location_name { get; set; }
         public int total_strings { get; set; }
         public double ghi { get; set; }

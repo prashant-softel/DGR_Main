@@ -22,7 +22,7 @@ namespace DGRAPIs.Models
             public double ac_capacity { get; set; }
             public double total_tarrif { get; set; }
 
-            public string commissioning_date { get; set; }
+            public dynamic commissioning_date { get; set; }
 
     }
 }

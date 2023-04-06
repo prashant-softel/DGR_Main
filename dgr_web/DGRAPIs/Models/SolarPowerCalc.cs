@@ -11,26 +11,26 @@ namespace DGRAPIs.Models
         public int month_no { get; set; }
         public int site_id { get; set; }
         public string site { get; set; }
-        public double Near_shading { get; set; }
+        public double near_sheding { get; set; }
 
-        public double IAM { get; set; }
-        public double Soiling { get; set; }
-        public double PV { get; set; }
-        public double LID { get; set; }
-        public double Array_mismatch { get; set; }
-        public double DC_Ohmic { get; set; }
-        public double Conversion { get; set; }
-        public double Plant_aux { get; set; }
-        public double Sys_unavailability { get; set; }
-        public double AC_Ohmic { get; set; }
-        public double Ext_transformer { get; set; }
+        public double iam_factor { get; set; }
+        public double soiling_factor { get; set; }
+        public double pv_loss { get; set; }
+        public double lid { get; set; }
+        public double array_missmatch { get; set; }
+        public double dc_ohmic { get; set; }
+        public double conversion_loss { get; set; }
+        public double plant_auxilary { get; set; }
+        public double system_unavailability { get; set; }
+        public double ac_ohmic { get; set; }
+        public double external_transformer { get; set; }
 
-        public double Ageing_factor { get; set; }
+        public double yoy_degradation { get; set; }
         public double alpha { get; set; }
         //For POA
-        public double T_cnd { get; set; }
-        public double T_stc { get; set; }
-
+        public double tstc { get; set; }
+        public double tcnd { get; set; }
+        public string module_degradarion { get; set; }
         //TBCalculated
         public double Loss_factor { get; set; }
     }

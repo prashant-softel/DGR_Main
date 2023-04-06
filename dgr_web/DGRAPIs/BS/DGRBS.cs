@@ -172,7 +172,7 @@ namespace DGRAPIs.BS
         Task<List<SolarOpertionalHead1>> GetTotalMWforDashbord(string w_site, string s_site);
 
         Task<List<SolarDailyGenReports3>> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr);
-        Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string pr);
+        Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType);
         //Task<WindOpertionalHead> GetOperationHeadData(string site);
     }
     public class DGRBS : IDGRBS
@@ -2398,13 +2398,13 @@ namespace DGRAPIs.BS
             }
 
         }
-        public async Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string pr)
+        public async Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.GetActualVSExpectedYearly(fromDate, toDate, spv, site, pr);
+                    return await repos.GetActualVSExpectedYearly(fromDate, toDate, spv, site, prType);
 
                 }
             }

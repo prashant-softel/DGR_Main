@@ -8,6 +8,7 @@ namespace DGRAPIs.Models
     public class InsertWindTMLData
     {
         public string WTGs { get; set; }
+        public int wtg_id { get; set; }
         public dynamic timestamp { get; set; }
         public double avg_active_power { get; set; }
         public double avg_wind_speed { get; set; }

@@ -40,7 +40,7 @@ namespace DGRAPIs.Repositories
                
             }
             else {
-                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `useremail`='" + username + "' and (`password` = md5('" + password + "') or password = '"+ password +"') and `active_user` = 1 ;";
+                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `useremail`='" + username + "' and `password` = md5('" + password + "') or password = '"+ password +"' and `active_user` = 1 ;";
                 //qry = "SELECT login_id,username,useremail,user_role,islogin as islogin FROM `login` where `useremail`='" + username + "' and `password` = md5('" + password + "') and `active_user` = 1 ;";
 
             }

@@ -731,12 +731,12 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
         // DGR2 Implementation 
-        public async Task<IActionResult> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr)
+        public async Task<IActionResult> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string prType)
         {
            string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetActualVSExpected?fromDate=" + fromDate + "&toDate=" + toDate + "&spv=" + spv + "&site=" + site + "&pr=" + pr;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SolarExpectedReport?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&prType=" + prType;// + "&spv=" + spv;
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {
@@ -753,12 +753,13 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string pr)
+        public async Task<IActionResult> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType)
         {
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetActualVSExpectedYearly?fromDate=" + fromDate + "&toDate=" + toDate + "&spv=" + spv + "&site=" + site + "&pr=" + pr;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SolarExpectedReport?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&prType=" + prType + "&spv=" + spv;
+               
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {

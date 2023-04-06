@@ -71,6 +71,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
         Hashtable equipmentId = new Hashtable();
         Hashtable onm2equipmentName = new Hashtable();
+        Hashtable SiteByWtg = new Hashtable();
         Hashtable maxkWhMap_wind = new Hashtable();
         Hashtable breakdownType = new Hashtable();//(B)Gets bdTypeID from bdTypeName: BDType table
         Hashtable siteNameId = new Hashtable(); //(C)Gets siteId from siteName
@@ -3907,6 +3908,18 @@ namespace DGRA_V1.Areas.admin.Controllers
                             errorCount++;
                             continue;
                         }
+                        if(addUnit.WTGs != " ")
+                        {
+                            addUnit.wtg_id = equipmentId.ContainsKey(addUnit.WTGs) ? Convert.ToInt32(equipmentId[addUnit.WTGs]) : 0;
+                            //addUnit.wtg = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
+                            addUnit.site = SiteByWtg.ContainsKey(addUnit.WTGs) ? SiteByWtg[addUnit.WTGs].ToString() : "";
+                            if(addUnit.site != " ")
+                            {
+
+                                addUnit.site_id = addUnit.site is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                            }
+                        
+                        }
 
                         bool isdateEmpty = dr["Time Stamp"] is DBNull || string.IsNullOrEmpty((string)dr["Time Stamp"]);
                         if (isdateEmpty)
@@ -4294,6 +4307,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 int wtgId = (int)Convert.ToInt64(dr["location_master_id"]);//D
                 equipmentId.Add((string)dr["wtg"], wtgId);
                 onm2equipmentName.Add((string)dr["wtg_onm"], (string)dr["wtg"]);
+                SiteByWtg.Add((string)dr["wtg"], (string)dr["site"]);
                 double max_kWh = Convert.ToDouble(dr["max_kwh_day"]);
                 maxkWhMap_wind.Add(wtgId, max_kWh);
             }

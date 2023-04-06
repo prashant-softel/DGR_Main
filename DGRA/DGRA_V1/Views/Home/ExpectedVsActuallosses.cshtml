@@ -94,7 +94,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label text-left">PR : </label>
+                                <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
                                 <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
                     </select>-->
                             </div>
@@ -105,27 +105,59 @@
                 <div class="row">
                     <div class="col-md-5"></div>
                     <div class="col-md-2">
-                        <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style=" width: 5rem;">Search</button>
+                        <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style=" width: 5rem;">Search</button>
                     </div>
                     <div class="col-md-5"></div>
                 </div>
                 <hr>
+                <div class="row">
+                    <!--<div class="col-sm-3"> PR Type :</div>-->
 
+                    <div class="col-sm-4">
+
+                        <div class="form-group row">
+                            <span>PR Type :</span>
+                            <div class="col-sm-3">
+                                <div class="custom-control custom-radio " style="padding-left: 42px; margin-top: 3px; ">
+                                    <input class="custom-control-input solar_expected_report_load_el" type="radio" id="customRadio1" name="customRadio" value="1" checked>
+                                    <label for="customRadio1" class="custom-control-label">AOP</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="custom-control custom-radio " style="padding-left: 42px; margin-top: 3px; ">
+                                    <input class="custom-control-input solar_expected_report_load_el" type="radio" id="customRadio2" name="customRadio" value="2">
+                                    <label for="customRadio2" class="custom-control-label">Toplining</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-5"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                    </div>
+                </div>
+                <br>
+                <hr>
+                <br>
                 <div class="col-sm-12">
 
                     <canvas id="monthly_chart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>
                 </div>
+                <br>
+                <hr>
+                <br>
                 <div class="col-sm-12">
 
                     <canvas id="yearly_chart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>
                 </div>
-
+                <br>
                 <hr>
                 <div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
-            </div>
-        
+            <canvas id="bar-chart" width="600" height="350"></canvas>
+
+        </div>
+
     </section>
 
 </div>
@@ -156,6 +188,7 @@
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
 $(document).ready(function () {
@@ -172,11 +205,11 @@ $(document).ready(function () {
         var today = new Date();
         fyear = getFinancialYear(today);
         fdate = getFinancialYearDateStartDate(fyear);
-        
+
         console.log(fdate);
         GetSPV();
    // monthlychart();
-    yearlyChart();
+    //yearlyChart();
 }
 function GetSPV() {
     let state = "";
@@ -239,9 +272,12 @@ function GetSite() {
     // GetPR(false);
 }
 
+    $(".solar_expected_report_load_el").on("click", getReport);
+   // $(".solar_expected_report_load_el").on("click", getYearlyReport);
 /// Get Fiter Data
 function getReport()
 {
+
     var data_Array = [];
     document.getElementById("loader").style.display = 'flex';
     var daterange = $('#daterange').val();
@@ -251,7 +287,15 @@ function getReport()
     var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
     let site_id = "";
     let spv_list = "";
-    let pr = "";
+    let prType = "";
+    if ($("#customRadio1").prop("checked")) {
+         prType = "AOP";
+    }
+    if ($("#customRadio2").prop("checked")) {
+        // do something
+        prType = "toplining";
+    }
+
     var spv = $('select#spv option:selected').each(function () {
         spv_list += $(this).val() + ",";
     });
@@ -263,7 +307,7 @@ function getReport()
 
     $.ajax({
         type: "POST",
-        url: '@Url.Action("GetActualVSExpected", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id +'&pr='+pr,
+        url: '@Url.Action("GetActualVSExpected", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
         contentType: "application/json; charset=utf-8",
         datatype: "html",
         success: function (result, status, xhr) {
@@ -278,6 +322,8 @@ function getReport()
             tbl += '<th>USMH</th>';
             tbl += '<th>SMH</th>';
             tbl += '<th>Other</th>';
+            tbl += '<th>IGBD</th>';
+            tbl += '<th>EGBD</th>';
             tbl += '<th>Curtaiment</th>';
             tbl += '<th>PR</th>';
             tbl += '<th>Actual</th>';
@@ -288,46 +334,98 @@ function getReport()
                 let total_usmh = 0;
                 let total_smh = 0;
                 let total_oh = 0;
+                let total_igbd = 0;
+                let total_egbd =0;
                 let total_curtaiment = 0;
                 let total_pr = 0;
                 let avg_pr = 0;
                 let total_actual = 0;
+                let expected_cal = 0;
+                let usmh_cal = 0;
+                let smh_cal = 0;
+                let oh_cal = 0;
+                let igbd_cal = 0;
+                let egbd_cal = 0;
+                let curtailment_cal = 0;
+                let pr_cal = 0;
+                let pr_chart = 0;
+                let actual_cal = 0;
+                let main_data = [];
+                let cal_data = [];
                 var cnt = 0;
                 for (var i = 0; i < result.length; i++) {
+                    let pr_value = 0;
+                    let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                    pr_value = result[i].inv_kwh - total_breakdown;
                     var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                     tbl += '<tr>';
                     tbl += '<td  class="text-left">' + formattedDate + '</td>';
                     tbl += '<td  class="text-left">' + result[i].site + '</td>';
-                    tbl += '<td  class="text-right">' + result[i].targer_kwh.toFixed(2) + '</td>';
-                    tbl += '<td  class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">' + result[i].usmh.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">' + result[i].smh.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">' + result[i].oh.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">-</td>';
-                    tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
+                    //tbl += '<td  class="text-left">0.00</td>';
+                    tbl += '<td  class="text-right">' + result[i].target.toFixed(2) + '</td>';
+                    tbl += '<td  class="text-right">' + (result[i].pexpected / 1000000).toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + (result[i].usmh / 1000000).toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + (result[i].smh / 1000000).toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + (result[i].oh / 1000000).toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + (result[i].igbdh / 1000000).toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + (result[i].egbdh/1000000).toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + (result[i].load_shedding/1000000).toFixed(2) + '</td>';
+                    //tbl+= '<td class="text-right">-</td>';
+                    tbl += '<td class="text-right">' + (pr_value/1000000).toFixed(2) + '</td>';
+                    tbl += '<td class="text-right">' + (result[i].inv_kwh/1000000).toFixed(2) + '</td>';
                     tbl += '</tr>';
 
                     cnt++;
-                    total_target += result[i].targer_kwh;
-                    total_expected += result[i].expected_kwh;
-                    total_usmh += result[i].usmh;
-                    total_smh += result[i].smh;
-                    total_oh += result[i].oh;
-                    total_actual += result[i].inv_kwh;
-                    total_pr += result[i].plant_pr;
+                    total_target += result[i].target;
+                    total_expected += (result[i].pexpected / 1000000);
+                    total_usmh += (result[i].usmh / 1000000);
+                    total_smh += (result[i].usmh / 1000000);
+                    total_oh += (result[i].oh / 1000000);
+                    total_actual += (result[i].inv_kwh/1000000);
+                    total_pr += pr_value / 1000000;
+                    total_igbd += (result[i].igbdh / 1000000);
+                    total_egbd += (result[i].egbdh / 1000000);
+                    total_curtaiment += (result[i].load_shedding / 1000000);
 
                 }
-                avg_pr = (total_pr / cnt);
-                data_Array = [{ label: "Target",Yaxis:0, backgroundColor: "#77CAE7", data: [total_target.toFixed(1)] },
-                    { label: "Expected", Yaxis: 0, backgroundColor: "#31576D", data: [total_expected.toFixed(1)] },
-                    { label: "USMH", backgroundColor: "#86C466", data: [total_usmh.toFixed(1)] },
-                    { label: "SMH", backgroundColor: "#FFCA5A", data: [total_smh.toFixed(1)] },
-                    { label: "Other", backgroundColor: "#76D7C4", data: [total_oh.toFixed(1)] },
-                    { label: "PR", backgroundColor: "#58D68D", data: [avg_pr.toFixed(1)] },
-                    { label: "Actual", backgroundColor: "#F39C12", data: [total_actual.toFixed(1)] }];
-                console.log("Data Array :", data_Array);
-                monthlychart(data_Array);
+                expected_cal = (total_expected / total_expected) * 100;
+                usmh_cal = (total_usmh / total_expected) * 100;
+                smh_cal = (total_smh / total_expected) * 100;
+                oh_cal = (total_oh / total_expected) * 100;
+                igbd_cal = (total_igbd / total_expected) * 100;
+                egbd_cal = (total_egbd / total_expected) * 100;
+                curtailment_cal = (total_curtaiment / total_expected) * 100;
+                pr_cal = (total_pr / total_expected) * 100;
+                actual_cal = (total_actual / total_expected) * 100;
+
+
+                // Push Dataset in chart
+                cal_data.push("0", expected_cal.toFixed(1), usmh_cal.toFixed(1), smh_cal.toFixed(1), oh_cal.toFixed(1), igbd_cal.toFixed(1), egbd_cal.toFixed(1), curtailment_cal.toFixed(1), pr_cal.toFixed(1), actual_cal.toFixed(1));
+                main_data.push(total_target.toFixed(1), total_expected.toFixed(1), total_usmh.toFixed(1), total_smh.toFixed(1), total_oh.toFixed(1), total_igbd.toFixed(1), total_egbd.toFixed(1), total_curtaiment.toFixed(1), total_pr.toFixed(1), total_actual.toFixed(1));
+
+
+               /* data_Array = [{ label: "Target", type: "bar", yAxisID: "A", backgroundColor: "#77CAE7", data: [total_target.toFixed(1)] },
+                    { label: "Expected", type: "bar", yAxisID: "A", backgroundColor: "#31576D", data: [total_expected.toFixed(1)] },
+                    { label: "USMH", type: "bar", yAxisID: "A", backgroundColor: "#86C466", data: [total_usmh.toFixed(1)] },
+                    { label: "SMH", type: "bar", yAxisID: "A", backgroundColor: "#FFCA5A", data: [total_smh.toFixed(1)] },
+                    { label: "Other", type: "bar", yAxisID: "A", backgroundColor: "#76D7C4", data: [total_oh.toFixed(1)] },
+                    { label: "IGBD", type: "bar", yAxisID: "A",backgroundColor: "#76D7C4", data: [total_igbd.toFixed(1)] },
+                    { label: "EGBD", type: "bar", yAxisID: "A", backgroundColor: "#76D7C4", data: [total_egbd.toFixed(1)] },
+                    { label: "Curtailment", type: "bar", yAxisID: "A",backgroundColor: "#76D7C4", data: [total_curtaiment.toFixed(1)] },
+                    { label: "PR", type: "bar", yAxisID: "A",backgroundColor: "#58D68D", data: [total_pr.toFixed(1)] },
+                    { label: "Actual", type: "bar", yAxisID: "A", backgroundColor: "#58D68D", data: [total_actual.toFixed(1)] },
+                   
+                    {label: "Dataset1",type: "line",backgroundColor: "#0000FF", borderColor: "#0000FF",borderWidth: 1,fill: false, xAxisID: "axis-bar",data: [0, 100, -2.5, 30, 22, 28, 63, 35, 57, 44]
+                    }
+                 
+                ]
+                console.log("Data Array :", data_Array);*/
+                //monthlychart(data_Array);
+
+                monthlychart(main_data, cal_data);
+
+               // monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual, 0, expected_cal, usmh_cal, smh_cal, oh_cal, igbd_cal, egbd_cal, curtailment_cal, pr_cal, actual_cal, cal_data);
+                //charttest(data);
             }
             else {
             }
@@ -379,11 +477,22 @@ function getYearlyReport()
     var daterange = $('#daterange').val();
     var arr1 = new Array();
     arr1 = daterange.split("-");
+    var today = new Date(arr1[0]);
+   
+    fyear = getFinancialYear(today);
+    fdate = getFinancialYearDateStartDate(fyear);
     var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
     var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
     let site_id = "";
     let spv_list = "";
-    let pr = "";
+    let prType = "";
+    if ($("#customRadio1").prop("checked")) {
+        prType = "AOP";
+    }
+    if ($("#customRadio2").prop("checked")) {
+        // do something
+         prType = "toplining";
+    }
     var spv = $('select#spv option:selected').each(function () {
         spv_list += $(this).val() + ",";
     });
@@ -395,56 +504,475 @@ function getYearlyReport()
 
     $.ajax({
         type: "POST",
-        url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id +'&pr='+pr,
+        url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
         contentType: "application/json; charset=utf-8",
         datatype: "html",
         success: function (result, status, xhr) {
             //console.log(result);
             document.getElementById("loader").style.display = 'none';
-          
+
             if (result.length > 0) {
                 let total_target = 0;
                 let total_expected = 0;
                 let total_usmh = 0;
                 let total_smh = 0;
                 let total_oh = 0;
+                let total_igbd = 0;
+                let total_egbd = 0;
                 let total_curtaiment = 0;
                 let total_pr = 0;
                 let avg_pr = 0;
                 let total_actual = 0;
                 var cnt = 0;
+                let expected_cal = 0;
+                let usmh_cal = 0;
+                let smh_cal = 0;
+                let oh_cal = 0;
+                let igbd_cal = 0;
+                let egbd_cal = 0;
+                let curtailment_cal = 0;
+                let pr_cal = 0;
+                let actual_cal = 0;
+                let main_data = [];
+                let cal_data = [];
                 for (var i = 0; i < result.length; i++) {
-                    
 
+                    let pr_value = 0;
+                    let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                    pr_value = result[i].inv_kwh - total_breakdown;
                     cnt++;
-                    total_target += result[i].targer_kwh;
-                    total_expected += result[i].expected_kwh;
-                    total_usmh += result[i].usmh;
-                    total_smh += result[i].smh;
-                    total_oh += result[i].oh;
-                    total_actual += result[i].inv_kwh;
-                    total_pr += result[i].plant_pr;
+                    total_target += result[i].target;
+                    total_expected += (result[i].pexpected/1000000);
+                    total_usmh += (result[i].usmh/1000000);
+                    total_smh += (result[i].usmh/1000000);
+                    total_oh += (result[i].oh/1000000);
+                    total_actual += (result[i].inv_kwh / 1000000);
+                    total_pr += (result[i].pr_value/1000000);
+                    total_igbd += (result[i].igbdh/1000000);
+                    total_egbd += (result[i].egbdh/1000000);
+                    total_curtaiment += (result[i].load_shedding/1000000);
 
                 }
-                avg_pr = (total_pr / cnt);
+                expected_cal = (total_expected / total_expected) * 100;
+                usmh_cal = (total_usmh / total_expected) * 100;
+                smh_cal = (total_smh / total_expected) * 100;
+                oh_cal = (total_oh / total_expected) * 100;
+                igbd_cal = (total_igbd / total_expected) * 100;
+                egbd_cal = (total_egbd / total_expected) * 100;
+                curtailment_cal = (total_curtaiment / total_expected) * 100;
+                pr_cal = (total_pr / total_expected) * 100;
+                actual_cal = (total_actual / total_expected) * 100;
+
+                //avg_pr = (total_pr / cnt);
                 data_Array = [{ label: "Target",Yaxis:0, backgroundColor: "#77CAE7", data: [total_target.toFixed(1)] },
                     { label: "Expected", Yaxis: 0, backgroundColor: "#31576D", data: [total_expected.toFixed(1)] },
                     { label: "USMH", backgroundColor: "#86C466", data: [total_usmh.toFixed(1)] },
                     { label: "SMH", backgroundColor: "#FFCA5A", data: [total_smh.toFixed(1)] },
                     { label: "Other", backgroundColor: "#76D7C4", data: [total_oh.toFixed(1)] },
-                    { label: "PR", backgroundColor: "#58D68D", data: [avg_pr.toFixed(1)] },
+                    { label: "IGBD", backgroundColor: "#76D7C4", data: [total_igbd.toFixed(1)] },
+                    { label: "EGBD", backgroundColor: "#76D7C4", data: [total_egbd.toFixed(1)] },
+                    { label: "Curtailment", backgroundColor: "#76D7C4", data: [total_curtaiment.toFixed(1)] },
+                    { label: "PR", backgroundColor: "#58D68D", data: [total_pr.toFixed(1)] },
                     { label: "Actual", backgroundColor: "#F39C12", data: [total_actual.toFixed(1)] }];
                 console.log("Data Array :", data_Array);
-                //monthlychart(data_Array);
+
+                cal_data.push("0", expected_cal.toFixed(1), usmh_cal.toFixed(1), smh_cal.toFixed(1), oh_cal.toFixed(1), igbd_cal.toFixed(1), egbd_cal.toFixed(1), curtailment_cal.toFixed(1), pr_cal.toFixed(1), actual_cal.toFixed(1));
+                main_data.push(total_target.toFixed(1), total_expected.toFixed(1), total_usmh.toFixed(1), total_smh.toFixed(1), total_oh.toFixed(1), total_igbd.toFixed(1), total_egbd.toFixed(1), total_curtaiment.toFixed(1), total_pr.toFixed(1), total_actual.toFixed(1));
+                yearlyChart(main_data, cal_data);
             }
             else {
             }
-           
+
         }
 });
 }
 
-    function monthlychart(data) {
+   /* function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual, target_cal, expected_cal, usmh_cal, smh_cal, oh_cal, igbd_cal, egbd_cal, curtailment_cal, pr_cal, actual_cal, cal_data) {
+        console.log("Target :" + total_target);
+        console.log("total_expected :" + total_expected);
+        console.log("target_cal :" + target_cal);
+        console.log("expected_cal :" + expected_cal);
+        let chartStatus = Chart.getChart("monthly_chart"); // <canvas> id
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+        new Chart(document.getElementById("monthly_chart"), {
+            type: 'bar',
+            data: {
+
+                labels: ["Taget", "Expected", "USMH", "SMH", "Other", "IGBD", "EGBD","Curtailment","PR","Actual"],
+                datasets: [
+                    {
+                        yAxisID: 'A',
+                        label: "Taget",
+                        type: "bar",
+                        backgroundColor: "#77CAE7",
+                        data: [total_target.toFixed(1)],
+                        //order: 1,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                            },
+                        }
+                    }, {
+
+                        yAxisID: 'A',
+                        label: "Expected",
+                        type: "bar",
+                        backgroundColor: "#31576D",
+                        backgroundColorHover: "#3e95cd",
+                        data: [total_expected.toFixed(1)],
+                       // order:1,
+                        datalabels: {
+                            anchor: 'center',
+                            align: 'top',
+                            color: 'white',
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+
+                                    }
+                                },
+                            },
+                        },
+                    } , {
+
+                        yAxisID: 'A',
+                        label: "USMH",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_usmh.toFixed(1)],
+                       // order: 1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    {
+
+                        yAxisID: 'A',
+                        label: "SMH",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_smh.toFixed(1)],
+                       // order:1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    {
+
+                        yAxisID: 'A',
+                        label: "Other",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_oh.toFixed(1)],
+                      //  order: 1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    {
+
+                        yAxisID: 'A',
+                        label: "IGBD",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_igbd.toFixed(1)],
+                      //  order: 1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    {
+
+                        yAxisID: 'A',
+                        label: "EGBD",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_egbd.toFixed(1)],
+                        //order: 1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    {
+
+                        yAxisID: 'A',
+                        label: "Curtailment",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_curtaiment.toFixed(1)],
+                       //order: 1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    {
+
+                        yAxisID: 'A',
+                        label: "PR",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_pr.toFixed(1)],
+                        //order: 1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    {
+
+                        yAxisID: 'A',
+                        label: "Actual",
+                        type: "bar",
+                        borderColor: "#86C466",
+                        data: [total_actual.toFixed(1)],
+                        //order: 1,
+                        fill: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 5
+                        },
+
+
+                    },
+                    /*{
+                       // order: 1,
+                        yAxisID: 'B',
+                        label: "",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [target_cal.toFixed(1) + '%'],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },*/
+                   /* {
+                        //order: 0,
+                        yAxisID: 'B',
+                        label: "Expected Cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [cal_data],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "USMH cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [usmh_cal.toFixed(1)],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "SMH Cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [smh_cal.toFixed(1)],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "Other Cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [oh_cal.toFixed(1)],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "IGDB Cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [igbd_cal.toFixed(1)],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "EGBD Cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [egbd_cal.toFixed(1)],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "Cur Cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [curtailment_cal.toFixed(1)],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "PR Cal",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [pr_cal.toFixed(1) ],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    },
+                    {
+                        order: 0,
+                        yAxisID: 'B',
+                        label: "Actual Cal ",
+                        type: "line",
+                        borderColor: "#FF7F50",
+                        data: [actual_cal.toFixed(1)],
+                        fill: false,
+
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                        },
+
+                    }*/
+               /* ]
+            },
+
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        //text: title
+                        text: ""
+
+                    },
+
+                    legend: {
+                        display: true,
+                        position: "bottom"
+                    }
+
+                },
+
+                scales: {
+                    A: {
+                        type: 'linear',
+                        position: 'left',
+                        //ticks: { beginAtZero: true, },
+                       // grid: { display: false }
+                    },
+                    B: {
+                        type: 'linear',
+                        position: 'right',
+                       // ticks: { beginAtZero: true, },
+                        grid: { display: false }
+                    },
+                }
+            }
+
+
+
+        }
+        );
+        //);
+    }*/
+  /* function monthlychart(data) {
         console.log(data);
     let chartStatus = Chart.getChart("monthly_chart"); // <canvas> id
     if (chartStatus != undefined) {
@@ -453,7 +981,8 @@ function getYearlyReport()
     new Chart(document.getElementById("monthly_chart"), {
         type: 'bar',
         data: {
-            labels: ["Monthly"],
+           // labels: ["Monthly"],
+           labels: ["Taget", "Expected", "USMH", "SMH", "Other", "IGBD", "EGBD", "Curtailment", "PR", "Actual"],
             datasets: data,
             datalabels: {
                 anchor: 'center',
@@ -467,157 +996,6 @@ function getYearlyReport()
                     },
                 },
             },
-
-            /*datasets: [{
-                        label: "Target",
-                        backgroundColor: "#77CAE7",
-                        data: [4.55],
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        }
-                    }, {
-                        label: "Expected",
-                        backgroundColor: "#31576D",
-                        backgroundColorHover: "#3e95cd",
-                        data: [3.5],
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-                    }, {
-
-                        label: "USMH",
-                        backgroundColor: "#86C466",
-                        borderColor: "#86C466",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-                    },
-                    {
-                       label: "SMH",
-                       backgroundColor: "#FFCA5A",
-                       borderColor: "#FFCA5A",
-                       data: [4.5],
-                       fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-                    },
-                    {
-                        label: "Other",
-                        backgroundColor: "#76D7C4",
-                        borderColor: "#76D7C4",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-                    },
-                    {
-                        label: "Curtaiment",
-                        backgroundColor: "#F1948A",
-                        borderColor: "#F1948A",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-                    },
-                    {
-                        label: "PR",
-                        backgroundColor: "#58D68D",
-                        borderColor: "#58D68D",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-
-                    },
-                    {
-                        label: "Actual",
-                        backgroundColor: "#F39C12",
-                        borderColor: "#F39C12",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-                    }
-                ]*/
             },
 
             plugins: [ChartDataLabels],
@@ -632,184 +1010,240 @@ function getYearlyReport()
                     },
 
                     legend: {
-                        display: true,
+                        display: false,
                         position: "bottom"
                     }
 
                 },
-
+                scales: {
+                    xAxes: [{
+                        type: "category",
+                        id: "axis-bar",
+                    }],
+                    A: {
+                        type: 'linear',
+                        position: 'left',
+                        //ticks: { beginAtZero: true, },
+                        // grid: { display: false }
+                    },
+                    B: {
+                        type: 'linear',
+                        position: 'right',
+                        // ticks: { beginAtZero: true, },
+                        grid: { display: false }
+                    },
+                }
             }
         }
     );
-}
+    }*/
 
-function yearlyChart() {
+    function monthlychart(data,cal_data) {
+        console.log(data);
+        let chartStatus = Chart.getChart("monthly_chart"); // <canvas> id
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+        new Chart(document.getElementById("monthly_chart"), {
+            type: 'bar',
+            data: {
+                // labels: ["Monthly"],
+                labels: ["Taget", "Expected", "USMH", "SMH", "Other", "IGBD", "EGBD", "Curtailment", "PR", "Actual"],
+                datasets: [{
+                    label: "Monthly data",
+                    type: "line",
+                    backgroundColor: "#77CAE7",
+                    borderColor: "#77CAE7",
+                    borderWidth: 1,
+                    fill: false,
+                    yAxisID: 'B',
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        offset: 10
+                    },
+                   // xAxisID: "axis-time",
+                    data: cal_data,// [12296, 12381, 9141, 24203, 21987, 21801, 65394, 91892, 57645, 44637, 22631, 17502]
+                }, {
+                    label: "Calculation Trend",
+                    type: "bar",
+                    backgroundColor: "#31576D",
+                    borderColor: "#31576D",
+                    borderWidth: 1,
+                    fill: true,
+                   // xAxisID: "axis-bar",
+                    yAxisID: 'A',
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        offset: 5
+                    },
+                    data: data,//[299405, 244029, 247191, 329711, 273855, 441914, 426271, 471912, 374388, 366864, 326155, 277442]
+                }],
+                datalabels: {
+                    anchor: 'center',
+                    align: 'top',
+                    color: 'white',
+                    labels: {
+                        title: {
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                },
+            },
+
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Monthly"
+                        ///text: ""
+
+                    },
+
+                    legend: {
+                        display: false,
+                        position: "bottom"
+                    }
+
+                },
+                scales: {
+                   // xAxes: [{
+                      ////  type: "category",
+                       // id: "axis-bar",
+                   // }],
+                    A: {
+                        type: 'linear',
+                        position: 'left',
+                        //ticks: { beginAtZero: true, },
+                        // grid: { display: false }
+                    },
+                    B: {
+                        type: 'linear',
+                        position: 'right',
+                        // ticks: { beginAtZero: true, },
+                        grid: { display: false }
+                    },
+                }
+            }
+        }
+        );
+    }
+
+    function yearlyChart(ydata,ycal_data) {
     let chartStatus = Chart.getChart("yearly_chart"); // <canvas> id
     if (chartStatus != undefined) {
         chartStatus.destroy();
-    }
-    new Chart(document.getElementById("yearly_chart"), {
+        }
+        new Chart(document.getElementById("yearly_chart"), {
+            type: 'bar',
+            data: {
+                // labels: ["Monthly"],
+                labels: ["Taget", "Expected", "USMH", "SMH", "Other", "IGBD", "EGBD", "Curtailment", "PR", "Actual"],
+                datasets: [{
+                    label: "Yearly data",
+                    type: "line",
+                    backgroundColor: "#77CAE7",
+                    borderColor: "#77CAE7",
+                    borderWidth: 1,
+                    fill: false,
+                    yAxisID: 'B',
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        offset: 10
+                    },
+                    // xAxisID: "axis-time",
+                    data: ycal_data,// [12296, 12381, 9141, 24203, 21987, 21801, 65394, 91892, 57645, 44637, 22631, 17502]
+                }, {
+                    label: "Calculation Trend",
+                    type: "bar",
+                    backgroundColor: "#31576D",
+                    borderColor: "#31576D",
+                    borderWidth: 1,
+                    fill: true,
+                    // xAxisID: "axis-bar",
+                    yAxisID: 'A',
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        offset: 5
+                    },
+                    data: ydata,//[299405, 244029, 247191, 329711, 273855, 441914, 426271, 471912, 374388, 366864, 326155, 277442]
+                }],
+                datalabels: {
+                    anchor: 'center',
+                    align: 'top',
+                    color: 'white',
+                    labels: {
+                        title: {
+                            font: {
+                                weight: 'bold'
+                            }
+                        },
+                    },
+                },
+            },
+
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Yearly"
+                        //text: ""
+
+                    },
+
+                    legend: {
+                        display: false,
+                        position: "bottom"
+                    }
+
+                },
+                scales: {
+                    // xAxes: [{
+                    ////  type: "category",
+                    // id: "axis-bar",
+                    // }],
+                    A: {
+                        type: 'linear',
+                        position: 'left',
+                        //ticks: { beginAtZero: true, },
+                        // grid: { display: false }
+                    },
+                    B: {
+                        type: 'linear',
+                        position: 'right',
+                        // ticks: { beginAtZero: true, },
+                        grid: { display: false }
+                    },
+                }
+            }
+        }
+        );
+   /* new Chart(document.getElementById("yearly_chart"), {
             type: 'bar',
             data: {
                 labels: ["Yearly"],// ["Target", "Expected", "USMH", "SMH", "Other", "Curtaiment", "PR", "Actual"],
-                datasets: [
-                    {
-                        label: "Target",
-                        backgroundColor: "#77CAE7",
-                        data: [4.55],
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        }
-                    }, {
-
-                        label: "Expected",
-                        backgroundColor: "#31576D",
-                        backgroundColorHover: "#3e95cd",
-                        data: [3.5],
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-                    }, {
-
-                        label: "USMH",
-                        backgroundColor: "#86C466",
-                        borderColor: "#86C466",
-                        data: [4.5],
-                        //order: 0,
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-
-
-                    },
-                    {
-                        label: "SMH",
-                        backgroundColor: "#FFCA5A",
-                        borderColor: "#FFCA5A",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-
-                    },
-                    {
-                        label: "Other",
-                        backgroundColor: "#76D7C4",
-                        borderColor: "#76D7C4",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-
-                    },
-                    {
-                        label: "Curtaiment",
-                        backgroundColor: "#F1948A",
-                        borderColor: "#F1948A",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
+                datasets: ydata,
+                datalabels: {
+                    anchor: 'center',
+                    align: 'top',
+                    color: 'white',
+                    labels: {
+                        title: {
+                            font: {
+                                weight: 'bold'
+                            }
                         },
                     },
-                    {
-                        label: "PR",
-                        backgroundColor: "#58D68D",
-                        borderColor: "#58D68D",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-
-                    },
-                    {
-                        label: "Actual",
-                        backgroundColor: "#F39C12",
-                        borderColor: "#F39C12",
-                        data: [4.5],
-                        fill: false,
-                        datalabels: {
-                            anchor: 'center',
-                            align: 'top',
-                            color: 'white',
-                            labels: {
-                                title: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                },
-                            },
-                        },
-
-                    }
-                ]
+                },
             },
 
             plugins: [ChartDataLabels],
@@ -828,10 +1262,6 @@ function yearlyChart() {
                     }
                 },
             }
-    });
+    });*/
 }
 </script>
-
-
-
-
