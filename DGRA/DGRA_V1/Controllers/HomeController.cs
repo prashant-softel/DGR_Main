@@ -171,17 +171,18 @@ namespace DGRA_V1.Controllers
             bool IsSSO = false;
             string[] userList = username.Split("@");
             string last = userList[1];
+            string encodedPassword = System.Web.HttpUtility.UrlEncode(pass);
             //if (last.Equals("herofutureenergies.com")) {
-               // SSOLogin();
-           // }
-           // else {
-                bool login_status = false;
+            // SSOLogin();
+            // }
+            // else {
+            bool login_status = false;
                 LoginModel model = new LoginModel();
                 //UserAccess usermodel = new UserAccess();
                 System.Collections.Generic.Dictionary<string, object>[] map = new System.Collections.Generic.Dictionary<string, object>[1];
                 try
                 {
-                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UserLogin?username=" + username + "&password=" + pass + "&isSSO=false&device_id=" + device_id ;
+                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UserLogin?username=" + username + "&password=" + encodedPassword + "&isSSO=false&device_id=" + device_id ;
                     WebRequest request = WebRequest.Create(url);
                     using (WebResponse response = (HttpWebResponse)request.GetResponse()){
                         Stream receiveStream = response.GetResponseStream();
@@ -440,11 +441,13 @@ namespace DGRA_V1.Controllers
         public async Task<IActionResult> WindNewUserRegister(string fname,string useremail,string role,string userpass)
         {
             string line = "";
+            string encodedPassword = System.Web.HttpUtility.UrlEncode(userpass);
+
             try
             {
                /// var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail="+ useremail + "&site="+ site + "&role="+ role + "&pages="+ pages + "&reports="+ reports + "&read="+ read + "&write="+ write + "";
                 //var url = "http://localhost:23835/api/Login/WindUserRegistration?fname=" + fname + "&useremail=" + useremail + "&role=" + role+ "&created_on="+ created_on + "";
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail=" + useremail + "&role=" + role + "&userpass="+ userpass + "";
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail=" + useremail + "&role=" + role + "&userpass="+ encodedPassword + "";
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {
@@ -466,11 +469,13 @@ namespace DGRA_V1.Controllers
         public async Task<IActionResult> UpdatePassword(int loginid, string updatepass)
         {
             string line = "";
+            string encodedPassword = System.Web.HttpUtility.UrlEncode(updatepass);
+
             try
             {
                 /// var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail="+ useremail + "&site="+ site + "&role="+ role + "&pages="+ pages + "&reports="+ reports + "&read="+ read + "&write="+ write + "";
                 //var url = "http://localhost:23835/api/Login/WindUserRegistration?fname=" + fname + "&useremail=" + useremail + "&role=" + role+ "&created_on="+ created_on + "";
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UpdatePassword?loginid=" + loginid + "&updatepass=" + updatepass +"";
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UpdatePassword?loginid=" + loginid + "&updatepass=" + encodedPassword + "";
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {

@@ -190,10 +190,11 @@
         var useremail = document.getElementById("useremail").value;
         var userpass = document.getElementById("userpass").value;
         var role = $('select#userrole option:selected').val();
+        var encodedPassword = encodedPassword(userpass);
        
         $.ajax({
             type: "POST",
-            url: '@Url.Action("WindNewUserRegister", "Home")' + '?fname=' + fname + '&useremail=' + useremail + '&role=' + role + '&userpass=' + userpass,
+            url: '@Url.Action("WindNewUserRegister", "Home")' + '?fname=' + fname + '&useremail=' + useremail + '&role=' + role + '&userpass=' + encodedPassword,
             //url: "/Home/WindNewUserRegister?fname=" + fname + "&useremail=" + useremail + "&role=" + role + "&created_on=" + created_on,
             contentType: "application/json; charset=utf-8",
             // data: '{"state":"' + val + '"}',

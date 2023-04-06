@@ -162,8 +162,11 @@
         function Login() {
             var username = document.getElementById("username").value;
             var password = document.getElementById("pass").value;
+            var encodedPassword = encodeURIComponent(password);
+            var finalPassword = encodedPassword.toString();
             var device_id = getMachineId();
             console.log("device id from login function " + device_id);
+            console.log("Username : ", username, " Password ", password, " Encoded password : ", finalPassword, " type of :", typeof (encodedPassword));
             if (username == "" || password == "") {
                 document.getElementById("msg").style.display = 'block';
                 document.getElementById("msg").innerHTML = 'Please Enter Require Filed';
@@ -174,15 +177,15 @@
                 return false;
 
             }
-            //if (username.includes('@@herofutureenergies.com')) {
-            if (username.includes('@@kamaleshs48gmail.onmicrosoft.com')) {
+            if (username.includes('@@herofutureenergies.com')) {
+            //if (username.includes('@@kamaleshs48gmail.onmicrosoft.com')) {
                 $("#aSSOLogin")[0].click();
             }
             else {
                 $.ajax({
 
                     type: "POST",
-                    url: '@Url.Action("Login", "Home")' + '?username=' + username + '&pass=' + password + '&device_id=' + device_id,
+                    url: '@Url.Action("Login", "Home")' + '?username=' + username + '&pass=' + finalPassword + '&device_id=' + device_id,
 
                     // url:"/Home/Login?username=" + username + "&pass=" + password,
                     contentType: "application/json; charset=utf-8",
