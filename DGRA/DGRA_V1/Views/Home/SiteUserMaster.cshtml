@@ -294,6 +294,7 @@
         var fname = document.getElementById(temp1).value;
         var useremail = document.getElementById(temp2).value;
         var userpass = document.getElementById(temp3).value;
+        var encodedPassword = encodeURIComponent(userpass);
         var role = "User";
         var logInId;
 
@@ -302,7 +303,7 @@
         } else {
             $.ajax({
             type: "POST",
-            url: '@Url.Action("WindNewUserRegister", "Home")' + '?fname=' + fname + '&useremail=' + useremail + '&role=' + role + '&userpass=' + userpass,
+                url: '@Url.Action("WindNewUserRegister", "Home")' + '?fname=' + fname + '&useremail=' + useremail + '&role=' + role + '&userpass=' + encodedPassword,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -383,13 +384,14 @@
 
         var updatePassword = "changePass " + login_id;
         var changePassword = document.getElementById(updatePassword).value;
+        var encodedPassword = encodeURIComponent(changePassword);
         if (changePassword == "") {
             a1.style.display = "block";
         } else {
             a.style.display = "none";
             $.ajax({
             type: "POST",
-            url: '@Url.Action("UpdatePassword", "Home")' + '?loginid=' + login_id + '&updatepass=' + changePassword,
+                url: '@Url.Action("UpdatePassword", "Home")' + '?loginid=' + login_id + '&updatepass=' + encodedPassword,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {

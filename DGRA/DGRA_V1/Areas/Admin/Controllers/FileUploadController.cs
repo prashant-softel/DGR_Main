@@ -3974,7 +3974,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 {
                     // file date is incorrect
                     m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                    retValue = true;
+                    //retValue = true;
                 }
 
             }
