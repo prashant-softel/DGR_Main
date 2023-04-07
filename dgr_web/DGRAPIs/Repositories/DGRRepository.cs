@@ -5235,7 +5235,7 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
 (SELECT dc_capacity FROM site_master_solar where site=t1.site and state=t1.state)as dc_capacity,
 (SELECT total_tarrif FROM site_master_solar where site=t1.site and state=t1.state)as total_tarrif,
 (SELECT  sum(gen_nos) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy='" + fy + "') as tar_kwh," +
-"(sum(expected_kwh)/1000000)as expected_kwh,(sum(inv_kwh_afterloss)/1000000)as act_kwh,(SELECT lineloss FROM monthly_line_loss_solar where site=t1.site and fy='" + fy + "' and month_no=month(t1.date)  order by monthly_line_loss_solar_id desc limit 1)as lineloss,(SELECT  sum(ghi)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ghi,sum(ghi)/count(*) as act_ghi,(SELECT  sum(poa)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_poa,sum(poa)/count(*) as act_poa,(SELECT  sum(plf)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_plf,sum(inv_plf_afterloss)/count(*) as act_plf,(SELECT  sum(pr)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_pr,sum(plant_pr)/count(*) as act_pr,(SELECT  sum(ma)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ma,sum(ma)/count(*) as act_ma,(SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_iga,sum(iga)/count(*) as act_iga,(SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + "  and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where  " + datefilter + " "+ filter + " group by site";
+"(sum(expected_kwh)/1000000)as expected_kwh,(sum(inv_kwh_afterloss)/1000000)as act_kwh,(SELECT lineloss FROM monthly_line_loss_solar where site=t1.site and fy='" + fy + "' and month_no=month(t1.date)  order by monthly_line_loss_solar_id desc limit 1)as lineloss,(SELECT  sum(ghi)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ghi,sum(ghi)/count(*) as act_ghi,(SELECT  sum(poa)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_poa,sum(poa)/count(*) as act_poa,(SELECT  sum(plf)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_plf,sum(inv_plf_afterloss)/count(*) as act_plf,(SELECT  sum(pr)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_pr,sum(plant_pr)/count(*) as act_pr,(SELECT  sum(ma)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ma,sum(ma)/count(*) as act_ma,(SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_iga,sum(iga)/count(*) as act_iga,(SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + "  and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where  " + datefilter + " " + filter + " group by site order by site";
 
             //and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where t1.approve_status=" + approve_status + " and " + datefilter + " group by site";
             List<SolarPerformanceReports1> data = new List<SolarPerformanceReports1>();
@@ -8940,8 +8940,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             monthlypr = await GetWindPerformanceReportSiteWise(fy, mfromDate, mtodate, site);
             lastdaypr = await GetWindPerformanceReportSiteWise(fy, lastDay, lastDay, site);
 
-            string qry = "SELECT SUM(kwh/1000000) as tar_kwh, site FROM `daily_target_kpi` where date >= '"+ yfromDate +"' and date <='"+ ytodate +"' group by site_id;";
-            List<WindPerformanceReports> tarData= new List<WindPerformanceReports>();
+            string qry = "SELECT SUM(kwh/1000000) as tar_kwh, site FROM `daily_target_kpi` where date >= '" + yfromDate + "' and date <='" + (lastYear.AddYears(1).ToString("yyyy")) + "-04-01' group by site_id;";
+            List<WindPerformanceReports> tarData = new List<WindPerformanceReports>();
             tarData = await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
 
 
@@ -9313,26 +9313,32 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; '  border='1'>";
             tb += "<thead class='tb-head'><tr>";
             tb += "<th rowspan='2'  style='width: 9%; background-color:#31576D;color:#ffffff' >Site</th><th  rowspan='2'  style='width: 8%; background-color:#31576D; color:#ffffff'>Capacity (MW)</th><th rowspan='2' style='width: 8%; background-color:#31576D;color:#ffffff' >Total Tar</th>";
-            tb += "<th colspan='10' class='text-center' style='background-color:#86C466;color:#ffffff'>YTD</th>";
-            tb += "<th colspan='10' class='text-center' style='background-color:#77CAE7;'>MTD</th>";
+            tb += "<th colspan='13' class='text-center' style='background-color:#86C466;color:#ffffff'>YTD</th>";
+            tb += "<th colspan='13' class='text-center' style='background-color:#77CAE7;'>MTD</th>";
             tb += "<th colspan='13' class='text-center' style='background-color:#FFCA5A;'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
             tb += "<tr><th  style='background-color:#86C466;color:#ffffff' >Tar Gen</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>Act Gen</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Tar IR</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Act IR</th>";
+            tb += "<th  style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
+            tb += "<th style='background-color:#86C466;color:#ffffff'>PLF (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>MA (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>IGA (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>EGA (%)</th>";
-            tb += "<th style='background-color:#86C466;color:#ffffff'>PLF (%)</th>";
             tb += "<th  style='background-color:#86C466;color:#ffffff'>Tar PR (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>Act PR (%)</th>";
             tb += "<th style='background-color:#86C466;color:#ffffff'>Var (%)</th>";
             tb += "<th  style='background-color:#77CAE7;'>Tar Gen</th>";
             tb += "<th style='background-color:#77CAE7;'>Act Gen</th>";
-            tb += "<th  style='background-color:#77CAE7;'>Var (%)</th>";          
+            tb += "<th  style='background-color:#77CAE7;'>Var (%)</th>";
+            tb += "<th  style='background-color:#77CAE7;'>Tar IR</th>";
+            tb += "<th  style='background-color:#77CAE7;'>Act IR</th>";
+            tb += "<th  style='background-color:#77CAE7;'>Var (%)</th>";
+            tb += "<th style='background-color:#77CAE7;'>PLF (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>MA (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>IGA (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>EGA (%)</th>";
-            tb += "<th style='background-color:#77CAE7;'>PLF (%)</th>";
             tb += "<th  style='background-color:#77CAE7;'>Tar PR (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>Act PR (%)</th>";
             tb += "<th style='background-color:#77CAE7;'>Var (%)</th>";
@@ -9342,7 +9348,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th  style='background-color:#FFCA5A;'>Tar IR</th>";
             tb += "<th  style='background-color:#FFCA5A;'>Act IR</th>";
             tb += "<th  style='background-color:#FFCA5A;'>Var (%)</th>";
-            tb += "<th  style='background-color:#FFCA5A;'>PA (%)</th>";          
+            tb += "<th  style='background-color:#FFCA5A;'>PA (%)</th>";
             tb += "<th style='background-color:#FFCA5A;'>IGA (%)</th>";
             tb += "<th style='background-color:#FFCA5A;'>EGA (%)</th>";
             tb += "<th style='background-color:#FFCA5A;'>CUF_AC (%)</th>";
@@ -9357,6 +9363,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double poa_var_yr = 0;
             double pr_var_yr = 0;
             double act_prval_yr = 0;
+            double total_target = 0;
 
             double t_var_mn = 0;
             double tar_mu_mn = 0;
@@ -9371,6 +9378,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double act_prval_ld = 0;
 
             double total_capacity_yr = 0;
+            double total_target_yr = 0;
             double total_excepted_kwh_yr = 0;
             double total_tar_kwh_yr = 0;
             double total_act_kwh_yr = 0;
@@ -9469,6 +9477,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site);
             lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, lastDay, site);
 
+            string qry = "SELECT sum(gen_nos) as tar_kwh, sites as site FROM `daily_target_kpi_solar` where date >= '" + yfromDate + "' and date <='" + (lastYear.AddYears(1).ToString("yyyy")) + "-04-01' group by site_id;";
+            List<SolarPerformanceReports1> tarData = new List<SolarPerformanceReports1>();
+            tarData = await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);
 
             for (int i = 0; i < yearlypr.Count; i++)
             {
@@ -9503,16 +9514,30 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 total_capActEga_yr += yearlypr[i].act_ega * yearlypr[i].capacity;
                 total_capTarPr_yr += yearlypr[i].tar_pr * yearlypr[i].capacity;
                 total_capActPr_yr += act_prval_yr * yearlypr[i].capacity;
+
+                foreach (SolarPerformanceReports1 tar in tarData)
+                {
+                    if (yearlypr[i].site == tar.site)
+                    {
+                        total_target = tar.tar_kwh;
+                        break;
+                    }
+                }
+                total_target_yr += total_target;
+
                 try
                 {
                     // tb += "<td style='padding:0.5rem;'>" + yearlypr[i].site + "</td>";
                     tb += "<td style='text-align:left;' >" + yearlypr[i].site + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].capacity, 2) + "</td>";
-                    tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].expected_kwh, 2) + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + Math.Round(total_target, 2) + "</td>";
 
                     tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].tar_kwh, 2) + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_kwh, 2) + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + Math.Round(t_var_yr, 2) + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].tar_poa, 2) + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_poa, 2) + "</td>";
+                    tb += "<td style='padding:0.5rem;'>" + Math.Round(poa_var_yr, 2) + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_plf, 2) + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_ma, 2) + "</td>";
                     tb += "<td style='padding:0.5rem;'>" + Math.Round(yearlypr[i].act_iga, 2) + "</td>";
@@ -9566,17 +9591,21 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                         monthlyRecordFound = true;
-                        try { 
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_kwh, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_kwh, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(t_var_mn, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_plf, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_ma, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_iga, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_ega, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_pr, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(act_prval_mn, 2) + "</td>";
-                        tb += "<td style='padding:0.5rem;'>" + Math.Round(pr_var_mn, 2) + "</td>";
+                        try
+                        {
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_kwh, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_kwh, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(t_var_mn, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_poa, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_poa, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(poa_var_mn, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_plf, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_ma, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_iga, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].act_ega, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(monthlypr[j].tar_pr, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(act_prval_mn, 2) + "</td>";
+                            tb += "<td style='padding:0.5rem;'>" + Math.Round(pr_var_mn, 2) + "</td>";
                         }
                         catch (Exception ex)
                         {
@@ -9731,7 +9760,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 // tb += "<tfoot><tr><td style='padding:0.5rem;'><b>Grand Total</b></td>";
                 tb += "<tfoot style='font-size: 10px;text-align:center' ><tr><td style='text-align:left'><b>Grand Total</b></td>";
                 tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_capacity_yr, 2) + "</b></td>";
-                tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_excepted_kwh_yr, 2) + "</b></td>";
+                tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_target_yr, 2) + "</b></td>";
                 tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_tar_kwh_yr, 2) + "</b></td>";
                 tb += "<td style='padding:0.5rem;'><b>" + Math.Round(total_act_kwh_yr, 2) + "</b></td>";
                 tb += "<td style='padding:0.5rem;'><b>" + Math.Round(avg_solar_var_yr, 2) + "</b></td>";
