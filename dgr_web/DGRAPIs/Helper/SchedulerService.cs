@@ -159,54 +159,38 @@ namespace DGRAPIs.Helper
 
                     //Weekly report mail
                     string weeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
+                    string weeklyTimeSolar = MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar");
                     string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
 
                     if (DateTime.Now.ToString("HH:mm") == weeklyTime)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
                     {
-                        API_InformationLog("Inside if where dailytime =" + dailyTime);
+                        API_InformationLog("Inside if Wind Weekly Mail Send where dailytime =" + dailyTime);
 
                         EmailWeeklyFunction();
 
                         async Task<int> EmailWeeklyFunction()
                         {
-                            API_InformationLog("Email Weekly Function Called from scheduler");
+                            API_InformationLog("Email Weekly Wind Function Called from scheduler");
                             string hostName = MyConfig.GetValue<string>("Timer:hostName");
 
-                            bool SolarMailSuccess = false;
                             bool WindMailSuccess = false;
                             try
                             {
-                                string apiUrlSolar = hostName + "/api/DGR/PPTCreate";
-                                API_InformationLog("API URL " + apiUrlSolar);
-                                CallAPI(apiUrlSolar);
+                                string apiUrlWind = hostName + "/api/DGR/PPTCreate";
+                                API_InformationLog("API URL " + apiUrlWind);
+                                CallAPI(apiUrlWind);
                                 // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
-                                SolarMailSuccess = true;
-                                API_InformationLog("Inside try Solar mail send");
-                            }
-                            catch (Exception e)
-                            {
-                                string msg = e.Message;
-                                API_ErrorLog("Inside catch WInd weeekly mail failed" + msg);
-                            }
-                            try
-                            {
-
-                                string apiUrlSolar = hostName + "/api/DGR/PPTCreate_Solar";
-
-                                API_InformationLog("API URL " + apiUrlSolar);
-                                CallAPI(apiUrlSolar);
-                                // await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
-                                API_InformationLog("Inside try Solar mail send");
                                 WindMailSuccess = true;
+                                API_InformationLog("Inside try Wind Weekly Mail Send");
                             }
                             catch (Exception e)
                             {
                                 string msg = e.Message;
-                                API_ErrorLog("Inside catch Wind mail failed" + msg);
+                                API_ErrorLog("Inside catch Wind weeekly mail failed" + msg);
                             }
-                            if (WindMailSuccess && SolarMailSuccess)
+                            if (WindMailSuccess)
                             {
-                                API_InformationLog("Solar and Wind Mail Sent" + msg);
+                                API_InformationLog("Wind Mail Sent" + msg);
                                 return 1;
                             }
                             else
@@ -214,17 +198,45 @@ namespace DGRAPIs.Helper
                                 return 0;
                             }
                         }
-
-
-
-                        //repo.PPTCreate(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
-                        // repo.PPTCreate_Solar(fy, datetimenow.ToString("yyyy-MM-dd"), datetimenow.ToString("yyyy-MM-dd"), "");
                     }
 
-                    //repo.EmailSolarReport(fy, "2022-12-31", "");
-                    //API_ErrorLog("Scheduler method EmailWindReport calling at :- " + DateTime.Now);
-                    //repo.EmailWindReport(fy, "2023-02-27", "");
-                    //API_ErrorLog("Scheduler mail sent :- " + DateTime.Now);
+                    //Solar Weekly Mail Send Function 
+                    if (DateTime.Now.ToString("HH:mm") == weeklyTimeSolar)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
+                    {
+                        API_InformationLog("Inside if Weekly Mail Send Solar where dailytime =" + dailyTime);
+
+                        EmailWeeklyFunction();
+
+                        async Task<int> EmailWeeklyFunction()
+                        {
+                            API_InformationLog("Email Weekly Mail Send Solar Function Called from scheduler");
+                            string hostName = MyConfig.GetValue<string>("Timer:hostName");
+
+                            bool SolarMailSuccess = false;
+                            try
+                            {
+                                string apiUrlSolar = hostName + "/api/DGR/PPTCreate_Solar";
+                                API_InformationLog("Email weekly mail send solar API URL " + apiUrlSolar);
+                                CallAPI(apiUrlSolar);
+                                API_InformationLog("Inside try Solar weekly mail send");
+                                SolarMailSuccess = true;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.Message;
+                                API_ErrorLog("Inside catch Solar Weekly mail failed" + msg);
+                            }
+                            if (SolarMailSuccess)
+                            {
+                                API_InformationLog("Solar Mail Sent" + msg);
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
+                    }
                 }
 
 

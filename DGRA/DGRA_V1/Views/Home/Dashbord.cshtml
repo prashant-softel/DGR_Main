@@ -692,7 +692,7 @@
                     
 
                     if (wind_lastday_energy_target != 0) {
-                        lastVariant_energy = (((wind_lastday_energy / 1000).toFixed(1) - (wind_lastday_energy_target / 1000).toFixed(1)/ (wind_lastday_energy_target / 1000).toFixed(1))) * 100;
+                        lastVariant_energy = ((wind_lastday_energy - wind_lastday_energy_target) /wind_lastday_energy_target) * 100;
                     }
                     if (wind_lastday_wspeed_target != 0) {
                         lastVariant_wspeed = ((wind_lastday_wspeed - wind_lastday_wspeed_target) / wind_lastday_wspeed_target) * 100;
