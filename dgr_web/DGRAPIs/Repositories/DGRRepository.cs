@@ -3377,7 +3377,7 @@ bd_remarks, action_taken
         }
         internal async Task<int> MailSend(string fname)
         {
-            API_InformationLog("MailSend function part invoked at :- " + DateTime.Now);
+            API_InformationLog("Weekly MailSend function part invoked at :- " + DateTime.Now + fname); 
             //MAILING FUNCTIONALITY
             MailSettings _settings = new MailSettings();
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -3399,17 +3399,17 @@ bd_remarks, action_taken
             List<string> AddCc = new List<string>();
             MailRequest request = new MailRequest();
 
-            API_ErrorLog("Reading mail Msg file path:- " + DateTime.Now);
+            API_ErrorLog("Weekly mail Reading mail Msg file path:- " + DateTime.Now + fname);
             string qry = "";
             if (fname.Contains("Solar"))
             {
-                API_InformationLog("File contains soalr");
+                API_InformationLog("Weekly Mail File contains soalr " + fname);
                 qry = "select useremail from login where To_Weekly_Solar = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
                     AddTo.Add(item.useremail);
-                    API_InformationLog("Added to email id :" + item.useremail);
+                    API_InformationLog("Solar Weekly Mail Added to email id :" + item.useremail);
                 }
                 qry = "select useremail from login where Cc_Weekly_Solar = 1;";
                 try
@@ -3418,7 +3418,7 @@ bd_remarks, action_taken
                     foreach (var item in data3)
                     {
                         AddCc.Add(item.useremail);
-                        API_InformationLog("Added CC email id :" + item.useremail);
+                        API_InformationLog("Solar  Weekly Mail Added CC email id :" + item.useremail);
                     }
                 }
                 catch (Exception e)
@@ -3427,13 +3427,13 @@ bd_remarks, action_taken
             }
             else
             {
-                API_InformationLog("File contains wind");
+                API_InformationLog("Weekly Mail File contains wind");
                 qry = "select useremail from login where To_Weekly_Wind = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
                     AddTo.Add(item.useremail);
-                    API_InformationLog("Added to email id :" + item.useremail);
+                    API_InformationLog("Wind Weekly Mail Added to email id :" + item.useremail);
                 }
                 qry = "select useremail from login where Cc_Weekly_Wind = 1;";
                 try
@@ -3442,7 +3442,7 @@ bd_remarks, action_taken
                     foreach (var item in data3)
                     {
                         AddCc.Add(item.useremail);
-                        API_InformationLog("Added CC email id :" + item.useremail);
+                        API_InformationLog("Wind Weekly Mail Added CC email id :" + item.useremail);
                     }
                 }
                 catch (Exception e)
@@ -3458,58 +3458,38 @@ bd_remarks, action_taken
             if (fname.Contains("Solar"))
             {
                 subject = "Solar Weekly Reports";
-                API_InformationLog("Subject selected : " + subject);
+                API_InformationLog("Weekly Mail Subject selected : " + subject);
             }
             else
             {
                 subject = "Wind Weekly Reports";
-                API_InformationLog("Subject selected : " + subject);
+                API_InformationLog("Weekly Mail Subject selected : " + subject);
             }
 			request.Subject = subject;
             request.Body = Msg;
 
-            //var file = "/Users/sanketkar/Downloads/WeeklyReport_2023-01-04.pptx";
-            //var file = "C:\\Users\\sujit\\Downloads\\" + fname+".pptx";
-            //var file = "C:\\Users\\DGR\\Downloads\\" + fname+".pptx";
             var file = "C:\\inetpub\\wwwroot\\DGR_WEB\\pptupload\\" + fname + ".pptx";
-            API_InformationLog("Reading file path:- " + file);
+            API_InformationLog("Weekly Mail Reading file path:- " + file);
             try {
-                //using var stream = new MemoryStream(System.IO.File.ReadAllBytes(file).ToArray());
-
-
-                //var formFile = new FormFile(stream, 0, stream.Length, "streamFile", file.Split(@"/").Last());
-                //    List<IFormFile> list = new List<IFormFile>();
-                //    list.Add(formFile);
-                //    request.Attachments = list;
-
                 var formFile = new FormFile(System.IO.File.OpenRead(file), 0, new FileInfo(file).Length, null, Path.GetFileName(file));
                 List<IFormFile> list = new List<IFormFile>();
                 list.Add(formFile);
                 request.Attachments = list;
-                API_InformationLog("File opened for reading at path :" + file);
+                API_InformationLog("Weekly Mail File opened for reading at path :" + file);
             }
             catch(Exception ex)
             {
-                API_ErrorLog("File read failed exception :" + ex.Message);
+                API_ErrorLog("Weekly Mail File read failed exception :" + ex.Message);
             }
-
-            //formFile.ContentType = "application/octet-stream";
-        
-
-            /*using (var stream = System.IO.File.OpenRead(@"/Users/sanketkar/file.txt"))
-            {
-                await request.Attachments.CopyToAsync(stream);
-            }*/
             try
             {
                 var res = await MailService.SendEmailAsync(request, _settings);
-                API_InformationLog("SendEmailAsync function completed");
+                API_InformationLog("Weekly Mail SendEmailAsync function completed");
             }
             catch (Exception e)
             {
                 string msg = e.Message;
-                API_ErrorLog("SendEmailAsync function failed exception :" + e.Message);
-                //Pending: error log failed mail
+                API_ErrorLog("Weekly Mail SendEmailAsync function failed exception :" + e.Message);
             }
             return 1;
         }
@@ -3517,27 +3497,12 @@ bd_remarks, action_taken
         //internal async Task<int> PPTCreate(string fy, string startDate, string endDate, string type) //Email ppt rename fnc
         internal async Task<int> PPTCreate()
         {
-            //string AppSetting_Key;
-            API_InformationLog("PPTCreate function method called.");
-            //var psi = new ProcessStartInfo
-            //{
-            //    //FileName = "https://localhost:5001/Home/"+type+"WeeklyPRReports?28/12/2022",
-            //    FileName = "https://localhost:44378/Home/WindWeeklyPRReports?" + endDate,
-               
-            //    UseShellExecute = true
-            //};
-            //Process.Start(psi);
-            //var psi1 = new ProcessStartInfo
-            //{
-            //    FileName = "https://localhost:5001/Home/SolarWeeklyPRReports?28/06/2022",
-            //    //FileName = "https://localhost:5001/Home/SolarWeeklyPRReports?"+endDate,
-            //    UseShellExecute = true
-            //};
-            //Process.Start(psi1);
+            API_InformationLog("Weekly Wind PPTCreate function method called.");
+            
 
             string msg = "WindWeeklyReport_" + DateTime.Now.ToString("yyyy-MM-dd");
             MailSend(msg);
-            API_InformationLog("MailSend function called from PPTCreate functionwith parameter " + msg);
+            API_InformationLog("Weekly Wind Mail MailSend function called from PPTCreate functionwith parameter " + msg);
 
             return 1;
         }
@@ -3545,27 +3510,9 @@ bd_remarks, action_taken
         //internal async Task<int> PPTCreate_Solar(string fy, string startDate, string endDate, string type)
             internal async Task<int> PPTCreate_Solar()
         {
-            //string AppSetting_Key;
-
-            //var psi = new ProcessStartInfo
-            //{
-            //    //FileName = "https://localhost:5001/Home/"+type+"WeeklyPRReports?28/12/2022",
-            //    FileName = "https://localhost:44378/Home/SolarWeeklyPRReports?" + endDate,
-
-            //    UseShellExecute = true
-            //};
-            //Process.Start(psi);
-            //var psi1 = new ProcessStartInfo
-            //{
-            //    FileName = "https://localhost:5001/Home/SolarWeeklyPRReports?28/06/2022",
-            //    //FileName = "https://localhost:5001/Home/SolarWeeklyPRReports?"+endDate,
-            //    UseShellExecute = true
-            //};
-            //Process.Start(psi1);
-
             string msg = "SolarWeeklyReport_" + DateTime.Now.ToString("yyyy-MM-dd");
             MailSend(msg);
-            API_InformationLog("MailSend function called from PPTCreate_Solar function with parameter " + msg);
+            API_InformationLog("Wekly solar Mail MailSend function called from PPTCreate_Solar function with parameter " + msg);
 
             return 1;
         }
