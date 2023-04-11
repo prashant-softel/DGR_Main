@@ -3377,7 +3377,7 @@ bd_remarks, action_taken
         }
         internal async Task<int> MailSend(string fname)
         {
-            API_InformationLog("Weekly MailSend function part invoked at :- " + DateTime.Now + fname); 
+            PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : with parameter : " + fname + " : " + DateTime.Now);
             //MAILING FUNCTIONALITY
             MailSettings _settings = new MailSettings();
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -3399,18 +3399,26 @@ bd_remarks, action_taken
             List<string> AddCc = new List<string>();
             MailRequest request = new MailRequest();
 
-            API_ErrorLog("Weekly mail Reading mail Msg file path:- " + DateTime.Now + fname);
+            PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly mail Reading mail Msg file path:- " + DateTime.Now + fname);
             string qry = "";
             if (fname.Contains("Solar"))
             {
-                API_InformationLog("Weekly Mail File contains soalr " + fname);
+                PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains soalr " + fname);
                 qry = "select useremail from login where To_Weekly_Solar = 1;";
-                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data2)
+                try
                 {
-                    AddTo.Add(item.useremail);
-                    API_InformationLog("Solar Weekly Mail Added to email id :" + item.useremail);
+                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data2)
+                    {
+                        AddTo.Add(item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar Weekly Mail Added to email id :" + item.useremail);
+                    }
                 }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
+                }                
                 qry = "select useremail from login where Cc_Weekly_Solar = 1;";
                 try
                 {
@@ -3418,22 +3426,32 @@ bd_remarks, action_taken
                     foreach (var item in data3)
                     {
                         AddCc.Add(item.useremail);
-                        API_InformationLog("Solar  Weekly Mail Added CC email id :" + item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail Added CC email id :" + item.useremail);
                     }
                 }
                 catch (Exception e)
                 {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg) ;
                 }
             }
             else
             {
-                API_InformationLog("Weekly Mail File contains wind");
+                PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains wind");
                 qry = "select useremail from login where To_Weekly_Wind = 1;";
-                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data2)
+                try
                 {
-                    AddTo.Add(item.useremail);
-                    API_InformationLog("Wind Weekly Mail Added to email id :" + item.useremail);
+                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data2)
+                    {
+                        AddTo.Add(item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added to email id :" + item.useremail);
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
                 }
                 qry = "select useremail from login where Cc_Weekly_Wind = 1;";
                 try
@@ -3442,32 +3460,30 @@ bd_remarks, action_taken
                     foreach (var item in data3)
                     {
                         AddCc.Add(item.useremail);
-                        API_InformationLog("Wind Weekly Mail Added CC email id :" + item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added CC email id :" + item.useremail);
                     }
                 }
                 catch (Exception e)
                 {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg);
                 }
             }
-
-
-
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
             string subject = "";
             if (fname.Contains("Solar"))
             {
                 subject = "Solar Weekly Reports";
-                API_InformationLog("Weekly Mail Subject selected : " + subject);
+                PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject);
             }
             else
             {
                 subject = "Wind Weekly Reports";
-                API_InformationLog("Weekly Mail Subject selected : " + subject);
+                PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject);
             }
 			request.Subject = subject;
             request.Body = Msg;
-
             var file = "C:\\inetpub\\wwwroot\\DGR_WEB\\pptupload\\" + fname + ".pptx";
             API_InformationLog("Weekly Mail Reading file path:- " + file);
             try {
@@ -3475,45 +3491,38 @@ bd_remarks, action_taken
                 List<IFormFile> list = new List<IFormFile>();
                 list.Add(formFile);
                 request.Attachments = list;
-                API_InformationLog("Weekly Mail File opened for reading at path :" + file);
+                PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File opened for reading at path :" + file);
             }
             catch(Exception ex)
             {
-                API_ErrorLog("Weekly Mail File read failed exception :" + ex.Message);
+                PPT_ErrorLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File read failed exception :" + ex.Message);
             }
             try
             {
                 var res = await MailService.SendEmailAsync(request, _settings);
-                API_InformationLog("Weekly Mail SendEmailAsync function completed");
+                PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail SendEmailAsync function completed");
             }
             catch (Exception e)
             {
                 string msg = e.Message;
-                API_ErrorLog("Weekly Mail SendEmailAsync function failed exception :" + e.Message);
+                PPT_ErrorLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail SendEmailAsync function failed exception :" + e.Message);
             }
             return 1;
         }
-        
-        //internal async Task<int> PPTCreate(string fy, string startDate, string endDate, string type) //Email ppt rename fnc
         internal async Task<int> PPTCreate()
         {
-            API_InformationLog("Weekly Wind PPTCreate function method called.");
-            
-
+            PPT_InformationLog("From DGR Repository : Inside PPTCreate function for Wind Weekly Mail Send : Inside Method. " + DateTime.Now);
             string msg = "WindWeeklyReport_" + DateTime.Now.ToString("yyyy-MM-dd");
             MailSend(msg);
-            API_InformationLog("Weekly Wind Mail MailSend function called from PPTCreate functionwith parameter " + msg);
-
+            PPT_InformationLog("From DGR Repository : Inside PPTCreate function for Wind Weekly Mail Send : MailSend() function Called with Parameter : " + msg + " : " + DateTime.Now);
             return 1;
         }
-
-        //internal async Task<int> PPTCreate_Solar(string fy, string startDate, string endDate, string type)
-            internal async Task<int> PPTCreate_Solar()
+        internal async Task<int> PPTCreate_Solar()
         {
+            PPT_InformationLog("From DGR Repository : Inside PPTCreate_Solar function for Solar Weekly Mail Send : Inside Method. " + DateTime.Now);
             string msg = "SolarWeeklyReport_" + DateTime.Now.ToString("yyyy-MM-dd");
             MailSend(msg);
-            API_InformationLog("Wekly solar Mail MailSend function called from PPTCreate_Solar function with parameter " + msg);
-
+            PPT_InformationLog("From DGR Repository : Inside PPTCreate_Solar function for Solar Weekly Mail Send : MailSend() function Called with Parameter : " + msg + " : " + DateTime.Now);
             return 1;
         }
         internal async Task<int> InsertDailyTargetKPI(List<WindDailyTargetKPI> set)
@@ -3534,33 +3543,7 @@ bd_remarks, action_taken
             qry += values;
             await Context.ExecuteNonQry<int>(delqry.Substring(0, (delqry.Length - 2)) + ";").ConfigureAwait(false);
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
-
-            //string delqry = "";
-            //for (int i = 0; i < windDailyTargetKPI.Count; i++)
-            //{
-
-            //    string dates = Convert.ToDateTime(unit.Date).ToString("yyyy-MM-dd");
-
-            //    delqry += "delete from daily_target_kpi where fy='" + windDailyTargetKPI[i].FY + "' and date='" + dates + "' and site='" + windDailyTargetKPI[i].Site + "' ;";
-            //}
-            //await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
-
-            //string qry = "";
-            //for (int i = 0; i < windDailyTargetKPI.Count; i++)
-            //{
-
-            //    string dates = Convert.ToDateTime(windDailyTargetKPI[i].Date).ToString("yyyy-MM-dd");
-            //    string ma = Convert.ToString(windDailyTargetKPI[i].MA);
-            //    string iga = Convert.ToString(windDailyTargetKPI[i].IGA);
-            //    string ega = Convert.ToString(windDailyTargetKPI[i].EGA);
-            //    string plf = Convert.ToString(windDailyTargetKPI[i].PLF);
-
-            //    qry += "insert into daily_target_kpi (fy,date,site,wind_speed,kwh,ma,iga,ega,plf) values ('" + windDailyTargetKPI[i].FY + "','" + dates + "','" + windDailyTargetKPI[i].Site + "','" + windDailyTargetKPI[i].WindSpeed + "','" + windDailyTargetKPI[i].kWh + "','" + ma.TrimEnd('%') + "','" + iga.TrimEnd('%') + "','" + ega.TrimEnd('%') + "','" + plf.TrimEnd('%') + "');";
-            //}
-            //return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
-
         }
-
         internal async Task<int> InsertMonthlyTargetKPI(List<WindMonthlyTargetKPI> set)
         {
             //pending : add log activity
@@ -3600,8 +3583,6 @@ bd_remarks, action_taken
             }
             return val;
         }
-
-
         internal async Task<int> InsertMonthlyUploadingLineLosses(List<WindMonthlyUploadingLineLosses> set)
         {
             //pending : add log activity
@@ -3641,8 +3622,6 @@ bd_remarks, action_taken
             }
             return val;
         }
-
-
         internal async Task<int> InsertWindJMR(List<WindMonthlyJMR> set)
         {
             ////pending : add activity log
@@ -3682,7 +3661,6 @@ bd_remarks, action_taken
             }
             return val;
         }
-
         internal async Task<int> InsertWindDailyLoadShedding(List<WindDailyLoadShedding> set)
         {
             //pending : add activity log
@@ -3703,7 +3681,6 @@ bd_remarks, action_taken
             await Context.ExecuteNonQry<int>(delqry.Substring(0, (delqry.Length - 2)) + ";").ConfigureAwait(false);
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
-
         /*internal async Task<int> InsertDailyJMR(List<WindDailyJMR> set)
         {
             //pending : add activity log
@@ -3773,7 +3750,6 @@ bd_remarks, action_taken
             }
             return val;
         }
-
         internal async Task<int> InsertSolarMonthlyUploadingLineLosses(List<SolarMonthlyUploadingLineLosses> set)
         {
             string fetchQry = "select monthly_line_loss_solar_id, site_id, year, month_no from monthly_line_loss_solar";
@@ -3812,7 +3788,6 @@ bd_remarks, action_taken
             }
             return val;
         }
-
         internal async Task<int> InsertSolarJMR(List<SolarMonthlyJMR> set)
         {
             //pending : add activity log
@@ -3855,7 +3830,6 @@ bd_remarks, action_taken
             }
             return val;
         }
-
         internal async Task<int> InsertSolarDailyLoadShedding(List<SolarDailyLoadShedding> set)
         {
             string delqry = "delete from daily_load_shedding_solar where";
@@ -3874,7 +3848,6 @@ bd_remarks, action_taken
             await Context.ExecuteNonQry<int>(delqry.Substring(0, (delqry.Length - 2)) + ";").ConfigureAwait(false);
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
-
         internal async Task<int> InsertSolarInvAcDcCapacity(List<SolarInvAcDcCapacity> set)
         {
             string fetchQry = "select capacity_id, inverter, site_id from solar_ac_dc_capacity ;";
@@ -3912,7 +3885,6 @@ bd_remarks, action_taken
             }
             return val;
         }
-
         internal async Task<int> InsertSolarDailyBDloss(List<SolarDailyBDloss> solarDailyBDloss)
         {
 
@@ -3937,7 +3909,6 @@ bd_remarks, action_taken
             return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<int> importMetaData(ImportBatch meta, string userName, int userId)
         {
             string query = "";
@@ -3950,7 +3921,6 @@ bd_remarks, action_taken
             query = "insert into import_batches (file_name, import_type, import_file_type, data_date, log_filename, site_id, import_date, imported_by, import_by_name) values ('" + meta.importFilePath + "','" + meta.importType + "','" + meta.importFileType + "','" + meta.automationDataDate + "','" + meta.importLogName + "','" + meta.importSiteId + "',NOW(),'" + userId + "','" + userName + "');";
             return await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
         }
-
         internal async Task<int> InsertSolarUploadingPyranoMeter1Min(List<SolarUploadingPyranoMeter1Min> set, int batchId)
         {
             API_InformationLog("InsertSolarUploadingPyranoMeter1Min: Batch Id <" + batchId + ">");
@@ -3969,7 +3939,6 @@ bd_remarks, action_taken
             // return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
-
         internal async Task<int> InsertSolarUploadingPyranoMeter15Min(List<SolarUploadingPyranoMeter15Min> set, int batchId)
         {
             string delqry = "delete from uploading_pyranometer_15_min_solar where DATE(date_time) = DATE('" + set[0].date_time + "') and site_id=" + set[0].site_id + ";";
@@ -3984,7 +3953,6 @@ bd_remarks, action_taken
             qry += values;
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
-
         internal async Task<int> InsertSolarUploadingFileGeneration(List<SolarUploadingFileGeneration> set, int batchId)
         {
             string delqry = "delete from uploading_file_generation_solar  where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
@@ -4000,7 +3968,6 @@ bd_remarks, action_taken
 
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
-
         internal async Task<int> DeleteBreakdownDataFromUploading(dynamic date, int id)
         {
             string delqry = "delete from uploading_file_breakdown_solar where date = '" + date + "' and site_id=" + id + ";";
@@ -4019,7 +3986,6 @@ bd_remarks, action_taken
             }
             return temp;
         }
-
         internal async Task<int> InsertSolarUploadingFileBreakDown(List<SolarUploadingFileBreakDown> set, int batchId)
         {//Updated
             int result = 0;
@@ -4061,7 +4027,6 @@ bd_remarks, action_taken
             //return response;
 
         }
-
         internal async Task<int> InsertWindUploadingFileGeneration(List<WindUploadingFileGeneration> set, int batchId)
         {
             string delqry = "delete from uploading_file_generation where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
@@ -4077,7 +4042,6 @@ bd_remarks, action_taken
 
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -4125,8 +4089,6 @@ bd_remarks, action_taken
             }
         
         }
-
-
         internal async Task<BatchIdImport> GetBatchId(string logFileName)
         {
 
@@ -4143,8 +4105,6 @@ bd_remarks, action_taken
                 throw;
             }
         }
-
-
         async Task<int> DeleteFromSolarDailyGenSummary(int id)
         {
             int temp;
@@ -4290,7 +4250,6 @@ bd_remarks, action_taken
                 return 0;
             }
         }
-
         internal async Task<BatchIdImport> IsDataApproved(int windOrSolar, int siteID, string importDate)
         {
 
@@ -4307,7 +4266,6 @@ bd_remarks, action_taken
                 throw;
             }
         }
-
         internal async Task<int> InsertWindUploadingFileBreakDown(List<WindUploadingFileBreakDown> set, int batchId)
         {
             string delqry = "delete from uploading_file_breakdown where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
@@ -4323,7 +4281,6 @@ bd_remarks, action_taken
 
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
-
         internal async Task<List<SolarDailyGenReports>> GetSolarInverterFromdailyGenSummary(string state, string site)
         {
             string filter = "";
@@ -4373,7 +4330,6 @@ bd_remarks, action_taken
             return await Context.GetData<SolarDailyGenReports>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<List<SolarDailyGenReports1>> GetSolarDailyGenSummaryReport1(string fromDate, string toDate, string country, string state, string spv, string site, string inverter, string month)
         {
             string filter = "";
@@ -4496,130 +4452,6 @@ where   t2.state=t1.state  and t3.inverter=t1.location_name  " + filter + " grou
             return await Context.GetData<SolarDailyGenReports1>(qry).ConfigureAwait(false);
 
         }
-
-//        internal async Task<List<SolarDailyGenReports2>> GetSolarDailyGenSummaryReport2(string fromDate, string toDate, string country, string state, string spv, string site, string inverter, string month)
-//        {
-//            string filter = "";
-
-//            if (!string.IsNullOrEmpty(fromDate) && fromDate != "All")
-//            {
-//                filter += " and (date >= '" + fromDate + "'  and date<= '" + toDate + "')";
-
-//            }
-//            if (!string.IsNullOrEmpty(country) && country != "All~")
-//            {
-
-//                string[] spcountry = country.Split("~");
-//                filter += " and t2.country in (";
-//                string countrys = "";
-//                for (int i = 0; i < spcountry.Length; i++)
-//                {
-//                    if (!string.IsNullOrEmpty(spcountry[i].ToString()))
-//                    {
-//                        countrys += "'" + spcountry[i].ToString() + "',";
-//                    }
-//                }
-//                filter += countrys.TrimEnd(',') + ")";
-
-//            }
-//            if (!string.IsNullOrEmpty(state) && state != "All~")
-//            {
-
-//                string[] spstate = state.Split("~");
-//                filter += " and t1.state in (";
-//                string states = "";
-//                for (int i = 0; i < spstate.Length; i++)
-//                {
-//                    if (!string.IsNullOrEmpty(spstate[i].ToString()))
-//                    {
-//                        states += "'" + spstate[i].ToString() + "',";
-//                    }
-//                }
-//                filter += states.TrimEnd(',') + ")";
-
-//            }
-//            if (!string.IsNullOrEmpty(spv) && spv != "All~")
-//            {
-
-//                string[] spspv = spv.Split("~");
-//                filter += " and t2.spv in (";
-//                string spvs = "";
-//                for (int i = 0; i < spspv.Length; i++)
-//                {
-//                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
-//                    {
-//                        spvs += "'" + spspv[i].ToString() + "',";
-//                    }
-//                }
-//                filter += spvs.TrimEnd(',') + ")";
-
-//            }
-//            if (!string.IsNullOrEmpty(site) && site != "All~")
-//            {
-
-//                string[] spsite = site.Split("~");
-//                filter += " and t1.site in (";
-//                string sites = "";
-//                for (int i = 0; i < spsite.Length; i++)
-//                {
-//                    if (!string.IsNullOrEmpty(spsite[i].ToString()))
-//                    {
-//                        sites += "'" + spsite[i].ToString() + "',";
-//                    }
-//                }
-//                filter += sites.TrimEnd(',') + ")";
-
-//            }
-//            if (!string.IsNullOrEmpty(inverter) && inverter != "All~")
-//            {
-//                inverter = inverter.Replace('=', '/');
-//                string[] spinverter = inverter.Split("~");
-//                filter += " and t1.location_name in (";
-//                string inverters = "";
-//                for (int i = 0; i < spinverter.Length; i++)
-//                {
-//                    if (!string.IsNullOrEmpty(spinverter[i].ToString()))
-//                    {
-//                        inverters += "'" + spinverter[i].ToString() + "',";
-//                    }
-//                }
-//                filter += inverters.TrimEnd(',') + ")";
-//            }
-//            if (!string.IsNullOrEmpty(month) && month != "All~")
-//            {
-
-//                string[] spmonth = month.Split("~");
-//                filter += " and month(date) in (";
-//                string months = "";
-//                for (int i = 0; i < spmonth.Length; i++)
-//                {
-//                    if (!string.IsNullOrEmpty(spmonth[i].ToString()))
-//                    {
-//                        months += "" + spmonth[i].ToString() + ",";
-//                    }
-//                }
-//                filter += months.TrimEnd(',') + ")";
-//            }
-
-
-//            string qry = @"SELECT year(date)as year,month(date)as month,date,
-//t2.country,t1.state,t2.spv,t1.site,(t2.dc_capacity)as dc_capacity,
-//(t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh,
-//sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(*))as inv_pr,(sum(plant_pr)/count(*))as plant_pr,
-//inv_plf_ac as inv_plf,plant_plf_ac as plant_plf,
-//ma as ma_actual,ma as ma_contractual,
-//(sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,sum(prod_hrs) as gen_hrs,sum(usmh)as usmh,sum(smh)as smh,
-//sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh,
-//sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as total_losses
-// FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site=t1.site
-//where   t2.state=t1.state  " + filter + " group by date,t1.site ";
-
-//            //where t1.approve_status=" + approve_status + " and  t2.state=t1.state  " + filter + " group by date,t1.site ";
-
-//            return await Context.GetData<SolarDailyGenReports2>(qry).ConfigureAwait(false);
-
-//        }
-
         internal async Task<List<SolarDailyGenReports1>> GetSolarMonthlyGenSummaryReport1(string fy, string month, string country, string state, string spv, string site, string inverter)
         {
             string filter = "";
@@ -4759,7 +4591,6 @@ and t3.inverter=t1.location_name " + filter + " group by t1.site,location_name ,
             return await Context.GetData<SolarDailyGenReports1>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<List<SolarDailyGenReports2>> GetSolarMonthlyGenSummaryReport2(string fy, string month, string country, string state, string spv, string site, string inverter)
         {
             string filter = "";
@@ -4877,7 +4708,6 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
             return await Context.GetData<SolarDailyGenReports2>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<List<SolarDailyGenReports1>> GetSolarYearlyGenSummaryReport1(string fromDate, string toDate, string country, string state, string spv, string site, string inverter, string month)
         {
             string filter = "";
@@ -4997,7 +4827,6 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             return await Context.GetData<SolarDailyGenReports1>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<List<SolarDailyGenReports2>> GetSolarYearlyGenSummaryReport2(string fromDate, string toDate, string country, string state, string spv, string site, string inverter, string month)
         {
             string filter = "";
@@ -5122,8 +4951,6 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
             }
 
         }
-
-
         internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySiteWise(string fy, string fromDate, string todate,string site)
         {
 
@@ -5221,7 +5048,6 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
             return data;
 
         }
-
         internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site)
         {
 
@@ -5347,7 +5173,6 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
             return data;
 
         }
-
         internal async Task<List<SolarDailyBDloss>> GetSolarDailyBDLossData(string fromDate, string todate)
         {
 
@@ -5367,14 +5192,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
             return await Context.GetData<SolarDailyBDloss>(qry).ConfigureAwait(false);
 
         }
-
-
-
-
-
         ////#region views
-
-
         internal async Task<List<DailyGenSummary>> GetWindDailyGenSummary(string site, string fromDate, string ToDate)
         {
             if (String.IsNullOrEmpty(site)) return new List<DailyGenSummary>();
@@ -5382,7 +5200,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             //string filter = " where approve_status=" + approve_status + " and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
             return await Context.GetData<DailyGenSummary>("Select * from daily_gen_summary " + filter).ConfigureAwait(false);
         }
-
         internal async Task<List<SolarDailyGenSummary>> GetSolarDailyGenSummary1(string site, string fromDate, string ToDate)
         {
             if (String.IsNullOrEmpty(site)) return new List<SolarDailyGenSummary>();
@@ -5414,7 +5231,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             return await Context.GetData<SolarDailyGenSummary>("Select * from daily_gen_summary_solar " + filter).ConfigureAwait(false);
 
         }
-
         internal async Task<List<WindDailyTargetKPI>> GetWindDailyTargetKPI(string site, string fromDate, string todate)
         {
             if (String.IsNullOrEmpty(site)) return new List<WindDailyTargetKPI>();
@@ -5423,7 +5239,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             return await Context.GetData<WindDailyTargetKPI>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<List<SolarDailyTargetKPI>> GetSolarDailyTargetKPI(string fromDate, string todate, string site)
         {
             string filter = " site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
@@ -5695,8 +5510,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             string qry = @"SELECT  fy,month,site,line_loss as LineLoss FROM monthly_uploading_line_losses " + filter;
             return await Context.GetData<WindMonthlyUploadingLineLosses>(qry).ConfigureAwait(false);
         }
-
-
         internal async Task<List<SolarMonthlyUploadingLineLosses>> GetSolarMonthlyLineLoss(string fy, string month, string site)
         {
             string filter = "";
@@ -5752,7 +5565,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             string qry = @"SELECT  fy, month, site as Sites, LineLoss FROM monthly_line_loss_solar " + filter;
             return await Context.GetData<SolarMonthlyUploadingLineLosses>(qry).ConfigureAwait(false);
         }
-
         internal async Task<List<WindMonthlyJMR1>> GetWindMonthlyJMR(string site, string fy, string month)
         {
 
@@ -6129,7 +5941,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             return await Context.GetData<WindDailyBreakdownReport>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<List<SolarFileBreakdown>> GetSolarDailyBreakdownPending(string date, string site)
         {
 
@@ -6166,8 +5977,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             return await Context.GetData<SolarFileBreakdown>(qry).ConfigureAwait(false);
 
         }
-
-
         internal async Task<int> UpdateWindDailyGenSummaryApproveStatus(List<DailyGenSummary> dailyGenSummary)
         {
             string temptable = "tempwindData";
@@ -6249,7 +6058,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
 
         }
-
         internal async Task<int> UpdateSolarDailyGenSummaryApproveStatus(List<SolarDailyGenSummary> solarDailyGenSummary)
         {
             string temptable = "tempsolarData";
@@ -6344,7 +6152,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
 
         }
-
         public async Task<List<approvalObject>> GetImportBatches(string importFromDate, string importToDate, string siteId, int importType, int status, int userid)
         {
             string query = "";
@@ -6380,7 +6187,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return _approvalObject;
 
         }
-
         internal async Task<int> SetApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
             
@@ -6425,7 +6231,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
         }
-
         internal async Task<int> SetRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
         {
 
@@ -6434,7 +6239,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
            
         }
-
         internal async Task<int> SetSolarApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
 
@@ -6477,7 +6281,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
         }
-
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
         {
             string query = "UPDATE `import_batches` SET `rejected_date` = NOW(),`rejected_by`= " + rejectedBy + ",`is_approved`=" + status + ",`rejected_by_name`='" + rejectByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
@@ -6779,7 +6582,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return _locattionmasterDate;
 
         }
-
         public async Task<List<WindUploadingFilegeneration1>> GetImportGenData(int importId)
         {
             // string query = "SELECT t1.*,t2.site as site_name FROM `uploading_file_generation` as t1 join site_master as t2 on t2.site_master_id=t1.site_id  where import_batch_id =" + importId + "";
@@ -6840,8 +6642,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return _importSolarP15Data;
 
         }
-
-
         public async Task<List<WindOpertionalHead>> GetOperationHeadData(string site)
         {
             string filter = "";
@@ -7300,7 +7100,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return sFY;
         }
-
         string GetMonth(string fromDate)
         {
             DateTime dt = Convert.ToDateTime(fromDate);
@@ -7509,7 +7308,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return returnValue * 100;
         }
-
         internal async Task<bool> CalculateDailySolarKPI_PR(string site, string fromDate, string toDate, string logFileName)
         {
             /* update in gen table
@@ -8727,7 +8525,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 return true;
             return false;
         }
-      public async Task<string> EmailWindReport(string fy, string fromDate, string site)
+        public async Task<string> EmailWindReport(string fy, string fromDate, string site)
         {
             API_InformationLog("EmailWindReport function called from repository for wind");
 
@@ -9220,7 +9018,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return tb;
         }
-
         public async Task<string> EmailSolarReport(string fy, string fromDate, string site)
         {
             API_InformationLog("EmailSolarReport function Called");
@@ -9823,8 +9620,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             // return res;
             return tb;
         }
-
-
         internal async Task<int> MailDailySend(string data ,string reportTitle)
         {
             API_InformationLog("Inside MailDailySend function from repository for wind");
@@ -9928,16 +9723,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
         }
-
-        private void PPT_API_ErrorLog(string Message)
+        private void PPT_ErrorLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\ppt_api_Log.txt", "**Error**:" + Message + "\r\n");
+            System.IO.File.AppendAllText(@"C:\LogFile\PPT_Log.txt", "**Error**:" + Message + "\r\n");
         }
-        private void PPT_API_InformationLog(string Message)
+        private void PPT_InformationLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\ppt_api_Log.txt", "**Info**:" + Message + "\r\n");
+            System.IO.File.AppendAllText(@"C:\LogFile\PPT_Log.txt", "**Info**:" + Message + "\r\n");
         }
         internal class ViewerStatsFormat
         {

@@ -32,27 +32,9 @@ namespace DGRAPIs.Helper
 
             _timerNotification = new Timer(RunJob, null, TimeSpan.Zero,
               TimeSpan.FromMinutes(1)); /*Set Interval time here*/
-            API_ErrorLog("Scheduler started at :- " + DateTime.Now);
+            PPT_InformationLog("From Scheduler Service : Scheduler started at :- " + DateTime.Now);
             return Task.CompletedTask;
         }
-        //public Task StartAsync(CancellationToken stoppingToken)
-        //{
-        //    // Calculate the time until the next 7:30 PM
-        //    DateTime now = DateTime.Now;
-        //    DateTime next730PM = now.Date.AddDays(1).AddHours(19).AddMinutes(30);
-        //    if (now > next730PM)
-        //    {
-        //        next730PM = next730PM.AddDays(1);
-        //    }
-        //    TimeSpan initialDelay = next730PM - now;
-
-        //    // Set up the timer with a 24-hour interval
-        //    _timerNotification = new Timer(RunJob, null, initialDelay, TimeSpan.FromHours(24));
-
-        //    return Task.CompletedTask;
-        //}
-
-
         private void RunJob(object state)
         {
 
@@ -60,19 +42,8 @@ namespace DGRAPIs.Helper
             {
                 try
                 {
-                    //  var store = scrope.ServiceProvider.GetService<IStoreRepo>(); /* You can access any interface or service like this here*/
-                    //store.GetAll(); /* You can access any interface or service method like this here*/
-
-                    /*
-                     Place your code here which you want to schedule on regular intervals
-                     */
-
-                    string msg = "Sechduler run at : " + DateTime.Now;
-                    API_ErrorLog(msg);
-                    
-                    //MYSQLDBHelper db = new MYSQLDBHelper("temp");
-                    //var repo = new DGRRepository(db);
-                    //repo.MailSend("Calling this function  repo.EmailSolarReport(fy, '2023-03-01'   at " + DateTime.Now + "", " Test mail sechduler");
+                    string msg = "From Scheduler Service : Sechduler run at : " + DateTime.Now;
+                    PPT_InformationLog(msg);
 
                     DateTime datetimenow = DateTime.Now;
                     DateTime oneWeekAgo = datetimenow.Date.AddDays(-7);
@@ -94,21 +65,22 @@ namespace DGRAPIs.Helper
                     string dailyTime = MyConfig.GetValue<string>("Timer:DailyReportTime");
                     //daily mail
 
-                    msg = "Current Time : " + DateTime.Now;
-                    API_InformationLog(msg);
+                    msg = "From Scheduler Service : Current Time : " + DateTime.Now;
+                    PPT_InformationLog(msg);
 
-                    msg = "Daily time Time : " + dailyTime;
-                    API_InformationLog(msg);
+                    msg = "From Scheduler Service : Daily Scheduled Mail Sending Time : " + dailyTime;
+                    PPT_InformationLog(msg);
 
                     if (DateTime.Now.ToString("HH:mm") == dailyTime)
                     {
-                        API_InformationLog("Inside if where dailytime ="+dailyTime);
+                        PPT_InformationLog("From Scheduler Service : For Daily Mail Send : Inside if where dailytime =" + dailyTime);
+                        PPT_InformationLog("From Scheduler Service : For Daily Mail Send : Started Mail Send functionality.");
 
                         EmailFunction();
 
                         async Task<int> EmailFunction()
                         {
-                            API_InformationLog("Email Function Called from scheduler");
+                            PPT_InformationLog("From Scheduler Service : For Daily Mail Send : EmailFunction() Called from scheduler");
                             string hostName = MyConfig.GetValue<string>("Timer:hostName");
 
                             bool SolarMailSuccess = false;
@@ -116,45 +88,57 @@ namespace DGRAPIs.Helper
                             try
                             {
                                 string apiUrlSolar = hostName+ "/api/DGR/EmailSolarReport?fy=" + fy +"&fromDate="+ datetimenow.ToString("yyyy-MM-dd") +"&site=";
-                                API_InformationLog("API URL " + apiUrlSolar);
+                                PPT_InformationLog("From Scheduler Service : For Daily Mail Send Solar : API URL " + apiUrlSolar);
                                 CallAPI(apiUrlSolar);
                                // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 SolarMailSuccess = true;
-                                API_InformationLog("Inside try Solar mail send");
+                                PPT_InformationLog("From Scheduler Service : For Daily Mail Send Solar : Inside try Solar Daily mail send");
                             }
                             catch(Exception e)
                             {
                                 string msg = e.Message;
-                                API_ErrorLog("Inside catch Solar mail failed"+ msg);
+                                PPT_ErrorLog("From Scheduler Service : For Daily Mail Send Solar : Inside catch Solar Daily mail failed" + msg);
                             }
                             try
                             {
-                                
                                 string apiUrlWind = hostName + "/api/DGR/EmailWindReport?fy=" + fy + "&fromDate=" + datetimenow.ToString("yyyy-MM-dd") + "&site=";
-
-                                API_InformationLog("API URL "+ apiUrlWind);
+                                PPT_InformationLog("From Scheduler Service : For Daily Mail Send Wind : API URL " + apiUrlWind);
                                 CallAPI(apiUrlWind);
                                 // await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
-                                API_InformationLog("Inside try Wind mail send");
+                                PPT_InformationLog("From Scheduler Service : For Daily Mail Send Wind : Inside try Wind mail send");
                                 WindMailSuccess = true;
                             }
                             catch(Exception e)
                             {
                                 string msg = e.Message;
-                                API_ErrorLog("Inside catch Wind mail failed"+ msg);
+                                PPT_ErrorLog("From Scheduler Service : For Daily Mail Send Wind : Inside catch Wind mail failed" + msg);
                             }
                             if(WindMailSuccess && SolarMailSuccess)
                             {
-                                API_InformationLog("Solar and Wind Mail Sent"+msg);
+                                PPT_InformationLog("From Scheduler Service : For Daily Mail Send : Solar and Wind Mail Sent" + msg);
                                 return 1;
                             }
                             else
                             {
+                                if (!(WindMailSuccess))
+                                {
+                                    PPT_InformationLog("From Scheduler Service : For Daily Mail Send : Wind Mail send Failed ");
+                                }
+                                else
+                                {
+                                    PPT_InformationLog("From Scheduler Service : For Daily Mail Send : Wind Mail send Successful.");
+                                }
+                                if (!(SolarMailSuccess))
+                                {
+                                    PPT_InformationLog("From Scheduler Service : For Daily Mail Send : Solar Mail send Failed ");
+                                }
+                                else
+                                {
+                                    PPT_InformationLog("From Scheduler Service : For Daily Mail Send : Wind Mail send Successful. ");
+                                }
                                 return 0;
                             }
-                        }
-
-                        
+                        }                        
                     }
 
                     //Weekly report mail
@@ -162,35 +146,40 @@ namespace DGRAPIs.Helper
                     string weeklyTimeSolar = MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar");
                     string WeeklyReportDayOfWeek = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
 
+                    msg = "From Scheduler Service : Weekly Wind Scheduled Mail Sending Time : " + weeklyTime;
+                    PPT_InformationLog(msg);
+                    msg= "From Scheduler Service : Weekly Solar Scheduled Mail Sending Time : " + weeklyTimeSolar;
+                    PPT_InformationLog(msg);
+
                     if (DateTime.Now.ToString("HH:mm") == weeklyTime)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
                     {
-                        API_InformationLog("Inside if Wind Weekly Mail Send where dailytime =" + dailyTime);
+                        PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : Inside if where Weekly =" + weeklyTime);
+                        PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : Started sending Email for Wind Weekly Mail Send ");
 
                         EmailWeeklyFunction();
 
                         async Task<int> EmailWeeklyFunction()
                         {
-                            API_InformationLog("Email Weekly Wind Function Called from scheduler");
+                            PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : Email Weekly Wind Function Called from scheduler");
                             string hostName = MyConfig.GetValue<string>("Timer:hostName");
 
                             bool WindMailSuccess = false;
                             try
                             {
                                 string apiUrlWind = hostName + "/api/DGR/PPTCreate";
-                                API_InformationLog("API URL " + apiUrlWind);
+                                PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : API URL " + apiUrlWind);
                                 CallAPI(apiUrlWind);
-                                // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 WindMailSuccess = true;
-                                API_InformationLog("Inside try Wind Weekly Mail Send");
+                                PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : Inside try Wind Weekly Mail Send Flag : " + WindMailSuccess);
                             }
                             catch (Exception e)
                             {
                                 string msg = e.Message;
-                                API_ErrorLog("Inside catch Wind weeekly mail failed" + msg);
+                                PPT_ErrorLog("From Scheduler Service : For Wind Weekly Mail Send : Inside catch Wind weeekly mail failed" + msg + " Flag : " + WindMailSuccess);
                             }
                             if (WindMailSuccess)
                             {
-                                API_InformationLog("Wind Mail Sent" + msg);
+                                PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : Mail Sent" + msg);
                                 return 1;
                             }
                             else
@@ -203,32 +192,33 @@ namespace DGRAPIs.Helper
                     //Solar Weekly Mail Send Function 
                     if (DateTime.Now.ToString("HH:mm") == weeklyTimeSolar)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
                     {
-                        API_InformationLog("Inside if Weekly Mail Send Solar where dailytime =" + dailyTime);
+                        PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Inside if where Weekly time = " + weeklyTime);
+                        PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Started sending Email for Solar Weekly Mail Send ");
 
                         EmailWeeklyFunction();
 
                         async Task<int> EmailWeeklyFunction()
                         {
-                            API_InformationLog("Email Weekly Mail Send Solar Function Called from scheduler");
+                            PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Email Weekly Mail Send Solar Function Called from scheduler");
                             string hostName = MyConfig.GetValue<string>("Timer:hostName");
 
                             bool SolarMailSuccess = false;
                             try
                             {
                                 string apiUrlSolar = hostName + "/api/DGR/PPTCreate_Solar";
-                                API_InformationLog("Email weekly mail send solar API URL " + apiUrlSolar);
+                                PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Email weekly mail send solar API URL " + apiUrlSolar);
                                 CallAPI(apiUrlSolar);
-                                API_InformationLog("Inside try Solar weekly mail send");
                                 SolarMailSuccess = true;
+                                PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Inside try Solar weekly mail send Flag : " + SolarMailSuccess );
                             }
                             catch (Exception e)
                             {
                                 string msg = e.Message;
-                                API_ErrorLog("Inside catch Solar Weekly mail failed" + msg);
+                                PPT_ErrorLog("From Scheduler Service : For Solar Weekly Mail Send : Inside catch Solar Weekly mail failed" + msg);
                             }
                             if (SolarMailSuccess)
                             {
-                                API_InformationLog("Solar Mail Sent" + msg);
+                                PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Solar Mail Sent" + msg + " Flag : " + SolarMailSuccess );
                                 return 1;
                             }
                             else
@@ -238,13 +228,10 @@ namespace DGRAPIs.Helper
                         }
                     }
                 }
-
-
                 catch (Exception ex)
                 {
-
                     string msg = ex.Message+  " exception at :-  " + DateTime.Now;
-                    API_ErrorLog(msg);
+                    PPT_ErrorLog(msg);
                 }
                 Interlocked.Increment(ref executionCount);
             }
@@ -253,7 +240,7 @@ namespace DGRAPIs.Helper
         public void CallAPI (string apiUrl)
         {
             Uri address = new Uri(apiUrl);
-            API_InformationLog("Api Url :"+ apiUrl);
+            PPT_InformationLog("From Scheduler Service : Inside CallAPI function : Api Url :" + apiUrl);
             // Create the web request
             HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
 
@@ -268,7 +255,7 @@ namespace DGRAPIs.Helper
 
                 // Console application output
                 string strOutputXml = reader.ReadToEnd();
-                API_InformationLog(reader.ReadToEnd());
+                PPT_InformationLog("From Scheduler Service : Inside CallAPI function : " + reader.ReadToEnd());
 
             }
         }
@@ -284,37 +271,11 @@ namespace DGRAPIs.Helper
             _timerNotification?.Dispose();
         }
 
-        private void API_ErrorLog(string Message)
+        private void PPT_ErrorLog(string Message)
         {
             try
             {
-                System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Error**:" + Message + "\r\n");
-            }
-            catch (Exception e)
-            {
-            }
-            //Read variable from appsetting to enable disable log
-            
-        }
-        private void API_InformationLog(string Message)
-        {
-            //Read variable from appsetting to enable disable log
-            try
-            {
-                System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
-            }
-            catch (Exception e)
-            { 
-            }
-           
-        }
-
-        /*
-        private void API_ErrorLog(string Message)
-        {
-            try
-            {
-                System.IO.File.AppendAllText(@"C:\LogFile\ppt_api_Log.txt", "**Error**:" + Message + "\r\n");
+                System.IO.File.AppendAllText(@"C:\LogFile\PPT_Log.txt", "**Error**:" + Message + "\r\n");
             }
             catch (Exception e)
             {
@@ -322,17 +283,16 @@ namespace DGRAPIs.Helper
             //Read variable from appsetting to enable disable log
 
         }
-        private void API_InformationLog(string Message)
+        private void PPT_InformationLog(string Message)
         {
             //Read variable from appsetting to enable disable log
             try
             {
-                System.IO.File.AppendAllText(@"C:\LogFile\ppt_api_Log.txt", "**Info**:" + Message + "\r\n");
+                System.IO.File.AppendAllText(@"C:\LogFile\PPT_Log.txt", "**Info**:" + Message + "\r\n");
             }
             catch (Exception e)
             {
             }
-
-        } */
+        }
     }
 }
