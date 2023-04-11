@@ -589,17 +589,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                 InformationLog(url);
                                                 var response = await client.GetAsync(url);
                                                 //response.Timeout = TimeSpan.FromSeconds(300); // set the request timeout to 5 minutes
-
-
-
                                                 if (response.IsSuccessStatusCode)
                                                 {
                                                     dttt = DateTime.Now;
                                                     //InformationLog("CalculateDailySolarKpI function returned successfully to frontend." + dttt);
                                                     m_ErrorLog.SetInformation(",SolarKPI Calculations Updated Successfully:");
                                                     statusCode = (int)response.StatusCode;
-                                                    status = "Successfully Uploaded";
-                                                    
+                                                    status = "Successfully Uploaded";                                                    
                                                     // Added Code auto approved if uploaded by admin
                                                     string userName = HttpContext.Session.GetString("DisplayName");
                                                     int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
@@ -631,7 +627,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                     statusCode = (int)response.StatusCode;
                                                     string errorMsg = response.Content.ReadAsStringAsync().Result;
 
-                                                    //m_ErrorLog.SetError(",SolarKPI Calculations API Failed. Reason : " + errorMsg);
+                                                    m_ErrorLog.SetError(",SolarKPI Calculations API Failed. Reason : " + errorMsg);
                                                     status = "Solar KPI Calculation Import API Failed. Reason : " + errorMsg;
 
                                                     //for solar 0, wind 1;
