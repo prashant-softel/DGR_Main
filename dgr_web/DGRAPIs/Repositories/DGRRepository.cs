@@ -8622,11 +8622,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string ytodate = ltodate.ToString("yyyy-MM-dd");
             string title = "Wind Daily Report " + (ltodate.ToString("dd-MMM-yyyy"));
 
-            string tb = "<h5 style='text-align: left;'>Hi Team,</h5>";
-            tb += "<h5 style='text-align: left;'>Please find  below daily performance summary for Wind projects dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</h5>";
-            tb += "<h5 style='text-align: left;'><b>Note :<b/></h5>";
-            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;1.Gen in Million units.</h5>";
-            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;2.Actual Gen is at JMR level.</h5>";
+            string tb = "<p style='text-align: left;'>Hi Team,<br>";
+            tb += "Please find  below daily performance summary for Wind projects dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</p>";
+            tb += "<p style='text-align: left;'>Note :<br>";
+            tb += "1.Gen in Million units.<br>";
+            tb += "2.Actual Gen is at JMR level.</p>";
             tb += "<br>";
           //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             //tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; background-color:#f7f5f0'>";
@@ -9115,12 +9115,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string title = "Solar Daily Report " + (ltodate.ToString("dd-MMM-yyyy"));
 
 
-            string tb = "<h5 style='text-align: left;'>Hi Team,</h5>";
-            tb += "<h5 style='text-align: left;'>Please find  below daily performance summary for Solar projects dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</h5>";
-            tb += "<h5 style='text-align: left;'><b>Note :<b/></h5>";
+            string tb = "<p style='text-align: left;'>Hi Team,<br>";
+            tb += "Please find  below daily performance summary for Solar projects dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".<p>";
+            tb += "<p style='text-align: left;'>Note :<br>";
             //tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;1.Target & Actual Gen. at Plant metering level. </h5>";
-            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;1.Gen in Million units.</h5>";
-            tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;2.Actual Gen is at JMR level.</h5>";
+            tb += "1.Gen in Million units.<br>";
+            tb += "2.Actual Gen is at JMR level.</p>";
             tb += "<br>";
           //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<table id='emailTable' style='width: 100%; border-collapse: collapse ; border-spacing: 10px;'  border='1'>";
