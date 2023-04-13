@@ -1987,7 +1987,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(monthValidation(addUnit.Month, addUnit.month_no, rowNumber));
 
                         int year = errorFlag[0] == false ? Convert.ToInt32(addUnit.FY.Substring(0, 4)) : 0;
-                        addUnit.year = (addUnit.month_no > 3) ? year : year += 1;
+                        addUnit.year = (addUnit.month_no > 3) ? year : year + 1;
                         errorFlag.Add(yearValidation(addUnit.year, rowNumber));
 
                         addUnit.LineLoss = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss (%)"]), "Line Loss (%)");
@@ -2084,7 +2084,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(monthValidation(addUnit.month, addUnit.month_no, rowNumber));
 
                         int finalYear = errorFlag[0] == false ? Convert.ToInt32(addUnit.fy.Substring(0, 4)) : 0;
-                        addUnit.year = (addUnit.month_no > 3) ? finalYear : finalYear = +1;
+                        addUnit.year = (addUnit.month_no > 3) ? finalYear : finalYear + 1;
 
                         addUnit.lineLoss = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss%"]), "Line Loss%");
                         //errorFlag.Add((addUnit.lineLoss > 100 || addUnit.lineLoss < 0) ? true : false);
@@ -2181,7 +2181,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(monthValidation(addUnit.Month, addUnit.month_no, rowNumber));
 
                         int year = errorFlag[0] == false ? Convert.ToInt32(addUnit.FY.Substring(0, 4)) : 0;
-                        addUnit.year = (addUnit.month_no > 3) ? year : year += 1;
+                        addUnit.year = (addUnit.month_no > 3) ? year : year + 1;
                         errorFlag.Add(yearValidation(addUnit.year, rowNumber));
 
                         //addUnit.Site_Id = Convert.ToInt32(siteNameId[addUnit.Sites]);
@@ -2296,7 +2296,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(monthValidation(addUnit.month, addUnit.month_no, rowNumber));
 
                         int year = errorFlag[0] == false ? Convert.ToInt32(addUnit.fy.Substring(0, 4)) : 0;
-                        addUnit.year = (addUnit.month_no < 4 ? year += 1 : year);
+                        addUnit.year = (addUnit.month_no < 4 ? year + 1 : year);
                         errorFlag.Add(yearValidation(addUnit.year, rowNumber));
 
                         addUnit.site = string.IsNullOrEmpty((string)dr["Sites"]) ? "Nil" : Convert.ToString(dr["Sites"]);
