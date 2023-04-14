@@ -733,6 +733,7 @@ namespace DGRA_V1.Controllers
         // DGR2 Implementation 
         public async Task<IActionResult> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string prType)
         {
+            //string site, string fromDate, string toDate, string prType
            string line = "";
             try
             {
@@ -758,8 +759,32 @@ namespace DGRA_V1.Controllers
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SolarExpectedReport?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&prType=" + prType + "&spv=" + spv;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SolarExpectedReport?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&prType=" + prType;// + "&spv=" + spv;
                
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+
+        public async Task<IActionResult> SolarTrackerLoss(string site,string fromDate, string toDate )
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarTrackerLoss?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate;
+
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {

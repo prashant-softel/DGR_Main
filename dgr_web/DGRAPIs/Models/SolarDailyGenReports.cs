@@ -162,7 +162,7 @@ namespace DGRAPIs.Models
         public double egbdh { get; set; }
         public double load_shedding { get; set; }
         public double lull_hrs { get; set; }
-        public string tracker_losses { get; set; }
+        public double tracker_losses { get; set; }
         public double total_losses { get; set; }
 
 

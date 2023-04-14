@@ -99,7 +99,7 @@
                         <!-- /.card-tools -->
                     </div>
                     <div class="col-md-12 card-body " id="chart" style="display:none">
-                        <canvas id="myChart" style="width:100%; max-width:100%"></canvas>
+                        <canvas id="line-chart" style="width:100%; max-width:100%"></canvas>
                     </div>
 
                 </div>
@@ -464,113 +464,49 @@
         });
     }
     //var xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-    function OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr)
+  /*  function OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr)
     {
         console.log(ghi_arr1);
         let dataset_arr = [];
         //let datleble_arr = [
         if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
            
-            dataset_arr.push({ label: "GHI 1", data: ghi_arr1, borderColor: "#77CAE7", borderWidth: 1,fill: false });
+            dataset_arr.push({ label: "GHI 1", data: ghi_arr1, borderColor: "#77CAE7", pointRadius: 0.5, borderWidth: 1, fill: false });
         }
         if (ghi_arr2.length > 0 && ghi_arr2.length != ghiZeroArr2.length) {
            
-            dataset_arr.push({ label: "GHI 2", data: ghi_arr2, borderColor: "#86C466", borderWidth: 1, fill: false });
+            dataset_arr.push({ label: "GHI 2", data: ghi_arr2, borderColor: "#86C466", pointRadius: 0.5,borderWidth: 1,fill: false });
         }
         if (poa_arr1.length > 0 && poa_arr1.length != poaZeroArr1.length) {
-            dataset_arr.push({ label: "POA 1", data: poa_arr1, borderColor: "#77CAE7", borderWidth: 1,fill: false });
+            dataset_arr.push({ label: "POA 1", data: poa_arr1, borderColor: "#77CAE7", pointRadius: 0.5,borderWidth: 1, fill: false });
         }
         if (poa_arr2.length > 0 && poa_arr2.length != poaZeroArr2.length) {
-            dataset_arr.push({ label: "POA 2", data: poa_arr2, borderColor: "#31576D", borderWidth: 1, fill: false });
+            dataset_arr.push({ label: "POA 2", data: poa_arr2, borderColor: "#31576D", pointRadius: 0.5, borderWidth: 1, fill: false });
         }
         if (poa_arr3.length > 0 && poa_arr3.length != poaZeroArr3.length) {
-            dataset_arr.push({ label: "POA 3", data: poa_arr3, borderColor: "#76D7C4", borderWidth: 1,fill: false });
+            dataset_arr.push({ label: "POA 3", data: poa_arr3, borderColor: "#76D7C4", pointRadius: 0.5, borderWidth: 1, fill: false });
         }
         if (poa_arr4.length > 0 && poa_arr4.length != poaZeroArr4.length) {
-            dataset_arr.push({ label: "POA 4", data: poa_arr4, borderColor: "#58D68D", borderWidth: 1, fill: false });
+            dataset_arr.push({ label: "POA 4", data: poa_arr4, borderColor: "#58D68D", pointRadius: 0.5, borderWidth: 1, fill: false });
         }
         if (poa_arr5.length > 0 && poa_arr5.length != poaZeroArr5.length) {
-            dataset_arr.push({ label: "POA 5", data: poa_arr5, borderColor: "#F39C12", borderWidth: 1, fill: false });
+            dataset_arr.push({ label: "POA 5", data: poa_arr5, borderColor: "#F39C12", pointRadius: 0.5, borderWidth: 1, fill: false });
         }
         if (poa_arr6.length > 0 && poa_arr6.length != poaZeroArr6.length) {
-            dataset_arr.push({ label: "POA 6", data: poa_arr6, borderColor: "#27F9F3", borderWidth: 1, fill: false });
+            dataset_arr.push({ label: "POA 6", data: poa_arr6, borderColor: "#27F9F3", pointRadius: 0.5, borderWidth: 1, fill: false });
         }
         if (poa_arr7.length > 0 && poa_arr7.length != poaZeroArr7.length) {
-            dataset_arr.push({ label: "POA 7", data: poa_arr7, borderColor: "#F98027", borderWidth: 1,fill: false });
+            dataset_arr.push({ label: "POA 7", data: poa_arr7, borderColor: "#F98027", pointRadius: 0.5, borderWidth: 1,fill: false });
         }
-        dataset_arr.push({ label: "Amb Temp", data: amp_temp_arr, borderColor: "#FFCA5A", borderWidth: 1, fill: false });
-        dataset_arr.push({ label: "Mod Temp", data: mod_arr_arr, borderColor: "#31576D", borderWidth: 1, fill: false });
+        dataset_arr.push({ label: "Amb Temp", data: amp_temp_arr, borderColor: "#FFCA5A", pointRadius: 0.5,borderWidth: 1, fill: false });
+        dataset_arr.push({ label: "Mod Temp", data: mod_arr_arr, borderColor: "#31576D", pointRadius: 0.5,borderWidth: 1, fill: false });
         //console.log("DataLeblets" + datleble_arr);
         //];
         new Chart("myChart", {
             type: "line",
             data: {
                 labels: time_arr_arr,
-                datasets: dataset_arr,/*[{
-                    label: "GHI 1",
-                    data: ghi_arr1,//[860, 1140, 1060, 1060, 1070, 1110, 1330, 2210, 7830, 2478],
-                    borderColor: "#77CAE7",
-                    fill: false
-                }, {
-                    label: "GHI 2",
-                    data: ghi_arr2,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                    borderColor: "#86C466",
-                    fill: false
-                    },
-                    {
-                        label: "POA 1",
-                        data: poa_arr1,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                        borderColor: "#86C466",
-                        fill: false
-                    },
-                    {
-                        label: "POA 2",
-                        data: poa_arr2,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                        borderColor: "#86C466",
-                        fill: false
-                    },
-                    {
-                        label: "POA 3",
-                        data: poa_arr3,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                        borderColor: "#86C466",
-                        fill: false
-                    },
-                    {
-                        label: "POA 4",
-                        data: poa_arr4,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                        borderColor: "#86C466",
-                        fill: false
-                    },
-                    {
-                        label: "POA 5",
-                        data: poa_arr5,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                        borderColor: "#86C466",
-                        fill: false
-                    },
-                    {
-                        label: "POA 6",
-                        data: poa_arr6,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                        borderColor: "#86C466",
-                        fill: false
-                    },
-                    {
-                        label: "POA 7",
-                        data: poa_arr7,//[1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-                        borderColor: "#86C466",
-                        fill: false
-                    },{
-                    label: "Amb Temp",
-                    data: amp_temp_arr, //[300, 700, 2000, 5000, 6000, 4000, 2000, 1000, 200, 100],
-                    borderColor: "#FFCA5A",
-                    fill: false
-                    },
-                    {
-                        label: "Mod Temp",
-                        data: mod_arr_arr, //[300, 700, 2000, 5000, 6000, 4000, 2000, 1000, 200, 100],
-                        borderColor: "#31576D",
-                        fill: false
-                    }
-                ]*/
+                datasets: dataset_arr,
             },
             options: {
                 //legend: { display: false }
@@ -596,8 +532,80 @@
 
             }
         });
+    }*/
+    function OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
+       
+        let dataset_arr = [];
+
+        if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
+
+            dataset_arr.push({ yAxisID: 'A', label: "GHI 1", data: ghi_arr1, pointRadius: 0.5, borderColor: "#77CAE7", fill: false, borderWidth: 1 });
+        }
+        if (ghi_arr2.length > 0 && ghi_arr2.length != ghiZeroArr2.length) {
+
+            dataset_arr.push({ yAxisID: 'A', label: "GHI 2", data: ghi_arr2, pointRadius: 0.5, borderColor: "#86C466", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr1.length > 0 && poa_arr1.length != poaZeroArr1.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 1", data: poa_arr1, pointRadius: 0.5, borderColor: "#77CAE7", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr2.length > 0 && poa_arr2.length != poaZeroArr2.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 2", data: poa_arr2, pointRadius: 0.5, borderColor: "#31576D", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr3.length > 0 && poa_arr3 != poaZeroArr3.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 3", data: poa_arr3, pointRadius: 0.5, borderColor: "#76D7C4", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr4.length > 0 && poa_arr4.length != poaZeroArr4.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 4", data: poa_arr4, pointRadius: 0.5, borderColor: "#58D68D", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr5.length > 0 && poa_arr5.length != poaZeroArr5.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 5", data: poa_arr5, pointRadius: 0.5, borderColor: "#F39C12", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr6.length > 0 && poa_arr6.length != poaZeroArr6.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 6", data: poa_arr6, pointRadius: 0.5, borderColor: "#27F9F3", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr7.length > 0 && poa_arr7.length != poaZeroArr7.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 7", data: poa_arr7, pointRadius: 0.5, borderColor: "#F98027", fill: false, borderWidth: 1 });
+        }
+
+        dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.5, borderColor: "#FFCA5A", fill: false, borderWidth: 1 });
+        dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.5, borderColor: "#31576D", fill: false, borderWidth: 1 });
+
+        console.log(dataset_arr);
+        new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: time_arr_arr,
+                datasets: dataset_arr,
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'WMS Compatison'
+                },
+                responsive: true,
+                tooltips: {
+                    mode: 'index'
+                },
+                legend: {
+                    display: true,
+                    position: "bottom"
+                },
+                scales: {
+                    yAxes: [{
+                        id: 'A',
+                        type: 'linear',
+                        position: 'left',
+                    }, {
+                        id: 'B',
+                        type: 'linear',
+                        position: 'right',
+
+                    }]
+                }
+
+            }
+        });
     }
-    
 
 </script>
 

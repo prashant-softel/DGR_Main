@@ -831,6 +831,23 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("GetSolarTrackerLoss")]
+        [HttpGet]
+        public async Task<IActionResult> GetSolarTrackerLoss(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarTrackerLoss(site, fromDate, toDate);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [Route("CalculateDailyWindKPI")]
         [HttpGet]
@@ -973,6 +990,23 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //InsertWindSpeedTMD
+        [Route("InsertWindSpeedTMD")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindSpeedTMD(List<InsertWindSpeedTMD> InsertWindSpeedTMD)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindSpeedTMD(InsertWindSpeedTMD);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         /*[Route("InsertDailyJMR")]
          [HttpPost]
@@ -1100,6 +1134,24 @@ namespace DGRAPIs.Controllers
             try
             {
                 var data = await _dgrBs.InsertSolarTrackerLoss(InsertSolarTrackerLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertSolarTrackerLossMonthly
+        [Route("InsertSolarTrackerLossMonthly")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarTrackerLossMonthly(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarTrackerLossMonthly(InsertSolarTrackerLoss);
                 return Ok(data);
 
             }
@@ -2424,7 +2476,7 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Route("GetActualVSExpected")]
+        /*[Route("GetActualVSExpected")]
         [HttpGet]
         public async Task<IActionResult> GetActualVSExpected(string fromDate, string toDate, string spv,string site,string pr)
         {
@@ -2454,7 +2506,8 @@ namespace DGRAPIs.Controllers
 
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
+
         [Route("eQry/{qry}")]
         [HttpGet]
         public async Task<IActionResult> eQry(string qry)

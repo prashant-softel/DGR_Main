@@ -23,7 +23,7 @@ namespace DGRAPIs.Models
         public int gen_losses { get; set; }
         public string remark { get; set; }
         public string month { get; set; }
-        public string result { get; set; }
+        public string reason { get; set; }
 
 
     }

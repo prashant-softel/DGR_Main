@@ -841,6 +841,12 @@ namespace DGRA_V1.Controllers
             return View();
         }
         [TypeFilter(typeof(SessionValidation))]
+        public ActionResult SolarTrackerLoss()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+        [TypeFilter(typeof(SessionValidation))]
         public ActionResult WindUserDetails(string id)
         {
            return RedirectToAction("WindUserView", new { id });

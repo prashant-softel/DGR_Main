@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using DGRA_V1.Filters;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace DGRA_V1.Areas.admin.Controllers
 {
@@ -490,6 +491,23 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
+                                else if (excelSheet == FileSheetType.Solar_tracker_loss_monthly)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Solar_tracker_loss_monthly;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if (ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Solar")
+                                        {
+                                            m_ErrorLog.SetInformation(",Reviewing Solar Tracker_Loss Monthly WorkSheet:");
+                                            statusCode = await InsertSolarTrackerLossMonthly(status, ds);
+                                        }
+                                        else
+                                        {
+                                            status = "Wrong file upload type selected for tracker_loss Monthly import";
+                                        }
+                                    }
+                                }
                                 else if (excelSheet == FileSheetType.Solar_soiling_loss)
                                 {
                                     fileImportType = FileSheetType.FileImportType.imporFileType_Solar_soiling_loss;
@@ -527,7 +545,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
                                 else if (excelSheet == FileSheetType.TML_Data)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.importFileType_TML_Data;
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_TML_Data;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
@@ -546,7 +564,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
                                 else if (excelSheet == FileSheetType.Power_Curve)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.importFileType_Power_Curve;
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Power_Curve;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
@@ -560,6 +578,25 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Power_Curve WorkSheet:");
                                             statusCode = await InsertWindPowerCurve(status, ds);
+                                        }
+                                    }
+                                }
+                                else if (excelSheet == FileSheetType.WindSpeed_TMD)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_WindSpeed_TMD;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if (ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Solar")
+                                        {
+                                            m_ErrorLog.SetError(",WindSpeed_TMD file cannot be imported for Solar");
+                                            status = "Wrong file upload type selected for WindSpeed_TMD import";
+                                            //statusCode = await InsertWindPowerCurve(status, ds);
+                                        }
+                                        else
+                                        {
+                                            m_ErrorLog.SetInformation(",Importing Wind WindSpeed_TMD WorkSheet:");
+                                            statusCode = await InsertWindSpeedTMD(status, ds);
                                         }
                                     }
                                 }
@@ -633,6 +670,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             // m_ErrorLog.SetInformation("Url" + url);
                                             using (var client = new HttpClient())
                                             {
+                                                InformationLog("added timeout to InfiniteTimeSpan");
+                                                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                 var response = await client.GetAsync(url);
                                                 //status = "Respose" + response;
                                                 if (response.IsSuccessStatusCode)
@@ -711,6 +750,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
                                             using (var client = new HttpClient())
                                             {
+                                                InformationLog("added timeout to InfiniteTimeSpan");
+                                                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                 var response = await client.GetAsync(url);
                                                 if (response.IsSuccessStatusCode)
                                                 {
@@ -3569,6 +3610,170 @@ namespace DGRA_V1.Areas.admin.Controllers
             return responseCode;
         }
 
+        //InsertSolarTrackerLossMonthly
+        private async Task<int> InsertSolarTrackerLossMonthly(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+            DateTime dateValidate = DateTime.MinValue;
+            DateTime fromDate;
+            DateTime toDate;
+            DateTime nextDate = DateTime.MinValue;
+            string site = "";
+            try
+            {
+                fromDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
+                toDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
+
+            }
+            catch (Exception e)
+            {
+                //m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format MM-dd-yyyy");
+                m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format dd-MM-yyyy");
+                fromDate = DateTime.MaxValue;
+                toDate = DateTime.MinValue;
+            }
+
+            if (ds.Tables.Count > 0)
+            {
+                List<InsertSolarTrackerLoss> addSet = new List<InsertSolarTrackerLoss>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    InsertSolarTrackerLoss addUnit = new InsertSolarTrackerLoss();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+                        if (addUnit.date == "" && addUnit.from_time == "" && addUnit.to_time == "")
+                        {
+                            errorCount++;
+                            skipRow = true;
+                            continue;
+                        }
+                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
+                        addUnit.site_id = Convert.ToInt32(siteNameId[addUnit.site]);
+                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+                        objImportBatch.importSiteId = addUnit.site_id;
+
+                        addUnit.ac_capacity = Convert.ToDouble(dr["Plant AC Capacity (MW)"]);
+                        errorFlag.Add(numericNullValidation(addUnit.ac_capacity, "Plant AC Capacity (MW)", rowNumber));
+
+                        bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
+                        if (isdateEmpty)
+                        {
+                            m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
+                            continue;
+                        }
+                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToString((string)dr["Date"]);
+                        errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
+                        addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+
+                        // addUnit.stop_from = Convert.ToDateTime(dr["Stop From"]).ToString("HH:mm:ss");
+                        addUnit.from_time = Convert.ToDateTime(dr["From Time"]).ToString("HH:mm:ss");
+
+                        addUnit.to_time = Convert.ToDateTime(dr["To Time"]).ToString("HH:mm:ss");
+
+                        addUnit.trackers_in_BD = Convert.ToInt32(dr["No. of Trackers in Breakdown (Nos)"]);
+                        errorFlag.Add(numericNullValidation(addUnit.trackers_in_BD, "No. of Trackers in Breakdown (Nos)", rowNumber));
+
+                        addUnit.module_tracker = Convert.ToInt32(dr["No. of Module Tracker (Nos)"]);
+                        errorFlag.Add(numericNullValidation(addUnit.trackers_in_BD, "No. of Module Tracker (Nos)", rowNumber));
+
+                        addUnit.module_WP = Convert.ToInt32(dr["Module WP (Watt)"]);
+                        errorFlag.Add(numericNullValidation(addUnit.module_WP, "Module WP (Watt)", rowNumber));
+
+                        addUnit.reason = Convert.ToString(dr["Remark"]);
+                        errorFlag.Clear();
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                        bool containsSingleQuote = addUnit.reason.Contains("'");
+                        if (containsSingleQuote)
+                        {
+                            addUnit.reason = addUnit.reason.Replace("'", " ");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        //developer errorlog
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarTrackerLossMonthly,");
+                        ErrorLog(",Exception Occurred In Function: InsertSolarTrackerLossMonthly: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Solar Tracker Loss Monthly Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarTrackerLossMonthly";
+                    using (var client = new HttpClient())
+                    {
+                        InformationLog("added timeout to InfiniteTimeSpan");
+                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                        var response = await client.PostAsync(url, data);
+                        string returnResponse = response.Content.ReadAsStringAsync().Result;
+                        if(returnResponse.Contains("True") || returnResponse.Contains("False"))
+                        {
+                            string[] substrings = returnResponse.Split(',');
+                            bool[] values = new bool[substrings.Length];
+                            int totalCalculations = substrings.Length;
+                            int successfulCalculations = 0;
+                            int failedCalculations = 0;
+                            for(int i = 0; i< substrings.Length; i++)
+                            {
+                                if (substrings[i] == "False")
+                                {
+                                    int count = i + 1;
+                                    m_ErrorLog.SetError(", Calculation of Tracker loss failed for row number <" + count + "> " );
+                                    failedCalculations++;
+                                }
+                                else
+                                {
+                                    successfulCalculations++;
+                                }
+                            }
+                            m_ErrorLog.SetInformation(", " + successfulCalculations + " number of calculations completed out of " + totalCalculations + " number of calculations.");
+                            if(failedCalculations != 0)
+                            {
+                                m_ErrorLog.SetError(", " + failedCalculations + " number of calculations failed out of " + totalCalculations + " number of calculations.");
+                            }
+                        }
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            m_ErrorLog.SetInformation(",Solar Tracker Loss Monthly API SuccessFul,");
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",Solar Tracker Loss Monthly API Failure,: responseCode <" + (int)response.StatusCode + "> Reason : " + returnResponse);
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Solar Tracker Loss Monthly Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
         //InsertSolarSoilingLoss
         private async Task<int> InsertSolarSoilingLoss(string status, DataSet ds)
         {
@@ -3894,6 +4099,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
                 string previousTime = "00:00:00";
+                string dataDate = "";
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     InsertWindTMLData addUnit = new InsertWindTMLData();
@@ -3915,8 +4121,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                             addUnit.site = SiteByWtg.ContainsKey(addUnit.WTGs) ? SiteByWtg[addUnit.WTGs].ToString() : "";
                             if(addUnit.site != " ")
                             {
-
-                                addUnit.site_id = addUnit.site is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                                addUnit.site_id = Convert.ToInt32(siteNameId[addUnit.site]);
+                            }
+                            else
+                            {
+                                addUnit.site_id = 0;
                             }
                         
                         }
@@ -3935,6 +4144,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if(rowNumber == 2)
                         {
                             previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
+                            dataDate = addUnit.date;
+                        }
+                        if(!(dataDate == addUnit.date))
+                        {
+                            m_ErrorLog.SetError(", Row <" + rowNumber + "> column <Time Stamp> : <" + dataDate + "> and Date <" + addUnit.date + "> missmatched");
+                            errorCount++;
                         }
                         addUnit.from_time = previousTime;
                         addUnit.to_time = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
@@ -3983,15 +4198,45 @@ namespace DGRA_V1.Areas.admin.Controllers
                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData";
                     using (var client = new HttpClient())
                     {
+                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                         var response = await client.PostAsync(url, data);
+                        string returnResponse = response.Content.ReadAsStringAsync().Result;
                         if (response.IsSuccessStatusCode)
                         {
                             m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
+                            if(returnResponse == "1")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetError(",Error inserting new TML Data.");
+                                m_ErrorLog.SetError(",Error updating manual BD column.");
+                                m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                            }
+                            if (returnResponse == "2")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetError(",Error updating manual BD column.");
+                                m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                            }
+                            if (returnResponse == "3")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                            }
+                            if (returnResponse == "4")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                            }
                             return responseCode = (int)response.StatusCode;
                         }
                         else
                         {
-                            m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + ">");
+                            m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + "> due to exception : " + returnResponse);
 
                             //for solar 0, wind 1, other 2;
                             int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
@@ -4156,9 +4401,9 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         objImportBatch.importSiteId = addUnit.site_id;//C
 
-                        addUnit.active_power = dr["Wind Speed (m/s)"] is DBNull || string.IsNullOrEmpty((string)dr["Wind Speed (m/s)"]) ? 0 : Convert.ToDouble(dr["Wind Speed (m/s)"]);
+                        addUnit.wind_speed = dr["Wind Speed (m/s)"] is DBNull || string.IsNullOrEmpty((string)dr["Wind Speed (m/s)"]) ? 0 : Convert.ToDouble(dr["Wind Speed (m/s)"]);
 
-                        addUnit.wind_speed = dr["Active Power (kW)"] is DBNull || string.IsNullOrEmpty((string)dr["Active Power (kW)"]) ? 0 : Convert.ToDouble(dr["Active Power (kW)"]);
+                        addUnit.active_power = dr["Active Power (kW)"] is DBNull || string.IsNullOrEmpty((string)dr["Active Power (kW)"]) ? 0 : Convert.ToDouble(dr["Active Power (kW)"]);
 
                         //errorFlag.Clear();
                         if (!(skipRow))
@@ -4218,7 +4463,143 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return responseCode;
         }
+        //InsertWindSpeed_TMD
+        private async Task<int> InsertWindSpeedTMD(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+            string rowOneDate = "";
 
+            if (ds.Tables.Count > 0)
+            {
+                List<InsertWindSpeedTMD> addSet = new List<InsertWindSpeedTMD>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    InsertWindSpeedTMD addUnit = new InsertWindSpeedTMD();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
+                        if (addUnit.site == "" || addUnit.site == null)
+                        {
+                            m_ErrorLog.SetError(", Site column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+
+                        addUnit.site_id = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+
+                        if (addUnit.site_id == 0)
+                        {
+                            //m_ErrorLog.SetError("Site name <" + addUnit.site + "> fail to match with data in Location Master at row <" + rowNumber + ">.");
+                            errorCount++;
+                        }
+
+                        objImportBatch.importSiteId = addUnit.site_id;//C
+                        bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
+                        if (isdateEmpty)
+                        {
+                            m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
+                            continue;
+                        }
+                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+
+                        errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
+                        if(rowNumber == 2)
+                        {
+                            rowOneDate = addUnit.date;
+                        }
+                        if(rowNumber > 2)
+                        {
+                            if (!(rowOneDate == addUnit.date ))
+                            {
+                                m_ErrorLog.SetError(", Date " + addUnit.date + " mismatched with " + rowOneDate + " at <" + rowNumber + "> row ");
+                            }
+                        }
+                        bool isTimeEmpty = false;
+                        if (dr["Time"] is DBNull || string.IsNullOrEmpty((string)dr["Time"]))
+                        {
+                            isTimeEmpty = true;
+                        }
+                        else
+                        {
+                            isTimeEmpty = false;
+                        }
+                        if (isTimeEmpty)
+                        {
+                            m_ErrorLog.SetError(", Time column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+                        else
+                        {
+                            addUnit.time = Convert.ToDateTime(dr["Time"]).ToString("HH:mm:ss");
+                        }
+
+                        addUnit.wind_speed = dr["Wind Farm WindSpeed"] is DBNull || string.IsNullOrEmpty((string)dr["Wind Farm WindSpeed"]) ? 0 : Convert.ToDouble(dr["Wind Farm WindSpeed"]);
+
+                        //errorFlag.Clear();
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        //developer errorlog
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindSpeedTMD,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindSpeedTMD: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Wind Windspeed TMD Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindSpeedTMD";
+                    using (var client = new HttpClient())
+                    {
+                        var response = await client.PostAsync(url, data);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            m_ErrorLog.SetInformation(",Wind Windspeed TMD API SuccessFul,");
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",Wind Windspeed TMD API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else if (deleteStatus == 0)
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", File not uploaded");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Wind Windspeed TMD Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
         private async Task importMetaData(string importType, string fileName, FileSheetType.FileImportType fileImportType)
         {
             int responseCode = 400;
@@ -5278,7 +5659,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         public string validateAndCleanSpChar(long rowNumber, string colName, string sActionTaken)
         {
             string retValue = "";
-            List<char> charsToRemove = new List<char>() { '\'', '@' };
+            List<char> charsToRemove = new List<char>() { '\'', '@', '#', '-' };
             retValue = Filter(rowNumber, colName, sActionTaken, charsToRemove);
             return retValue;
         }
