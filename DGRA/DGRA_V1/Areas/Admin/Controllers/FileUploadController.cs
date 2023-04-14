@@ -1154,8 +1154,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         errorCount++;
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindFileGeneration,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindFileGeneration: " + e.Message + "");
+                        m_ErrorLog.SetError(",File row <" + rowNumber + ">" + e.GetType() + ": Function: InsertWindFileGeneration,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindFileGeneration: " + e.ToString() + "");
                     }
                 }
                 if (!(errorCount > 0))
@@ -1307,7 +1307,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File row <" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarFileBreakDown");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarFileBreakDown: " + e.Message);
+                        ErrorLog(",Exception Occurred In Function: InsertSolarFileBreakDown: " + e.ToString());
                         errorCount++;
                     }
                 }
@@ -1429,8 +1429,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindFileBreakDown,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindFileBreakDown: " + e.Message + ",");
+                        m_ErrorLog.SetError(",File row <" + rowNumber + ">" + e.GetType() + ": Function: InsertWindFileBreakDown,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindFileBreakDown: " + e.ToString() + ",");
+                        errorCount++;
                     }
                 }
                 if (!(errorCount > 0))
