@@ -9739,48 +9739,48 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<string> AddTo = new List<string>();
             List<string> AddCc = new List<string>();
 
-            //string qry = "";
-            //if (reportTitle.Contains("Solar"))
-            //{
-            //    PPT_InformationLog("MailDailySend function : Contains solar file");
-            //    qry = "select useremail from login where To_Daily_Solar = 1;";
-            //    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-            //    foreach (var item in data2)
-            //    {
-            //        AddTo.Add(item.useremail);
-            //        PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
+            string qry = "";
+            if (reportTitle.Contains("Solar"))
+            {
+               PPT_InformationLog("MailDailySend function : Contains solar file");
+               qry = "select useremail from login where To_Daily_Solar = 1;";
+               List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+               foreach (var item in data2)
+               {
+                   AddTo.Add(item.useremail);
+                   PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
 
-            //    }
-            //    qry = "select useremail from login where Cc_Daily_Solar = 1;";
-            //    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-            //    foreach (var item in data3)
-            //    {
-            //        AddCc.Add(item.useremail);
-            //        PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
+               }
+               qry = "select useremail from login where Cc_Daily_Solar = 1;";
+               List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+               foreach (var item in data3)
+               {
+                   AddCc.Add(item.useremail);
+                   PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
 
-            //    }
-            //}
-            //else
-            //{
-            //    PPT_InformationLog("MailDailySend function : Contains wind file");
+               }
+            }
+            else
+            {
+               PPT_InformationLog("MailDailySend function : Contains wind file");
 
-            //    qry = "select useremail from login where to_daily_wind = 1;";
-            //    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-            //    foreach (var item in data2)
-            //    {
-            //        AddTo.Add(item.useremail);
-            //        PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
+               qry = "select useremail from login where to_daily_wind = 1;";
+               List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+               foreach (var item in data2)
+               {
+                   AddTo.Add(item.useremail);
+                   PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
 
-            //    }
-            //    qry = "select useremail from login where Cc_Daily_Wind = 1;";
-            //    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-            //    foreach (var item in data3)
-            //    {
-            //        AddCc.Add(item.useremail);
-            //        PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
+               }
+               qry = "select useremail from login where Cc_Daily_Wind = 1;";
+               List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+               foreach (var item in data3)
+               {
+                   AddCc.Add(item.useremail);
+                   PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
 
-            //    }
-            //}
+               }
+            }
 
 
 
