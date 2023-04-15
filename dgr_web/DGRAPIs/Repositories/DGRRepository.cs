@@ -9122,7 +9122,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
           //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<table id='emailTable' style='width: 100%; border-collapse: collapse ; border-spacing: 10px;'  border='1'>";
             tb += "<thead style ='font-size: 13px;'><tr>";
-            tb += "<th rowspan='2'  style='text-align: center; padding:0.5rem; background-color:#31576D;color:#ffffff'>Site</th><th  rowspan='2'  style='width: 3 %;text-align: center; padding:0.5rem; background-color:#31576D; color:#ffffff'>Capacity (MW)</th><th rowspan='2' style='width: 3 %;text-align: center; padding:0.5rem; background-color:#31576D;color:#ffffff'>Total Tar</th>";
+            tb += "<th rowspan='2'  style='text-align: center; padding:0.5rem; background-color:#31576D;color:#ffffff'>Site</th><th  rowspan='2'   style='width:3%; text-align: center; padding:0.5rem; background-color:#31576D;color:#ffffff'>Capacity (MW)</th><th rowspan='2'  style='width:3%; text-align: center; padding:0.5rem; background-color:#31576D;color:#ffffff'>Total Tar</th>";
             tb += "<th colspan='13' class='text-center' style=' text-align:center; background-color:#86C466;color:#ffffff'>YTD</th>";
             tb += "<th colspan='13' class='text-center' style=' text-align:center; background-color:#77CAE7;'>MTD</th>";
             tb += "<th colspan='13' class='text-center' style=' text-align:center; background-color:#FFCA5A;'>Last Day (" + (ltodate.ToString("dd-MMM-yyyy")) + ")</th>";
@@ -9485,7 +9485,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         try { 
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].tar_kwh, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_kwh, 1) + "&nbsp;&nbsp;</td>";
-                        tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(t_var_yr, 1) + "&nbsp;&nbsp;</td>";
+                        tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(t_var_ld, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].tar_poa, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_poa, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(poa_var_ld, 1) + "&nbsp;&nbsp;</td>";
@@ -9576,6 +9576,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (avg_tar_IR_ld != 0)
             {
                 avg_IR_var_ld = (((Math.Round(avg_act_IR_ld,1) - Math.Round(avg_tar_IR_ld,1)) / Math.Round(avg_tar_IR_ld,1)) * 100);
+            }
+            if (avg_tar_IR_mn != 0)
+            {
+                avg_IR_var_mn = (((Math.Round(avg_act_IR_mn, 1) - Math.Round(avg_tar_IR_mn, 1)) / Math.Round(avg_tar_IR_mn, 1)) * 100);
+            }
+            if (avg_tar_IR_yr != 0)
+            {
+                avg_IR_var_yr = (((Math.Round(avg_act_IR_yr, 1) - Math.Round(avg_tar_IR_yr, 1)) / Math.Round(avg_tar_IR_yr, 1)) * 100);
             }
 
             avg_pr_var_ld = (Math.Round(avg_act_pr_ld, 1) - Math.Round(avg_tar_pr_ld, 1));
@@ -9731,48 +9739,48 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<string> AddTo = new List<string>();
             List<string> AddCc = new List<string>();
 
-            string qry = "";
-            if (reportTitle.Contains("Solar"))
-            {
-                PPT_InformationLog("MailDailySend function : Contains solar file");
-                qry = "select useremail from login where To_Daily_Solar = 1;";
-                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data2)
-                {
-                    AddTo.Add(item.useremail);
-                    PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
+            //string qry = "";
+            //if (reportTitle.Contains("Solar"))
+            //{
+            //    PPT_InformationLog("MailDailySend function : Contains solar file");
+            //    qry = "select useremail from login where To_Daily_Solar = 1;";
+            //    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    foreach (var item in data2)
+            //    {
+            //        AddTo.Add(item.useremail);
+            //        PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
 
-                }
-                qry = "select useremail from login where Cc_Daily_Solar = 1;";
-                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data3)
-                {
-                    AddCc.Add(item.useremail);
-                    PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
+            //    }
+            //    qry = "select useremail from login where Cc_Daily_Solar = 1;";
+            //    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    foreach (var item in data3)
+            //    {
+            //        AddCc.Add(item.useremail);
+            //        PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
 
-                }
-            }
-            else
-            {
-                PPT_InformationLog("MailDailySend function : Contains wind file");
+            //    }
+            //}
+            //else
+            //{
+            //    PPT_InformationLog("MailDailySend function : Contains wind file");
 
-                qry = "select useremail from login where to_daily_wind = 1;";
-                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data2)
-                {
-                    AddTo.Add(item.useremail);
-                    PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
+            //    qry = "select useremail from login where to_daily_wind = 1;";
+            //    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    foreach (var item in data2)
+            //    {
+            //        AddTo.Add(item.useremail);
+            //        PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
 
-                }
-                qry = "select useremail from login where Cc_Daily_Wind = 1;";
-                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data3)
-                {
-                    AddCc.Add(item.useremail);
-                    PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
+            //    }
+            //    qry = "select useremail from login where Cc_Daily_Wind = 1;";
+            //    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    foreach (var item in data3)
+            //    {
+            //        AddCc.Add(item.useremail);
+            //        PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
 
-                }
-            }
+            //    }
+            //}
 
 
 
