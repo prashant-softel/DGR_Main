@@ -11,6 +11,7 @@ namespace DGRAPIs.Models
         public dynamic Date { get; set; }
         public int month { get; set; }
         public int year { get; set; }
+        public string fy { get; set; }
         public string Site { get; set; }
         public double Wind{ get; set; }
 
@@ -21,6 +22,7 @@ namespace DGRAPIs.Models
         public double tarwind { get; set; }
         public dynamic tar_date { get; set; }
         public double total_mw { get; set; }
+       
     }
     public class WindDashboardData1
     {
@@ -28,6 +30,7 @@ namespace DGRAPIs.Models
         public dynamic Date { get; set; }
         public int month { get; set; }
         public int year { get; set; }
+        public string fy { get; set; }
         public string Site { get; set; }
         public double Wind { get; set; }
 
@@ -37,5 +40,6 @@ namespace DGRAPIs.Models
         public double tarkwh { get; set; }
         public double tarwind { get; set; }
         public double total_mw { get; set; }
+       
     }
 }

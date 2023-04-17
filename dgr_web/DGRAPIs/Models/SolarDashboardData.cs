@@ -10,6 +10,8 @@ namespace DGRAPIs.Models
         public dynamic Date { get; set; }
         public double month { get; set; }
         public int year { get; set; }
+        public string fy { get; set; }
+
         public string Site { get; set; }
         public double IR { get; set; }
 
@@ -25,11 +27,13 @@ namespace DGRAPIs.Models
     public class SolarDashboardData1
     {
         public dynamic Date { get; set; }
+        public string fy { get; set; }
         public double IR { get; set; }
         public double inv_kwh { get; set; }
         public double tarkwh { get; set; }
         public double tarIR { get; set; }
         public double ac_capacity { get; set; }
+
 
     }
 }
