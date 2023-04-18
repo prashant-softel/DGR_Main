@@ -8603,7 +8603,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string lastDay = ltodate.ToString("yyyy-MM-dd");
             //DateTime nextMonth = ltodate.AddMonths(1);
             DateTime lastYear = new DateTime();
-            if ((dt.Month + 1) <= 3)
+            if ((dt.Month) <= 3)
             {
                 lastYear = ltodate.AddYears(-1);
             }
@@ -9095,7 +9095,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string lastDay = ltodate.ToString("yyyy-MM-dd");
             //DateTime nextMonth = ltodate.AddMonths(1);
             DateTime lastYear = new DateTime();
-            if ((dt.Month + 1) <= 3)
+            if ((dt.Month) <= 3)
             {
                 lastYear = ltodate.AddYears(-1);
             }
@@ -9529,13 +9529,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             if (total_tar_kwh_yr != 0)
             {
-                avg_solar_var_yr = (((Math.Round(total_act_kwh_yr,1) - Math.Round(total_tar_kwh_yr,1)) / Math.Round(total_tar_kwh_yr,1)) * 100);
+                avg_solar_var_yr = ((total_act_kwh_yr - total_tar_kwh_yr)/ total_tar_kwh_yr) * 100;
             }
             if (total_tar_kwh_mn != 0)
             {
-                avg_solar_var_mn = (((Math.Round(total_act_kwh_mn,1) - Math.Round(total_tar_kwh_mn,1)) / Math.Round(total_tar_kwh_mn,1)) * 100);
+                avg_solar_var_mn = ((total_act_kwh_mn - total_tar_kwh_mn)/ total_tar_kwh_mn) * 100;
             }
-           
+            if (total_tar_kwh_ld != 0)
+            {
+                avg_solar_var_ld = ((total_act_kwh_ld - total_tar_kwh_ld)/ total_tar_kwh_ld) * 100;
+            }
+
             if (total_capacity_yr != 0)
             {
                 avg_tar_IR_yr = total_capTarIR_yr / total_capacity_yr;
@@ -9569,26 +9573,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 avg_act_plf_ld = total_capActPlf_ld / total_capacity_ld;
                 avg_act_ma_ld = total_capActMa_ld / total_capacity_ld;
             }
-            if (total_tar_kwh_ld != 0)
-            {
-                avg_solar_var_ld = (((Math.Round(total_act_kwh_ld,1) - Math.Round(total_tar_kwh_ld,1)) / Math.Round(total_tar_kwh_ld,1)) * 100);
-            }
+            
             if (avg_tar_IR_ld != 0)
             {
-                avg_IR_var_ld = (((Math.Round(avg_act_IR_ld,1) - Math.Round(avg_tar_IR_ld,1)) / Math.Round(avg_tar_IR_ld,1)) * 100);
+                avg_IR_var_ld = ((avg_act_IR_ld - avg_tar_IR_ld) / avg_tar_IR_ld) * 100;
             }
             if (avg_tar_IR_mn != 0)
             {
-                avg_IR_var_mn = (((Math.Round(avg_act_IR_mn, 1) - Math.Round(avg_tar_IR_mn, 1)) / Math.Round(avg_tar_IR_mn, 1)) * 100);
+                avg_IR_var_mn = ((avg_act_IR_mn - avg_tar_IR_mn) / avg_tar_IR_mn) * 100;
             }
             if (avg_tar_IR_yr != 0)
             {
-                avg_IR_var_yr = (((Math.Round(avg_act_IR_yr, 1) - Math.Round(avg_tar_IR_yr, 1)) / Math.Round(avg_tar_IR_yr, 1)) * 100);
+                avg_IR_var_yr = ((avg_act_IR_yr - avg_tar_IR_yr) / avg_tar_IR_yr) * 100;
             }
-
-            avg_pr_var_ld = (Math.Round(avg_act_pr_ld, 1) - Math.Round(avg_tar_pr_ld, 1));
-            avg_pr_var_mn = (Math.Round(avg_act_pr_mn, 1) - Math.Round(avg_tar_pr_mn, 1));
-            avg_pr_var_yr = (Math.Round(avg_act_pr_yr, 1) - Math.Round(avg_tar_pr_yr, 1));
+            
+            avg_pr_var_ld = (Math.Round(avg_act_pr_ld, 2) - Math.Round(avg_tar_pr_ld, 2));
+            avg_pr_var_mn = (Math.Round(avg_act_pr_mn, 2) - Math.Round(avg_tar_pr_mn, 2));
+            avg_pr_var_yr = (Math.Round(avg_act_pr_yr, 2) - Math.Round(avg_tar_pr_yr, 2));
             try
             {
                 //return tb;
@@ -9742,44 +9743,44 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry = "";
             if (reportTitle.Contains("Solar"))
             {
-               PPT_InformationLog("MailDailySend function : Contains solar file");
-               qry = "select useremail from login where To_Daily_Solar = 1;";
-               List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-               foreach (var item in data2)
-               {
-                   AddTo.Add(item.useremail);
-                   PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
+                PPT_InformationLog("MailDailySend function : Contains solar file");
+                qry = "select useremail from login where To_Daily_Solar = 1;";
+                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                foreach (var item in data2)
+                {
+                    AddTo.Add(item.useremail);
+                    PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
 
-               }
-               qry = "select useremail from login where Cc_Daily_Solar = 1;";
-               List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-               foreach (var item in data3)
-               {
-                   AddCc.Add(item.useremail);
-                   PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
+                }
+                qry = "select useremail from login where Cc_Daily_Solar = 1;";
+                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                foreach (var item in data3)
+                {
+                    AddCc.Add(item.useremail);
+                    PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
 
-               }
+                }
             }
             else
             {
-               PPT_InformationLog("MailDailySend function : Contains wind file");
+                PPT_InformationLog("MailDailySend function : Contains wind file");
 
-               qry = "select useremail from login where to_daily_wind = 1;";
-               List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-               foreach (var item in data2)
-               {
-                   AddTo.Add(item.useremail);
-                   PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
+                qry = "select useremail from login where to_daily_wind = 1;";
+                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                foreach (var item in data2)
+                {
+                    AddTo.Add(item.useremail);
+                    PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
 
-               }
-               qry = "select useremail from login where Cc_Daily_Wind = 1;";
-               List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-               foreach (var item in data3)
-               {
-                   AddCc.Add(item.useremail);
-                   PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
+                }
+                qry = "select useremail from login where Cc_Daily_Wind = 1;";
+                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                foreach (var item in data3)
+                {
+                    AddCc.Add(item.useremail);
+                    PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
 
-               }
+                }
             }
 
 
@@ -9789,7 +9790,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            AddTo.Add("tanvikinjale28@gmail.com");
+            AddTo.Add("tanvi@softetech.in");
             //dTo.Add("tanviik28@gmail.com");
 
             // emails.Add("tanviik28@gmail.com");
