@@ -31,12 +31,13 @@ namespace DGRA_V1.Common
         public const string TML_Data = "TML_Data";
         public const string Power_Curve = "Power_Curve";
         public const string WindSpeed_TMD = "WindSpeed_TMD";
+        public const string BD_Code_Gamesa = "BD_Code_Gamesa";
 
 
 
         public static List<string> sheetList = new List<string>()
         {
-            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity", "Solar_tracker_loss","Solar_tracker_loss_monthly", "Solar_soiling_loss", "Solar_PVSyst_loss", "GKK", "TML_Data","Power_Curve","WindSpeed_TMD",
+            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity", "Solar_tracker_loss","Solar_tracker_loss_monthly", "Solar_soiling_loss", "Solar_PVSyst_loss", "GKK", "TML_Data","Power_Curve","WindSpeed_TMD","BD_Code_Gamesa",
         };
 
         public enum FileImportType
@@ -60,6 +61,7 @@ namespace DGRA_V1.Common
             imporFileType_Power_Curve,
             imporFileType_Solar_tracker_loss_monthly,
             imporFileType_WindSpeed_TMD,
+            imporFileType_BD_Code_Gamesa,
         }
 
         enum uiPageType

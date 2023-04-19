@@ -581,6 +581,24 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
+                                else if (excelSheet == FileSheetType.BD_Code_Gamesa)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_BD_Code_Gamesa;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if (ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Solar")
+                                        {
+                                            m_ErrorLog.SetError(",BD_Code_Gamesa file cannot be imported for Solar");
+                                            status = "Wrong file upload type selected for BD_Code_Gamesa import";
+                                        }
+                                        else
+                                        {
+                                            m_ErrorLog.SetInformation(",Importing Wind BD_Code_Gamesa WorkSheet:");
+                                            statusCode = await InsertWindBDCodeGamesa(status, ds);
+                                        }
+                                    }
+                                }
                                 else if (excelSheet == FileSheetType.WindSpeed_TMD)
                                 {
                                     fileImportType = FileSheetType.FileImportType.imporFileType_WindSpeed_TMD;
@@ -4204,12 +4222,27 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (response.IsSuccessStatusCode)
                         {
                             m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
-                            if(returnResponse == "1")
+                            //FinalResult = 0 : Complete failure
+                            //FinalResult = 1 : Completed till deletion.
+                            //FinalResult = 2 : Completed till insertion.
+                            //FinalResult = 3 : Completed till updating manual bd column
+                            //FinalResult = 4 : Completed till updating reconstructed windspeed.
+                            //FinalResult = 5 : Completed till updating expected power column.
+                            //FinalResult = 6 : Completed till updating deviation kw column.
+                            //FinalResult = 7 : Completed till updating loss kw column.
+                            //FinalResult = 8 : Completed till updating all breakdown column.
+                            //FinalResult = 9 : Completed till updating all breakdown code column.
+                            if (returnResponse == "1")
                             {
                                 m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
                                 m_ErrorLog.SetError(",Error inserting new TML Data.");
                                 m_ErrorLog.SetError(",Error updating manual BD column.");
                                 m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                                m_ErrorLog.SetError(",Error updating expected power column.");
+                                m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                m_ErrorLog.SetError(",Error updating loss kw column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
                             }
                             if (returnResponse == "2")
                             {
@@ -4217,6 +4250,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
                                 m_ErrorLog.SetError(",Error updating manual BD column.");
                                 m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                                m_ErrorLog.SetError(",Error updating expected power column.");
+                                m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                m_ErrorLog.SetError(",Error updating loss kw column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
                             }
                             if (returnResponse == "3")
                             {
@@ -4224,6 +4262,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
                                 m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
                                 m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                                m_ErrorLog.SetError(",Error updating expected power column.");
+                                m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                m_ErrorLog.SetError(",Error updating loss kw column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
                             }
                             if (returnResponse == "4")
                             {
@@ -4231,6 +4274,72 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
                                 m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
                                 m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                m_ErrorLog.SetError(",Error updating expected power column.");
+                                m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                m_ErrorLog.SetError(",Error updating loss kw column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                            }
+                            if (returnResponse == "5")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                m_ErrorLog.SetError(",Error updating loss kw column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                            }
+                            if (returnResponse == "6")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                m_ErrorLog.SetError(",Error updating loss kw column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                            }
+                            if (returnResponse == "7")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
+                                m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                            }
+                            if (returnResponse == "8")
+                            {
+                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
+                                m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
+                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                            }
+                            if (returnResponse == "9")
+                            {
+                                /*m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
+                                m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
+                                m_ErrorLog.SetInformation(",Updated All Breakdown Code column successfully."); */
+                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
                             }
                             return responseCode = (int)response.StatusCode;
                         }
@@ -4459,6 +4568,99 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     m_ErrorLog.SetError(",Wind TML Data Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
+        //InsertWindBDCodeGamesa
+        private async Task<int> InsertWindBDCodeGamesa(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+
+            if (ds.Tables.Count > 0)
+            {
+                List<InsertWindBDCodeGamesa> addSet = new List<InsertWindBDCodeGamesa>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    InsertWindBDCodeGamesa addUnit = new InsertWindBDCodeGamesa();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+                        addUnit.site = dr["Sites"] is DBNull || string.IsNullOrEmpty((string)dr["Sites"]) ? "Nil" : Convert.ToString(dr["Sites"]);
+                        if (addUnit.site == "" || addUnit.site == null)
+                        {
+                            m_ErrorLog.SetError(", Site column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+
+                        addUnit.site_id = dr["Sites"] is DBNull || string.IsNullOrEmpty((string)dr["Sites"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+
+                        objImportBatch.importSiteId = addUnit.site_id;//C
+
+                        addUnit.codes = dr["Codes"] is DBNull || string.IsNullOrEmpty((string)dr["Codes"]) ? 0 : Convert.ToInt32(dr["Codes"]);
+
+                        addUnit.description = dr["Description"] is DBNull || string.IsNullOrEmpty((string)dr["Description"]) ? "" : Convert.ToString(dr["Description"]);
+
+                        addUnit.conditions = dr["Conditions"] is DBNull || string.IsNullOrEmpty((string)dr["Conditions"]) ? "" : Convert.ToString(dr["Conditions"]);
+
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindBDCodeGamesa,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeGamesa: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Wind BD Code Gamesa Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindBDCodeGamesa";
+                    using (var client = new HttpClient())
+                    {
+                        var response = await client.PostAsync(url, data);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            m_ErrorLog.SetInformation(",BD code Gamesa API SuccessFul,");
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",BD Code gamesa API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else if (deleteStatus == 0)
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", File not uploaded");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Wind BD Code Gamesa Validation Failed,");
                 }
             }
             return responseCode;

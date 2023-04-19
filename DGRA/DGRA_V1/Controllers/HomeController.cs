@@ -841,7 +841,7 @@ namespace DGRA_V1.Controllers
             return View();
         }
         [TypeFilter(typeof(SessionValidation))]
-        public ActionResult SolarTrackerLoss()
+        public ActionResult TrackerLoss()
         {
             TempData["notification"] = "";
             return View();

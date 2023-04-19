@@ -3824,8 +3824,29 @@ bd_remarks, action_taken
                         {
                             FinalResult = 4;
                         }
+                        if(updateManualBdRes == 4)
+                        {
+                            FinalResult = 5;
+                        }
+                        if (updateManualBdRes == 5)
+                        {
+                            FinalResult = 6;
+                        }
+                        if (updateManualBdRes == 6)
+                        {
+                            FinalResult = 7;
+                        }
+                        if (updateManualBdRes == 7)
+                        {
+                            FinalResult = 8;
+                        }
+                        if (updateManualBdRes == 8)
+                        {
+                            FinalResult = 9;
+                        }
                     }
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     string msg = e.Message;
                     API_ErrorLog("Exception while inserting new values in TML_Data table. Exception : " + msg);
@@ -3837,6 +3858,11 @@ bd_remarks, action_taken
             //FinalResult = 2 : Completed till insertion.
             //FinalResult = 3 : Completed till updating manual bd column
             //FinalResult = 4 : Completed till updating reconstructed windspeed.
+            //FinalResult = 5 : Completed till updating expected power column.
+            //FinalResult = 6 : Completed till updating deviation kw column.
+            //FinalResult = 7 : Completed till updating loss kw column.
+            //FinalResult = 8 : Completed till updating all breakdown column.
+            //FinalResult = 9 : Completed till updating all breakdown code column.
             return FinalResult;
         }
 
@@ -3852,6 +3878,11 @@ bd_remarks, action_taken
             int updateManualRes = 0;
             int windBDReportRows = 0;
             int updateReconWindSpeedRes = 0;
+            int updateExpectedPowerRes = 0;
+            int updateDeviationKwRes = 0;
+            int updateLossKwhRes = 0;
+            int updateAllBdRes = 0;
+            int updateAllBdIDRes = 0;
             TimeSpan bdStopFrom = new TimeSpan();
             TimeSpan bdStopTo = new TimeSpan();
 
@@ -3895,6 +3926,31 @@ bd_remarks, action_taken
                         if(updateReconWindSpeedRes == 9)
                         {
                             finalRes = 3;
+                            updateExpectedPowerRes = await UpdateExpectedPower(date, site_id);
+                            if(updateExpectedPowerRes == 3)
+                            {
+                                finalRes = 4;
+                                updateDeviationKwRes = await UpdateDeviationKw(date, site_id);
+                            }
+                            if(updateDeviationKwRes == 1)
+                            {
+                                finalRes = 5;
+                                updateLossKwhRes = await UpdateLossKwh(date, site_id);
+                            }
+                            if(updateLossKwhRes == 1)
+                            {
+                                finalRes = 6;
+                                updateAllBdRes = await UpdateAllBreakdown(date, site_id);
+                            }
+                            if(updateAllBdRes == 8)
+                            {
+                                finalRes = 7;
+                                updateAllBdIDRes = await UpdateAllBDID(date, site_id);
+                            }
+                            if(updateAllBdIDRes == 2)
+                            {
+                                finalRes = 8;
+                            }
                         }
                     }
                     catch(Exception e)
@@ -3906,8 +3962,13 @@ bd_remarks, action_taken
             }
             //finalRes = 0 : Failed
             //finalRes = 1 : Fetched Records from uploading_file_breakdown table.
-            //finalRes = 2 : Updated Manual Breakdown Column of table uploading_file_tmr_data
-            //finalRes = 3 : Successfully updated Reconstructed windspeed column of table uploading_file_tmr_data
+            //finalRes = 2 : Updated Manual Breakdown Column of table uploading_file_tmr_data.
+            //finalRes = 3 : Successfully updated Reconstructed windspeed column of table uploading_file_tmr_data.
+            //finalRes = 4 : Successfully updated Expected Power column of table uploading_file_tmr_data.
+            //finalRes = 5 : Successfully updated Deviation kW column of table uploading_file_tmr_data.
+            //finalRes = 6 : Successfully updated Loss kW column of table uploading_file_tmr_data.
+            //finalRes = 7 : Successfully updated All Breakdown of table uploading_file_tmr_data.
+            //finalRes = 8 : Successfully updated All Breakdown Code of table uploading_file_tmr_data.
             return finalRes;
         }
         
@@ -4113,6 +4174,338 @@ bd_remarks, action_taken
             return finalResult;
         }
 
+        //Calculationsfor Expected Power 
+        internal async Task<int> UpdateExpectedPower(string date, int site_id)
+        {
+            int finalResult = 0;
+            int getPowerCurveRes = 0;
+            int updateExpectedPower = 0;
+            int TMLDataRows = 0;
+            string getPowerCurveQry = "SELECT * FROM power_curve WHERE site_id = " + site_id;
+            string getTMLDataQry = "SELECT * FROM uploading_file_tmr_data WHERE date ='" + date + "' AND site_id = " + site_id;
+            string updateValue = "";
+            List<InsertWindPowerCurve> PowerCurveList = new List<InsertWindPowerCurve>();
+            List<InsertWindTMLData> TMLDataList = new List<InsertWindTMLData>();
+            Hashtable PowerCurveHash = new Hashtable();
+            try
+            {
+                PowerCurveList = await Context.GetData<InsertWindPowerCurve>(getPowerCurveQry).ConfigureAwait(false);
+                getPowerCurveRes = PowerCurveList.Count;
+                if(getPowerCurveRes > 0)
+                {
+                    finalResult = 1;
+                }
+            }
+            catch (Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Exception while getting power curve Data . Due to : " + msg );
+                return finalResult;
+            }
+            if(getPowerCurveRes > 0)
+            {
+                foreach (var unit in PowerCurveList)
+                {
+                    try
+                    {
+                        PowerCurveHash.Add(unit.wind_speed, unit.active_power);
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = e.ToString();
+                        API_ErrorLog("Exception while adding records to hashtable. due to " + msg);
+                    }
+                }
+            }
+            try
+            {
+                TMLDataList = await Context.GetData<InsertWindTMLData>(getTMLDataQry).ConfigureAwait(false);
+                finalResult = 2;
+                TMLDataRows = TMLDataList.Count;
+            }
+            catch(Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Exception while fetching records from tmldata table in list due to : " + msg);
+            }
+            if(TMLDataRows > 0)
+            {
+                if(PowerCurveHash.Count > 0)
+                {
+                    foreach(var unit in PowerCurveList)
+                    {
+                        double windSpeed = Math.Round(unit.wind_speed, 1, MidpointRounding.ToEven);
+                        double activePower = PowerCurveHash.ContainsKey(windSpeed) ? Convert.ToDouble(PowerCurveHash[windSpeed]) : 0;
+                        updateValue += "UPDATE uploading_file_tmr_data SET exp_power_kw = "+ activePower + " WHERE ROUND(recon_wind_speed, 1) = " + windSpeed + " AND site_id = " + site_id + " AND date = '" + date + "' ;";
+                    }
+                    try
+                    {
+                        updateExpectedPower = await Context.ExecuteNonQry<int>(updateValue).ConfigureAwait(false);
+                        finalResult = 3;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = e.ToString();
+                        API_ErrorLog("Exception while updating expected power column of TML data table. Due to : " + msg);
+                        return finalResult;
+                    }
+                }
+
+            }
+
+            //finalResult = 0 : Completely Failed.
+            //finalResult = 1 : Fetched Records from Power Curve table.
+            //finalResult = 2 : Fetched Records from TMLData table.
+            //finalResult = 3 : Updated Expected Power Column.
+            return finalResult;
+        }
+
+        //Calculations for Deviation kw 
+        internal async Task<int> UpdateDeviationKw(string date, int site_id)
+        {
+            int finalResult = 0;
+            int updateQryRes = 0;
+            //UPDATE table_name SET deviation_kw = CASE WHEN avg_active_power IS NULL OR avg_active_power = 0 THEN 0 - exp_power_kw WHEN avg_active_power > 0 THEN avg_active_power -exp_power_kw END WHERE date = '14-Mar-23' AND site_id = 217; 
+            string updateDeviationQry = "UPDATE uploading_file_tmr_data SET deviation_kw = CASE WHEN avg_active_power IS NULL OR avg_active_power = 0 THEN 0 - exp_power_kw WHEN avg_active_power > 0 THEN avg_active_power -exp_power_kw END WHERE date = '" + date + "' AND site_id = " + site_id;
+            try
+            {
+                updateQryRes = await Context.ExecuteNonQry<int>(updateDeviationQry).ConfigureAwait(false);
+                finalResult = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Exception while updating Deviation column due to : " + msg);
+                return finalResult;
+            }
+
+            //finalresult = 0 : Failed Completely.
+            //finalResult = 1 : Successful.
+            return finalResult;
+        }
+
+        //Calculation for Loss kWH
+        internal async Task<int> UpdateLossKwh(string date, int site_id)
+        {
+            int finalResult = 0;
+            int updateLossRes = 0;
+            //UPDATE uploading_file_tmr_data SET loss_kw = avg_active_power/6 WHERE uploading_file_TMR_Data_id = 246;
+            string updateLossKwhQry = "UPDATE uploading_file_tmr_data SET loss_kw = deviation_kw/6 WHERE site_id = " + site_id + " AND date = '" + date + "' ;";
+            try
+            {
+                updateLossRes = await Context.ExecuteNonQry<int>(updateLossKwhQry).ConfigureAwait(false);
+                if(updateLossRes > 0)
+                {
+                    finalResult = 1;
+                }
+            }
+            catch(Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Exception while Updating Loss kwh : due to " + msg );
+                return finalResult;
+            }
+            //finalResult = 0 : Completely Failed.
+            //finalResult = 1 : Updated Loss kWH column in uploading_file_tmr_data table.
+            return finalResult;
+        }
+        //Calculation for All Breakdown.
+        internal async Task<int> UpdateAllBreakdown(string date, int site_id)
+        {
+            int finalResult = 0;
+            int updateCondition1Res = 0;
+            int updateCondition2Res = 0;
+            int updateCondition3Res = 0;
+            int updateCondition4Res = 0;
+            int updateCondition5Res = 0;
+            int updateCondition6Res = 0;
+            int updateCondition7Res = 0;
+            bool updateCondition1Flag = false;
+            bool updateCondition2Flag = false;
+            bool updateCondition3Flag = false;
+            bool updateCondition4Flag = false;
+            bool updateCondition5Flag = false;
+            bool updateCondition6Flag = false;
+            bool updateCondition7Flag = false;
+            string updateAllBdCondition1Qry = "";
+            string updateAllBdCondition2Qry = "";
+            string updateAllBdCondition3Qry = "";
+            string updateAllBdCondition4Qry = "";
+            string updateAllBdCondition5Qry = "";
+            string updateAllBdCondition6Qry = "";
+            string updateAllBdCondition7Qry = "";
+            try
+            {
+                updateAllBdCondition1Qry = "UPDATE uploading_file_tmr_data SET all_bd = manual_bd WHERE site_id = " + site_id + " AND date = '" + date + "' AND manual_bd IS NOT NULL";
+                updateCondition1Res = await Context.ExecuteNonQry<int>(updateAllBdCondition1Qry).ConfigureAwait(false);
+                finalResult = 1;
+                updateCondition1Flag = true;
+            }
+            catch(Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Exception while updating values for All Breakdown using condition 1. due to : " + msg);
+                return finalResult;
+            }
+            if (updateCondition1Flag)
+            {
+                updateAllBdCondition2Qry = "UPDATE uploading_file_tmr_data SET all_bd = 'PCD' WHERE manual_bd IS NULL AND status_code = 0 AND restructive_WTG = 100 AND date = '" + date + "' AND site_id = " + site_id + " ;";
+                try
+                {
+                    updateCondition2Res = await Context.ExecuteNonQry<int>(updateAllBdCondition2Qry).ConfigureAwait(false);
+                    updateCondition2Flag = true;
+                    finalResult = 2;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while updating value of all bd using condition 2. due to : " + msg);
+                    return finalResult;
+                }
+            }
+            if (updateCondition2Flag)
+            {
+                updateAllBdCondition3Qry = "UPDATE uploading_file_tmr_data SET all_bd = 'USMH' WHERE manual_bd IS NULL AND status_code = 0 AND restructive_WTG = (0 OR 25 OR 50 OR 125)  AND date = '" + date + "' AND site_id = " + site_id + " ;";
+                try
+                {
+                    updateCondition3Res = await Context.ExecuteNonQry<int>(updateAllBdCondition3Qry).ConfigureAwait(false);
+                    updateCondition3Flag = true;
+                    finalResult = 3;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while updating value of all bd using condition 3. due to : " + msg);
+                    return finalResult;
+                }
+            }
+            if (updateCondition3Flag)
+            {
+                updateAllBdCondition4Qry = "UPDATE uploading_file_tmr_data SET all_bd = 'USMH' WHERE manual_bd IS NULL AND status_code = 1 AND restructive_WTG = (0 OR 25 OR 50 OR 125) AND date = '" + date + "' AND site_id = " + site_id + " ;";
+                try
+                {
+                    updateCondition4Res = await Context.ExecuteNonQry<int>(updateAllBdCondition4Qry).ConfigureAwait(false);
+                    updateCondition4Flag = true;
+                    finalResult = 4;
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while updating value of all bd using condition 4. due to : " + msg);
+                    return finalResult;
+                }
+            }
+            if (updateCondition4Flag)
+            {
+                updateAllBdCondition5Qry = "UPDATE uploading_file_tmr_data SET all_bd = 'LULL' WHERE manual_bd IS NULL AND restructive_WTG = 75 AND loss_kw <=0 AND date = '" + date + "' AND site_id = " + site_id + " ;";
+                try
+                {
+                    updateCondition5Res = await Context.ExecuteNonQry<int>(updateAllBdCondition5Qry).ConfigureAwait(false);
+                    updateCondition5Flag = true;
+                    finalResult = 5;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while updating value of all bd using condition 5.due to : " + msg);
+                    return finalResult;
+                }
+            }
+            if (updateCondition5Flag)
+            {
+                updateAllBdCondition6Qry = "UPDATE uploading_file_tmr_data SET all_bd = 'PCD' WHERE manual_bd IS NULL AND restructive_WTG = 75 AND status_code = 0 AND loss_kw > 0 AND date = '" + date + "' AND site_id = " + site_id + " ;";
+                try
+                {
+                    updateCondition6Res = await Context.ExecuteNonQry<int>(updateAllBdCondition6Qry).ConfigureAwait(false);
+                    updateCondition6Flag = true;
+                    finalResult = 6;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while Updating value of All breakdown using condition 6. Due to : " + msg );
+                    return finalResult;
+                }
+            }
+            if(updateCondition1Flag && updateCondition2Flag && updateCondition3Flag && updateCondition4Flag && updateCondition5Flag && updateCondition6Flag)
+            {
+                updateAllBdCondition7Qry = "UPDATE uploading_file_tmr_data SET all_bd = 'NC' WHERE all_bd IS NULL AND date = '" + date + "' AND site_id = " + site_id + " ;";
+                try
+                {
+                    updateCondition7Res = await Context.ExecuteNonQry<int>(updateAllBdCondition7Qry).ConfigureAwait(false);
+                    updateCondition7Flag = true;
+                    finalResult = 7;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while updating all bd value using condition 7. due to : " + msg);
+                    return finalResult;
+                }
+            }
+            if (updateCondition1Flag && updateCondition2Flag && updateCondition3Flag && updateCondition4Flag && updateCondition5Flag && updateCondition6Flag && updateCondition7Flag)
+            {
+                finalResult = 8;
+            }
+
+            //finalResult = 0 : Failed Completely.
+            //finalResult = 1 : Successfully Updated all_bd by condition 1
+            //finalResult = 2 : Successfully Updated all_bd by condition 2
+            //finalResult = 3 : Successfully Updated all_bd by condition 3
+            //finalResult = 4 : Successfully Updated all_bd by condition 4
+            //finalResult = 5 : Successfully Updated all_bd by condition 5
+            //finalResult = 6 : Successfully Updated all_bd by condition 6
+            //finalResult = 7 : Successfully Updated all_bd by condition 7
+            //finalResult = 8 : Successfully Updated all_bd
+            return finalResult;
+        }
+
+        //Calculations for All Breakdown codes.
+        internal async Task<int> UpdateAllBDID(string date, int site_id)
+        {
+            int finalResult = 0;
+            int getBdCodeListRes = 0;
+            int updateAllBdIdRes = 0;
+
+            List<InsertWindBDCodeGamesa> BDCodeList = new List<InsertWindBDCodeGamesa>();
+            Hashtable BDCodeTypehash = new Hashtable();
+            string getBDCodeListQry = "SELECT * from wind_bd_codes_gamesa WHERE site_id = " + site_id + " ;";
+            string updateAllBdIdQry = "";
+
+            try
+            {
+                BDCodeList = await Context.GetData<InsertWindBDCodeGamesa>(getBDCodeListQry).ConfigureAwait(false);
+                finalResult = 1;
+                getBdCodeListRes = BDCodeList.Count;
+            }
+            catch(Exception e)
+            {
+                string msg = e.ToString();
+            }
+            if(getBdCodeListRes > 0)
+            {
+                foreach(var unit in BDCodeList)
+                {
+                    updateAllBdIdQry += "UPDATE uploading_file_tmr_data SET all_bd_id = " + unit.codes + " WHERE all_bd = '" + unit.conditions + "' AND site_id = " + site_id + " AND date = '" + date + "';" ;
+                }
+                try
+                {
+                    updateAllBdIdRes = await Context.ExecuteNonQry<int>(updateAllBdIdQry).ConfigureAwait(false);
+                    finalResult = 2;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while updating values of All_Bd_id in tmr_data table");
+                    return finalResult;
+                }
+            }
+
+            //finalResult = 1 : fetched records from wind_bd_codes_gamesa for hashtable
+            //finalResult = 1 : Updated column all_bd_id in table uploading_file_tmr_data successfully.
+            return finalResult;
+        }
+
         //InsertWindPowerCurve
         internal async Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> set)
         {
@@ -4130,10 +4523,39 @@ bd_remarks, action_taken
                     site = unit.site;
                     site_id = unit.site_id;
                 }                                           
-                insertValues += "('" + unit.site + "','" + unit.site_id + "', " + unit.wind_speed + ", " + unit.active_power + "),";
+                insertValues += "('" + unit.site + "'," + unit.site_id + ", " + unit.wind_speed + ", " + unit.active_power + "),";
             }
 
             string deleteQry = "DELETE FROM power_curve WHERE site ='" + site + "' AND site_id =" + site_id + ";";
+            qry += insertValues;
+
+            await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            if (!(string.IsNullOrEmpty(insertValues)))
+            {
+                val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+            }
+            return val;
+        }
+        //InsertWindBDCodeGamesa
+        internal async Task<int> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> set)
+        {
+            int val = 0;
+            string qry = " INSERT INTO wind_bd_codes_gamesa ( site, site_id, codes, description, conditions ) VALUES";
+            string insertValues = "";
+            int counter = 0;
+            string site = "";
+            int site_id = 0;
+            foreach (var unit in set)
+            {
+                if (counter == 0)
+                {
+                    site = unit.site;
+                    site_id = unit.site_id;
+                }
+                insertValues += "('" + unit.site + "', " + unit.site_id + ", " + unit.codes + ", '" + unit.description + "', '" + unit.conditions + "'),";
+            }
+
+            string deleteQry = "DELETE FROM wind_bd_codes_gamesa WHERE site ='" + site + "' AND site_id =" + site_id + ";";
             qry += insertValues;
 
             await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
@@ -4699,27 +5121,34 @@ bd_remarks, action_taken
         internal async Task<int> InsertSolarUploadingFileBreakDown(List<SolarUploadingFileBreakDown> set, int batchId)
         {//Updated
             int result = 0;
-            dynamic date = set[0].date;
-            int id = set[0].site_id;
-            int temp = await DeleteBreakdownDataFromUploading(date, id);
-            if (temp == 1)
-            { 
-                string qry = " insert into uploading_file_breakdown_solar (date, site, site_id, ext_int_bd, igbd, icr, inv, smb, strings, from_bd, to_bd, total_bd, bd_remarks, bd_type, bd_type_id, action_taken, import_batch_id) values";
-                string values = "";
+            if(set.Count <= 0)
+            {
+                result = 1;
+            }
+            if(set.Count > 0)
+            {
+                dynamic date = set[0].date;
+                int id = set[0].site_id;
+                int temp = await DeleteBreakdownDataFromUploading(date, id);
+                if (temp == 1)
+                { 
+                    string qry = " insert into uploading_file_breakdown_solar (date, site, site_id, ext_int_bd, igbd, icr, inv, smb, strings, from_bd, to_bd, total_bd, bd_remarks, bd_type, bd_type_id, action_taken, import_batch_id) values";
+                    string values = "";
 
-                foreach (var unit in set)
-                {
-                    values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.ext_int_bd + "','" + unit.igbd + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.from_bd + "','" + unit.to_bd + "','" + unit.total_bd + "','" + unit.bd_remarks + "','" + unit.bd_type + "','" + unit.bd_type_id + "','" + unit.action_taken + "','" + batchId + "'),";
-                }
-                qry += values;
-                string tempQry = qry.Substring(0, (qry.Length - 1)) + ";";
-                try
-                {
-                    result = await Context.ExecuteNonQry<int>(tempQry).ConfigureAwait(false);
-                }catch (Exception e)
-                {
-                    string msg = e.Message;
-                    throw;
+                    foreach (var unit in set)
+                    {
+                        values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.ext_int_bd + "','" + unit.igbd + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.from_bd + "','" + unit.to_bd + "','" + unit.total_bd + "','" + unit.bd_remarks + "','" + unit.bd_type + "','" + unit.bd_type_id + "','" + unit.action_taken + "','" + batchId + "'),";
+                    }
+                    qry += values;
+                    string tempQry = qry.Substring(0, (qry.Length - 1)) + ";";
+                    try
+                    {
+                        result = await Context.ExecuteNonQry<int>(tempQry).ConfigureAwait(false);
+                    }catch (Exception e)
+                    {
+                        string msg = e.Message;
+                        throw;
+                    }
                 }
             }
             return result;
@@ -8373,7 +8802,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry1 = "";
             if (prType == "AOP")
             {
-                qry1 = "select site, t1.site_id, t1. date, pr, toplining_pr, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma) as ma, avg(t1.iga) as iga, avg(t1.ega) as iga,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter +
+                qry1 = "select site, t1.site_id, t1. date, pr, toplining_pr, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma) as ma, avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter +
                     " group by t1.site, t1.date ";
             }
             else if(prType == "toplining")

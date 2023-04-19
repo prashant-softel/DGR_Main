@@ -21,6 +21,13 @@ namespace DGRAPIs.Models
         public dynamic to_time { get; set; }
         public string status { get; set; }
         public int status_code { get; set; }
+        public double recon_wind_speed { get; set; }
+        public double exp_power_kw { get; set; }
+        public double deviation_kw { get; set; }
+        public double loss_kw { get; set; }
+        public string manual_bd { get; set; }
+        public string all_bd { get; set; }
+        public dynamic created_on { get; set; }
     }
     public class WindSpeedData
     {

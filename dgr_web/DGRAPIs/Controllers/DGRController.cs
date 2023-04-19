@@ -990,6 +990,23 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //InsertWindBDCodeGamesa
+        [Route("InsertWindBDCodeGamesa")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> InsertWindBDCodeGamesa)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindBDCodeGamesa(InsertWindBDCodeGamesa);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         //InsertWindSpeedTMD
         [Route("InsertWindSpeedTMD")]
         [HttpPost]
