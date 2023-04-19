@@ -8742,7 +8742,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double target_yr = 0;
             double total_target_yr = 0;
 
-
+            bool dailyRecordFound = false;
+            bool monthlyRecordFound = false;
 
 
             List<WindPerformanceReports> yearlypr,monthlypr,lastdaypr = new List<WindPerformanceReports>();
@@ -8810,7 +8811,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;" + Math.Round(yearlypr[i].act_ma, 1) + "&nbsp;&nbsp;</td>";
                 tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;" + Math.Round(yearlypr[i].act_iga, 1) + "&nbsp;&nbsp;</td>";
                 tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;" + Math.Round(yearlypr[i].act_ega, 1) + "&nbsp;&nbsp;</td>";
-                bool monthlyRecordFound = false;
+
                for(var j=0; j< monthlypr.Count; j++)
                 {
                     if (yearlypr[i].site == monthlypr[j].site)
@@ -8854,21 +8855,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     
                    
-                    //tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                   // tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
+                    //tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                   // tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
 
                 }
-                bool dailyRecordFound = false;
                 for (var k = 0; k < lastdaypr.Count; k++)
                 {
                     if (yearlypr[i].site == lastdaypr[k].site)
@@ -8910,18 +8910,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if(dailyRecordFound == false)
                 {
-                   // tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    //tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;0.0&nbsp;&nbsp;</td>";
+                   // tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    //tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
                 }
                 tb += "</tr>";
             }
@@ -8994,28 +8994,58 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ma_yr, 1) + "</b>&nbsp;&nbsp;</td>";
             tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_iga_yr, 1) + "</b>&nbsp;&nbsp;</td>";
             tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ega_yr, 1) + "</b>&nbsp;&nbsp;</td>";
-
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_tar_mu_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_act_jmr_kwh_mu_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_jmr_var_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_tar_wind_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_wind_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_wind_var_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_plf_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ma_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_iga_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ega_mn, 1) + "</b>&nbsp;&nbsp;</td>";
-
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_tar_mu_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_act_jmr_kwh_mu_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_jmr_var_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_tar_wind_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_wind_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_wind_var_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_plf_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ma_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_iga_ld, 1) + "</b>&nbsp;&nbsp;</td>";
-            tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ega_ld, 1) + "</b>&nbsp;&nbsp;</td></tr>";
+            if (monthlyRecordFound == true)
+            {
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_tar_mu_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_act_jmr_kwh_mu_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_jmr_var_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_tar_wind_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_wind_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_wind_var_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_plf_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ma_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_iga_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ega_mn, 1) + "</b>&nbsp;&nbsp;</td>";
+            }
+            else
+            {
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+            }
+            if (dailyRecordFound == true)
+            {
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_tar_mu_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(total_act_jmr_kwh_mu_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_jmr_var_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_tar_wind_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_wind_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_wind_var_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_plf_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ma_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_iga_ld, 1) + "</b>&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;<b>" + Math.Round(avg_act_ega_ld, 1) + "</b>&nbsp;&nbsp;</td></tr>";
+            }
+            else
+            {
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td>";
+                tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;-&nbsp;&nbsp;</td></tr>";
+            }
             
             tb += "</tfoot></table>";
            //return tb;
@@ -9149,8 +9179,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#77CAE7;'>MA (%)</th>";
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#77CAE7;'>IGA (%)</th>";
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#77CAE7;'>EGA (%)</th>";
-            tb += "<th  style='text-align:center; padding:0.5rem; background-color:#77CAE7;'>Tar PR (%)</th>";
-            tb += "<th style='text-align:center; padding:0.5rem; background-color:#77CAE7;'>Act PR (%)</th>";
+            tb += "<th  style='width:3%; text-align:center; padding:0.5rem; background-color:#77CAE7;'>Tar PR (%)</th>";
+            tb += "<th style='width:3%; text-align:center; padding:0.5rem; background-color:#77CAE7;'>Act PR (%)</th>";
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#77CAE7;'>Var (%)</th>";
             tb += "<th  style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>Tar Gen (MU)</th>";
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>Act Gen (MU)</th>";
@@ -9162,8 +9192,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>IGA (%)</th>";
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>EGA (%)</th>";
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>CUF_AC (%)</th>";
-            tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>Tar PR (%)</th>";
-            tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>Act PR (%)</th>";
+            tb += "<th style='width:3%; text-align:center; padding:0.5rem; background-color:#FFCA5A;'>Tar PR (%)</th>";
+            tb += "<th style='width:3%; text-align:center; padding:0.5rem; background-color:#FFCA5A;'>Act PR (%)</th>";
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A;'>Var (%)</th>";
             // tb += "</tr></thead><tbody><tr>";
             tb += "</tr></thead><tbody  style='font-size: 10px;text-align:center'>";
@@ -9258,6 +9288,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double avg_act_ega_mn = 0;
             double avg_act_ma_mn = 0;
             double avg_act_plf_mn = 0;
+            bool dailyRecordFound = false;
+            bool monthlyRecordFound = false;
+
 
             List<SolarPerformanceReports1> yearlypr, monthlypr, lastdaypr = new List<SolarPerformanceReports1>();
             try
@@ -9375,7 +9408,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
 
-                bool monthlyRecordFound = false;
+                
                 for (var j = 0; j < monthlypr.Count; j++)
                 {
                     if (yearlypr[i].site == monthlypr[j].site)
@@ -9440,11 +9473,21 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if (monthlyRecordFound == false)
                 {
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    
                 }
-                bool dailyRecordFound = false;
                 for (var k = 0; k < lastdaypr.Count; k++)
                 {
                     if (yearlypr[i].site == lastdaypr[k].site)
@@ -9507,19 +9550,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if (dailyRecordFound == false)
                 {
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
-                    tb += "<td style='padding:0.5rem; text-align: right;'>0.0&nbsp;&nbsp;</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
                 }
 
 
@@ -9611,32 +9654,71 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_pr_yr, 1) + "&nbsp;&nbsp;</b></td>";
                 tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_pr_yr, 1) + "&nbsp;&nbsp;</b></td>";
                 tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_pr_var_yr, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_tar_kwh_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_act_kwh_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_solar_var_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_IR_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_IR_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_IR_var_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_plf_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ma_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_iga_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ega_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_pr_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_pr_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_pr_var_mn, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_tar_kwh_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_act_kwh_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_solar_var_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_IR_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_IR_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_IR_var_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ma_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_iga_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ega_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_plf_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_pr_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_pr_ld, 1) + "&nbsp;&nbsp;</b></td>";
-                tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_pr_var_ld, 1) + "&nbsp;&nbsp;</b></td></tr>";
+                if (monthlyRecordFound == true)
+                {
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_tar_kwh_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_act_kwh_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_solar_var_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_IR_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_IR_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_IR_var_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_plf_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ma_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_iga_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ega_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_pr_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_pr_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_pr_var_mn, 1) + "&nbsp;&nbsp;</b></td>";
+                }
+                else
+                {
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                }
+                if (dailyRecordFound == true)
+                {
+
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_tar_kwh_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(total_act_kwh_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_solar_var_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_IR_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_IR_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_IR_var_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ma_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_iga_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_ega_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_plf_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_tar_pr_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_act_pr_ld, 1) + "&nbsp;&nbsp;</b></td>";
+                    tb += "<td style='padding:0.5rem; text-align: right;'><b>" + Math.Round(avg_pr_var_ld, 1) + "&nbsp;&nbsp;</b></td></tr>";
+                }
+                else
+                {
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td>";
+                    tb += "<td style='padding:0.5rem; text-align: center;'>-</td></tr>";
+                }
                 tb += "</tfoot></table>";
             }
             catch (Exception ex)
@@ -9790,7 +9872,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            AddTo.Add("tanvi@softetech.in");
+            AddTo.Add("tanvi@softeltech.in");
             //dTo.Add("tanviik28@gmail.com");
 
             // emails.Add("tanviik28@gmail.com");
