@@ -466,6 +466,68 @@ namespace DGRA_V1.Controllers
 
         }
         [TypeFilter(typeof(SessionValidation))]
+        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday)
+        {
+            var line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/EmailReportTimeChangeSetting?dailytime=" + dailytime + "&windweeklytime=" + windweeklytime + "&solarweeklytime=" + solarweeklytime + "&windweekday=" + windweekday + "&solarweekday=" + solarweekday+ "";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        //line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
+        //GetEmailTime
+        [TypeFilter(typeof(SessionValidation))]
+        public async Task<IActionResult> GetEmailTime()
+        {
+            var line = "";
+            try
+            {
+                EmailReportTimings emailReportTimingsList = new EmailReportTimings();
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/GetEmailTime";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                        emailReportTimingsList.time_list = JsonConvert.DeserializeObject<List<EmailReportTimings>>(line);
+                        string daily = emailReportTimingsList.time_list[0].dailyTime;
+                        string windWeekly = emailReportTimingsList.time_list[0].windWeeklyTimw;
+                        string solarWeekly = emailReportTimingsList.time_list[0].solarWeeklyTime;
+                        string windWeekDay = emailReportTimingsList.time_list[0].windweekday;
+                        string solarWeekDay = emailReportTimingsList.time_list[0].solarweekday;
+                        HttpContext.Session.SetString("DailyReportTime", daily.ToString());
+                        HttpContext.Session.SetString("WindWeeklyTime", windWeekly.ToString());
+                        HttpContext.Session.SetString("SolarWeeklyTime", solarWeekly.ToString());
+                        HttpContext.Session.SetString("WindWeeklyDay", windWeekDay.ToString());
+                        HttpContext.Session.SetString("SolarWeeklyDay", solarWeekDay.ToString());
+                        //res = response.Content.ReadAsStringAsync().Result;  
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
+        [TypeFilter(typeof(SessionValidation))]
         public async Task<IActionResult> UpdatePassword(int loginid, string updatepass)
         {
             string line = "";
@@ -777,6 +839,12 @@ namespace DGRA_V1.Controllers
         public IActionResult WindUserView()
         {
             
+            return View();
+        }
+        [TypeFilter(typeof(SessionValidation))]
+        public IActionResult EmailReportTimeSetting()
+        {
+            //TempData["notification"] = "";
             return View();
         }
         [TypeFilter(typeof(SessionValidation))]

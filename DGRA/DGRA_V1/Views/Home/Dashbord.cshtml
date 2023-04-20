@@ -370,6 +370,7 @@
     var displaychart = {"wind":false,"solar":false};
     //var tendays = "";
     window.onload = function () {
+        getEmailReportTime();
         updateLoginLog(UserID, "login");
         getYear();
         var today = new Date();
@@ -420,6 +421,24 @@
 
 
 
+    }
+
+    function getEmailReportTime() {
+        console.log("Inside GetEmailReportTime function.");
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetEmailTime", "Home")',
+            //url: "/Home/WindNewUserRegister?fname=" + fname + "&useremail=" + useremail + "&role=" + role + "&created_on=" + created_on,
+            contentType: "application/json; charset=utf-8",
+            // data: '{"state":"' + val + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
+                console.log(result);
+                if (result > 0) {
+                }
+            }
+        });
+        //console.log("Daily time : dailyTime wind Weekly time : windWeeklyTime solar Weekly Time : solarWeeklyTime");
     }
 
     //updateLoginLog()
@@ -547,7 +566,7 @@
     }
 
     function GetReport() {
-       
+
         if (userRole == "User" && !wsite_list && !ssite_list) {
             return;
         }
@@ -567,7 +586,7 @@
                 }
                 if (wsite_list) {
                     GetWindDataByLastDay();
-                    
+
                     if ($("#customRadio1").is(":checked")) {
                         chartTitle = "Last 10 Days";
                         GetWindChartData(tendays, chartTitle);
@@ -580,9 +599,9 @@
             }
             else {
                 GetWindDataByLastDay();
-               
+
                 GetSolarDataByLastDay();
-                
+
                 if ($("#customRadio1").is(":checked")) {
                     chartTitle = "Last 10 Days";
                     GetWindChartData(tendays, chartTitle);
@@ -689,7 +708,7 @@
                         wind_lastday_wspeed = total_capActWind / total_capacity;
                         wind_lastday_wspeed_target = total_capTarWind / total_capacity;
                     }
-                    
+
 
                     if (wind_lastday_energy_target != 0) {
                         lastVariant_energy = ((wind_lastday_energy - wind_lastday_energy_target) /wind_lastday_energy_target) * 100;
@@ -767,10 +786,10 @@
                         total_capacity += result[i].total_mw;
                         total_capActWind += result[i].wind * result[i].total_mw;
                         total_capTarWind += result[i].tarwind * result[i].total_mw;
-                        
+
                         wcnt++;
                     }
-                    
+
 
                     console.log(wcnt);
                     if (total_capacity != 0) {
@@ -787,7 +806,7 @@
                     if (wind_monthly_wspeed_target != 0) {
                         monthly_var_wspeed = ((wind_monthly_wspeed.toFixed(1) - wind_monthly_wspeed_target.toFixed(1)) / wind_monthly_wspeed_target.toFixed(1))* 100;
                     }
-                   
+
                     document.getElementById("manthly_enrgy").innerHTML = "<b>" + (wind_monthly_energy / 1000000).toFixed(1) + "</b>";
                     document.getElementById("monthly_wspeed").innerHTML = "<b>" + wind_monthly_wspeed.toFixed(1) + "</b>";
 

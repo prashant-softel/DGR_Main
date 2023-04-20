@@ -33,6 +33,8 @@ namespace DGRAPIs.BS
 
         //SubmitCloneUserAccess
         Task<int> SubmitCloneUserAccess(int login_id, int site_type, int page_type, int identity, int upload_access);
+        Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday);
+        Task<List<EmailReportTimings>> EmailReportTimings();
 
 
     }
@@ -345,6 +347,37 @@ namespace DGRAPIs.BS
             }
         }
 
+        public async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.EmailReportTimeChangeSetting(dailytime, windweeklytime, solarweeklytime, windweekday, solarweekday);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<EmailReportTimings>> EmailReportTimings()
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.EmailReportTimings();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
     }
 }

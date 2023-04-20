@@ -4055,27 +4055,30 @@ bd_remarks, action_taken
         internal async Task<int> InsertSolarUploadingFileBreakDown(List<SolarUploadingFileBreakDown> set, int batchId)
         {//Updated
             int result = 0;
-            dynamic date = set[0].date;
-            int id = set[0].site_id;
-            int temp = await DeleteBreakdownDataFromUploading(date, id);
-            if (temp == 1)
-            { 
-                string qry = " insert into uploading_file_breakdown_solar (date, site, site_id, ext_int_bd, igbd, icr, inv, smb, strings, from_bd, to_bd, total_bd, bd_remarks, bd_type, bd_type_id, action_taken, import_batch_id) values";
-                string values = "";
+            if(set.Count > 0)
+            {
+                dynamic date = set[0].date;
+                int id = set[0].site_id;
+                int temp = await DeleteBreakdownDataFromUploading(date, id);
+                if (temp == 1)
+                { 
+                    string qry = " insert into uploading_file_breakdown_solar (date, site, site_id, ext_int_bd, igbd, icr, inv, smb, strings, from_bd, to_bd, total_bd, bd_remarks, bd_type, bd_type_id, action_taken, import_batch_id) values";
+                    string values = "";
 
-                foreach (var unit in set)
-                {
-                    values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.ext_int_bd + "','" + unit.igbd + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.from_bd + "','" + unit.to_bd + "','" + unit.total_bd + "','" + unit.bd_remarks + "','" + unit.bd_type + "','" + unit.bd_type_id + "','" + unit.action_taken + "','" + batchId + "'),";
-                }
-                qry += values;
-                string tempQry = qry.Substring(0, (qry.Length - 1)) + ";";
-                try
-                {
-                    result = await Context.ExecuteNonQry<int>(tempQry).ConfigureAwait(false);
-                }catch (Exception e)
-                {
-                    string msg = e.Message;
-                    throw;
+                    foreach (var unit in set)
+                    {
+                        values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.ext_int_bd + "','" + unit.igbd + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.from_bd + "','" + unit.to_bd + "','" + unit.total_bd + "','" + unit.bd_remarks + "','" + unit.bd_type + "','" + unit.bd_type_id + "','" + unit.action_taken + "','" + batchId + "'),";
+                    }
+                    qry += values;
+                    string tempQry = qry.Substring(0, (qry.Length - 1)) + ";";
+                    try
+                    {
+                        result = await Context.ExecuteNonQry<int>(tempQry).ConfigureAwait(false);
+                    }catch (Exception e)
+                    {
+                        string msg = e.Message;
+                        throw;
+                    }
                 }
             }
             return result;

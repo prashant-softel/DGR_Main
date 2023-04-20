@@ -6,6 +6,12 @@ using DGRAPIs.Helper;
 using DGRAPIs.Models;
 using Nancy.Json;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using System.Configuration;
 
 namespace DGRAPIs.Repositories
 {
@@ -148,6 +154,115 @@ namespace DGRAPIs.Repositories
             
         }
 
+        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay)
+        {
+            
+            int finalRes = 1;
+            var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var configurationBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            var configuration = configurationBuilder.Build();
+            var json = File.ReadAllText("appsettings.json");
+            var jsonObject = JObject.Parse(json);
+            var updatedJson = "";
+                try
+                {
+                MyConfig["Timer:DailyReportTime"] = dailytime;
+                jsonObject["Timer"]["DailyReportTime"] = dailytime;
+                updatedJson = jsonObject.ToString();
+                File.WriteAllText("appsettings.json", updatedJson);
+
+                try
+                {
+                    MyConfig["Timer:WeeklyReportTime"] = windweeklytime;
+                    jsonObject["Timer"]["WeeklyReportTime"] = windweeklytime;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing Wind weekly email report time, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+                try
+                {
+                    MyConfig["Timer:WeeklyReportTimeSolar"] = solarweeklytime;
+                    jsonObject["Timer"]["WeeklyReportTimeSolar"] = solarweeklytime;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing Solar weekly email report time, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+                try
+                {
+                    MyConfig["Timer:WeeklyReportDayOfWeek"] = solarweeklytime;
+                    jsonObject["Timer"]["WeeklyReportDayOfWeek"] = windWeekDay;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing Wind weekly email report Day, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+                try
+                {
+                    MyConfig["Timer:WeeklyReportDayOfWeekSolar"] = solarweeklytime;
+                    jsonObject["Timer"]["WeeklyReportDayOfWeekSolar"] = solarWeekDay;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing Solar weekly email report Day, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+
+            }
+            catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    finalRes = 0;
+                    return finalRes;
+            }
+                
+
+            return finalRes;
+
+        }
+        //GetEmailTime
+        internal async Task<List<EmailReportTimings>> EmailReportTimings()
+        {
+            List<EmailReportTimings> EmailReportTimeList = new List<EmailReportTimings>();
+            ConfigurationManager.RefreshSection("appSettings");
+            var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
+            string dailyTime = MyConfig.GetValue<string>("Timer:DailyReportTime");
+            string windWeeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
+            string solarWeeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar");
+            string windWeekDay = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
+            string solarWeekDay = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeekSolar");
+
+            EmailReportTimings emailReportTimings = new EmailReportTimings()
+            {
+                dailyTime = dailyTime,
+                windWeeklyTimw = windWeeklyTime,
+                solarWeeklyTime = solarWeeklyTime,
+                windWeekDay = windWeekDay,
+                solarWeekDay = solarWeekDay
+            };
+            EmailReportTimeList.Add(emailReportTimings);
+            return EmailReportTimeList;
+        }
         internal async Task<int> UpdatePassword(int loginid, string updatepass)
         {
             string qry = "update login set password=MD5('" + updatepass + "') where login_id=" + loginid + "";
