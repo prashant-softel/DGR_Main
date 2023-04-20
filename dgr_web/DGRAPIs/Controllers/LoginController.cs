@@ -343,8 +343,42 @@ namespace Login.Controllers
             }
         }
 
+        //EmailReportTimeChangeSetting
+        [Route("EmailReportTimeChangeSetting")]
+        [HttpGet]
+        // public async Task<IActionResult> UserLogin(string username, string password)
+        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday)
+        {
+            try
+            {
 
+                var data = await _loginBs.EmailReportTimeChangeSetting(dailytime, windweeklytime, solarweeklytime, windweekday, solarweekday);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
 
+                return BadRequest(ex.Message);
+            }
+        }
+        //EmailReportTimings
+        [Route("GetEmailTime")]
+        [HttpGet]
+        // public async Task<IActionResult> UserLogin(string username, string password)
+        public async Task<IActionResult> EmailReportTimings()
+        {
+            try
+            {
+
+                var data = await _loginBs.EmailReportTimings();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
     }
 
 

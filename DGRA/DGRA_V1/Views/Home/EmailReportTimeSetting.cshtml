@@ -1,0 +1,236 @@
+﻿@using DGRA_V1.Common;
+@using DGRA_V1.Models;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Emial Report Settings";
+}
+
+@{ 
+    List<EmailReportTimings> list = new List<EmailReportTimings>();
+    var obj = new EmailReportTimings();
+    list = obj.GetTimeList();
+    string dailyTime = @HttpContextAccessor.HttpContext.Session.GetString("DailyReportTime");
+    string windWeeklyTime = @HttpContextAccessor.HttpContext.Session.GetString("WindWeeklyTime");
+    string solarWeeklyTime = @HttpContextAccessor.HttpContext.Session.GetString("SolarWeeklyTime");
+    string windWeeklyDay = @HttpContextAccessor.HttpContext.Session.GetString("WindWeeklyDay"); ;
+    string solarWeeklyDay = @HttpContextAccessor.HttpContext.Session.GetString("SolarWeeklyDay"); ;
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+<style>
+    .tab-btn {
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+</style>
+
+<div class="content-wrapper">
+
+    <section class="content-header">
+    </section>
+
+
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title  text-center">Email Report Time</h3>
+            </div>
+            <div class="card-body">
+                <div class="" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 40%">
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem">
+                        <div class="">
+                            <label class="">Daily Report Time : <strong> @dailyTime</strong> </label>
+                        </div>
+                        <div class="">
+                            <label class="">Wind Weekly Report Time: <strong>@windWeeklyTime</strong> </label>
+                        </div>
+                        <div class="">
+                            <label class="">Solar Weekly Report Time : <strong> @solarWeeklyTime </strong></label>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem">
+                        <div class="">
+                            <label class=""></label>
+                        </div>
+                        <div class="">
+                            <label class="">Wind Weekly Report Day : <strong> @windWeeklyDay</strong> </label>
+                        </div>
+                        <div class="">
+                            <label class="">Solar Weekly Report Day : <strong>@solarWeeklyDay</strong> </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title  text-center">Update Email Report Time</h3>
+            </div>
+            <div class="card-body">
+                <div class="" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20%; padding-left: 10%; padding-right: 10%; width:100%;">
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem; width: 100%">
+                        <div class="" style="display: flex; flex-direction: row; width:100%">
+                            <label class="" style="width: 100%">Daily Report Time : </label>
+                            <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="dailyReport" name="dailyReport" placeholder="Enter Daily report Time ">
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class="" style="width: 100%">Wind Weekly Report Time: </label>
+                            <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="windWeeklyReport" name="windWeeklyReport" placeholder="Enter Wind Weekly Report Time ">
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class="" style="width: 100%">Solar Weekly Report Time : </label>
+                            <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="solarWeeklyReport" name="solarWeeklyReport" placeholder="Enter Solar Weekly Report Time ">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem; width: 100%">
+                        <div class="" style="display: flex; flex-direction: row; width: 100%; padding: 1.3rem;">
+                            <label class="" style="width: 100%"></label>
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class=" " style="width: 100%">Wind Weekly Report Day : </label>
+                            <select id="windweekday" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " name="windweekday" onchange="windDaySelect()">
+                                <option value="Mon">Mon</option>
+                                <option value="Tue">Tue</option>
+                                <option value="Wed">Wed</option>
+                                <option value="Thu">Thu</option>
+                                <option value="Fri">Fri</option>
+                                <option value="Sat">Sat</option>
+                                <option value="Sun">Sun</option>
+                            </select>
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class=" " style="width: 100%">Solar Weekly Report Day : </label>
+                            <select id="solarweekday" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " name="solarweekday" onchange="solarDaySelect()">
+                                <option value="Mon">Mon</option>
+                                <option value="Tue">Tue</option>
+                                <option value="Wed">Wed</option>
+                                <option value="Thu">Thu</option>
+                                <option value="Fri">Fri</option>
+                                <option value="Sat">Sat</option>
+                                <option value="Sun">Sun</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6"></div>
+            </div>
+            <div class="row"><p><br></p></div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+
+                <div class="col-sm-2"><button type="button" class="btn btn-block btn-success" onclick="Update()">Update</button></div>
+                <div class="col-sm-2"> <button type="button" class="btn btn-block btn-danger" onclick="Cancel()">Cancel</button></div>
+                <div class="col-sm-4"></div>
+            </div>
+            <div class="row"><p><br></p></div>
+        </div>
+
+    </section>
+
+</div>
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
+<script src="~/Content/theme/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<script src="~/Content/theme/plugins/summernote/summernote-bs4.min.js"></script>
+<!--Datatable -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Content/theme/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/Content/theme/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js"></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/Content/theme/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+    window.onload = function (){
+        GetEmailTime();
+    }
+    function GetEmailTime() {
+        console.log("Inside GetEmialTime function.");
+        
+    }
+    var windWeekDay = "";
+    var solarWeekDay = "";
+    function windDaySelect() {
+        windWeekDay = document.getElementById("windweekday").value;
+        console.log("Wind Week Day Selected is  : " + windWeekDay);
+    }
+    function solarDaySelect() {
+        solarWeekDay = document.getElementById("solarweekday").value;
+        console.log("Solar Week Day Selected is  : " + solarWeekDay);
+    }
+    function Update() {
+
+        var dailytime = document.getElementById("dailyReport").value;
+        var windWeeklyTime = document.getElementById("windWeeklyReport").value;
+        var solarWeeklyTime = document.getElementById("solarWeeklyReport").value;
+        if (dailytime !== "") {
+            dailytime = dailytime;
+        } else {
+            dailytime =  "@dailyTime";
+        }
+        if (windWeeklyTime !== "") {
+            windWeeklyTime = windWeeklyTime;
+        } else {
+            windWeeklyTime = "@windWeeklyTime";
+        }
+        if (solarWeeklyTime !== "") {
+            solarWeeklyTime = solarWeeklyTime;
+        } else {
+            solarWeeklyTime = "@solarWeeklyTime";
+        }
+        if (windWeekDay !== "") {
+            windWeekDay = windWeekDay;
+        } else {
+            windWeekDay = "@windWeeklyDay";
+        }
+        if (solarWeekDay !== "") {
+            solarWeekDay = solarWeekDay;
+        } else {
+            solarWeekDay = "@solarWeeklyDay";
+        }
+        if (dailytime === "" && windWeeklyTime === "" && solarWeeklyTime === "" && windWeekDay === "" && solarWeekDay === "") {
+            alert("Please enter data.");
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay,
+            //url: "/Home/WindNewUserRegister?fname=" + fname + "&useremail=" + useremail + "&role=" + role + "&created_on=" + created_on,
+            contentType: "application/json; charset=utf-8",
+            // data: '{"state":"' + val + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
+                console.log("hello result of api "+result);
+                if (result == 1) {
+                    alert("Updated successfully!");
+                    //location.href = "/Home/WindSiteUserMaster";
+                }
+            }
+        });
+    }
+
+
+
+</script>

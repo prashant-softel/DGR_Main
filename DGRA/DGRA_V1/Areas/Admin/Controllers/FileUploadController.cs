@@ -4382,7 +4382,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             foreach (char c in charsToRemove)
             {
                 str = str.Replace(c.ToString(), string.Empty);
-//                m_ErrorLog.SetInformation(",Row <" + rowNumber + "> column <" + colName + "> : value <" + c.ToString() + "> removed from string,");
+               m_ErrorLog.SetInformation(",Row <" + rowNumber + "> column <" + colName + "> : value <" + c.ToString() + "> removed from string,");
             }
 
             return str;
@@ -4390,7 +4390,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         public string validateAndCleanSpChar(long rowNumber, string colName, string sActionTaken)
         {
             string retValue = "";
-            List<char> charsToRemove = new List<char>() { '\'', '@' };
+            List<char> charsToRemove = new List<char>() { '\'', '/', '?', '@', '-', '+', '\\', ')', '('  };
             retValue = Filter(rowNumber, colName, sActionTaken, charsToRemove);
             return retValue;
         }
