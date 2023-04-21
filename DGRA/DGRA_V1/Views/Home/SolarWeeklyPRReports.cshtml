@@ -510,8 +510,11 @@
                 if (tar_energy_wk != 0) {
                     energy_var_wk = (((act_energy_wk - tar_energy_wk) / tar_energy_wk) * 100);
                 }
+                if (tar_poa_wk != 0) {
+                    poa_var_wk = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
+                }
                 ghi_var_wk = (avg_act_ghi - avg_tar_ghi);
-                poa_var_wk = (avg_act_poa - avg_tar_poa);
+               // poa_var_wk = (avg_act_poa - avg_tar_poa);
                //avg_pr_var = (avg_act_pr - avg_tar_pr);
                // avg_gain_var = (avg_act_gain - avg_tar_gain);
                 plf_var_wk = (avg_act_plf - avg_tar_plf);
@@ -785,8 +788,11 @@
                 if (tar_energy_mn != 0) {
                     energy_var_mn = (((act_energy_mn - tar_energy_mn) / tar_energy_mn) * 100);
                 }
+                if (tar_poa_mn != 0) {
+                    poa_var_mn = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
+                }
                 ghi_var_mn = (avg_act_ghi - avg_tar_ghi);
-                poa_var_mn = (avg_act_poa - avg_tar_poa);
+               // poa_var_mn = (avg_act_poa - avg_tar_poa);
                 //avg_pr_var = (avg_act_pr - avg_tar_pr);
                 // avg_gain_var = (avg_act_gain - avg_tar_gain);
                 plf_var_mn = (avg_act_plf - avg_tar_plf);
@@ -1054,8 +1060,11 @@
                 if (tar_energy_yr != 0) {
                     energy_var_yr = (((act_energy_yr - tar_energy_yr) / tar_energy_yr) * 100);
                 }
+                if (tar_poa_yr != 0) {
+                    poa_var_yr = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
+                }
                 ghi_var_yr = (avg_act_ghi - avg_tar_ghi);
-                poa_var_yr = (avg_act_poa - avg_tar_poa);
+               // poa_var_yr = (avg_act_poa - avg_tar_poa);
                 //avg_pr_var = (avg_act_pr - avg_tar_pr);
                 // avg_gain_var = (avg_act_gain - avg_tar_gain);
                 plf_var_yr = (avg_act_plf - avg_tar_plf);
