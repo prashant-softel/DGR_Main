@@ -3759,6 +3759,23 @@ bd_remarks, action_taken
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="set"></param>
+        /// <returns>
+        ///    FinalResult = 0 : Complete failure
+        ///    FinalResult = 1 : Completed till deletion.
+        ///    FinalResult = 2 : Completed till insertion.
+        ///    FinalResult = 3 : Completed till updating manual bd column
+        ///    FinalResult = 4 : Completed till updating reconstructed windspeed.
+        ///    FinalResult = 5 : Completed till updating expected power column.
+        ///    FinalResult = 6 : Completed till updating deviation kw column.
+        ///    FinalResult = 7 : Completed till updating loss kw column.
+        ///    FinalResult = 8 : Completed till updating all breakdown column.
+        ///    FinalResult = 9 : Completed till updating all breakdown code column.
+        /// </returns>
         internal async Task<int> InsertWindTMLData(List<InsertWindTMLData> set)
         {
             int FinalResult = 0;
@@ -3775,6 +3792,7 @@ bd_remarks, action_taken
                     site_id = unit.site_id;
                 }
                 counter++;
+                //make single insertvalue.
                 if(unit.status_code == 0)
                 {
                     insertValues += "('" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
@@ -3786,8 +3804,9 @@ bd_remarks, action_taken
                 //DELETE FROM uploading_file_pvsyst_loss WHERE site_id IN (3,9) and month In ('Apr','Mar');
 
             }
-
-            string deleteQry = "DELETE FROM uploading_file_tmr_data WHERE date ='" + date + "' ;" ;
+            // database transactions start before delete.
+            //Delete data in starting 
+            string deleteQry = "DELETE FROM uploading_file_tmr_data WHERE date ='" + date + "' AND site_id = " + site_id + " ;" ;
             qry += insertValues;
 
             try
@@ -3853,16 +3872,7 @@ bd_remarks, action_taken
                     return FinalResult;
                 }
             }
-            //FinalResult = 0 : Complete failure
-            //FinalResult = 1 : Completed till deletion.
-            //FinalResult = 2 : Completed till insertion.
-            //FinalResult = 3 : Completed till updating manual bd column
-            //FinalResult = 4 : Completed till updating reconstructed windspeed.
-            //FinalResult = 5 : Completed till updating expected power column.
-            //FinalResult = 6 : Completed till updating deviation kw column.
-            //FinalResult = 7 : Completed till updating loss kw column.
-            //FinalResult = 8 : Completed till updating all breakdown column.
-            //FinalResult = 9 : Completed till updating all breakdown code column.
+            
             return FinalResult;
         }
 
@@ -3902,11 +3912,12 @@ bd_remarks, action_taken
             {
                 foreach (var unit in _WindBreakdownReport)
                 {
-                    bdStopFrom = unit.stop_from;
+                    bdStopFrom = unit.stop_from - 10;
                     bdStopTo = unit.stop_to;
 
                     //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00";
-                    addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND to_time <= '" + bdStopTo + "' ;";
+                    //can add this in insert qry. check for this..
+                    addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
                 }
                 try
                 {
@@ -3918,7 +3929,7 @@ bd_remarks, action_taken
                     string msg = e.ToString();
                     API_ErrorLog("Exception Caught while updating manual bd column : " + msg );
                 }
-                if(updateManualRes >= 0)
+                if(finalRes == 2)
                 {
                     try
                     {
@@ -3972,6 +3983,69 @@ bd_remarks, action_taken
             return finalRes;
         }
         
+        //Calculation for inserting data into windspeed TMD table.
+        internal async Task<int> UpdateWindSpeedTMD(List<InsertWindTMLData> set, string date, int site_id)
+        {
+            int finalResult = 0;
+            string yearMonthDate = "";
+            string updateWindspeedTMDQry = "INSERT INTO windspeed_tmd (site, site_id, tmd_date, tmd_time, windspeed ) VALUES ";
+            string updateValue = "";
+            int updateWindspeedTMDRes = 0;
+            try
+            {
+                yearMonthDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+            }
+            catch(Exception e)
+            {
+                API_ErrorLog("Error while converting date in required format. Due to : " + e.ToString());
+            }
+            int count = 0;
+            string loopDate = "";
+            foreach(var unit in set)
+            {
+                if(count == 0)
+                {
+                    loopDate = Convert.ToDateTime(unit.date).ToString("yyyy-MM-dd") ;
+                }
+                if(count > 0)
+                {
+                    if(loopDate == yearMonthDate)
+                    {
+                        string Tempdate = Convert.ToDateTime(unit.date).ToString("yyyy-MM-dd");
+                        if(unit.avg_wind_speed >0 && unit.status_code ==0)
+                        {
+                            updateValue += "( '" + unit.site + "', " + unit.site_id + ", '" + Tempdate + "', '" + unit.to_time + "', " + unit.avg_wind_speed + " ),";
+                        }
+                        if(unit.avg_wind_speed == 0 && unit.status_code == 1)
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        //break;
+                    }
+                }
+            }
+
+            if(updateValue != "")
+            {
+                updateWindspeedTMDQry += updateValue;
+                try
+                {
+                    updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Error while updaating value to Windspeed TMD table . Due to  : " + msg);
+                    return finalResult;
+                }
+            }
+
+            return finalResult;
+        }
         //Calculations for reconstructed wind speed.
         internal async Task<int> UpdateReconWindSpeedForTMLData(string date, int site_id)
         {
@@ -4175,6 +4249,7 @@ bd_remarks, action_taken
         }
 
         //Calculationsfor Expected Power 
+        
         internal async Task<int> UpdateExpectedPower(string date, int site_id)
         {
             int finalResult = 0;
@@ -8807,7 +8882,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             else if(prType == "toplining")
             {
-                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date "; 
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses, t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
             try
@@ -8881,7 +8956,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (SolarPowerCalc _dataElement in data)
             {
-                _dataElement.Loss_factor = ((1 + _dataElement.near_sheding / 100) * (1 + _dataElement.iam_factor / 100) * (1 + _dataElement.soiling_factor / 100) * (1 + _dataElement.pv_loss / 100) * (1 + _dataElement.lid / 100) * (1 + _dataElement.array_missmatch / 100) * (1 + _dataElement.dc_ohmic / 100) * (1 + _dataElement.conversion_loss / 100) * (1 + _dataElement.plant_auxilary / 100) * (1 + _dataElement.system_unavailability / 100) * (1 + _dataElement.ac_ohmic / 100) * (1 + _dataElement.external_transformer / 100)) - 1;
+                _dataElement.Loss_factor = 1 - ((1 + _dataElement.near_sheding) * (1 + _dataElement.iam_factor) * (1 + _dataElement.soiling_factor) * (1 + _dataElement.pv_loss) * (1 + _dataElement.lid) * (1 + _dataElement.array_missmatch) * (1 + _dataElement.dc_ohmic) * (1 + _dataElement.conversion_loss) * (1 + _dataElement.plant_auxilary) * (1 + _dataElement.system_unavailability) * (1 + _dataElement.ac_ohmic) * (1 + _dataElement.external_transformer));
+
+                //_dataElement.Loss_factor = 1 - ((1 + _dataElement.near_sheding / 100) * (1 + _dataElement.iam_factor / 100) * (1 + _dataElement.soiling_factor / 100) * (1 + _dataElement.pv_loss / 100) * (1 + _dataElement.lid / 100) * (1 + _dataElement.array_missmatch / 100) * (1 + _dataElement.dc_ohmic / 100) * (1 + _dataElement.conversion_loss / 100) * (1 + _dataElement.plant_auxilary / 100) * (1 + _dataElement.system_unavailability / 100) * (1 + _dataElement.ac_ohmic / 100) * (1 + _dataElement.external_transformer / 100));
 
             }
             DateTime commDate = new DateTime();
@@ -8928,7 +9005,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 break;
                             }
                         }
-                        degradation = ((start - commDate).TotalDays - 365) * LossData.yoy_degradation / 365;
+                        degradation = (((start - commDate).TotalDays) * LossData.yoy_degradation) / 365;
 
                         string qry3 = "select *,date_time as stringdatetime from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + start.Year.ToString() + "-" + start.Month.ToString() + "-" + start.Day + "' order by date_time asc";
                         List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
@@ -8944,10 +9021,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             if (_temp1mindata.avg_poa > 0)
                             {
-                                double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
-                                double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + LossData.Loss_factor / 100) * (1 - (LossData.alpha / 100 * (T_cell - LossData.tstc))) * (_temp1mindata.avg_poa / 1000);
-                                dailyPexpected += localPexpected;
-                                string updateQry = " update `uploading_pyranometer_15_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.stringdatetime.ToString("yyyy-MM-dd HH:mm:ss")+"' ";
+                            /*double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                            double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + LossData.Loss_factor / 100) * (1 - (LossData.alpha / 100 * (T_cell - LossData.tstc))) * (_temp1mindata.avg_poa / 1000);
+                            dailyPexpected += localPexpected;*/
+                            //double degradation = (((_temp1mindata.date - commDate).TotalDays) * LossData.yoy_degradation) / 365;
+                            double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                            double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa) * (1 - degradation) * (1 - LossData.Loss_factor) * (1 - (LossData.alpha * (T_cell - LossData.tstc))) / 1000 ;
+                            dailyPexpected += localPexpected;
+
+                            string updateQry = " update `uploading_pyranometer_15_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.stringdatetime.ToString("yyyy-MM-dd HH:mm:ss")+"' ";
                                 try {
                                     await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
                                 }
@@ -8961,7 +9043,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         SolarPowerCalcReturn obj = new SolarPowerCalcReturn();
                         obj.site_id = site;
                         obj.date = start.Date.ToString("yyyy-MM-dd");
-                        obj.Pexpected = dailyPexpected;
+                        //obj.Pexpected = dailyPexpected;
+                        //Will be divide by 60 for 1 min data.
+                        obj.Pexpected = dailyPexpected / 4 ;
                         result.Add(obj);
                         start = start.AddDays(1);
                     }
@@ -9001,11 +9085,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         if (_temp1mindata.avg_poa > 0)
                         {
+                            double degradation = (((_temp1mindata.date - commDate).TotalDays) * LossData.yoy_degradation) / 365;
+                            double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                            double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa ) * (1 - degradation / 100) * (1 + LossData.Loss_factor / 100) * (1 - (LossData.alpha / 100 * (T_cell - LossData.tstc)));
+                            MonthlyPexp += localPexpected;
+                            /*
                             double degradation = ((_temp1mindata.date - commDate).TotalDays - 365) * LossData.yoy_degradation / 365;
 
                             double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
                             double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + LossData.Loss_factor / 100) * (1 - (LossData.alpha / 100 * (T_cell - LossData.tstc))) * (_temp1mindata.avg_poa / 1000);
-                            MonthlyPexp += localPexpected;
+                            MonthlyPexp += localPexpected; */
+
+                           
+
                             string updateQry = " update `uploading_pyranometer_15_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.date_time + "' ";
                             try
                             {
@@ -9050,11 +9142,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         if (_temp1mindata.avg_poa > 0)
                         {
-                            double degradation = ((_temp1mindata.date - commDate).TotalDays - 365) * _eachMonthData.yoy_degradation / 365;
+                            double degradation = (((_temp1mindata.date - commDate).TotalDays) * _eachMonthData.yoy_degradation) / 365 ;
+                            //double degradation = ((_temp1mindata.date - commDate).TotalDays - 365) * _eachMonthData.yoy_degradation / 365;
 
                             double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * _eachMonthData.tcnd;
-                            double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + _eachMonthData.Loss_factor / 100) * (1 - (_eachMonthData.alpha / 100 * (T_cell - _eachMonthData.tstc))) * (_temp1mindata.avg_poa / 1000);
+                            double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa) * (1 - degradation / 100) * (1 + _eachMonthData.Loss_factor / 100) * (1 - (_eachMonthData.alpha / 100 * (T_cell - _eachMonthData.tstc)));
                             MonthlyPexp += localPexpected;
+
+                            //double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + _eachMonthData.Loss_factor / 100) * (1 - (_eachMonthData.alpha / 100 * (T_cell - _eachMonthData.tstc))) * (_temp1mindata.avg_poa / 1000);
+                            //MonthlyPexp += localPexpected;
+
                             string updateQry = " update `uploading_pyranometer_15_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.date_time + "' ";
                             try
                             {

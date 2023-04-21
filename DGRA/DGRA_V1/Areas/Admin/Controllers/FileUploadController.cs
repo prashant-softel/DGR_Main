@@ -4125,6 +4125,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         bool skipRow = false;
                         rowNumber++;
+                        //this will be onm_wtgs.
+                        //Need to make new hash table for WTGs and onm_WTGs.
+
                         addUnit.WTGs = dr["WTGs"] is DBNull || string.IsNullOrEmpty((string)dr["WTGs"]) ? "Nil" : (string)(dr["WTGs"]);
                         if (addUnit.WTGs == "" || addUnit.WTGs == null)
                         {
@@ -4179,14 +4182,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (!isActivePowerEmpty)
                         {
                             addUnit.avg_active_power = Convert.ToDouble(dr["Actual_Avg_Active_Power_10M"]);
+                            //Remove Status column from here and database.
                             addUnit.status = "Available";
                             addUnit.status_code = 0;
+                            //Change to 1;
                         }
 
                         if (isActivePowerEmpty)
                         {
                             addUnit.status = "Missing";
                             addUnit.status_code = 1;
+                            
                         }
 
                         addUnit.avg_wind_speed = dr["Actual_Avg_Wind_Speed_10M"] is DBNull || string.IsNullOrEmpty((string)dr["Actual_Avg_Wind_Speed_10M"]) ? 0 : Convert.ToDouble(dr["Actual_Avg_Wind_Speed_10M"]);
@@ -4204,11 +4210,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMLData,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindTMLData: " + e.Message + ",");
+                        ErrorLog(",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.Message + ",");
                         errorCount++;
                     }
                 }
-                if (!(errorCount > 0))
+                if (errorCount == 0)
                 {
                     m_ErrorLog.SetInformation(",Wind TML Data Validation SuccessFul,");
                     var json = JsonConvert.SerializeObject(addSet);
