@@ -711,10 +711,10 @@
 
 
                     if (wind_lastday_energy_target != 0) {
-                        lastVariant_energy = ((wind_lastday_energy - wind_lastday_energy_target) /wind_lastday_energy_target) * 100;
+                        lastVariant_energy = (((wind_lastday_energy / 1000).toFixed(2) - (wind_lastday_energy_target / 1000).toFixed(2)) / (wind_lastday_energy_target / 1000).toFixed(2)) * 100;
                     }
                     if (wind_lastday_wspeed_target != 0) {
-                        lastVariant_wspeed = ((wind_lastday_wspeed - wind_lastday_wspeed_target) / wind_lastday_wspeed_target) * 100;
+                        lastVariant_wspeed = ((wind_lastday_wspeed.toFixed(2) - wind_lastday_wspeed_target.toFixed(2)) / wind_lastday_wspeed_target.toFixed(2)) * 100;
                     }
 
                     document.getElementById("lastday_enrgy").innerHTML = "<b>" + (wind_lastday_energy / 1000).toFixed(1) + "</b>";
@@ -801,10 +801,10 @@
                     //console.log(wind_monthly_wspeed_target);
 
                     if (wind_monthly_energy_target != 0) {
-                        monthly_var_energy = (((wind_monthly_energy / 1000000).toFixed(1) - (wind_monthly_energy_target / 1000000).toFixed(1)) / (wind_monthly_energy_target / 1000000).toFixed(1))*100;
+                        monthly_var_energy = (((wind_monthly_energy / 1000000).toFixed(2) - (wind_monthly_energy_target / 1000000).toFixed(2)) / (wind_monthly_energy_target / 1000000).toFixed(2))*100;
                     }
                     if (wind_monthly_wspeed_target != 0) {
-                        monthly_var_wspeed = ((wind_monthly_wspeed.toFixed(1) - wind_monthly_wspeed_target.toFixed(1)) / wind_monthly_wspeed_target.toFixed(1))* 100;
+                        monthly_var_wspeed = ((wind_monthly_wspeed.toFixed(2) - wind_monthly_wspeed_target.toFixed(2)) / wind_monthly_wspeed_target.toFixed(2))* 100;
                     }
 
                     document.getElementById("manthly_enrgy").innerHTML = "<b>" + (wind_monthly_energy / 1000000).toFixed(1) + "</b>";
@@ -886,10 +886,10 @@
                     //console.log(wind_yearly_wspeed_target);
 
                     if (wind_yearly_energy_target != 0) {
-                        yearly_var_energy = (((wind_yearly_energy / 1000000).toFixed(1) - (wind_yearly_energy_target / 1000000).toFixed(1)) / (wind_yearly_energy_target / 1000000).toFixed(1)) * 100;
+                        yearly_var_energy = (((wind_yearly_energy / 1000000).toFixed(2) - (wind_yearly_energy_target / 1000000).toFixed(2)) / (wind_yearly_energy_target / 1000000).toFixed(2)) * 100;
                     }
                     if (wind_yearly_wspeed_target != 0) {
-                        yearly_var_wspeed = ((wind_yearly_wspeed.toFixed(1) - wind_yearly_wspeed_target.toFixed(1)) / wind_yearly_wspeed_target.toFixed(1)) * 100;
+                        yearly_var_wspeed = ((wind_yearly_wspeed.toFixed(2) - wind_yearly_wspeed_target.toFixed(2)) / wind_yearly_wspeed_target.toFixed(2)) * 100;
                     }
                     //console.log(result);
                     document.getElementById("yearly_enrgy").innerHTML = "<b>" + (wind_yearly_energy / 1000000).toFixed(1) + "</b>";
@@ -966,10 +966,10 @@
                         lastday_ir_tar = total_capTarIr / total_capacity;
                     }
                     if (lastday_energy_tar != 0) {
-                        lastday_var_energy = (((lastday_energy / 1000).toFixed(1) - (lastday_energy_tar / 1000).toFixed(1)) / (lastday_energy_tar / 1000).toFixed(1)) * 100;
+                        lastday_var_energy = (((lastday_energy / 1000).toFixed(2) - (lastday_energy_tar / 1000).toFixed(2)) / (lastday_energy_tar / 1000).toFixed(2)) * 100;
                     }
                     if (lastday_ir_tar != 0) {
-                        lastday_var_ir = ((lastday_ir.toFixed(1) - lastday_ir_tar.toFixed(1)) / lastday_ir_tar.toFixed(1)) * 100;
+                        lastday_var_ir = ((lastday_ir.toFixed(2) - lastday_ir_tar.toFixed(2)) / lastday_ir_tar.toFixed(2)) * 100;
                     }
 
                     console.log("Actuel IR" + lastday_ir);
@@ -1052,10 +1052,10 @@
                         monthly_ir_tar = total_capTarIr / total_capacity;
                     }
                     if (monthly_energy_tar != 0) {
-                        monthly_var_energy = (((monthly_energy / 1000000).toFixed(1) - (monthly_energy_tar / 1000000).toFixed(1)) /(monthly_energy_tar / 1000000).toFixed(1)) * 100;
+                        monthly_var_energy = (((monthly_energy / 1000000).toFixed(2) - (monthly_energy_tar / 1000000).toFixed(2)) /(monthly_energy_tar / 1000000).toFixed(2)) * 100;
                     }
                     if (monthly_ir_tar != 0) {
-                        monthly_var_ir = ((monthly_ir.toFixed(1) - monthly_ir_tar.toFixed(1)) / monthly_ir_tar.toFixed(1)) * 100;
+                        monthly_var_ir = ((monthly_ir.toFixed(2) - monthly_ir_tar.toFixed(2)) / monthly_ir_tar.toFixed(2)) * 100;
                     }
 
                     document.getElementById("monthly_solar_enrgy").innerHTML = "<b>" + (monthly_energy/ 1000000).toFixed(1) + "</b>";
@@ -1128,10 +1128,10 @@
                         yeary_ir_tar = total_capTarIr / total_capacity;
                     }
                     if (yearly_energy_tar != 0) {
-                        yearly_var_energy = (((yearly_energy / 1000000).toFixed(1) - (yearly_energy_tar / 1000000).toFixed(1)) / (yearly_energy_tar / 1000000).toFixed(1)) * 100;
+                        yearly_var_energy = (((yearly_energy / 1000000).toFixed(2) - (yearly_energy_tar / 1000000).toFixed(2)) / (yearly_energy_tar / 1000000).toFixed(2)) * 100;
                     }
                     if (yeary_ir_tar != 0) {
-                        yearly_var_ir = ((yeary_ir.toFixed(1) - yeary_ir_tar.toFixed(1)) / yeary_ir_tar.toFixed(1)) * 100;
+                        yearly_var_ir = ((yeary_ir.toFixed(2) - yeary_ir_tar.toFixed(2)) / yeary_ir_tar.toFixed(2)) * 100;
                     }
                     document.getElementById("yearly_solar_enrgy").innerHTML = "<b>" + ((yearly_energy) / 1000000).toFixed(1) + "</b>";
                     document.getElementById("yearly_ir").innerHTML = "<b>" + (yeary_ir).toFixed(1) + "</b>";
