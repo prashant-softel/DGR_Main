@@ -8,14 +8,17 @@
 }
 
 @{ 
-    List<EmailReportTimings> list = new List<EmailReportTimings>();
-    var obj = new EmailReportTimings();
+    List<EmailReportTimingsLog> list = new List<EmailReportTimingsLog>();
+    var obj = new EmailReportTimingsLog();
     list = obj.GetTimeList();
     string dailyTime = @HttpContextAccessor.HttpContext.Session.GetString("DailyReportTime");
     string windWeeklyTime = @HttpContextAccessor.HttpContext.Session.GetString("WindWeeklyTime");
     string solarWeeklyTime = @HttpContextAccessor.HttpContext.Session.GetString("SolarWeeklyTime");
-    string windWeeklyDay = @HttpContextAccessor.HttpContext.Session.GetString("WindWeeklyDay"); ;
-    string solarWeeklyDay = @HttpContextAccessor.HttpContext.Session.GetString("SolarWeeklyDay"); ;
+    string windWeeklyDay = @HttpContextAccessor.HttpContext.Session.GetString("WindWeeklyDay");
+    string solarWeeklyDay = @HttpContextAccessor.HttpContext.Session.GetString("SolarWeeklyDay") ;
+    string username = @HttpContextAccessor.HttpContext.Session.GetString("DisplayName");
+    string role = @HttpContextAccessor.HttpContext.Session.GetString("role");
+    string user_id = @HttpContextAccessor.HttpContext.Session.GetString("userid");
 }
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -37,6 +40,12 @@
 </style>
 
 <div class="content-wrapper">
+            <div class="card-header">
+                <h3 class="card-title  text-center">Email Report Time</h3>
+            </div>
+                <div style="display: flex; position: fixed; z-index: 9999;">
+                    <div id="loader" class="loader center" style="display:none; "></div>
+                </div>
 
     <section class="content-header">
     </section>
@@ -44,9 +53,6 @@
 
     <section class="content">
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title  text-center">Email Report Time</h3>
-            </div>
             <div class="card-body">
                 <div class="" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 40%">
                     <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem">
@@ -163,6 +169,13 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
+    var windWeekDay = "";
+    var solarWeekDay = "";
+    var loader = document.getElementById("loader").style;
+    var username = "@username";
+    var role = "@role";
+    var user_id = parseInt("@user_id", 10);
+
     window.onload = function (){
         GetEmailTime();
     }
@@ -170,8 +183,6 @@
         console.log("Inside GetEmialTime function.");
         
     }
-    var windWeekDay = "";
-    var solarWeekDay = "";
     function windDaySelect() {
         windWeekDay = document.getElementById("windweekday").value;
         console.log("Wind Week Day Selected is  : " + windWeekDay);
@@ -181,56 +192,59 @@
         console.log("Solar Week Day Selected is  : " + solarWeekDay);
     }
     function Update() {
-
+        if (loader.display == "none") {
+            loader.display = "flex";
+        }
+        if (loader.display == "flex") {
+            loader.display = "flex";
+        }
         var dailytime = document.getElementById("dailyReport").value;
         var windWeeklyTime = document.getElementById("windWeeklyReport").value;
         var solarWeeklyTime = document.getElementById("solarWeeklyReport").value;
-        if (dailytime !== "") {
-            dailytime = dailytime;
-        } else {
-            dailytime =  "@dailyTime";
-        }
-        if (windWeeklyTime !== "") {
-            windWeeklyTime = windWeeklyTime;
-        } else {
-            windWeeklyTime = "@windWeeklyTime";
-        }
-        if (solarWeeklyTime !== "") {
-            solarWeeklyTime = solarWeeklyTime;
-        } else {
-            solarWeeklyTime = "@solarWeeklyTime";
-        }
-        if (windWeekDay !== "") {
-            windWeekDay = windWeekDay;
-        } else {
-            windWeekDay = "@windWeeklyDay";
-        }
-        if (solarWeekDay !== "") {
-            solarWeekDay = solarWeekDay;
-        } else {
-            solarWeekDay = "@solarWeeklyDay";
-        }
         if (dailytime === "" && windWeeklyTime === "" && solarWeeklyTime === "" && windWeekDay === "" && solarWeekDay === "") {
-            alert("Please enter data.");
-        }
-
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay,
-            //url: "/Home/WindNewUserRegister?fname=" + fname + "&useremail=" + useremail + "&role=" + role + "&created_on=" + created_on,
-            contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
-            datatype: "html",
-            success: function (result, status, xhr) {
-                console.log("hello result of api "+result);
-                if (result == 1) {
-                    alert("Updated successfully!");
-                    //location.href = "/Home/WindSiteUserMaster";
-                }
+            alert("Please enter data...!");
+        } else {
+            if (dailytime !== "") {
+                dailytime = dailytime;
+            } else {
+                dailytime =  "@dailyTime";
             }
-        });
+            if (windWeeklyTime !== "") {
+                windWeeklyTime = windWeeklyTime;
+            } else {
+                windWeeklyTime = "@windWeeklyTime";
+            }
+            if (solarWeeklyTime !== "") {
+                solarWeeklyTime = solarWeeklyTime;
+            } else {
+                solarWeeklyTime = "@solarWeeklyTime";
+            }
+            if (windWeekDay !== "") {
+                windWeekDay = windWeekDay;
+            } else {
+                windWeekDay = "@windWeeklyDay";
+            }
+            if (solarWeekDay !== "") {
+                solarWeekDay = solarWeekDay;
+            } else {
+                solarWeekDay = "@solarWeeklyDay";
+            }
+            console.log("username : ", username, " role : ", role, " user_id : ", user_id);
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    console.log("hello result of api "+result);
+                    if (result == 1) {
+                        loader.display = "none";
+                        alert("Updated successfully!");
+                        location.href = "/Home/Dashbord";
+                    }
+                }
+            });
+        }
     }
-
-
 
 </script>

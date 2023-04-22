@@ -466,19 +466,19 @@ namespace DGRA_V1.Controllers
 
         }
         [TypeFilter(typeof(SessionValidation))]
-        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday)
+        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string username, int user_id, string role)
         {
             var line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/EmailReportTimeChangeSetting?dailytime=" + dailytime + "&windweeklytime=" + windweeklytime + "&solarweeklytime=" + solarweeklytime + "&windweekday=" + windweekday + "&solarweekday=" + solarweekday+ "";
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/EmailReportTimeChangeSetting?dailytime=" + dailytime + "&windweeklytime=" + windweeklytime + "&solarweeklytime=" + solarweeklytime + "&windweekday=" + windweekday + "&solarweekday=" + solarweekday+ "&username=" + username + "&user_id=" + user_id + "&role=" + role;
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     Stream receiveStream = response.GetResponseStream();
                     using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                     {
-                        //line = readStream.ReadToEnd().Trim();
+                        line = readStream.ReadToEnd().Trim();
                     }
                 }
             }
@@ -496,7 +496,7 @@ namespace DGRA_V1.Controllers
             var line = "";
             try
             {
-                EmailReportTimings emailReportTimingsList = new EmailReportTimings();
+                EmailReportTimingsLog emailReportTimingsList = new EmailReportTimingsLog();
                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/GetEmailTime";
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
@@ -505,18 +505,17 @@ namespace DGRA_V1.Controllers
                     using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                     {
                         line = readStream.ReadToEnd().Trim();
-                        emailReportTimingsList.time_list = JsonConvert.DeserializeObject<List<EmailReportTimings>>(line);
-                        string daily = emailReportTimingsList.time_list[0].dailyTime;
-                        string windWeekly = emailReportTimingsList.time_list[0].windWeeklyTimw;
-                        string solarWeekly = emailReportTimingsList.time_list[0].solarWeeklyTime;
-                        string windWeekDay = emailReportTimingsList.time_list[0].windweekday;
-                        string solarWeekDay = emailReportTimingsList.time_list[0].solarweekday;
+                        emailReportTimingsList.time_list = JsonConvert.DeserializeObject<List<EmailReportTimingsLog>>(line);
+                        string daily = emailReportTimingsList.time_list[0].daily_report;
+                        string windWeekly = emailReportTimingsList.time_list[0].wind_weekly;
+                        string solarWeekly = emailReportTimingsList.time_list[0].solar_weekly;
+                        string windWeekDay = emailReportTimingsList.time_list[0].wind_weekly_day;
+                        string solarWeekDay = emailReportTimingsList.time_list[0].solar_weekly_day;
                         HttpContext.Session.SetString("DailyReportTime", daily.ToString());
                         HttpContext.Session.SetString("WindWeeklyTime", windWeekly.ToString());
                         HttpContext.Session.SetString("SolarWeeklyTime", solarWeekly.ToString());
                         HttpContext.Session.SetString("WindWeeklyDay", windWeekDay.ToString());
                         HttpContext.Session.SetString("SolarWeeklyDay", solarWeekDay.ToString());
-                        //res = response.Content.ReadAsStringAsync().Result;  
                     }
                 }
             }
