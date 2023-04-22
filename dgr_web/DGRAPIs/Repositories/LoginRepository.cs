@@ -154,10 +154,11 @@ namespace DGRAPIs.Repositories
             
         }
 
-        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay)
+        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay, string username, int user_id, string role)
         {
             
             int finalRes = 1;
+            int insertTimeDataRes = 0;
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             var configurationBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             var configuration = configurationBuilder.Build();
@@ -235,23 +236,37 @@ namespace DGRAPIs.Repositories
                     finalRes = 0;
                     return finalRes;
             }
-                
+            if(finalRes == 1)
+            {
+                try
+                {
+                    string insertTimingsDataQry = "INSERT INTO email_report_timings_log (daily_report, wind_weekly, solar_weekly, wind_weekly_day, solar_weekly_day, updated_by_name, updated_by_id, updated_by_role) VALUES ( '" + dailytime + "', '" + windweeklytime + "', '" + solarweeklytime + "', '" + windWeekDay + "', '" + solarWeekDay + "', '" + username + "', " + user_id + ", '" + role + "' );" ;
+                    insertTimeDataRes = await Context.ExecuteNonQry<int>(insertTimingsDataQry).ConfigureAwait(false);
+
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while inserting data into email_report_timings_log table : due to " + msg);
+                    finalRes = 0;
+                }
+            }               
 
             return finalRes;
 
         }
         //GetEmailTime
-        internal async Task<List<EmailReportTimings>> EmailReportTimings()
+        internal async Task<List<EmailReportTimingsLog>> EmailReportTimings()
         {
-            List<EmailReportTimings> EmailReportTimeList = new List<EmailReportTimings>();
+            /*
             ConfigurationManager.RefreshSection("appSettings");
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
+            List<EmailReportTimings> EmailReportTimeList = new List<EmailReportTimings>();
             string dailyTime = MyConfig.GetValue<string>("Timer:DailyReportTime");
             string windWeeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
             string solarWeeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar");
             string windWeekDay = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeek");
-            string solarWeekDay = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeekSolar");
-
+            string solarWeekDay = MyConfig.GetValue<string>("Timer:WeeklyReportDayOfWeekSolar");            
             EmailReportTimings emailReportTimings = new EmailReportTimings()
             {
                 dailyTime = dailyTime,
@@ -261,15 +276,25 @@ namespace DGRAPIs.Repositories
                 solarWeekDay = solarWeekDay
             };
             EmailReportTimeList.Add(emailReportTimings);
-            return EmailReportTimeList;
+            */
+
+            List<EmailReportTimingsLog> TimeRecordList = new List<EmailReportTimingsLog>();
+            string fetchTimerecordQry = "SELECT * FROM email_report_timings_log ORDER BY email_report_timings_log_id DESC LIMIT 1;";
+            try
+            {
+                TimeRecordList = await Context.GetData<EmailReportTimingsLog>(fetchTimerecordQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Error while fetching records from email_report_timings_log table. due to : " + msg );
+            }
+            return TimeRecordList;
         }
         internal async Task<int> UpdatePassword(int loginid, string updatepass)
         {
             string qry = "update login set password=MD5('" + updatepass + "') where login_id=" + loginid + "";
-            //return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
-           // string a = qry;
             return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
-
         }
 
         internal async Task<int> DeactivateUser(int loginid)

@@ -14,4 +14,17 @@ namespace DGRAPIs.Models
         public string solarWeekDay { get; set; }
 
     }
+    public class EmailReportTimingsLog
+    {
+        public int email_report_timings_log_id { get; set; }
+        public string daily_report { get; set; }
+        public string wind_weekly { get; set; }
+        public string solar_weekly { get; set; }
+        public string wind_weekly_day { get; set; }
+        public string solar_weekly_day { get; set; }
+        public string updated_by_name { get; set; }
+        public int updated_by_id { get; set; }
+        public string updated_by_role { get; set; }
+        public dynamic created_on { get; set; }
+    }
 }
