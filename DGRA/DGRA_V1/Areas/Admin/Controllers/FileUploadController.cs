@@ -1264,7 +1264,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(timeValidation(addUnit.to_bd, "To", rowNumber));
 
                         addUnit.total_bd = validationObject.breakDownCalc(addUnit.from_bd, addUnit.to_bd, rowNumber);
-                        addUnit.bd_remarks = dr["BDRemarks"] is DBNull || string.IsNullOrEmpty((string)dr["BDRemarks"]) ? "Nil" : Convert.ToString(dr["BDRemarks"]);
+                        string remarks = dr["BDRemarks"] is DBNull || string.IsNullOrEmpty((string)dr["BDRemarks"]) ? "Nil" : Convert.ToString(dr["BDRemarks"]);
+                        remarks = validateAndCleanSpChar(rowNumber, "BDRemarks", remarks);
+                        addUnit.bd_remarks = remarks;
                         addUnit.bd_type = dr["BDType"] is DBNull || string.IsNullOrEmpty((string)dr["BDType"]) ? "Nil" : Convert.ToString(dr["BDType"]);
                         addUnit.bd_type_id = Convert.ToInt32(breakdownType[addUnit.bd_type]);//B
                         errorFlag.Add(bdTypeValidation(addUnit.bd_type, rowNumber));
@@ -1398,7 +1400,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.stop_from = Convert.ToDateTime(dr["Stop From"]).ToString("HH:mm:ss");
                         addUnit.stop_to = Convert.ToDateTime(dr["Stop To"]).ToString("HH:mm:ss");
                         addUnit.total_stop = ValidationObject.breakDownCalc(addUnit.stop_from, addUnit.stop_to);
-                        addUnit.error_description = Convert.ToString(dr["Error description"]);
+                        string errorDescription = Convert.ToString(dr["Error description"]);
+                        errorDescription = validateAndCleanSpChar(rowNumber, "Error Description", errorDescription);
+                        addUnit.error_description = errorDescription;
                         string sActionTaken = dr["Action Taken"] is DBNull || string.IsNullOrEmpty((string)dr["Action Taken"]) ? "Nil" : Convert.ToString(dr["Action Taken"]);
                         sActionTaken = validateAndCleanSpChar(rowNumber, "Action Taken", sActionTaken);
                         addUnit.action_taken = sActionTaken;
@@ -4382,15 +4386,15 @@ namespace DGRA_V1.Areas.admin.Controllers
             foreach (char c in charsToRemove)
             {
                 str = str.Replace(c.ToString(), string.Empty);
-               m_ErrorLog.SetInformation(",Row <" + rowNumber + "> column <" + colName + "> : value <" + c.ToString() + "> removed from string,");
             }
+            //m_ErrorLog.SetInformation(",Row <" + rowNumber + "> column <" + colName + "> : special character removed from string,");
 
             return str;
         }
         public string validateAndCleanSpChar(long rowNumber, string colName, string sActionTaken)
         {
             string retValue = "";
-            List<char> charsToRemove = new List<char>() { '\'', '/', '?', '@', '-', '+', '\\', ')', '('  };
+            List<char> charsToRemove = new List<char>() { '\'', '/', '\\', ')', '('  };
             retValue = Filter(rowNumber, colName, sActionTaken, charsToRemove);
             return retValue;
         }
