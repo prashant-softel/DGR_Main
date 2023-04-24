@@ -1024,7 +1024,23 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //ImportWindReferenceWtgs
+        [Route("ImportWindReferenceWtgs")]
+        [HttpPost]
+        public async Task<IActionResult> ImportWindReferenceWtgs(List<ImportWindReferenceWtgs> ImportWindReferenceWtgs)
+        {
+            try
+            {
+                var data = await _dgrBs.ImportWindReferenceWtgs(ImportWindReferenceWtgs);
+                return Ok(data);
 
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         /*[Route("InsertDailyJMR")]
          [HttpPost]
          public async Task<IActionResult> InsertDailyJMR(List<WindDailyJMR> windDailyJMR)

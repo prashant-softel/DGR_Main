@@ -3776,7 +3776,734 @@ bd_remarks, action_taken
         ///    FinalResult = 8 : Completed till updating all breakdown column.
         ///    FinalResult = 9 : Completed till updating all breakdown code column.
         /// </returns>
+        /// 
+
+
         internal async Task<int> InsertWindTMLData(List<InsertWindTMLData> set)
+        {
+            int finalResult = 0;
+            string date = "";
+            int site_id = 0;
+            if(set.Count > 0)
+            {
+                date = set[0].date;
+                site_id = set[0].site_id;
+                string insertWinsSpeedTmdQry = "INSERT INTO windspeed_tmd (site, site_id, wtg, wtg_id, tmd_date, date, from_time, to_time, windspeed ) VALUES ";
+                string insertWindSpeedTmdValues = "";
+                string deleteWindSpeedTmdQry = "DELETE FROM windspeed_tmd WHERE date = '" + date + "' AND site_id = " + site_id;
+                int insertWindSpeedTmdRes = 0;
+                int deleteWindSpeedTmdRes = 0;
+                int insertMainWindSpeedtmdRes = 0;
+                int UpdateManualBdForTMLDataRes = 0;
+                int UpdateReconWSAndOtherRes = 0;
+                string yearMonthDate = "";
+
+                try
+                {
+                    deleteWindSpeedTmdRes = await Context.ExecuteNonQry<int>(deleteWindSpeedTmdQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while deleting records from windspeed tmd table. Due to : " + msg);
+                    return finalResult;
+                }
+                int qryCounter = 0;
+                int count = 0;
+                foreach(var unit in set)
+                {
+                    yearMonthDate = Convert.ToDateTime(unit.date).ToString("yyyy-MM-dd");
+                    insertWindSpeedTmdValues += "('" + unit.site + "', " + unit.site_id + ", '" + unit.WTGs + "', " + unit.wtg_id + ", '" + yearMonthDate + "', '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', " + unit.avg_wind_speed + " ),";
+
+                    if(qryCounter == 10000)
+                    {
+                        insertWinsSpeedTmdQry += insertWindSpeedTmdValues;
+                        try
+                        {
+                            if(insertWindSpeedTmdValues != "")
+                            {
+                                insertWindSpeedTmdRes = await Context.ExecuteNonQry<int>(insertWinsSpeedTmdQry.Substring(0, (insertWinsSpeedTmdQry.Length - 1)) + ";").ConfigureAwait(false);
+                                if(insertWindSpeedTmdRes > 0)
+                                {
+                                    finalResult = 2;
+                                    API_InformationLog("Insert into windSpeed tmd Data table successful. counter count : " + qryCounter);
+                                    qryCounter = 0;
+                                }
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            string msg = e.ToString();
+                            API_ErrorLog("Exception while inserting tmd data into windspeed tmd table. Due to : " + msg );
+                            return finalResult;
+                        }
+                    }
+                    count++;
+                }
+                if(qryCounter < 10000)
+                {
+                    insertWinsSpeedTmdQry += insertWindSpeedTmdValues;
+                    try
+                    {
+                        if (insertWindSpeedTmdValues != "")
+                        {
+                            insertWindSpeedTmdRes = await Context.ExecuteNonQry<int>(insertWinsSpeedTmdQry.Substring(0, (insertWinsSpeedTmdQry.Length - 1)) + ";").ConfigureAwait(false);
+                            if (insertWindSpeedTmdRes > 0)
+                            {
+                                finalResult = 2;
+                                API_InformationLog("Insert into windSpeed tmd Data table successful. counter count/no. of rows : " + qryCounter + " / " + set.Count);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = e.ToString();
+                        API_ErrorLog("Exception while inserting tmd data into windspeed tmd table. Due to : " + msg);
+                        return finalResult;
+                    }
+                }
+                if (count == set.Count)
+                {
+                    API_InformationLog("Inserted data into table . counter count/no. of rows : " + count + " / " + set.Count);
+                }
+                else
+                {
+                    API_ErrorLog("Failed to insert data into table : counter count/no. of rows : " + count + " / " + set.Count);
+                }
+
+                if(finalResult == 2)
+                {
+                    insertMainWindSpeedtmdRes = await InsertMainWindSpeedTMD(set, date, site_id);
+                }
+                if(insertMainWindSpeedtmdRes == 8)
+                {
+                    finalResult = 3;
+                    UpdateManualBdForTMLDataRes = await UpdateManualBdForTMLData(set, date, site_id);
+                }
+                if(UpdateManualBdForTMLDataRes == 2)
+                {
+                    finalResult = 4;
+                    UpdateReconWSAndOtherRes = await UpdateReconAndOther(date, site_id);
+                }
+                if(UpdateReconWSAndOtherRes == 8)
+                {
+                    finalResult = 5;
+                }
+            }
+
+            //finalResult = 0 : Failed Completely.
+            //finalResult = 1 : Deleted Records from TML data table.
+            //finalResult = 2 : Inserted records in WindSpeed table for raw data.
+            //finalResult = 3 : Inserted Data into main wind Speed table.
+            //finalResult = 4 : Updated manual_bd Column in uploading_file_tmr_data table.
+            //finalResult = 5 : Updated further calculations columns.
+
+            return finalResult;
+        }
+        
+        
+        //Calculation for inserting data into windspeed TMD table.
+        internal async Task<int> InsertMainWindSpeedTMD(List<InsertWindTMLData> set, string date, int site_id)
+        {
+            int finalResult = 0;
+            string updateWindspeedTMDQry = "INSERT INTO uploading_file_tmr_data (WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, restructive_WTG, date, from_time, to_time, status, status_code) VALUES ";
+            string deleteFromTMDQry = "DELETE FROM uploading_file_tmr_data WHERE date = '" + date + "' AND site_id = " + site_id;
+            string insertValues = "";
+            int updateWindspeedTMDRes = 0;
+            int deleteTmdDataRes = 0;
+            int fetchReferenceWtgRes = 0;
+            Hashtable ReferenceWtgHash = new Hashtable();
+            List<ImportWindReferenceWtgs> referenceList = new List<ImportWindReferenceWtgs>();
+            string fetchReferenceQry = "SELECT * FROM tml_reference_wtgs WHERE site_id = " + site_id + ";";
+            try
+            {
+                deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
+                finalResult = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Exception while deleting records from TMD table. Due to : " + msg);
+                return finalResult;
+            }
+            try
+            {
+                referenceList = await Context.GetData<ImportWindReferenceWtgs>(fetchReferenceQry).ConfigureAwait(false);
+                fetchReferenceWtgRes = referenceList.Count;
+                finalResult = 2;
+            }
+            catch (Exception e)
+            {
+                string msg = e.ToString();
+                API_ErrorLog("Exception while fetching records fo rreference wtgs list form tml_reference_wtgs table " + msg);
+                return finalResult;
+            }
+            if (fetchReferenceWtgRes > 0)
+            {
+                try
+                {
+                    foreach (var unit in referenceList)
+                    {
+                        string referenceWtgs = "'" + unit.ref1 + "', '" + unit.ref2 + "', '" + unit.ref3 + "'";
+                        ReferenceWtgHash.Add(unit.wtg, referenceWtgs);
+                        finalResult = 3;
+                    }
+                    finalResult = 3;
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Error while adding data into hash table of reference wtgs. Due to : " + msg);
+                    return finalResult;
+                }
+            }
+            
+            int count = 0;
+            string loopDate = "";
+            int qryCounter = 0;
+
+            foreach (var unit in set)
+            {
+                if (count == 0)
+                {
+                    loopDate = unit.date;
+                }
+                if (count >= 0)
+                {
+                    if (loopDate == date)
+                    {
+                        string Tempdate = Convert.ToDateTime(unit.date).ToString("yyyy-MM-dd");
+                        if (unit.avg_wind_speed > 0 && unit.status_code == 0)
+                        {
+                            unit.avg_wind_speed = unit.avg_wind_speed;
+                        }
+                        if (unit.avg_wind_speed == 0)
+                        {
+                            string referenceWtgs = "";
+                            referenceWtgs = ReferenceWtgHash.ContainsKey(unit.WTGs) ? Convert.ToString(ReferenceWtgHash[unit.WTGs]) : "";
+                            //SELECT AVG(windspeed) as windspeed FROM windspeed_tmd WHERE site_id = 217 AND date = '14-Mar-23' AND windspeed > 0 AND to_time = '00:00:00' AND wtg IN('BD-02', 'BD-03', 'BD-04');
+                            string ReferenceWSQry = "SELECT AVG(windspeed) as windspeed FROM windspeed_tmd WHERE site_id = " + site_id + " AND date = '" + date + "' AND windspeed > 0 AND to_time = '" + unit.to_time + "' AND wtg IN (" + referenceWtgs + ");";
+                            try
+                            {
+                                List<WindSpeedData> avgeRefWindSpeed = await Context.GetData<WindSpeedData>(ReferenceWSQry).ConfigureAwait(false);
+                                unit.avg_wind_speed = avgeRefWindSpeed[0].windspeed;
+                                finalResult = 4;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.ToString();
+                                API_ErrorLog("Exception while getting average of reference WTGS : " + referenceWtgs + " due to : " + msg);
+                            }
+                        }
+                        if (unit.avg_wind_speed == 0)
+                        {
+                            string averageTmlQry = "SELECT AVG(windspeed) as windspeed FROM windspeed_tmd WHERE site_id = " + site_id + " AND date = '" + date + "' AND to_time = '" + unit.to_time + "' AND windspeed IS NOT NULL AND windspeed > 0";
+                            try
+                            {
+                                List<WindSpeedData> avgAllField = await Context.GetData<WindSpeedData>(averageTmlQry).ConfigureAwait(false);
+                                unit.avg_wind_speed = avgAllField[0].windspeed;
+                                finalResult = 5;
+                            }
+                            
+                            catch (Exception e)
+                            {
+                                string msg = e.ToString();
+                                API_ErrorLog("Exception while getting all windfarm average from TML data table Due to  : " + msg);
+                                return finalResult;
+                            }
+                        }
+                        if (unit.avg_wind_speed == 0)
+                        {
+                            string averageTmlQry = "";
+                            try
+                            {
+                                TimeSpan totimeSpan = TimeSpan.Parse(unit.to_time.ToString());
+                                TimeSpan toTime = totimeSpan.Add(TimeSpan.FromHours(5));
+                                TimeSpan fromtimeSpan = TimeSpan.Parse(unit.from_time.ToString());
+                                TimeSpan fromTime = fromtimeSpan.Subtract(TimeSpan.FromHours(5));
+                                finalResult = 6;
+                                averageTmlQry = "SELECT AVG(windspeed) as windspeed FROM windspeed_tmd WHERE site_id = " + site_id + " AND date = '" + date + "' AND to_time BETWEEN '" + toTime + "' AND '" + fromTime + "' AND wtg = '" + unit.WTGs + "' AND windspeed > 0 ;";
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.ToString();
+                                API_ErrorLog("Exception while adding and subtracting time. Due to : " + msg);
+                                return finalResult;
+                            }
+
+                            try
+                            {
+                                List<WindSpeedData> avgFivePrevNext = await Context.GetData<WindSpeedData>(averageTmlQry).ConfigureAwait(false);
+                                unit.avg_wind_speed = avgFivePrevNext[0].windspeed;
+                                finalResult = 7;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.ToString();
+                                API_ErrorLog("Error while fetching average of five hrs before and next, due to : " + msg);
+                                return finalResult;
+                            }
+                        }
+
+                        if(unit.status_code == 0)
+                        {
+                            insertValues += "('" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
+                        }
+                        if(unit.status_code == 1)
+                        {
+                            insertValues += "('" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', NULL, " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
+                        }
+
+                        if(qryCounter == 10000)
+                        {
+                            if (insertValues != "")
+                            {
+                                updateWindspeedTMDQry += insertValues;
+                                try
+                                {
+                                    updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry.Substring(0, (updateWindspeedTMDQry.Length - 1)) + " ;").ConfigureAwait(false);
+                                    finalResult = 8;
+                                    API_InformationLog("Inserted values into uploading_file_tmr_data  counter : " + qryCounter);
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = e.ToString();
+                                    API_ErrorLog("Error while updaating value to Windspeed TMD table . Due to  : " + msg);
+                                    return finalResult;
+                                }
+                            }
+                            qryCounter = 0;
+                        }
+                    }
+                    else
+                    {
+                        //break;
+                    }
+                }
+                count++;
+                qryCounter++;
+            }
+
+            if(qryCounter < 10000)
+            {
+                if (insertValues != "")
+                {
+                    updateWindspeedTMDQry += insertValues;
+                    try
+                    {
+                        updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry.Substring(0, (updateWindspeedTMDQry.Length - 1)) + " ;").ConfigureAwait(false);
+                        finalResult = 8;
+                        API_InformationLog("Inserted values into uploading_file_tmr_data  counter/no. of rows : " + qryCounter + " / " + set.Count);
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = e.ToString();
+                        API_ErrorLog("Error while updaating value to Windspeed TMD table . Due to  : " + msg);
+                        return finalResult;
+                    }
+                }
+            }
+
+            if (count == set.Count)
+            {
+                API_InformationLog("Inserted all data into uploading_file_tmr_data table : counter/no. of rows : " + count + " / " + qryCounter + " ");
+            }
+            else
+            {
+                API_ErrorLog("Failed to insert all data into uploading_file_tmr_data table : counter/no. of rows : " + count + " / " + qryCounter + " ");
+            }
+            //finalResult = 0 : Failed completely.
+            //finalResult = 1 : Deleted previous data.
+            //finalResult = 2 : Fetched data from reference wtg table for list.
+            //finalResult = 3 : Added data into hashtable of reference wtgs.
+            //finalResult = 4 : Received average of first condition of reference windspeed.
+            //finalResult = 5 : Received average of second condition of reference windspeed.
+            //finalResult = 6 : Converted time to 5 hrs ahead and behind for condition 3.
+            //finalResult = 7 : Fetched average of condition third of reference windspeed.
+            //finalResult = 8 : Inserted data into uploading_file_tmr_data table. 
+            return finalResult;
+        }
+        
+        //Get Manual Breakdown from uploading_file_breakdown table for TML_Data_Calculations.
+        internal async Task<int> UpdateManualBdForTMLData(List<InsertWindTMLData> set, string date, int site_id)
+        {
+            int finalRes = 0;
+            //14-Mar-23
+            string original_date = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+            List<WindDailyBreakdownReport> _WindBreakdownReport = new List<WindDailyBreakdownReport>();
+            string getQry = "SELECT * FROM uploading_file_breakdown WHERE date = '" + original_date + "' AND site_id = " + site_id + "; " ;
+            string addManualBdQry = "";
+            int updateManualRes = 0;
+            int updateManualRes2 = 0;
+            int windBDReportRows = 0;
+            int updateReconWindSpeedRes = 0;
+            int updateExpectedPowerRes = 0;
+            int updateTMLdataRes = 0;
+            int updateDeviationKwRes = 0;
+            int updateLossKwhRes = 0;
+            int updateAllBdRes = 0;
+            int updateAllBdIDRes = 0;
+            TimeSpan bdStopFrom = new TimeSpan();
+            TimeSpan bdStopTo = new TimeSpan();
+
+            try
+            {
+                _WindBreakdownReport = await Context.GetData<WindDailyBreakdownReport>(getQry).ConfigureAwait(false);
+                finalRes = 1;
+                windBDReportRows = _WindBreakdownReport.Count;
+            }
+            catch (Exception e)
+            {
+                string msg = e.Message;
+                API_ErrorLog("Error while fetching data from uploading_file_breakdown table due to Exception :" + msg);
+                return finalRes;
+            }
+            if (windBDReportRows > 0 )
+            {
+                foreach (var unit in _WindBreakdownReport)
+                {
+                    bdStopFrom = unit.stop_from;
+                    bdStopTo = unit.stop_to;
+
+                    //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00";
+                    //can add this in insert qry. check for this..
+                    addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
+                }
+                try
+                {
+                    string addManualBdQry2 = "UPDATE uploading_file_tmr_data SET manual_bd = '-' WHERE manual_bd IS NULL AND date = '" + date + "' AND site_id = " + site_id + ";";
+                    updateManualRes = await Context.ExecuteNonQry<int>(addManualBdQry).ConfigureAwait(false);
+                    updateManualRes2 = await Context.ExecuteNonQry<int>(addManualBdQry2).ConfigureAwait(false);
+                    finalRes = 2;
+                }
+                catch(Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception Caught while updating manual bd column : " + msg );
+                }
+                if(finalRes == 2)
+                {
+                   /* try
+                    {
+
+                        updateReconWindSpeedRes = await UpdateReconWindSpeedForTMLData(date, site_id);
+                        if(updateReconWindSpeedRes == 9)
+                        {
+                            finalRes = 3;
+                            updateExpectedPowerRes = await UpdateExpectedPower(date, site_id);
+                            if(updateExpectedPowerRes == 3)
+                            {
+                                finalRes = 4;
+                                updateDeviationKwRes = await UpdateDeviationKw(date, site_id);
+                            }
+                            if(updateDeviationKwRes == 1)
+                            {
+                                finalRes = 5;
+                                updateLossKwhRes = await UpdateLossKwh(date, site_id);
+                            }
+                            if(updateLossKwhRes == 1)
+                            {
+                                finalRes = 6;
+                                updateAllBdRes = await UpdateAllBreakdown(date, site_id);
+                            }
+                            if(updateAllBdRes == 8)
+                            {
+                                finalRes = 7;
+                                updateAllBdIDRes = await UpdateAllBDID(date, site_id);
+                            }
+                            if(updateAllBdIDRes == 2)
+                            {
+                                finalRes = 8;
+                            }
+
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        API_ErrorLog("Error whilel updating reconstructed windspeed column of table uploading_file_tmr_data. due to " + e.ToString());
+                        return finalRes;
+                    } */
+                }
+            }
+            //finalRes = 0 : Failed
+            //finalRes = 1 : Fetched Records from uploading_file_breakdown table.
+            //finalRes = 2 : Updated Manual Breakdown Column of table uploading_file_tmr_data.
+            // For old Method Till 8 For new till 2.
+            //finalRes = 3 : Successfully updated Reconstructed windspeed column of table uploading_file_tmr_data.
+            //finalRes = 4 : Successfully updated Expected Power column of table uploading_file_tmr_data.
+            //finalRes = 5 : Successfully updated Deviation kW column of table uploading_file_tmr_data.
+            //finalRes = 6 : Successfully updated Loss kW column of table uploading_file_tmr_data.
+            //finalRes = 7 : Successfully updated All Breakdown of table uploading_file_tmr_data.
+            //finalRes = 8 : Successfully updated All Breakdown Code of table uploading_file_tmr_data.
+            return finalRes;
+        }
+        internal async Task<int> UpdateReconAndOther(string date, int site_id)
+        {
+            int finalResult = 0;
+            string UpdateQry = "";
+            string updateQryValues = "";
+            int counter = 0;
+            int qryCounter = 0;
+            string fetchUpdatedTMLDataQry = "SELECT * FROM uploading_file_tmr_data WHERE date = '" + date + "' AND site_id = " + site_id + ";";
+            string fetchAverageWindSpeedQry = "SELECT AVG(avg_wind_speed) as avg_wind_speed FROM uploading_file_tmr_data WHERE date = '" + date + "' AND site_id = " + site_id + ";";
+            string getPowerCurveQry = "SELECT * FROM power_curve WHERE site_id = " + site_id;
+            List<InsertWindTMLData> UpdatedTMLDataList = new List<InsertWindTMLData>();
+            List<InsertWindPowerCurve> PowerCurveList = new List<InsertWindPowerCurve>();
+            Hashtable PowerCurveHash = new Hashtable();
+            int PowerCurveHashRows = 0;
+            int updateRes = 0;
+            int fetchUpdatedTMLDataRes = 0;
+            int fetchAverageWindSpeedRes = 0;
+            int getPowerCurveRes = 0;
+            double averageWindSpeed = 0;
+
+            try
+            {
+                UpdatedTMLDataList = await Context.GetData<InsertWindTMLData>(fetchUpdatedTMLDataQry).ConfigureAwait(false);
+                finalResult = 1;
+                fetchUpdatedTMLDataRes = UpdatedTMLDataList.Count;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching updated data after manual bd column update. due to  : " + e.ToString();
+                API_ErrorLog(msg);
+                return finalResult;
+            }
+            try
+            {
+                List<InsertWindTMLData> fetchAverage = await Context.GetData<InsertWindTMLData>(fetchAverageWindSpeedQry).ConfigureAwait(false);
+                fetchAverageWindSpeedRes = fetchAverage.Count;
+                averageWindSpeed = fetchAverage[0].avg_wind_speed;
+                finalResult = 2;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching average windspeed from tmd data table due to :" + e.ToString();
+                API_ErrorLog(msg);
+                return finalResult;
+            }
+            if(fetchUpdatedTMLDataRes > 0)
+            {
+                try
+                {
+                    PowerCurveList = await Context.GetData<InsertWindPowerCurve>(getPowerCurveQry).ConfigureAwait(false);
+                    getPowerCurveRes = PowerCurveList.Count;
+                    if (getPowerCurveRes > 0)
+                    {
+                        finalResult = 3;
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while getting power curve Data . Due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return finalResult;
+                }
+                if (getPowerCurveRes > 0)
+                {
+                    foreach (var uni in PowerCurveList)
+                    {
+                        try
+                        {
+                            PowerCurveHash.Add(uni.wind_speed, uni.active_power);
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while adding records to hashtable. due to " + e.ToString();
+                            API_ErrorLog(msg);
+                            return finalResult;
+                        }
+                        PowerCurveHashRows = PowerCurveHash.Count;
+                    }
+                }
+
+                foreach (var unit in UpdatedTMLDataList)
+                {
+                    //Calculate reconstructed windspeed.
+                    //Add try catch.
+                    //reconstructed wind speed condition 1.
+                    try
+                    {
+                        double reconstructedWS = 0;
+                        if(unit.avg_wind_speed < 3 && unit.avg_wind_speed > 0 && unit.manual_bd == "-")
+                        {
+                            reconstructedWS = averageWindSpeed;
+                        }
+                        //reconstructed windspeed condition 2
+                        else if(unit.avg_wind_speed == 0 && unit.manual_bd == "-")
+                        {
+                            reconstructedWS = averageWindSpeed;
+                        }
+                        else
+                        {
+                            reconstructedWS = unit.avg_wind_speed;
+                        }
+
+                        unit.recon_wind_speed =  reconstructedWS;
+                        finalResult = 2;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while calculating reconstructed windspeed. " + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalResult;
+                    }
+
+                    //Update Expected Power.
+                    try
+                    {
+                        if(PowerCurveHashRows > 0)
+                        {
+                            double windSpeed = Math.Round(unit.recon_wind_speed, 1, MidpointRounding.ToEven);
+                            double expPower = PowerCurveHash.ContainsKey(windSpeed) ? Convert.ToDouble(PowerCurveHash[windSpeed]) : 0;
+                            if(expPower > 0)
+                            {
+                                unit.exp_power_kw = expPower;
+                                finalResult = 4;
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while calculating Expected power, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalResult;
+                    }
+
+                    //Calculate Deviation kw.
+                    try
+                    {
+                        double deviation = 0;
+                        if(unit.avg_active_power == 0)
+                        {
+                            deviation = 0 - unit.exp_power_kw;
+                        }
+                        if(unit.avg_active_power > 0)
+                        {
+                            deviation = unit.avg_active_power - unit.exp_power_kw;
+                        }
+
+                        unit.deviation_kw = deviation;
+                        finalResult = 5;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while calculating deviation due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalResult;
+                    }
+
+                    // Calculate Loss kw 
+                    try
+                    {
+                        double loss = 0;
+                        if(unit.deviation_kw > 0)
+                        {
+                            loss = unit.deviation_kw / 6;
+                        }
+                        unit.loss_kw = loss;
+                        finalResult = 6;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while calculating loss kw, due to : " + ToString();
+                        API_ErrorLog(msg);
+                        return finalResult;
+                    }
+
+                    //Calculate All Breakdown.
+
+                    try
+                    {
+                        string allBreakdown = "NC";
+                        //condition 1
+                        if (unit.manual_bd != "-" && unit.manual_bd != "")
+                        {
+                            allBreakdown = unit.manual_bd;
+                        }
+                        //condition 2
+                        else if (unit.manual_bd == "-" && unit.status_code == 0 && unit.restructive_WTG == 100)
+                        {
+                            allBreakdown = "PCD";
+                        }
+                        //condition 3 & condition 4
+                        else if (unit.manual_bd == "-" && (unit.status_code == 0 || unit.status_code == 1) && (unit.restructive_WTG == 0 || unit.restructive_WTG == 25 || unit.restructive_WTG == 50 || unit.restructive_WTG == 125))
+                        {
+                            allBreakdown = "USMH";
+                        }
+                        //condition 5
+                        else if (unit.manual_bd == "-" && unit.restructive_WTG == 75 && unit.loss_kw <= 0)
+                        {
+                            allBreakdown = "LULL";
+                        }
+                        //condition 6
+                        else if (unit.manual_bd == "-" && unit.restructive_WTG == 75 && unit.status_code == 0 && unit.loss_kw > 0)
+                        {
+                            allBreakdown = "PCD";
+                        }
+                        else
+                        {
+                            allBreakdown = "NC";
+                        }
+                        unit.all_bd = allBreakdown;
+                        finalResult = 7;
+
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "" + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalResult;
+                    }
+
+                    if(finalResult == 7)
+                    {
+                        //addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
+                        //uploading_file_tmr_data (WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, restructive_WTG, date, from_time, to_time, status, status_code)
+                        UpdateQry += "UPDATE uploading_file_tmr_data SET recon_wind_speed = " + unit.recon_wind_speed + ", exp_power_kw = " + unit.exp_power_kw + ", deviation_kw = " + unit.deviation_kw + ", loss_kw = " + unit.loss_kw + ", all_bd = '" + unit.all_bd + "' WHERE uploading_file_TMR_Data_id = " + unit.uploading_file_TMR_Data_id + ";";
+                    }
+                    if(qryCounter > 10000)
+                    {
+                        updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
+                        finalResult = 8;
+                        qryCounter = 0;
+                    }
+                    counter++;
+                    qryCounter++;
+                }
+                if(qryCounter < 10000)
+                {
+                    updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
+                    finalResult = 8;
+                }
+                if(counter == UpdatedTMLDataList.Count)
+                {
+                    string msg = "Updated all records into datatbase counter / no. of records : " + counter + " / " + UpdatedTMLDataList.Count;
+                    API_InformationLog(msg);
+                }
+                else
+                {
+                    string msg = "Exception while updating records into database : counter / no. of records : " + counter + " / " + UpdatedTMLDataList.Count;
+                    API_ErrorLog(msg);
+                }
+            }
+
+            //finalResult = 0 : Failed completely.
+            //finalResult = 1 : Fetched data from uploading_file_TML_data table.
+            //finalResult = 2 : Updated reconstructed wind speed.
+            //finalResult = 3 : Fetched records from power_curve table.
+            //finalResult = 4 : Calculated expected power column.
+            //finalResult = 5 : Calculated deviation kw
+            //finalResult = 6 : Calculated loss kw
+            //finalResult = 7 : Calculate all breakdown.
+            //finalResult = 8 :Updated records to the data_base.
+
+            return finalResult;
+        }
+
+
+        /* internal async Task<int> InsertWindTMLData(List<InsertWindTMLData> set)
         {
             int FinalResult = 0;
             string qry = " insert into uploading_file_tmr_data (WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, restructive_WTG, date, from_time, to_time, status, status_code) values";
@@ -3874,178 +4601,12 @@ bd_remarks, action_taken
             }
             
             return FinalResult;
-        }
+        } */
 
-        //Get Manual Breakdown from uploading_file_breakdown table for TML_Data_Calculations.
-        internal async Task<int> UpdateManualBdForTMLData(List<InsertWindTMLData> set, string date, int site_id)
-        {
-            int finalRes = 0;
-            //14-Mar-23
-            string original_date = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
-            List<WindDailyBreakdownReport> _WindBreakdownReport = new List<WindDailyBreakdownReport>();
-            string getQry = "SELECT * FROM uploading_file_breakdown WHERE date = '" + original_date + "' AND site_id = " + site_id + "; " ;
-            string addManualBdQry = "";
-            int updateManualRes = 0;
-            int windBDReportRows = 0;
-            int updateReconWindSpeedRes = 0;
-            int updateExpectedPowerRes = 0;
-            int updateDeviationKwRes = 0;
-            int updateLossKwhRes = 0;
-            int updateAllBdRes = 0;
-            int updateAllBdIDRes = 0;
-            TimeSpan bdStopFrom = new TimeSpan();
-            TimeSpan bdStopTo = new TimeSpan();
+                
 
-            try
-            {
-                _WindBreakdownReport = await Context.GetData<WindDailyBreakdownReport>(getQry).ConfigureAwait(false);
-                finalRes = 1;
-                windBDReportRows = _WindBreakdownReport.Count;
-            }
-            catch (Exception e)
-            {
-                string msg = e.Message;
-                API_ErrorLog("Error while fetching data from uploading_file_breakdown table due to Exception :" + msg);
-                return finalRes;
-            }
-            if (windBDReportRows > 0 )
-            {
-                foreach (var unit in _WindBreakdownReport)
-                {
-                    bdStopFrom = unit.stop_from - 10;
-                    bdStopTo = unit.stop_to;
-
-                    //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00";
-                    //can add this in insert qry. check for this..
-                    addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
-                }
-                try
-                {
-                    updateManualRes = await Context.ExecuteNonQry<int>(addManualBdQry).ConfigureAwait(false);
-                    finalRes = 2;
-                }
-                catch(Exception e)
-                {
-                    string msg = e.ToString();
-                    API_ErrorLog("Exception Caught while updating manual bd column : " + msg );
-                }
-                if(finalRes == 2)
-                {
-                    try
-                    {
-                        updateReconWindSpeedRes = await UpdateReconWindSpeedForTMLData(date, site_id);
-                        if(updateReconWindSpeedRes == 9)
-                        {
-                            finalRes = 3;
-                            updateExpectedPowerRes = await UpdateExpectedPower(date, site_id);
-                            if(updateExpectedPowerRes == 3)
-                            {
-                                finalRes = 4;
-                                updateDeviationKwRes = await UpdateDeviationKw(date, site_id);
-                            }
-                            if(updateDeviationKwRes == 1)
-                            {
-                                finalRes = 5;
-                                updateLossKwhRes = await UpdateLossKwh(date, site_id);
-                            }
-                            if(updateLossKwhRes == 1)
-                            {
-                                finalRes = 6;
-                                updateAllBdRes = await UpdateAllBreakdown(date, site_id);
-                            }
-                            if(updateAllBdRes == 8)
-                            {
-                                finalRes = 7;
-                                updateAllBdIDRes = await UpdateAllBDID(date, site_id);
-                            }
-                            if(updateAllBdIDRes == 2)
-                            {
-                                finalRes = 8;
-                            }
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        API_ErrorLog("Error whilel updating reconstructed windspeed column of table uploading_file_tmr_data. due to " + e.ToString());
-                        return finalRes;
-                    }
-                }
-            }
-            //finalRes = 0 : Failed
-            //finalRes = 1 : Fetched Records from uploading_file_breakdown table.
-            //finalRes = 2 : Updated Manual Breakdown Column of table uploading_file_tmr_data.
-            //finalRes = 3 : Successfully updated Reconstructed windspeed column of table uploading_file_tmr_data.
-            //finalRes = 4 : Successfully updated Expected Power column of table uploading_file_tmr_data.
-            //finalRes = 5 : Successfully updated Deviation kW column of table uploading_file_tmr_data.
-            //finalRes = 6 : Successfully updated Loss kW column of table uploading_file_tmr_data.
-            //finalRes = 7 : Successfully updated All Breakdown of table uploading_file_tmr_data.
-            //finalRes = 8 : Successfully updated All Breakdown Code of table uploading_file_tmr_data.
-            return finalRes;
-        }
-        
-        //Calculation for inserting data into windspeed TMD table.
-        internal async Task<int> UpdateWindSpeedTMD(List<InsertWindTMLData> set, string date, int site_id)
-        {
-            int finalResult = 0;
-            string yearMonthDate = "";
-            string updateWindspeedTMDQry = "INSERT INTO windspeed_tmd (site, site_id, tmd_date, tmd_time, windspeed ) VALUES ";
-            string updateValue = "";
-            int updateWindspeedTMDRes = 0;
-            try
-            {
-                yearMonthDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
-            }
-            catch(Exception e)
-            {
-                API_ErrorLog("Error while converting date in required format. Due to : " + e.ToString());
-            }
-            int count = 0;
-            string loopDate = "";
-            foreach(var unit in set)
-            {
-                if(count == 0)
-                {
-                    loopDate = Convert.ToDateTime(unit.date).ToString("yyyy-MM-dd") ;
-                }
-                if(count > 0)
-                {
-                    if(loopDate == yearMonthDate)
-                    {
-                        string Tempdate = Convert.ToDateTime(unit.date).ToString("yyyy-MM-dd");
-                        if(unit.avg_wind_speed >0 && unit.status_code ==0)
-                        {
-                            updateValue += "( '" + unit.site + "', " + unit.site_id + ", '" + Tempdate + "', '" + unit.to_time + "', " + unit.avg_wind_speed + " ),";
-                        }
-                        if(unit.avg_wind_speed == 0 && unit.status_code == 1)
-                        {
-
-                        }
-                    }
-                    else
-                    {
-                        //break;
-                    }
-                }
-            }
-
-            if(updateValue != "")
-            {
-                updateWindspeedTMDQry += updateValue;
-                try
-                {
-                    updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry).ConfigureAwait(false);
-                    finalResult = 1;
-                }
-                catch(Exception e)
-                {
-                    string msg = e.ToString();
-                    API_ErrorLog("Error while updaating value to Windspeed TMD table . Due to  : " + msg);
-                    return finalResult;
-                }
-            }
-
-            return finalResult;
-        }
+        //Old Calculations method for Wind TML Data.
+        /*
         //Calculations for reconstructed wind speed.
         internal async Task<int> UpdateReconWindSpeedForTMLData(string date, int site_id)
         {
@@ -4247,9 +4808,7 @@ bd_remarks, action_taken
             //finalResult = 9 : Updated reconstructed wind speed.
             return finalResult;
         }
-
         //Calculationsfor Expected Power 
-        
         internal async Task<int> UpdateExpectedPower(string date, int site_id)
         {
             int finalResult = 0;
@@ -4334,7 +4893,6 @@ bd_remarks, action_taken
             //finalResult = 3 : Updated Expected Power Column.
             return finalResult;
         }
-
         //Calculations for Deviation kw 
         internal async Task<int> UpdateDeviationKw(string date, int site_id)
         {
@@ -4358,7 +4916,6 @@ bd_remarks, action_taken
             //finalResult = 1 : Successful.
             return finalResult;
         }
-
         //Calculation for Loss kWH
         internal async Task<int> UpdateLossKwh(string date, int site_id)
         {
@@ -4581,6 +5138,11 @@ bd_remarks, action_taken
             return finalResult;
         }
 
+        */
+
+
+
+
         //InsertWindPowerCurve
         internal async Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> set)
         {
@@ -4685,6 +5247,63 @@ bd_remarks, action_taken
                     string msg = e.Message;
                     API_ErrorLog("Exception while inserting new records in table due to : " + e.ToString());
                     throw new Exception("Exception while adding new records in windspeed_tmd table. Due to :" + msg );
+                }
+            }
+            return val;
+        }
+        //ImportWindReferenceWtgs
+        internal async Task<int> ImportWindReferenceWtgs(List<ImportWindReferenceWtgs> set)
+        {
+            int val = 0;
+            string qry = " INSERT INTO tml_reference_wtgs ( site, site_id, wtg, wtg_id, ref1, ref2, ref3 ) VALUES";
+            string insertValues = "";
+            int counter = 0;
+            string site = "";
+            string date = "";
+            int previous_site_id = 0;
+            string site_id_string = "";
+            foreach (var unit in set)
+            {
+                if(counter == 0)
+                {
+                    previous_site_id = unit.site_id;
+                    site_id_string = unit.site_id.ToString() + ",";
+                }
+                if(counter > 0)
+                {
+                    if(previous_site_id != unit.site_id)
+                    {
+                        site_id_string += unit.site_id.ToString() + ",";
+                        previous_site_id = unit.site_id;
+                    }
+                }
+                insertValues += "('" + unit.site + "'," + unit.site_id + ", '" + unit.wtg + "', " + unit.wtg_id + ", '" + unit.ref1 + "', '" + unit.ref2 + "', '" + unit.ref3 + "'),";
+                counter++;
+            }
+
+            string deleteQry = "DELETE FROM tml_reference_wtgs WHERE site_id IN(" + site_id_string.Substring(0, (site_id_string.Length -1)) + ") ;";
+            qry += insertValues;
+            try
+            {
+                await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = e.Message;
+                API_ErrorLog("Exception caught while deleting old records. Due to : " + e.ToString());
+                throw new Exception("Exception caught while deleting old records. Due to " + msg);
+            }
+            if (!(string.IsNullOrEmpty(insertValues)))
+            {
+                try
+                {
+                    val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    API_ErrorLog("Exception while inserting new records in table due to : " + e.ToString());
+                    throw new Exception("Exception while adding new records in tml_reference_wtgs table. Due to :" + msg);
                 }
             }
             return val;

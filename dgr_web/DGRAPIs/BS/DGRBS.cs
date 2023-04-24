@@ -78,6 +78,8 @@ namespace DGRAPIs.BS
         Task<int> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> set);
         //InsertWindSpeedTMD
         Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> set);
+        //ImportWindReferenceWtgs
+        Task<int> ImportWindReferenceWtgs(List<ImportWindReferenceWtgs> set);
         Task<List<SolarSiteMaster>> GetSolarSiteList(string state, string spvdata, string site);
         //Task<int> InsertDailyJMR(List<WindDailyJMR> set);
         Task<int> InsertSolarDailyTargetKPI(List<SolarDailyTargetKPI> set);
@@ -1259,6 +1261,22 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.InsertWindSpeedTMD(InsertWindSpeedTMD);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //ImportWindReferenceWtgs
+        public async Task<int> ImportWindReferenceWtgs(List<ImportWindReferenceWtgs> ImportWindReferenceWtgs)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.ImportWindReferenceWtgs(ImportWindReferenceWtgs);
 
                 }
             }

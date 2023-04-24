@@ -618,6 +618,25 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
+                                else if (excelSheet == FileSheetType.Reference_WTGs)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Reference_WTGs;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if (ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Solar")
+                                        {
+                                            m_ErrorLog.SetError(",Reference_WTGs file cannot be imported for Solar");
+                                            status = "Wrong file upload type selected for Reference_WTGs import";
+                                            //statusCode = await InsertWindPowerCurve(status, ds);
+                                        }
+                                        else
+                                        {
+                                            m_ErrorLog.SetInformation(",Importing Wind Reference_WTGs WorkSheet:");
+                                            statusCode = await ImportWindReferenceWtgs(status, ds);
+                                        }
+                                    }
+                                }
                                 /*else if (isGamesa == 1)
                                 {
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
@@ -4238,6 +4257,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                             //FinalResult = 7 : Completed till updating loss kw column.
                             //FinalResult = 8 : Completed till updating all breakdown column.
                             //FinalResult = 9 : Completed till updating all breakdown code column.
+
+                            if(returnResponse == "5")
+                            {
+                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetError(",Error in Calculation.");
+                            }
+
+                            /*
                             if (returnResponse == "1")
                             {
                                 m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
@@ -4336,17 +4366,18 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                             if (returnResponse == "9")
                             {
-                                /*m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
-                                m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
-                                m_ErrorLog.SetInformation(",Updated All Breakdown Code column successfully."); */
+                                //m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                //m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                //m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                //m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                //m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                //m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                //m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
+                                //m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
+                                //m_ErrorLog.SetInformation(",Updated All Breakdown Code column successfully."); 
                                 m_ErrorLog.SetInformation("TML_Data file imported successfully.");
                             }
+                            */
                             return responseCode = (int)response.StatusCode;
                         }
                         else
@@ -4804,6 +4835,113 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     m_ErrorLog.SetError(",Wind Windspeed TMD Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
+        //ImportWindReferenceWtgs
+        private async Task<int> ImportWindReferenceWtgs(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+            string rowOneDate = "";
+
+            if (ds.Tables.Count > 0)
+            {
+                List<ImportWindReferenceWtgs> addSet = new List<ImportWindReferenceWtgs>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    ImportWindReferenceWtgs addUnit = new ImportWindReferenceWtgs();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
+                        if (addUnit.site == "" || addUnit.site == null)
+                        {
+                            m_ErrorLog.SetError(", Site column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+
+                        addUnit.site_id = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+
+                        if (addUnit.site_id == 0)
+                        {
+                            //m_ErrorLog.SetError("Site name <" + addUnit.site + "> fail to match with data in Location Master at row <" + rowNumber + ">.");
+                            errorCount++;
+                        }
+
+                        objImportBatch.importSiteId = addUnit.site_id;//C
+                        
+
+                        addUnit.wtg = dr["WTGs"] is DBNull || string.IsNullOrEmpty((string)dr["WTGs"]) ? "" : Convert.ToString(dr["WTGs"]);
+                        if (addUnit.wtg != "")
+                        {
+                            addUnit.wtg_id = equipmentId.ContainsKey(addUnit.wtg) ? Convert.ToInt32(equipmentId[addUnit.wtg]) : 0;
+                        }
+
+                            addUnit.ref1 = dr["Ref.1"] is DBNull || string.IsNullOrEmpty((string)dr["Ref.1"]) ? "" : Convert.ToString(dr["Ref.1"]);
+                        addUnit.ref2 = dr["Ref.2"] is DBNull || string.IsNullOrEmpty((string)dr["Ref.2"]) ? "" : Convert.ToString(dr["Ref.2"]);
+                        addUnit.ref3 = dr["Ref.3"] is DBNull || string.IsNullOrEmpty((string)dr["Ref.3"]) ? "" : Convert.ToString(dr["Ref.3"]);
+
+                        //errorFlag.Clear();
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        //developer errorlog
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: ImportWindReferenceWtgs,");
+                        ErrorLog(",Exception Occurred In Function: ImportWindReferenceWtgs: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Wind Reference WTGs Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/ImportWindReferenceWtgs";
+                    using (var client = new HttpClient())
+                    {
+                        var response = await client.PostAsync(url, data);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            m_ErrorLog.SetInformation(",Wind Reference WTGs API SuccessFul,");
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",Wind Reference WTGs API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else if (deleteStatus == 0)
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", File not uploaded");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Wind Reference WTGs Validation Failed,");
                 }
             }
             return responseCode;
