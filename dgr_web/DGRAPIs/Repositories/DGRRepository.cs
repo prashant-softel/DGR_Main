@@ -4099,18 +4099,48 @@ bd_remarks, action_taken
         }
         internal async Task<int> InsertWindUploadingFileGeneration(List<WindUploadingFileGeneration> set, int batchId)
         {
-            string delqry = "delete from uploading_file_generation where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
-            await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
-            string qry = " insert into uploading_file_generation (site_name, site_id, date, wtg, wtg_id, wind_speed, grid_hrs, operating_hrs, lull_hrs, kwh, import_batch_id) values";
-            string values = "";
-
-            foreach (var unit in set)
+            int finalResult = 0;
+            int deleteRes = 0;
+            int insertRes = 0;
+            if(set.Count > 0)
             {
-                values += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.date + "','" + unit.wtg + "','" + unit.wtg_id + "','" + unit.wind_speed + "','" + unit.grid_hrs + "','" + unit.operating_hrs + "','" + unit.lull_hrs + "','" + unit.kwh + "','" + batchId + "'),";
-            }
-            qry += values;
+                string delqry = "delete from uploading_file_generation where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
+                try
+                {
+                    deleteRes = await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while deleting old records from uploading_file_generation table, due to : " + ToString();
+                    API_ErrorLog(msg);
+                    return finalResult;
+                }
+                if(finalResult == 1)
+                {
+                    string qry = " insert into uploading_file_generation (site_name, site_id, date, wtg, wtg_id, wind_speed, grid_hrs, operating_hrs, lull_hrs, kwh, import_batch_id) values";
+                    string values = "";
+                    foreach (var unit in set)
+                    {
+                        values += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.date + "','" + unit.wtg + "','" + unit.wtg_id + "','" + unit.wind_speed + "','" + unit.grid_hrs + "','" + unit.operating_hrs + "','" + unit.lull_hrs + "','" + unit.kwh + "','" + batchId + "'),";
+                    }
+                    qry += values;
 
-            return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                    try
+                    {
+                        insertRes =  await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while inserting data in uploading_file_generation, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalResult;
+                    }
+                }
+            }
+
+            return finalResult;
         }
         /// <summary>
         /// 
@@ -4338,18 +4368,51 @@ bd_remarks, action_taken
         }
         internal async Task<int> InsertWindUploadingFileBreakDown(List<WindUploadingFileBreakDown> set, int batchId)
         {
-            string delqry = "delete from uploading_file_breakdown where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
-            await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
-            string qry = " insert into uploading_file_breakdown(date, site_name, site_id, wtg, wtg_id, bd_type, bd_type_id, stop_from, stop_to, total_stop, error_description, action_taken, import_batch_id) values ";
-            string values = "";
-
-            foreach (var unit in set)
+            int finalResult = 0;
+            int deleteRes = 0;
+            int insertRes = 0;
+            if(set.Count > 0)
             {
-                values += "('" + unit.date + "','" + unit.site_name + "'," + unit.site_id + ",'" + unit.wtg + "'," + unit.wtg_id + ",'" + unit.bd_type + "', " + unit.bd_type_id + ", '" + unit.stop_from + "', '" + unit.stop_to + "', '" + unit.total_stop + "', '" + unit.error_description + "', '" + unit.action_taken + "', " + batchId + "),";
-            }
-            qry += values;
+                string delqry = "delete from uploading_file_breakdown where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
+                string qry = " insert into uploading_file_breakdown(date, site_name, site_id, wtg, wtg_id, bd_type, bd_type_id, stop_from, stop_to, total_stop, error_description, action_taken, import_batch_id) values ";
+                string values = "";
+                try
+                {
+                    deleteRes = await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while deleting records from uploading_file_breakdown, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return finalResult;
+                }
 
-            return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                if(finalResult == 1)
+                {
+                    foreach (var unit in set)
+                    {
+                        values += "('" + unit.date + "','" + unit.site_name + "'," + unit.site_id + ",'" + unit.wtg + "'," + unit.wtg_id + ",'" + unit.bd_type + "', " + unit.bd_type_id + ", '" + unit.stop_from + "', '" + unit.stop_to + "', '" + unit.total_stop + "', '" + unit.error_description + "', '" + unit.action_taken + "', " + batchId + "),";
+                    }
+                    qry += values;
+                    try
+                    {
+                        insertRes = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while inserting values into table uploading_file_breakdown, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalResult;
+                    }
+                }
+            }
+
+            //finalResult = 0 : Complete failure.
+            //finalResult = 1 : Deleted Records from table.
+            //finalResult = 2 : Inserted records into table.
+            return finalResult;
         }
         internal async Task<List<SolarDailyGenReports>> GetSolarInverterFromdailyGenSummary(string state, string site)
         {
