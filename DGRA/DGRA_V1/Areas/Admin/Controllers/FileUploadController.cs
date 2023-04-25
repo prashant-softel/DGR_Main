@@ -496,60 +496,76 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             await importMetaData(fileUploadType, file.FileName, fileImportType);
                                             statusCode = await dgrWindImport(batchIdDGRAutomation);
-                                            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailyWindKPI?fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
-                                            //remove after testing
-                                            // m_ErrorLog.SetInformation("Url" + url);
-                                            using (var client = new HttpClient())
+                                            if(statusCode == 200)
                                             {
-                                                var response = await client.GetAsync(url);
-                                                //status = "Respose" + response;
-                                                if (response.IsSuccessStatusCode)
+                                                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailyWindKPI?fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
+                                                //remove after testing
+                                                // m_ErrorLog.SetInformation("Url" + url);
+                                                using (var client = new HttpClient())
                                                 {
-                                                    m_ErrorLog.SetInformation(",Wind KPI Calculations Updated Successfully:");
-                                                    statusCode = (int)response.StatusCode;
-                                                    status = "Successfully Uploaded";
-
-                                                    // Added Code auto approved if uploaded by admin
-                                                    string userName = HttpContext.Session.GetString("DisplayName");
-                                                    int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
-                                                    siteUserRole = HttpContext.Session.GetString("role");
-                                                    if (siteUserRole == "Admin")
+                                                    var response = await client.GetAsync(url);
+                                                    //status = "Respose" + response;
+                                                    if (response.IsSuccessStatusCode)
                                                     {
-                                                        
-                                                        var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
-                                                        using (var client1 = new HttpClient())
+                                                        m_ErrorLog.SetInformation(",Wind KPI Calculations Updated Successfully:");
+                                                        statusCode = (int)response.StatusCode;
+                                                        status = "Successfully Uploaded";
+
+                                                        // Added Code auto approved if uploaded by admin
+                                                        string userName = HttpContext.Session.GetString("DisplayName");
+                                                        int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
+                                                        siteUserRole = HttpContext.Session.GetString("role");
+                                                        if (siteUserRole == "Admin")
                                                         {
-                                                            await Task.Delay(10000);
-                                                            var response1 = await client1.GetAsync(url1);
-                                                            if (response1.IsSuccessStatusCode)
+                                                        
+                                                            var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
+                                                            using (var client1 = new HttpClient())
                                                             {
-                                                                //status = "Successfully Data Approved";
-                                                            }
-                                                            else
-                                                            {
-                                                                //status = "Data Not Approved";
+                                                                await Task.Delay(10000);
+                                                                var response1 = await client1.GetAsync(url1);
+                                                                if (response1.IsSuccessStatusCode)
+                                                                {
+                                                                    //status = "Successfully Data Approved";
+                                                                }
+                                                                else
+                                                                {
+                                                                    //status = "Data Not Approved";
+                                                                }
                                                             }
                                                         }
                                                     }
+                                                    else
+                                                    {
+                                                    
+                                                        statusCode = (int)response.StatusCode;
+                                                        string errorMsg = response.Content.ReadAsStringAsync().Result;
+                                                        status = "Wind KPI Calculation Import API Failed";
+                                                        m_ErrorLog.SetError(",Wind KPI Calculations API Failed. Reason : " + errorMsg);
+
+                                                        //for solar 0, wind 1;
+                                                        int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 1);
+                                                        if(deleteStatus == 1)
+                                                        {
+                                                            m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                                        }
+                                                        else
+                                                        {
+                                                            m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                m_ErrorLog.SetError(",Wind KPI Calculations API Failed.");
+                                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 1);
+                                                if (deleteStatus == 1)
+                                                {
+                                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
                                                 }
                                                 else
                                                 {
-                                                    
-                                                    statusCode = (int)response.StatusCode;
-                                                    string errorMsg = response.Content.ReadAsStringAsync().Result;
-                                                    status = "Wind KPI Calculation Import API Failed";
-                                                    m_ErrorLog.SetError(",Wind KPI Calculations API Failed. Reason : " + errorMsg);
-
-                                                    //for solar 0, wind 1;
-                                                    int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 1);
-                                                    if(deleteStatus == 1)
-                                                    {
-                                                        m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
-                                                    }
-                                                    else
-                                                    {
-                                                        m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                                                    }
+                                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
                                                 }
                                             }
                                         }
@@ -578,68 +594,84 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             //InformationLog("ImportMetaData function called from FUCtrl" + dttt);
                                             await importMetaData(fileUploadType, file.FileName, fileImportType);
                                             statusCode = await dgrSolarImport(batchIdDGRAutomation);
-                                            //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?fromDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
-                                            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
-                                            using (var client = new HttpClient())
+                                            if(statusCode == 200)
                                             {
-                                                InformationLog("added timeout to InfiniteTimeSpan");
-                                                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                                                dttt = DateTime.Now;
-                                                InformationLog("CalculateDailysolarKPI API Called." +dttt);
-                                                InformationLog(url);
-                                                var response = await client.GetAsync(url);
-                                                //response.Timeout = TimeSpan.FromSeconds(300); // set the request timeout to 5 minutes
-                                                if (response.IsSuccessStatusCode)
+                                                //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?fromDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
+                                                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
+                                                using (var client = new HttpClient())
                                                 {
+                                                    InformationLog("added timeout to InfiniteTimeSpan");
+                                                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                     dttt = DateTime.Now;
-                                                    //InformationLog("CalculateDailySolarKpI function returned successfully to frontend." + dttt);
-                                                    m_ErrorLog.SetInformation(",SolarKPI Calculations Updated Successfully:");
-                                                    statusCode = (int)response.StatusCode;
-                                                    status = "Successfully Uploaded";                                                    
-                                                    // Added Code auto approved if uploaded by admin
-                                                    string userName = HttpContext.Session.GetString("DisplayName");
-                                                    int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
-                                                    siteUserRole = HttpContext.Session.GetString("role");
-                                                    dttt = DateTime.Now;
-                                                    if (siteUserRole == "Admin")
+                                                    InformationLog("CalculateDailysolarKPI API Called." +dttt);
+                                                    InformationLog(url);
+                                                    var response = await client.GetAsync(url);
+                                                    //response.Timeout = TimeSpan.FromSeconds(300); // set the request timeout to 5 minutes
+                                                    if (response.IsSuccessStatusCode)
                                                     {
-                                                        //InformationLog("Uploading User is Admin. So SetsolarApprovalFlagForImpoortBatches API call" +dttt);
-                                                        var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetSolarApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
-                                                        using (var client1 = new HttpClient())
+                                                        dttt = DateTime.Now;
+                                                        //InformationLog("CalculateDailySolarKpI function returned successfully to frontend." + dttt);
+                                                        m_ErrorLog.SetInformation(",SolarKPI Calculations Updated Successfully:");
+                                                        statusCode = (int)response.StatusCode;
+                                                        status = "Successfully Uploaded";                                                    
+                                                        // Added Code auto approved if uploaded by admin
+                                                        string userName = HttpContext.Session.GetString("DisplayName");
+                                                        int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
+                                                        siteUserRole = HttpContext.Session.GetString("role");
+                                                        dttt = DateTime.Now;
+                                                        if (siteUserRole == "Admin")
                                                         {
-                                                            await Task.Delay(10000);
-                                                            var response1 = await client1.GetAsync(url1);
-                                                            if (response1.IsSuccessStatusCode)
+                                                            //InformationLog("Uploading User is Admin. So SetsolarApprovalFlagForImpoortBatches API call" +dttt);
+                                                            var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetSolarApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
+                                                            using (var client1 = new HttpClient())
                                                             {
-                                                                //InformationLog("Approved Data Successfully." + DateTime.Now);
-                                                                //status = "Successfully Data Approved";
-                                                            }
-                                                            else
-                                                            {
-                                                                //ErrorLog("Data not approved"+ DateTime.Now);
-                                                                //status = "Data Not Approved";
+                                                                await Task.Delay(10000);
+                                                                var response1 = await client1.GetAsync(url1);
+                                                                if (response1.IsSuccessStatusCode)
+                                                                {
+                                                                    //InformationLog("Approved Data Successfully." + DateTime.Now);
+                                                                    //status = "Successfully Data Approved";
+                                                                }
+                                                                else
+                                                                {
+                                                                    //ErrorLog("Data not approved"+ DateTime.Now);
+                                                                    //status = "Data Not Approved";
+                                                                }
                                                             }
                                                         }
                                                     }
+                                                    else
+                                                    {
+                                                        statusCode = (int)response.StatusCode;
+                                                        string errorMsg = response.Content.ReadAsStringAsync().Result;
+
+                                                        m_ErrorLog.SetError(",SolarKPI Calculations API Failed. Reason : " + errorMsg);
+                                                        status = "Solar KPI Calculation Import API Failed. Reason : " + errorMsg;
+
+                                                        //for solar 0, wind 1;
+                                                        int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 0);
+                                                        if (deleteStatus == 1)
+                                                        {
+                                                            m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                                        }
+                                                        else
+                                                        {
+                                                            m_ErrorLog.SetError(", Records deletion failed due to incomplete upload");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                m_ErrorLog.SetError(",SolarKPI Calculations API Failed.");
+                                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 0);
+                                                if (deleteStatus == 1)
+                                                {
+                                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
                                                 }
                                                 else
                                                 {
-                                                    statusCode = (int)response.StatusCode;
-                                                    string errorMsg = response.Content.ReadAsStringAsync().Result;
-
-                                                    m_ErrorLog.SetError(",SolarKPI Calculations API Failed. Reason : " + errorMsg);
-                                                    status = "Solar KPI Calculation Import API Failed. Reason : " + errorMsg;
-
-                                                    //for solar 0, wind 1;
-                                                    int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 0);
-                                                    if (deleteStatus == 1)
-                                                    {
-                                                        m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
-                                                    }
-                                                    else
-                                                    {
-                                                        m_ErrorLog.SetError(", Records deletion failed due to incomplete upload");
-                                                    }
+                                                    m_ErrorLog.SetError(", Records deletion failed due to incomplete upload");
                                                 }
                                             }
                                         }
@@ -3626,18 +3658,15 @@ namespace DGRA_V1.Areas.admin.Controllers
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlGeneration, dataGeneration);
-
+                responseCodeGen = (int)response.StatusCode;
+                string returnResponse = response.Content.ReadAsStringAsync().Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    responseCodeGen = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Gen Import API Successful");
-                    //InformationLog("InsertSolarUploadingFileGeneration True\r\n");
                 }
                 else
                 {
-                    responseCodeGen = (int)response.StatusCode;
-                    m_ErrorLog.SetError(",Solar Gen Import API Failed");
-                    ErrorLog("InsertSolarUploadingFileGeneration False. Error code <" + responseCodeGen + ">\r\n");
+                    m_ErrorLog.SetError(",Solar Generation Import API Failed");
                 }
             }
 
@@ -3647,16 +3676,14 @@ namespace DGRA_V1.Areas.admin.Controllers
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlBreakdown, dataBreakdown);
+                responseCodeBreak = (int)response.StatusCode;
+                string returnResponse = response.Content.ReadAsStringAsync().Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    //InformationLog("InsertSolarUploadingFileBreakDown True\r\n");
-                    responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Break Import API Successful");
                 }
                 else
                 {
-                    ErrorLog("InsertSolarUploadingFileBreakDown False\r\n");
-                    responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Solar Break Import API Failed. Error code <"+ responseCodeBreak + ">");
                 }
             }
@@ -3667,16 +3694,14 @@ namespace DGRA_V1.Areas.admin.Controllers
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlPyro1Min, dataPyro1Min);
+                responseCodePyro1 = (int)response.StatusCode;
+                string returnResponse = response.Content.ReadAsStringAsync().Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    //InformationLog("dgrSolarImport success\r\n");
-                    responseCodePyro1 = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Pyro-1 Import API Successful");
                 }
                 else
                 {
-                    //ErrorLog("dgrSolarImport Failed code line: 3668 \r\n");
-                    responseCodePyro1 = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Solar Pyro-1 Import API Failed. Error code <" + responseCodePyro1 + ">");
                 }
             }
@@ -3687,31 +3712,30 @@ namespace DGRA_V1.Areas.admin.Controllers
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlPyro15Min, dataPyro15Min);
+                responseCodePyro15 = (int)response.StatusCode;
+                string returnResponse = response.Content.ReadAsStringAsync().Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    //InformationLog("InsertSolarUploadingPyranoMeter15Min successful\r\n");
-                    responseCodePyro15 = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Solar Pyro-15 Import API Successful");
                 }
                 else
                 {
-                    //ErrorLog("InsertSolarUploadingPyranoMeter15Min failed code line : 3688\r\n");
-                    responseCodePyro15 = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Solar Pyro-15 Import API Failed. Error code <" + responseCodePyro15 + ">");
                 }
             }
-            if (responseCodeGen != 200 || responseCodeBreak != 200 || responseCodePyro1 != 200 || responseCodePyro15 != 200)
+            if (responseCodeGen == 200 && responseCodeBreak == 200 && responseCodePyro1 == 200 && responseCodePyro15 == 200)
             {
                 //pending : Need to add code to cleanup import that is failed.
-                return 400;
+                return 200;
             }
             else
             {
-                return 200;
+                return 400;
             }
         }
         public async Task<int> dgrWindImport(int batchId)
         {
+            int finalResult = 0;
             int responseCodeGen = 0;
             int responseCodeBreak = 0;
 
@@ -3722,15 +3746,16 @@ namespace DGRA_V1.Areas.admin.Controllers
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlGeneration, dataGeneration);
+                responseCodeGen = (int)response.StatusCode;
+                string returnResponse = response.Content.ReadAsStringAsync().Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    responseCodeGen = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Wind Generation Import API Successful");
                     //InformationLog("InsertWindUploadingFileGeneration success ");
                 }
                 else
                 {
-                    responseCodeGen = (int)response.StatusCode;
+                    //responseCodeGen = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Wind Generation Import API Failed. Error code <" + responseCodeGen + ">\r\n");
                     //InformationLog("InsertWindUploadingFileGeneration failed code line 3725");
 
@@ -3741,28 +3766,29 @@ namespace DGRA_V1.Areas.admin.Controllers
             using (var client = new HttpClient())
             {
                 var response = await client.PostAsync(urlBreakdown, dataBreakdown);
+                responseCodeBreak = (int)response.StatusCode;
+                string returnResponse = response.Content.ReadAsStringAsync().Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetInformation(",Wind BreakDown Import API Successful:");
                    // InformationLog("InsertWindUploadingFileBreakDown success ");
 
                 }
                 else
                 {
-                    responseCodeBreak = (int)response.StatusCode;
+                    //responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Wind BreakDown Import API Failed. Error code <" + responseCodeBreak + ">\r\n");
                    // InformationLog("InsertWindUploadingFileBreakDown Failed code line :3745 " + responseCodeBreak);
 
                 }
             }
-            if (responseCodeGen != 200 || responseCodeBreak != 200)
+            if (responseCodeGen == 200 && responseCodeBreak == 200)
             {
-                return 400;
+                return 200;
             }
             else
             {
-                return 200;
+                return 400;
             }
         }
 
