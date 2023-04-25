@@ -2838,16 +2838,16 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             string filter2 = "";
             if (!string.IsNullOrEmpty(site))
             {
-                filter += "AND site_id in (" + site + ")";
+                filter += "AND t1.site_id in (" + site + ")";
                 filter2 += "site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + toDate + "'";
             }
-            filter += " AND date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+            filter += " AND t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'"; /*group by site_id,bd_type*/
             filter2 = " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
 
-            string qry = "SELECT date, site ,bd_type_id, bd_type , bd_remarks ,icr , inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd  FROM uploading_file_breakdown_solar WHERE `bd_type_id` in (1,2) AND `total_bd` > '00:30:00'and (((inv='Nil'and smb='Nil' and strings='Nil')) OR (( smb='Nil' and strings='Nil')))" + filter;
+            string qry = "SELECT t1.date, t1.site ,t1.bd_type_id, t1.bd_type , t1.bd_remarks ,t1.icr , t1.inv, (HOUR(t1.total_bd) + MINUTE(t1.total_bd) / 60 + SECOND(t1.total_bd) / 3600) as total_bd  FROM uploading_file_breakdown_solar t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and  t1.bd_type_id in (1,2) AND t1.total_bd > '00:30:00'and (((t1.inv='Nil'and t1.smb='Nil' and t1.strings='Nil')) OR ((t1.smb='Nil' and t1.strings='Nil')))" + filter;
 
-            string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, if(count(if(icr = 'Nil',NULL,icr)) = 0 ,'All',count(if(icr = 'Nil',NULL,icr))) as icr_cnt, if(count(if(inv = 'Nil',NULL,inv)) = 0 ,'All',count(if(inv = 'Nil',NULL,inv))) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00'and NOT bd_type_id in (1, 2) and(( (inv ='Nil'and smb ='Nil' and strings ='Nil')) OR (( smb='Nil' and strings='Nil'))))as custom where" + filter2 + " GROUP BY bd_type_id, date, site ;";
+            string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, if(count(if(icr = 'Nil',NULL,icr)) = 0 ,'All',count(if(icr = 'Nil',NULL,icr))) as icr_cnt, if(count(if(inv = 'Nil',NULL,inv)) = 0 ,'All',count(if(inv = 'Nil',NULL,inv))) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT t1.date, t1.site ,t1.bd_type_id, t1.bd_type , t1.bd_remarks  , t1.icr ,t1.inv, (HOUR(t1.total_bd) + MINUTE(t1.total_bd) / 60 + SECOND(t1.total_bd) / 3600) as total_bd from uploading_file_breakdown_solar t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.total_bd > '00:30:00'and NOT t1.bd_type_id in (1, 2) and(( (t1.inv ='Nil'and t1.smb ='Nil' and t1.strings ='Nil')) OR (( t1.smb='Nil' and t1.strings='Nil'))))as custom where" + filter2 + " GROUP BY bd_type_id, date, site ;";
             
             //string qry2 = "SELECT date, site ,bd_type_id, bd_type , bd_remarks, count(icr) as icr_cnt, count(if(inv = 'Nil',NULL,inv)) as inv_cnt, sum(total_bd) as total_bd  FROM (SELECT date, site ,bd_type_id, bd_type , bd_remarks  , icr ,inv, (HOUR(total_bd) + MINUTE(total_bd) / 60 + SECOND(total_bd) / 3600) as total_bd from uploading_file_breakdown_solar where `total_bd` > '00:30:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date; ";
             //string qry = "Select date, site_name, SEC_TO_TIME(sum(TIME_TO_SEC(total_stop))) as total_stop,count(wtg_id) as wtg_cnt,wtg,bd_type,bd_type_id,error_description,action_taken from uploading_file_breakdown";
@@ -3480,11 +3480,11 @@ bd_remarks, action_taken
                         PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar Weekly Mail Added to email id :" + item.useremail);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     string msg = e.ToString();
                     PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
-                }                
+                }
                 qry = "select useremail from login where Cc_Weekly_Solar = 1;";
                 try
                 {
@@ -3498,7 +3498,7 @@ bd_remarks, action_taken
                 catch (Exception e)
                 {
                     string msg = e.ToString();
-                    PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg) ;
+                    PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg);
                 }
             }
             else
@@ -3514,7 +3514,7 @@ bd_remarks, action_taken
                         PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added to email id :" + item.useremail);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     string msg = e.ToString();
                     PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
@@ -3535,6 +3535,7 @@ bd_remarks, action_taken
                     PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg);
                 }
             }
+           // AddTo.Add("tanvi@softeltech.in");
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
             string subject = "";
@@ -6790,23 +6791,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string filter2 = "";
             if (!string.IsNullOrEmpty(site))
             {
-                filter += "AND site_id in (" + site + ")";
-                filter2 += "site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + toDate + "'";
+                filter += "AND t1.site_id in (" + site + ")";
+                filter2 += "t1.site_id in (" + site + ") and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
             }
-            filter += " AND date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+            filter += " AND t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'"; /*group by site_id,bd_type*/
             filter2 = " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
 
-            string qry = "SELECT date,site_name,bd_type_id, bd_type , error_description ,action_taken, wtg ,(HOUR(total_stop) + MINUTE(total_stop) / 60 + SECOND(total_stop) / 3600) as total_stop_num  FROM uploading_file_breakdown WHERE `bd_type_id` in (1,2) AND `total_stop` > '04:00:00'"+ filter ;
+            string qry = "SELECT t1.date,t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg ,(HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop_num  FROM uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.bd_type_id in (1,2) AND t1.total_stop > '04:00:00'" + filter ;
 
-            string qry2 = "SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT date, site_name,bd_type_id, bd_type , error_description ,action_taken, wtg , (HOUR(total_stop) + MINUTE(total_stop) / 60 + SECOND(total_stop) / 3600) as total_stop from uploading_file_breakdown where `total_stop` > '01:00:00' AND NOT bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date,site_name; ";
+            string qry2 = "SELECT date, site_name,bd_type_id, bd_type ,error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT t1.date, t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg , (HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop from uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.total_stop > '01:00:00' AND NOT t1.bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date, site_name; ";
 
             List<WindUploadingFileBreakDown> _bdData = new List<WindUploadingFileBreakDown>();
              _bdData = await Context.GetData<WindUploadingFileBreakDown>(qry).ConfigureAwait(false);
 
             List<WindUploadingFileBreakDown> _bdData2 = new List<WindUploadingFileBreakDown>();
             _bdData2 = await Context.GetData<WindUploadingFileBreakDown>(qry2).ConfigureAwait(false);
-
            _bdData.AddRange(_bdData2); ;
 
 
@@ -9875,7 +9875,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            AddTo.Add("tanvi@softeltech.in");
+            //AddTo.Add("tanvi@softeltech.in");
             //dTo.Add("tanviik28@gmail.com");
 
             // emails.Add("tanviik28@gmail.com");
