@@ -64,6 +64,8 @@ namespace DGRAPIs.BS
         Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string logFileName);
         Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType);
         Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate);
+        Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
+        Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate);
         Task<int> InsertDailyTargetKPI(List<WindDailyTargetKPI> set);
         Task<int> InsertMonthlyTargetKPI(List<WindMonthlyTargetKPI> set);
         Task<int> InsertMonthlyUploadingLineLosses(List<WindMonthlyUploadingLineLosses> set);
@@ -2495,6 +2497,41 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.GetSolarTrackerLoss(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        //Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
+        public async Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindTMLData(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        //GetWindTMLGraphData
+        public async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindTMLGraphData(site, fromDate, toDate);
 
                 }
             }

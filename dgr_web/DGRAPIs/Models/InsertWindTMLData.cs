@@ -39,4 +39,26 @@ namespace DGRAPIs.Models
         public double windspeed { get; set; }
         public double averageWindSpeed { get; set; }
     }
+
+    public class GetWindTMLGraphData
+    {
+        public string all_bd { get; set; }
+        public double loss_kw { get; set; }
+        public double expected_kw_sum { get; set; }
+        public double active_power_sum { get; set; }
+        public double target_sum { get; set; }
+        public double line_loss_per { get; set; }
+
+        public double lineloss_final { get; set; }
+        public double expected_final { get; set; }
+        public double target_final { get; set; }
+        public double actual_final { get; set; }
+        public double lossIGBD_final { get; set; }
+        public double lossEGBD_final { get; set; }
+        public double lossLULL_final { get; set; }
+        public double lossNC_final { get; set; }
+        public double lossPCD_final { get; set; }
+        public double lossSMH_final { get; set; }
+        public double lossUSMH_final { get; set; }
+    }
 }

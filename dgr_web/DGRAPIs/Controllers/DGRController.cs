@@ -848,6 +848,38 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("GetWindTMLData")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindTMLData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindTMLData(site, fromDate, toDate);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        //GetWindTMLGraphData
+        [Route("GetWindTMLGraphData")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindTMLGraphData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindTMLGraphData(site, fromDate, toDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         [Route("CalculateDailyWindKPI")]
         [HttpGet]

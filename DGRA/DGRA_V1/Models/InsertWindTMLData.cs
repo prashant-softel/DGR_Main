@@ -21,4 +21,8 @@ namespace DGRA_V1.Models
         public string status { get; set; }
         public int status_code { get; set; }
     }
+    public class GetWindTMLGraphData
+    {
+
+    }
 }

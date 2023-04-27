@@ -605,8 +605,10 @@ function getYearlyReport()
 
         }
     });
-}
+    }
+
     function monthlychart(data) {
+        console.log("inside monthly Chart function : " + data);
         let chartStatus = Chart.getChart("Waterfall"); // <canvas> id
         if (chartStatus != undefined) {
             chartStatus.destroy();

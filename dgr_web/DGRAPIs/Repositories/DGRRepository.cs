@@ -4045,15 +4045,16 @@ bd_remarks, action_taken
                                 return finalResult;
                             }
                         }
-
-                        if(unit.status_code == 0)
+                        insertValues += "('" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
+                        /*
+                        if (unit.status_code == 0)
                         {
                             insertValues += "('" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
-                        }
-                        if(unit.status_code == 1)
+                        }*/
+                        /*if(unit.status_code == 1)
                         {
                             insertValues += "('" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', NULL, " + unit.avg_wind_speed + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
-                        }
+                        }*/
 
                         if(qryCounter == 10000)
                         {
@@ -4321,7 +4322,6 @@ bd_remarks, action_taken
                 foreach (var unit in UpdatedTMLDataList)
                 {
                     //Calculate reconstructed windspeed.
-                    //Add try catch.
                     //reconstructed wind speed condition 1.
                     try
                     {
@@ -4375,7 +4375,7 @@ bd_remarks, action_taken
                     try
                     {
                         double deviation = 0;
-                        if(unit.avg_active_power == 0)
+                        if(unit.avg_active_power  <= 0)
                         {
                             deviation = 0 - unit.exp_power_kw;
                         }
@@ -4398,16 +4398,17 @@ bd_remarks, action_taken
                     try
                     {
                         double loss = 0;
-                        if(unit.deviation_kw > 0)
-                        {
-                            loss = unit.deviation_kw / 6;
-                        }
-                        unit.loss_kw = loss;
+                        loss = unit.deviation_kw / 6;
+                        unit.loss_kw = loss;    
                         finalResult = 6;
+                        if(unit.deviation_kw < 0)
+                        {
+                            API_InformationLog("Deviation less than 0 : " + unit.deviation_kw);
+                        }
                     }
                     catch(Exception e)
                     {
-                        string msg = "Exception while calculating loss kw, due to : " + ToString();
+                        string msg = "Exception while calculating loss kw, due to : " + e.ToString();
                         API_ErrorLog(msg);
                         return finalResult;
                     }
@@ -9496,12 +9497,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry1 = "";
             if (prType == "AOP")
             {
-                qry1 = "select site, t1.site_id, t1. date, pr, toplining_pr, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma) as ma, avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter +
-                    " group by t1.site, t1.date ";
+                //qry1 = "select site, t1.site_id, t1. date, pr, toplining_pr, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma) as ma, avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter +                    " group by t1.site, t1.date ";
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
             }
             else if(prType == "toplining")
             {
-                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses, t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+
+                //qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses, t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
             try
@@ -12119,15 +12123,295 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         
         internal async Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate)
         {
+            List<SolarTrackerLoss> _trackerLossList = new List<SolarTrackerLoss>();
             string filter = "date >= '" + fromDate + "'  and date<= '" + toDate + "'";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and site_id IN(" + site + ") ";
             }
-            
+            filter += " ORDER BY date ASC;";
             string qry = "SELECT site,ac_capacity,date,	from_time,to_time,trackers_in_BD,module_tracker,module_WP,remark,tracker_loss,breakdown_tra_capacity,actual_poa,actual_ghi,	target_aop_pr FROM `uploading_file_tracker_loss` where " + filter ;
-            return await Context.GetData<SolarTrackerLoss>(qry).ConfigureAwait(false);
+            try
+            {
+                _trackerLossList =  await Context.GetData<SolarTrackerLoss>(qry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching records from uploading_file_tracker_loss, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
+            return _trackerLossList;
         }
+
+        internal async Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate)
+        {
+            List<InsertWindTMLData> _windTMLDataList = new List<InsertWindTMLData>();
+            try
+            {
+                string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
+                string todate = Convert.ToDateTime(toDate).ToString("dd-MMM-yy");
+                string filter = "date >= '" + fdate + "'  and date <= '" + todate + "'";
+                if (!string.IsNullOrEmpty(site))
+                {
+                    filter += " and site_id IN(" + site + ") ";
+                }
+                filter += " ORDER BY WTGs ASC, to_time ASC ;";
+                string fetchQry = "SELECT * FROM uploading_file_tmr_data WHERE " +filter;
+                _windTMLDataList = await Context.GetData<InsertWindTMLData>(fetchQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching records from tml_data table for displaying, due to  : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            return _windTMLDataList;
+        }
+
+        //GetWindTMLGraphData
+        internal async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate)
+        {
+            List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
+            string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
+            string todate = Convert.ToDateTime(toDate).ToString("dd-MMM-yy");
+            string tmrFilter = "date >= '" + fdate + "'  and date <= '" + todate + "'";
+            double lossIGBD = 0;
+            double lossEGBD = 0;
+            double lossLULL = 0;
+            double lossNC = 0;
+            double lossPCD = 0;
+            double lossSMH = 0;
+            double lossUSMH = 0;
+            double expected_power_sum = 0;
+            double actual_active_power = 0;
+            double target_sum = 0;
+            double lineloss_percentage = 0;
+            double lineloss_final = 0;
+            try
+            {
+                if (!string.IsNullOrEmpty(site))
+                {
+                    tmrFilter += " and site_id IN(" + site + ") ";
+                }
+                //tmrFilter += " ORDER BY WTGs ASC, to_time ASC ;";
+                //USMH, SMH, IGBD, EGBD, PCD, NC, LULL :- SELECT all_bd, SUM(loss_kw) as loss_kw FROM `uploading_file_tmr_data` WHERE date = '06-Apr-23' AND site_id = 224 GROUP BY all_bd;
+                //Expected :- SELECT (SUM(exp_power_kw)/6)/1000000 as expected_kw_sum FROM `uploading_file_tmr_data` WHERE date = '06-Apr-23' AND site_id = 224;
+                //Actual :- SELECT (SUM(avg_active_power)/6)/1000000 as active_power_sum FROM `uploading_file_tmr_data` WHERE date = '06-Apr-23' AND site_id = 224;
+                //
+                //Target :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
+                //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
+                //              line_loss_per * actual / 1000000.
+
+                string fetchLossQry = "SELECT all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
+                try
+                {
+                    _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLossQry).ConfigureAwait(false);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while fetching records from uploading_file_tmr_data for sum(loss_kw), due to  : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching records from tml_data table for displaying, due to  : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            try
+            {
+                if (_tmlDataList.Count > 0)
+                {
+                    foreach (var unit in _tmlDataList)
+                    {
+                        if (unit.all_bd == "IGBG")
+                        {
+                            lossIGBD = unit.loss_kw;
+                        }
+                        if (unit.all_bd == "EGBD")
+                        {
+                            lossEGBD = unit.loss_kw;
+                        }
+                        if (unit.all_bd == "LULL")
+                        {
+                            lossLULL = unit.loss_kw;
+                        }
+                        if (unit.all_bd == "NC")
+                        {
+                            lossNC = unit.loss_kw;
+                        }
+                        if (unit.all_bd == "PCD")
+                        {
+                            lossPCD = unit.loss_kw;
+                        }
+                        if (unit.all_bd == "SMH")
+                        {
+                            lossSMH = unit.loss_kw;
+                        }
+                        if (unit.all_bd == "USMH")
+                        {
+                            lossUSMH = unit.loss_kw;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while extracting loss sum from _tmlDataList, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            _tmlDataList.Clear();
+
+            //Expected :- SELECT (SUM(exp_power_kw)/6)/1000000 as expected_kw_sum FROM `uploading_file_tmr_data` WHERE date = '06-Apr-23' AND site_id = 224;
+            string fetchExpectedQry = "SELECT (SUM(exp_power_kw)/6)/1000000 as expected_kw_sum FROM `uploading_file_tmr_data` WHERE " + tmrFilter + ";";
+            try
+            {
+                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchExpectedQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching Expected sum from uploading_file_tmr_data, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            if(_tmlDataList.Count >  0)
+            {
+                try
+                {
+                    foreach(var unit in _tmlDataList)
+                    {
+                        expected_power_sum = unit.expected_kw_sum;
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while extracting Expected sum value from _tmlDataList, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+            _tmlDataList.Clear();
+
+            //Actual :- SELECT (SUM(avg_active_power)/6)/1000000 as active_power_sum FROM `uploading_file_tmr_data` WHERE date = '06-Apr-23' AND site_id = 224;
+            string fetchActualQry = "SELECT (SUM(avg_active_power)/6)/1000000 as active_power_sum FROM `uploading_file_tmr_data` WHERE " +tmrFilter + ";";
+            try
+            {
+                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchActualQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching records from uploading_file_tmr_data for Actual Sum, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            if(_tmlDataList.Count > 0)
+            {
+                try
+                {
+                    foreach(var unit in _tmlDataList)
+                    {
+                        actual_active_power = unit.active_power_sum;
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while extracting value of Actual_active_power from _tmrDataList, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+            _tmlDataList.Clear();
+
+            //Target :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
+            string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            try
+            {
+                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchTargetQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while Fetching target sum form daily_target_kpi, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            if(_tmlDataList.Count > 0)
+            {
+                try
+                {
+                    foreach(var unit in _tmlDataList)
+                    {
+                        target_sum = unit.target_sum;
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while Extracting target sum from _tmlDataList, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+            _tmlDataList.Clear();
+
+            //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
+            //              line_loss_per * actual / 1000000.
+            string toMonth = Convert.ToDateTime(toDate).ToString("MM");
+            string fromMonth = Convert.ToDateTime(fromDate).ToString("MM");
+            string fromYear = Convert.ToDateTime(fromDate).ToString("yyyy");
+            string toYear = Convert.ToDateTime(fromDate).ToString("yyyy");
+            string fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") ;" ;
+            try
+            {
+                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            if(_tmlDataList.Count > 0)
+            {
+                try
+                {
+                    foreach(var unit in _tmlDataList)
+                    {
+                        lineloss_percentage = unit.line_loss_per;
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+            _tmlDataList.Clear();
+
+            if(lineloss_percentage > 0)
+            {
+                double temp = (lineloss_percentage * actual_active_power) / 6;
+                lineloss_final =  temp / 1000000 ;
+            }
+            _tmlDataList.Clear();
+
+            try
+            {
+                GetWindTMLGraphData finalData = new GetWindTMLGraphData()
+                {
+                    expected_final = expected_power_sum,
+                    lineloss_final = lineloss_final,
+                    target_final = target_sum,
+                    lossUSMH_final = lossUSMH,
+                    lossSMH_final = lossSMH,
+                    lossNC_final = lossNC,
+                    lossIGBD_final = lossIGBD,
+                    lossEGBD_final = lossEGBD,
+                    lossLULL_final = lossLULL,
+                    lossPCD_final = lossPCD,
+                    actual_final = actual_active_power,
+                };
+                _tmlDataList.Add(finalData);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while inserting final Values into _tmlDataList, due to : " + e.ToString();
+            }
+            return _tmlDataList;
+        }
+
         private void API_ErrorLog(string Message)
         {
             //Read variable from appsetting to enable disable log
