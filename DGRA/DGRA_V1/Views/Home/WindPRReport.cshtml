@@ -31,6 +31,11 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/jquery/jquery.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables/jquery.dataTables.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/js/dataTables.responsive.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js">
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
@@ -48,6 +53,15 @@
         overflow-y: auto;
         clear: both;
     }
+    .dt-button buttons-columnVisibility:active {
+        background-color:aquamarine;
+    }
+   /* .dt-button-collection > div > button{
+        background-color: palevioletred;
+    }
+    .dt-button-collection > div > button:active{
+        background-color: blueviolet;
+    }*/
 </style>
 
 <div class="content-wrapper">
@@ -650,12 +664,87 @@
                                 }
                             }
                         },
-                        'colvis'
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'JMR Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'JMR Energy (in MU)  Act';
+                                }
+                                else if (idx == 4) {
+                                    return 'JMR Energy (in MU)  Var (%)';
+                                }
+                                else if (idx == 5) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 6) {
+                                    return 'Wind Speed (m/s)  Tar';
+                                }
+                                else if (idx == 7) {
+                                    return 'Wind Speed (m/s)  Act ';
+                                }
+                                else if (idx == 8) {
+                                    return 'Wind Speed (m/s)  Var (%) ';
+                                }
+                                else if (idx == 9) {
+                                    return 'PLF (%)  Tar';
+                                }
+                                else if (idx == 10) {
+                                    return 'PLF (%)  Act ';
+                                }
+                                else if (idx == 11) {
+                                    return 'PLF (%)  Var (%) ';
+                                }
+                                else if (idx == 12) {
+                                    return 'MA Actual (%)  Tar';
+                                }
+                                else if (idx == 13) {
+                                    return 'MA Actual (%)  Act ';
+                                }
+                                else if (idx == 14) {
+                                    return 'MA Actual (%)  Var (%) ';
+                                }
+                                else if (idx == 15) {
+                                    return 'IGA (%)  Tar';
+                                }
+                                else if (idx == 16) {
+                                    return 'IGA (%)  Act ';
+                                }
+                                else if (idx == 17) {
+                                    return 'IGA (%)  Var (%) ';
+                                }
+                                else if (idx == 18) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 19) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 20) {
+                                    return 'EGA (%)  Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        }
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
 
@@ -1114,12 +1203,96 @@
                                 }
                             }
                         },
-                        'colvis'
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'JMR Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'JMR Energy (in MU) Act';
+                                }
+                                else if (idx == 4) {
+                                    return 'JMR Energy (in MU) Var (%)';
+                                }
+                                else if (idx == 5) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 6) {
+                                    return 'Wind Speed (m/s) Tar';
+                                }
+                                else if (idx == 7) {
+                                    return 'Wind Speed (m/s) Act ';
+                                }
+                                else if (idx == 8) {
+                                    return 'Wind Speed (m/s) Var (%) ';
+                                }
+                                else if (idx == 9) {
+                                    return 'PLF (%) Tar';
+                                }
+                                else if (idx == 10) {
+                                    return 'PLF (%) Act ';
+                                }
+                                else if (idx == 11) {
+                                    return 'PLF (%) Var (%) ';
+                                }
+                                else if (idx == 12) {
+                                    return 'MA Actual (%) Tar';
+                                }
+                                else if (idx == 13) {
+                                    return 'MA Actual (%) Act ';
+                                }
+                                else if (idx == 14) {
+                                    return 'MA Actual (%) Var (%) ';
+                                }
+                                else if (idx == 15) {
+                                    return 'IGA (%) Tar';
+                                }
+                                else if (idx == 16) {
+                                    return 'IGA (%) Act ';
+                                }
+                                else if (idx == 17) {
+                                    return 'IGA (%) Var (%) ';
+                                }
+                                else if (idx == 18) {
+                                    return 'EGA (%) Tar';
+                                }
+                                else if (idx == 19) {
+                                    return 'EGA (%) Act ';
+                                }
+                                else if (idx == 20) {
+                                    return 'EGA (%) Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        }
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dt-button-collection > div > button").addClass('btn btn-secondary');
+               // $("button.dt-button.buttons-collection.buttons-colvis").addClass('btn btn-light');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                //$(document).on("click", ".dt-button-collection ", function () {
+                //    var collection = document.getElementsByClassName("buttons-collection");
+                //    var firstElement = collection[0];
+                //    var attributeValue = firstElement.getAttribute('aria-expanded');
+                //    console.log(attributeValue + "jjj");
+                //});
+               
                 document.getElementById("loader").style.display = 'none';
                 $('#example2').wrap("<div class='scrolledTable'></div>");
 

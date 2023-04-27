@@ -2705,13 +2705,89 @@
                                 }
                             }
                         },
-                        'colvis'
+                       // 'colvis'
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'JMR Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'JMR Energy (in MU) Act';
+                                }
+                                else if (idx == 4) {
+                                    return 'JMR Energy (in MU) Var (%)';
+                                }
+                                else if (idx == 5) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 6) {
+                                    return 'Wind Speed (m/s) Tar';
+                                }
+                                else if (idx == 7) {
+                                    return 'Wind Speed (m/s) Act ';
+                                }
+                                else if (idx == 8) {
+                                    return 'Wind Speed (m/s) Var (%) ';
+                                }
+                                else if (idx == 9) {
+                                    return 'PLF (%) Tar';
+                                }
+                                else if (idx == 10) {
+                                    return 'PLF (%) Act ';
+                                }
+                                else if (idx == 11) {
+                                    return 'PLF (%) Var (%) ';
+                                }
+                                else if (idx == 12) {
+                                    return 'MA Actual (%) Tar';
+                                }
+                                else if (idx == 13) {
+                                    return 'MA Actual (%) Act ';
+                                }
+                                else if (idx == 14) {
+                                    return 'MA Actual (%) Var (%) ';
+                                }
+                                else if (idx == 15) {
+                                    return 'IGA (%) Tar';
+                                }
+                                else if (idx == 16) {
+                                    return 'IGA (%) Act ';
+                                }
+                                else if (idx == 17) {
+                                    return 'IGA (%) Var (%) ';
+                                }
+                                else if (idx == 18) {
+                                    return 'EGA (%) Tar';
+                                }
+                                else if (idx == 19) {
+                                    return 'EGA (%) Act ';
+                                }
+                                else if (idx == 20) {
+                                    return 'EGA (%) Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        }
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 //$('#example1').removeClass('dataTable');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 $('#example1').wrap("<div class='scrolledTable'></div>");
                 //document.getElementById("reportsDaily").style.display = 'block';
                // document.getElementById("sitewisechart").style.display = 'none';
@@ -3298,12 +3374,87 @@
                                 }
                             }
                         },
-                        'colvis'
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'JMR Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'JMR Energy (in MU) Act';
+                                }
+                                else if (idx == 4) {
+                                    return 'JMR Energy (in MU) Var (%)';
+                                }
+                                else if (idx == 5) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 6) {
+                                    return 'Wind Speed (m/s) Tar';
+                                }
+                                else if (idx == 7) {
+                                    return 'Wind Speed (m/s) Act ';
+                                }
+                                else if (idx == 8) {
+                                    return 'Wind Speed (m/s) Var (%) ';
+                                }
+                                else if (idx == 9) {
+                                    return 'PLF (%) Tar';
+                                }
+                                else if (idx == 10) {
+                                    return 'PLF (%) Act ';
+                                }
+                                else if (idx == 11) {
+                                    return 'PLF (%) Var (%) ';
+                                }
+                                else if (idx == 12) {
+                                    return 'MA Actual (%) Tar';
+                                }
+                                else if (idx == 13) {
+                                    return 'MA Actual (%) Act ';
+                                }
+                                else if (idx == 14) {
+                                    return 'MA Actual (%) Var (%) ';
+                                }
+                                else if (idx == 15) {
+                                    return 'IGA (%) Tar';
+                                }
+                                else if (idx == 16) {
+                                    return 'IGA (%) Act ';
+                                }
+                                else if (idx == 17) {
+                                    return 'IGA (%) Var (%) ';
+                                }
+                                else if (idx == 18) {
+                                    return 'EGA (%) Tar';
+                                }
+                                else if (idx == 19) {
+                                    return 'EGA (%) Act ';
+                                }
+                                else if (idx == 20) {
+                                    return 'EGA (%) Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        }
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 $('#example2').wrap("<div class='scrolledTable'></div>");
                 EnergyBarChart(target_energy, actual_energy, pas_energy_var, neg_energy_var, Levels);
                 WindBarChart(target_wind, actual_wind, pas_wind_var, neg_wind_var, Levels);
@@ -3683,6 +3834,13 @@ function GetWindMajorBreakdown() {
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 $('#example1').removeClass('dataTable');
                 //document.getElementById("reportsDaily").style.display = 'block';
 
