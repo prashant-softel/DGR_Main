@@ -368,43 +368,43 @@
 
 
 
-                        total_capacity += result[i].capacity.toFixed(2);
-                        total_tar_kwh += result[i].tar_kwh.toFixed(2);
+                        total_capacity += result[i].capacity;
+                        total_tar_kwh += result[i].tar_kwh;
                         //total_expected_kwh += result[i].expected_kwh;
-                        total_act_kwh += result[i].act_kwh.toFixed(2);
-                        total_minr += minr.toFixed(2);
-                        total_tar_ghi += result[i].tar_ghi.toFixed(2);
-                        total_act_ghi += result[i].act_ghi.toFixed(2);
-                        total_tar_poa += result[i].tar_poa.toFixed(2);
-                        total_act_poa += result[i].act_poa.toFixed(2);
-                        total_tar_gain += gain_tar.toFixed(2);
-                        total_act_gain += gain_act.toFixed(2);
-                        total_tar_plf += result[i].tar_plf.toFixed(2);
-                        total_act_plf += result[i].act_plf.toFixed(2);
-                        total_tar_pr += result[i].tar_pr.toFixed(2);
-                        total_act_pr += act_prval.toFixed(2);
-                        total_tar_ma += result[i].tar_ma.toFixed(2);
-                        total_act_ma += result[i].act_ma.toFixed(2);
-                        total_tar_iga += result[i].tar_iga.toFixed(2);
-                        total_act_iga += result[i].act_iga.toFixed(2);
-                        total_tar_ega += result[i].tar_ega.toFixed(2);
-                        total_act_ega += result[i].act_ega.toFixed(2);
-                        total_capTarGhi += result[i].tar_ghi.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capTarPoa += result[i].tar_poa.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capTarPlf += result[i].tar_plf.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capTarPr += result[i].tar_pr.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capTarGain += gain_tar.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capTarMa += result[i].tar_ma.toFixed(2) * result[i].capacity.toFixed(2)
-                        total_capTarIga += result[i].tar_iga.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capTarEga += result[i].tar_ega.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActGhi += result[i].act_ghi.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActPoa += result[i].act_poa.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActPlf += result[i].act_plf.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActPr += act_prval.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActGain += gain_act.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActMa += result[i].act_ma.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActIga += result[i].act_iga.toFixed(2) * result[i].capacity.toFixed(2);
-                        total_capActEga += result[i].act_ega.toFixed(2) * result[i].capacity.toFixed(2);
+                        total_act_kwh += result[i].act_kwh;
+                        total_minr += minr;
+                        total_tar_ghi += result[i].tar_ghi;
+                        total_act_ghi += result[i].act_ghi;
+                        total_tar_poa += result[i].tar_poa;
+                        total_act_poa += result[i].act_poa;
+                        total_tar_gain += gain_tar;
+                        total_act_gain += gain_act;
+                        total_tar_plf += result[i].tar_plf;
+                        total_act_plf += result[i].act_plf;
+                        total_tar_pr += result[i].tar_pr;
+                        total_act_pr += act_prval;
+                        total_tar_ma += result[i].tar_ma;
+                        total_act_ma += result[i].act_ma;
+                        total_tar_iga += result[i].tar_iga;
+                        total_act_iga += result[i].act_iga;
+                        total_tar_ega += result[i].tar_ega;
+                        total_act_ega += result[i].act_ega;
+                        total_capTarGhi += result[i].tar_ghi * result[i].capacity;
+                        total_capTarPoa += result[i].tar_poa * result[i].capacity;
+                        total_capTarPlf += result[i].tar_plf * result[i].capacity;
+                        total_capTarPr += result[i].tar_pr * result[i].capacity;
+                        total_capTarGain += gain_tar * result[i].capacity;
+                        total_capTarMa += result[i].tar_ma * result[i].capacity
+                        total_capTarIga += result[i].tar_iga * result[i].capacity;
+                        total_capTarEga += result[i].tar_ega * result[i].capacity;
+                        total_capActGhi += result[i].act_ghi * result[i].capacity;
+                        total_capActPoa += result[i].act_poa * result[i].capacity;
+                        total_capActPlf += result[i].act_plf * result[i].capacity;
+                        total_capActPr += act_prval * result[i].capacity;
+                        total_capActGain += gain_act * result[i].capacity;
+                        total_capActMa += result[i].act_ma * result[i].capacity;
+                        total_capActIga += result[i].act_iga * result[i].capacity;
+                        total_capActEga += result[i].act_ega * result[i].capacity;
 
 
                         console.log(act_prval);
@@ -1223,7 +1223,7 @@
                     }
                    
                     avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
-                    avg_gain_var = (avg_act_gain - avg_tar_gain.toFixed(2));
+                    avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
                     avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
                     avg_ma_var = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
                     avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
