@@ -27,6 +27,33 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/jquery/jquery.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables/jquery.dataTables.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/js/dataTables.responsive.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js">
+@*<script type="text/javascript">
+        alert("This alert box was called with the onload event");
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
+    <link href="https://code.jquery.com/jquery-3.5.1.js" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js" rel="stylesheet">*@
+
+@*In addition to the above code, the following Javascript library files are loaded for use in this example:
+
+    https://code.jquery.com/jquery-3.5.1.js
+    https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js
+    https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js
+    https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
+    https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js*@
+
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
@@ -43,10 +70,10 @@
 
     .card-body {
     }
+
     hr {
         margin-top: -10px !important;
     }
-   
 </style>
 
 <div class="content-wrapper">
@@ -59,138 +86,138 @@
             <div class="card-header">
                 <h3 class="card-title text-center">Solar Weekly Performance Reports</h3>
             </div>
-          
 
-        <div class="card-body">
-            <div class="tab-content" id="custom-tabs-two-tabContent">
-                <div class="tab-pane fade show active" id="custom-tabs-two-op" role="tabpanel" aria-labelledby="custom-tabs-two-op-tab">
-                    <div class="row">
-                        <!--<div class="col-sm-4">
-            <div class="form-group">
-                <div class="row">
-                    <label class="col-sm-4 col-form-label text-right">FY : </label>
-                    <select class="form-control  col-sm-8" id="fy" name="fy" value="">
-                        <option value="">Select Financial Year</option>
-                    </select>
-                </div>
-            </div>
-        </div>-->
-                        <div class="col-sm-4">
-                            <div class="input-group " >
-                                <label class="col-sm-2 col-form-label text-left">Date : </label>
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </span>
+
+            <div class="card-body">
+                <div class="tab-content" id="custom-tabs-two-tabContent">
+                    <div class="tab-pane fade show active" id="custom-tabs-two-op" role="tabpanel" aria-labelledby="custom-tabs-two-op-tab">
+                        <div class="row">
+                            <!--<div class="col-sm-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-4 col-form-label text-right">FY : </label>
+                                        <select class="form-control  col-sm-8" id="fy" name="fy" value="">
+                                            <option value="">Select Financial Year</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control float-right" id="daterange" name="daterange">
+                            </div>-->
+                            <div class="col-sm-4">
+                                <div class="input-group ">
+                                    <label class="col-sm-2 col-form-label text-left">Date : </label>
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="daterange" name="daterange">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-block btn-primary" onclick="GetOperationWKPR();">Search</button>
+                            </div>
+                            <div class="col-sm-6"></div>
+
+                        </div>
+                        <br>
+                        <hr>
+                        <div id="loader" class="loader  center" style="display:none"></div>
+                        <div id="divHFE">
+                            <div class="row" id="wk_head" style="display:none">
+                                <div class="col-sm-5 text-center" id="wk_head_sec1">
+
+                                </div>
+                                <div class="col-sm-3" id="wk_head_sec2">
+
+                                </div>
+                                <div class="col-sm-4" id="wk_head_sec3">
+
+                                </div>
+
                             </div>
                         </div>
+                        <hr>
+                        <div class="row">
+                            <div class="chart col-sm-4" style="padding:10px;">
+                                <canvas id="energy_mu_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                            <div class="chart col-sm-4" style="padding:10px;">
+                                <canvas id="wind_sp_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                            <div class="chart col-sm-4" style="padding:10px;">
+                                <canvas id="plf_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <hr>
 
-                        <div class="col-sm-2">
-                            <button type="button" class="btn btn-block btn-primary" onclick="GetOperationWKPR();">Search</button>
-                        </div>
-                        <div class="col-sm-6"></div>
+                        <div class="row">
 
-                    </div>
-                    <br>
-                    <hr>
-                    <div id="loader" class="loader  center" style="display:none"></div>
-                      <div id="divHFE">
-		       <div class="row" id="wk_head" style="display:none">
-                        <div class="col-sm-5 text-center" id="wk_head_sec1">
+                            <div class="chart col-sm-4 " style="padding:10px;">
+                                <canvas id="ma_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                            <div class="chart col-sm-4" style="padding:10px;">
+                                <canvas id="ega_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                            <div class="chart col-sm-4" style="padding:10px;">
+                                <canvas id="iga_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <hr>
 
-                        </div>
-                        <div class="col-sm-3" id="wk_head_sec2">
-
-                        </div>
-                        <div class="col-sm-4" id="wk_head_sec3">
-
-                        </div>
-
-			</div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="chart col-sm-4" style="padding:10px;">
-                            <canvas id="energy_mu_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                        <div class="chart col-sm-4" style="padding:10px;">
-                            <canvas id="wind_sp_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                        <div class="chart col-sm-4" style="padding:10px;">
-                            <canvas id="plf_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                    </div>
-                    <hr>
-
-                    <div class="row">
-
-                        <div class="chart col-sm-4 " style="padding:10px;">
-                            <canvas id="ma_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                        <div class="chart col-sm-4" style="padding:10px;">
-                            <canvas id="ega_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                        <div class="chart col-sm-4" style="padding:10px;">
-                            <canvas id="iga_chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                    </div>
-                    <hr>
-
-                    <br>
+                        <br>
                         <div id="divPBS">
-                    <div class="card-header">
-                        <h3 class="card-title text-center">Performance By Site</h3>
-                    </div>
-                    <br>
-                    <div id="reportsDailySite" style="overflow-x: auto;" class="reportsDailySite"></div>
+                            <div class="card-header">
+                                <h3 class="card-title text-center">Performance By Site</h3>
+                            </div>
+                            <br>
+                            <div id="reportsDailySite" style="overflow-x: auto;" class="reportsDailySite"></div>
                         </div>
-                    <br>
-                    <div class="row" id="sitewisechart">
-                        <div class="chart col-sm-6 text-center">
-                            <!--<h5>Energy (MUs) </h5>-->
-                            <canvas id="energy_chart_pr_site" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
-                        </div>
-                        <div class="chart col-sm-6 text-center">
-                            <!--<h5>PR (%)</h5>-->
-                            <canvas id="wind_chart_pr_site" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
-                        </div>
+                        <br>
+                        <div class="row" id="sitewisechart">
+                            <div class="chart col-sm-6 text-center">
+                                <!--<h5>Energy (MUs) </h5>-->
+                                <canvas id="energy_chart_pr_site" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
+                            </div>
+                            <div class="chart col-sm-6 text-center">
+                                <!--<h5>PR (%)</h5>-->
+                                <canvas id="wind_chart_pr_site" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
+                            </div>
 
-                    </div>
-                    <br>
+                        </div>
+                        <br>
                         <div id="divPSPV">
-                    <div class="card-header">
-                        <h3 class="card-title text-center">Performance By SPV</h3>
-                    </div>
-                    <br>
-                    <div id="reportsDailySPV" style="overflow-x: auto;" class="reportsDailySPV"></div>
+                            <div class="card-header">
+                                <h3 class="card-title text-center">Performance By SPV</h3>
+                            </div>
+                            <br>
+                            <div id="reportsDailySPV" style="overflow-x: auto;" class="reportsDailySPV"></div>
                         </div>
-                    <br>
-                    <div class="row" id="sitewisechart">
-                        <div class="chart col-sm-6 text-center">
-                            <!--<h5>Energy (MUs) </h5>-->
-                            <canvas id="energy_chart_pr_spv" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
-                        </div>
-                        <div class="chart col-sm-6 text-center">
-                            <!--<h5>PR (%)</h5>-->
-                            <canvas id="wind_chart_pr_spv" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
-                        </div>
+                        <br>
+                        <div class="row" id="sitewisechart">
+                            <div class="chart col-sm-6 text-center">
+                                <!--<h5>Energy (MUs) </h5>-->
+                                <canvas id="energy_chart_pr_spv" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
+                            </div>
+                            <div class="chart col-sm-6 text-center">
+                                <!--<h5>PR (%)</h5>-->
+                                <canvas id="wind_chart_pr_spv" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
+                            </div>
 
-                    </div>
-                    <hr>
-                        <div id="divMBR">
-                    <div class="card-header">
-                        <h5 class="card-title text-center">Major Breakdown Reports</h5>
-                    </div>
-                    <br>
-                    <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
                         </div>
+                        <hr>
+                        <div id="divMBR">
+                            <div class="card-header">
+                                <h5 class="card-title text-center">Major Breakdown Reports</h5>
+                            </div>
+                            <br>
+                            <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
+                        </div>
+                    </div>
+
                 </div>
-                
             </div>
         </div>
-</div>
 
         <!--<div class="card-footer">
             Footer
@@ -230,7 +257,7 @@
 
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/libs/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/dist/pptxgen.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <script type="text/javascript">
     var fyear ="";
@@ -480,7 +507,7 @@
                         avg_tar_ghi = tar_ghi_wk / total_capacity;
                         avg_act_ghi = act_ghi_wk / total_capacity;
                     }
-                   
+
                     if (tar_plf_wk != 0 || act_plf_wk != 0) {
                         avg_tar_plf = tar_plf_wk / total_capacity;
                         avg_act_plf = act_plf_wk / total_capacity;
@@ -522,7 +549,7 @@
                 iga_var_wk = (avg_act_iga - avg_tar_iga);
                 ega_var_wk = (avg_act_ega - avg_tar_ega);
 
-                //Energy 
+                //Energy
                 let en_pasitive;
                 let en_negative;
                 if (energy_var_wk < 0) {
@@ -531,7 +558,7 @@
                 else {
                     en_pasitive = (energy_var_wk).toFixed(1);
                 }
-                
+
                 diff_MUs_wk = (act_energy_wk - tar_energy_wk);
                 Diff_Mus.push(diff_MUs_wk.toFixed(1));
                 revenue.push(total_revenue_wk);
@@ -557,7 +584,7 @@
                 var_ghi_neg.push(ghi_negative);
 
                 //POA
-                
+
                 let poa_positive;
                 let poa_negative;
                 if (poa_var_wk < 0) {
@@ -566,12 +593,12 @@
                 else {
                     poa_positive = (poa_var_wk).toFixed(1);
                 }
-                
+
                 actual_poa.push(avg_act_poa.toFixed(1));
                 target_poa.push(avg_tar_poa.toFixed(1));
                 var_poa_pos.push(poa_positive);
                 var_poa_neg.push(poa_negative);
-                
+
                 //plf
                 let plf_positive;
                 let plf_negative;
@@ -588,7 +615,7 @@
                 var_plf_pos.push(plf_positive);
                 var_plf_neg.push(plf_negative);
                 // MA Calcultion
-                
+
                 let ma_positive;
                 let ma_negative;
                 if (ma_var_wk < 0) {
@@ -619,7 +646,7 @@
                 var_iga_neg.push(iga_negative);
 
                 //EGA Calculation
-                
+
                 let ega_positive;
                 let ega_negative;
                 if (ega_var_wk < 0) {
@@ -635,13 +662,13 @@
                 var_ega_neg.push(ega_negative);
                 GetOperationMonthlyPR();
 
-               
+
             }
 
         });
-      
+
         //document.getElementById("loader").style.display = 'none';
-        
+
     }
 
     function GetOperationMonthlyPR() {
@@ -755,7 +782,7 @@
                         avg_tar_ghi = tar_ghi_mn / total_capacity_mn;
                         avg_act_ghi = act_ghi_mn / total_capacity_mn;
                     }
-                   
+
                     if (tar_plf_mn != 0 || act_plf_mn != 0) {
                         avg_tar_plf = tar_plf_mn / total_capacity_mn;
                         avg_act_plf = act_plf_mn / total_capacity_mn;
@@ -800,13 +827,13 @@
                 iga_var_mn = (avg_act_iga - avg_tar_iga);
                 ega_var_mn = (avg_act_ega - avg_tar_ega);
 
-               
+
                 revenue.push( total_revenue_mn );
                 // Push Energy MU Monthly
                 diff_MUs_mn = (act_energy_mn - tar_energy_mn);
                 Diff_Mus.push(diff_MUs_mn.toFixed(1));
 
-                //Energy 
+                //Energy
                 let en_pasitive;
                 let en_negative;
                 if (energy_var_mn < 0) {
@@ -915,7 +942,7 @@
                 var_ega_pos.push(ega_positive);
                 var_ega_neg.push(ega_negative);
                 GetOperationYearlyPR();
-               
+
                 //document.getElementById("loader").style.display = 'none';
                 // Call function for get yearly data
             }
@@ -1030,7 +1057,7 @@
                         avg_tar_ghi = tar_ghi_yr / total_capacity_yr;
                         avg_act_ghi = act_ghi_yr / total_capacity_yr;
                     }
-                   
+
                     if (tar_plf_yr != 0 || act_plf_yr != 0) {
                         avg_tar_plf = tar_plf_yr / total_capacity_yr;
                         avg_act_plf = act_plf_yr / total_capacity_yr;
@@ -1073,7 +1100,7 @@
                 ega_var_yr = (avg_act_ega - avg_tar_ega);
 
 
-                //Energy 
+                //Energy
                 let en_pasitive;
                 let en_negative;
                 if (energy_var_yr < 0) {
@@ -1082,7 +1109,7 @@
                 else {
                     en_pasitive = (energy_var_yr).toFixed(1);
                 }
-                
+
                 revenue.push(total_revenue_yr);
                 // Push Energy MU Monthly
                 diff_MUs_yr = (act_energy_yr - tar_energy_yr);
@@ -1240,7 +1267,7 @@
 
     }
     async function makePPT(ChartImages) {
-     
+
         let pres = new PptxGenJS();
         //pres.addText('Note : Reports for Performance By Site, Performance By SPV  is limited to column MA Actual(%), Major Breakdown Reports limited to 10 records due to truncate of data.', { x: 0, y: '90%', w: '100%', h: 50, align: 'center' });
         //Add HFE data
@@ -1250,15 +1277,15 @@
         console.log(HFECharts)
         console.log('Before length of chart image :- '+ChartImages.length)
         ChartImages = [...new Set(ChartImages)];
-        
+
         ChartImages.splice(1, 0, imgHFE);
         ChartImages.splice(5, 0, imgPSPV);
         ChartImages.splice(15, 0, imgPBS);
         ChartImages.splice(16, 0, imgMBR);
 
         ChartImages.splice(2, 0, ...HFECharts);
-        
-        
+
+
 
 
         //// 2. Add a Slide
@@ -1285,9 +1312,9 @@
 
                 let temp = ChartImages[12]; // Store 11th element in temp variable
         ChartImages[12] = ChartImages[7]; // Assign 11th element to 5th position
-        ChartImages[7] = temp; 
+        ChartImages[7] = temp;
 
-        
+
         ChartImages.forEach(function (currentValue, index, arr) {
             if(index == 1 ){
                 console.log(1);
@@ -1352,7 +1379,7 @@
                 w: "30%",
                 h: "30%",
             });
-            
+
          }
          else if(index > 2 && index <9 ){
              console.log(index);
@@ -1398,7 +1425,7 @@
              console.log(index);
          }
          else if(index == ChartImages.length-2) {
-             // this for before chart images before breAKDOWN 
+             // this for before chart images before breAKDOWN
                pres.addSlide().addImage({
                  path: ChartImages[10+1],
                  x: "0%",
@@ -1447,7 +1474,7 @@
 //                    h: "70%",
 //            });
 //            }
-            
+
         });
 
         // 4. Save the Presentation
@@ -1654,7 +1681,7 @@
                     onComplete: (e) => {
                         var url1 = sampleChart.toBase64Image();
                         //console.log(url1);
-                   
+
                         ChartImages.push(url1);
                     }
                 },
@@ -2361,7 +2388,7 @@
                     //var total_time = "";
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
-                       
+
                                 tbl += '<tr>';
                                 tbl += '<td class="text-left">' + formattedDate + '</td>';
                                 tbl += '<td class="text-left">' + result[i].site + '</td>';
@@ -2377,7 +2404,7 @@
                                 tbl += '<td class="text-left">' + result[i].total_bd.toFixed(2) + '</td>';
                                 tbl += '<td class="text-left">' + result[i].bd_remarks + '</td>';
                             }
-                          
+
                 }
                 else {
                     //console.log("Data not available");
@@ -2423,6 +2450,13 @@
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 $('#example2').removeClass('dataTable');
 
                 var divMBR = document.getElementById('divMBR');
@@ -2591,14 +2625,14 @@
                         if (result[i].tar_poa != 0) {
                             poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
                         }
-                        
+
                         pr_var = (act_prval - result[i].tar_pr);
                         plf_var = (result[i].act_plf - result[i].tar_plf);
                         ma_act_var = (result[i].act_ma - result[i].tar_ma);
                         iga_var = (result[i].act_iga - result[i].tar_iga);
                         ega_var = (result[i].act_ega - result[i].tar_ega);
 
-                       
+
                         if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
                             gain_tar = 0;
                         } else {
@@ -2852,6 +2886,13 @@
                     autoWidth: true,
                     responsive: false,
                     pageLength: 50,
+                    //columnDefs: [
+                    //    {
+                    //        targets: 1,
+                    //        className: 'noVis'
+                    //    }
+                    //],
+                   
                     buttons: [
                         {
                             extend: 'excel',
@@ -3068,12 +3109,114 @@
                                 }
                             }
                         },
-                        'colvis'
-                    ]
+                       {
+                           extend: 'colvis',
+                           columnText: function (dt, idx, title) {
+                               if (idx == 1) {
+                                   return 'Capacity (MW)';
+                               }
+                               else if (idx == 2) {
+                                   return 'Energy (in MU)  Tar';
+                               }
+                               else if (idx == 3) {
+                                   return 'Energy (in MU)  Act';
+                               }
+                               else if (idx == 4) {
+                                   return 'Energy (in MU)  Var (%)';
+                               }
+                               else if (idx == 5) {
+                                   return 'Revenue (MINR) ';
+                               }
+                               else if (idx == 6) {
+                                   return 'GHI (kWh/m^2)  Tar';
+                               }
+                               else if (idx == 7) {
+                                   return 'GHI (kWh/m^2)  Act';
+                               }
+                               else if (idx == 8) {
+                                   return 'GHI (kWh/m^2)  Var (%) ';
+                               }
+                               else if (idx == 9) {
+                                   return 'POA (kWh/m^2)  Tar';
+                               }
+                               else if (idx == 10) {
+                                   return 'POA (kWh/m^2)  Act ';
+                               }
+                               else if (idx == 11) {
+                                   return 'POA (kWh/m^2) Var (%) ';
+                               }
+                               else if (idx == 12) {
+                                   return 'GHI VS POA Gain (%)  Tar';
+                               }
+                               else if (idx == 13) {
+                                   return 'GHI VS POA Gain (%)  Act ';
+                               }
+                               else if (idx == 14) {
+                                   return 'GHI VS POA Gain(%)  Var (%) ';
+                               }
+                               else if (idx == 15) {
+                                   return 'PLF (%)  Tar';
+                               }
+                               else if (idx == 16) {
+                                   return 'PLF (%)  Act ';
+                               }
+                               else if (idx == 17) {
+                                   return 'PLF (%)  Var (%) ';
+                               }
+                               else if (idx == 18) {
+                                   return 'PR (%)  Tar';
+                               }
+                               else if (idx == 19) {
+                                   return 'PR (%)  Act ';
+                               }
+                               else if (idx == 20) {
+                                   return 'PR (%)  Var (%) ';
+                               }
+                               else if (idx == 21) {
+                                   return 'MA (%)  Tar';
+                               }
+                               else if (idx == 22) {
+                                   return 'MA (%)  Act ';
+                               }
+                               else if (idx == 23) {
+                                   return 'MA (%)  Var (%) ';
+                               }
+                               else if (idx == 24) {
+                                   return 'IGA (%)  Tar';
+                               }
+                               else if (idx == 25) {
+                                   return 'IGA (%)  Act ';
+                               }
+                               else if (idx == 26) {
+                                   return 'IGA (%)  Var (%) ';
+                               }
+                               else if (idx == 27) {
+                                   return 'EGA (%)  Tar';
+                               }
+                               else if (idx == 28) {
+                                   return 'EGA (%)  Act ';
+                               }
+                               else if (idx == 29) {
+                                   return 'EGA (%)  Var (%) ';
+                               }
+                               else {
+                                   return title;
+                               }
+                            }
+                       }
+                    ]                  
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
-                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(".dt-buttons > div > div > button ").addClass('btn btn-secondary');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm  ');
                 //$('#example1').removeClass('dataTable');
                 $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
@@ -3505,7 +3648,7 @@
                         if (result[i].tar_poa != 0) {
                             poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
                         }
-                        
+
                         pr_var = (act_prval - result[i].tar_pr);
                         plf_var = (result[i].act_plf - result[i].tar_plf);
                         ma_act_var = (result[i].act_ma - result[i].tar_ma);
@@ -3783,6 +3926,9 @@
                     autoWidth: true,
                     responsive: false,
                     pageLength: 50,
+                    //columnDefs: [
+                    //    { targets: 1, className: 'btn btn-light' },
+                    //],
                     buttons: [
                         {
                             extend: 'excel',
@@ -3808,12 +3954,12 @@
                                         }
                                         else if (columnIdx == 4) {
                                             return 'Energy (in MU)  Var (%)';
-                                        }                                      
+                                        }
                                         else if (columnIdx == 5) {
                                             return 'Revenue (MINR) ';
                                         }
                                         else if (columnIdx == 6) {
-                                            
+
                                             return `GHI (kWh/m^2)  Tar`;
                                         }
                                         else if (columnIdx == 7) {
@@ -3910,13 +4056,13 @@
                                         }
                                         else if (columnIdx == 2) {
                                             return 'Energy (in MU)  Tar';
-                                        }                                       
+                                        }
                                         else if (columnIdx == 3) {
                                             return 'Energy (in MU)  Act';
                                         }
                                         else if (columnIdx == 4) {
                                             return 'Energy (in MU)  Var (%)';
-                                        }                                       
+                                        }
                                         else if (columnIdx == 5) {
                                             return 'Revenue (MINR) ';
                                         }
@@ -3999,13 +4145,118 @@
                                 }
                             }
                         },
-                        'colvis'
+                       // 'colvis'
+                        {
+                            extend: 'colvis',
+                          //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'Energy (in MU)  Act';
+                                }
+                                else if (idx == 4) {
+                                    return 'Energy (in MU)  Var (%)';
+                                }
+                                else if (idx == 5) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 6) {
+
+                                    return `GHI (kWh/m^2)  Tar`;
+                                }
+                                else if (idx == 7) {
+                                    return 'GHI (kWh/m^2)  Act';
+                                }
+                                else if (idx == 8) {
+                                    return 'GHI (kWh/m^2)  Var (%) ';
+                                }
+                                else if (idx == 9) {
+                                    return 'POA (kWh/m^2)  Tar';
+                                }
+                                else if (idx == 10) {
+                                    return 'POA (kWh/m^2)  Act ';
+                                }
+                                else if (idx == 11) {
+                                    return 'POA (kWh/m^2) Var (%) ';
+                                }
+                                else if (idx == 12) {
+                                    return 'GHI VS POA Gain (%)  Tar';
+                                }
+                                else if (idx == 13) {
+                                    return 'GHI VS POA Gain (%)  Act ';
+                                }
+                                else if (idx == 14) {
+                                    return 'GHI VS POA Gain(%)  Var (%) ';
+                                }
+                                else if (idx == 15) {
+                                    return 'PLF (%)  Tar';
+                                }
+                                else if (idx == 16) {
+                                    return 'PLF (%)  Act ';
+                                }
+                                else if (idx == 17) {
+                                    return 'PLF (%)  Var (%) ';
+                                }
+                                else if (idx == 18) {
+                                    return 'PR (%)  Tar';
+                                }
+                                else if (idx == 19) {
+                                    return 'PR (%)  Act ';
+                                }
+                                else if (idx == 20) {
+                                    return 'PR (%)  Var (%) ';
+                                }
+                                else if (idx == 21) {
+                                    return 'MA (%)  Tar';
+                                }
+                                else if (idx == 22) {
+                                    return 'MA (%)  Act ';
+                                }
+                                else if (idx == 23) {
+                                    return 'MA (%)  Var (%) ';
+                                }
+                                else if (idx == 24) {
+                                    return 'IGA (%)  Tar';
+                                }
+                                else if (idx == 25) {
+                                    return 'IGA (%)  Act ';
+                                }
+                                else if (idx == 26) {
+                                    return 'IGA (%)  Var (%) ';
+                                }
+                                else if (idx == 27) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 28) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 29) {
+                                    return 'EGA (%)  Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+
+                            }
+                        }
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 //$('#example2').removeClass('dataTable');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 $('#example2').wrap("<div class='scrolledTable'></div>");
 
                 //It will convert div to image of PBS

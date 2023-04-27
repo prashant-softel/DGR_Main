@@ -794,13 +794,121 @@
                                 }
                             }
                         },
-                        'colvis'
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'Energy (in MU)  Exp';
+                                }
+                                else if (idx == 4) {
+                                    return 'Energy (in MU)  Act';
+                                }
+                                else if (idx == 5) {
+                                    return 'Energy (in MU)  T.Var (%)';
+                                }
+                                else if (idx == 6) {
+                                    return 'Energy (in MU)  E.Var (%)';
+                                }
+                                else if (idx == 7) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 8) {
+                                    return 'GHI (kWh/m^2)  Tar';
+                                }
+                                else if (idx == 9) {
+                                    return 'GHI (kWh/m^2)  Act';
+                                }
+                                else if (idx == 10) {
+                                    return 'GHI (kWh/m^2)  Var (%) ';
+                                }
+                                else if (idx == 11) {
+                                    return 'POA (kWh/m^2)  Tar';
+                                }
+                                else if (idx == 12) {
+                                    return 'POA (kWh/m^2)  Act ';
+                                }
+                                else if (idx == 13) {
+                                    return 'POA (kWh/m^2) Var (%) ';
+                                }
+                                else if (idx == 14) {
+                                    return 'GHI VS POA Gain (%)  Tar';
+                                }
+                                else if (idx == 15) {
+                                    return 'GHI VS POA Gain (%)  Act ';
+                                }
+                                else if (idx == 16) {
+                                    return 'GHI VS POA Gain(%)  Var (%) ';
+                                }
+                                else if (idx == 17) {
+                                    return 'PLF (%)  Tar';
+                                }
+                                else if (idx == 18) {
+                                    return 'PLF (%)  Act ';
+                                }
+                                else if (idx == 19) {
+                                    return 'PLF (%)  Var (%) ';
+                                }
+                                else if (idx == 20) {
+                                    return 'PR (%)  Tar';
+                                }
+                                else if (idx == 21) {
+                                    return 'PR (%)  Act ';
+                                }
+                                else if (idx == 22) {
+                                    return 'PR (%)  Var (%) ';
+                                }
+                                else if (idx == 23) {
+                                    return 'MA (%)  Tar';
+                                }
+                                else if (idx == 24) {
+                                    return 'MA (%)  Act ';
+                                }
+                                else if (idx == 25) {
+                                    return 'MA (%)  Var (%) ';
+                                }
+                                else if (idx == 26) {
+                                    return 'IGA (%)  Tar';
+                                }
+                                else if (idx == 27) {
+                                    return 'IGA (%)  Act';
+                                }
+                                else if (idx == 28) {
+                                    return 'IGA (%)  Var (%) ';
+                                }
+                                else if (idx == 29) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 30) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 31) {
+                                    return 'EGA (%)  Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        }
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 $('#example1').wrap("<div class='scrolledTable'></div>");
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 document.getElementById("loader").style.display = 'none';
                 //$('#example1').removeClass('dataTable');
 
@@ -1407,12 +1515,120 @@
                                 }
                             }
                         },
-                        'colvis'
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'Energy (in MU)  Exp';
+                                }
+                                else if (idx == 4) {
+                                    return 'Energy (in MU)  Act';
+                                }
+                                else if (idx == 5) {
+                                    return 'Energy (in MU)  T.Var (%)';
+                                }
+                                else if (idx == 6) {
+                                    return 'Energy (in MU)  E.Var (%)';
+                                }
+                                else if (idx == 7) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 8) {
+                                    return 'GHI (kWh/m^2)  Tar';
+                                }
+                                else if (idx == 9) {
+                                    return 'GHI (kWh/m^2)  Act';
+                                }
+                                else if (idx == 10) {
+                                    return 'GHI (kWh/m^2)  Var (%) ';
+                                }
+                                else if (idx == 11) {
+                                    return 'POA (kWh/m^2)  Tar';
+                                }
+                                else if (idx == 12) {
+                                    return 'POA (kWh/m^2)  Act ';
+                                }
+                                else if (idx == 13) {
+                                    return 'POA (kWh/m^2) Var (%) ';
+                                }
+                                else if (idx == 14) {
+                                    return 'GHI VS POA Gain (%)  Tar';
+                                }
+                                else if (idx == 15) {
+                                    return 'GHI VS POA Gain (%)  Act ';
+                                }
+                                else if (idx == 16) {
+                                    return 'GHI VS POA Gain(%)  Var (%) ';
+                                }
+                                else if (idx == 17) {
+                                    return 'PLF (%)  Tar';
+                                }
+                                else if (idx == 18) {
+                                    return 'PLF (%)  Act ';
+                                }
+                                else if (idx == 19) {
+                                    return 'PLF (%)  Var (%) ';
+                                }
+                                else if (idx == 20) {
+                                    return 'PR (%)  Tar';
+                                }
+                                else if (idx == 21) {
+                                    return 'PR (%)  Act ';
+                                }
+                                else if (idx == 22) {
+                                    return 'PR (%)  Var (%) ';
+                                }
+                                else if (idx == 23) {
+                                    return 'MA (%)  Tar';
+                                }
+                                else if (idx == 24) {
+                                    return 'MA (%)  Act ';
+                                }
+                                else if (idx == 25) {
+                                    return 'MA (%)  Var (%) ';
+                                }
+                                else if (idx == 26) {
+                                    return 'IGA (%)  Tar';
+                                }
+                                else if (idx == 27) {
+                                    return 'IGA (%)  Act ';
+                                }
+                                else if (idx == 28) {
+                                    return 'IGA (%)  Var (%) ';
+                                }
+                                else if (idx == 29) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 30) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 31) {
+                                    return 'EGA (%)  Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        }
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
                // $('#example1').removeClass('dataTable');
