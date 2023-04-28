@@ -8689,7 +8689,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "Please find  below daily performance summary for Wind projects dated " + (ltodate.ToString("dd-MMM-yyyy")) + ".</p>";
             tb += "<p style='text-align: left;'>Note :<br>";
             tb += "1.Gen in Million units.<br>";
-            tb += "2.Actual Gen is at JMR level.</p>";
+            tb += "2.Actual Gen is at JMR level.<br>";
+            tb += "3.The empty cells in the 'Last Day' section indicate that DGR was not available during that time.</p>";
             tb += "<br>";
           //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             //tb += "<table id='emailTable'  class='table table-bordered table-striped' style='width: 100%; background-color:#f7f5f0'>";
@@ -9213,7 +9214,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<p style='text-align: left;'>Note :<br>";
             //tb += "<h5 style='text-align: left;'>&nbsp;&nbsp;1.Target & Actual Gen. at Plant metering level. </h5>";
             tb += "1.Gen in Million units.<br>";
-            tb += "2.Actual Gen is at JMR level.</p>";
+            tb += "2.Actual Gen is at JMR level.<br>";
+            tb += "3.The empty cells in the 'Last Day' section indicate that DGR was not available during that time.</p>";
             tb += "<br>";
           //  tb += "<h2 style='text-align: center;'><b>" + title + "<b/></h2>";
             tb += "<table id='emailTable' style='width: 100%; border-collapse: collapse ; border-spacing: 10px;'  border='1'>";
@@ -9938,10 +9940,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            //AddTo.Add("tanvi@softeltech.in");
-            //dTo.Add("tanviik28@gmail.com");
-
-            // emails.Add("tanviik28@gmail.com");
+           // AddTo.Add("tanvi@softeltech.in");          
+        
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
             request.Subject = reportTitle;
