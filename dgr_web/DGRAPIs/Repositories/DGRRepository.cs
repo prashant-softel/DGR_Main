@@ -2675,7 +2675,8 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 filter += wtgs.TrimEnd(',') + ")";
 
             }
-
+            //
+            //SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type  where  (date >= '2023-04-28'  and date<= '2023-04-28') and t1.site_id in (224) and approve_status = 1;
             string qry = @"SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type ";
 
             //t3.site=t2.site  where t1.approve_status="+approve_status+"";
@@ -2684,15 +2685,32 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             {
                 qry += " where  " + filter;
             }
-            return await Context.GetData<WindDailyBreakdownReport>(qry).ConfigureAwait(false);
+            qry += " and approve_status = 1;";
+            List<WindDailyBreakdownReport> _windBDList = new List<WindDailyBreakdownReport>();
 
+            _windBDList =  await Context.GetData<WindDailyBreakdownReport>(qry).ConfigureAwait(false);
+
+            //SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id where (date >= '2023-04-28' and date<= '2023-04-28') and t1.site_id in (224) and t5.is_approved = 1;
+            if(_windBDList.Count == 0)
+            {
+                string fetchQry = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1";
+
+                try
+                {
+                    _windBDList = await Context.GetData<WindDailyBreakdownReport>(fetchQry).ConfigureAwait(false);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while getting data form uploading_file_breakdown, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+
+            return _windBDList;
         }
         internal async Task<List<SolarDailyGenSummary>> GetSolarDailyGenSummary()
         {
-            string qry = @"SELECT *,
-(SELECT dc_capacity FROM solar_ac_dc_capacity where inverter=t1.location_name)as dc_capacity,
-(SELECT ac_capacity FROM solar_ac_dc_capacity where inverter=t1.location_name) as ac_capacity
- FROM daily_gen_summary_solar t1 ";
+            string qry = @"SELECT *, (SELECT dc_capacity FROM solar_ac_dc_capacity where inverter=t1.location_name)as dc_capacity, (SELECT ac_capacity FROM solar_ac_dc_capacity where inverter=t1.location_name) as ac_capacity  FROM daily_gen_summary_solar t1 ";
 
             //FROM daily_gen_summary_solar t1 where t1.approve_status=" + approve_status + "";
 
@@ -3425,10 +3443,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 chkfilter = 1;
             }
 
-            string qry = @"SELECT date,t2.country,t2.state,t2.spv,t2.site,
-bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,
-bd_remarks, action_taken
- FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id ";
+            string qry = @"SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id ";
 
             //FROM daily_bd_loss_solar t1 left join site_master_solar t2 on t2.site=t1.site where t1.approve_status="+ approve_status;
 
@@ -3438,8 +3453,36 @@ bd_remarks, action_taken
             }
             string final = qry;
             string data =qry;
-            return await Context.GetData<SolarDailyBreakdownReport>(qry).ConfigureAwait(false);
+            //SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id  where (date >= '2023-04-28'  and date<= '2023-04-28') and t1.site_id in (14);
+            qry += " and approve_status = 1;";
+            List<SolarDailyBreakdownReport> _solarBDList = new List<SolarDailyBreakdownReport>();
+            try
+            {
+                _solarBDList = await Context.GetData<SolarDailyBreakdownReport>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching records from uploading_file_breakdown_solar, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
 
+            if (_solarBDList.Count == 0)
+            {
+                //SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id where (date >= '2023-04-28' and date<= '2023-04-28') and t1.site_id in (14) AND t5.is_approved = 1;
+
+                string fetchQry = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1";
+
+                try
+                {
+                    _solarBDList = await Context.GetData<SolarDailyBreakdownReport>(fetchQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while getting data form uploading_file_breakdown, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+            return _solarBDList;
         }
         internal async Task<int> MailSend(string fname)
         {
@@ -6322,21 +6365,28 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<int> SetApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
-            
+            int finalResult = 0;
+
             string qry = "select t1.*,t2.site,t2.country,t2.state,t3.feeder from uploading_file_generation as t1 left join site_master as t2 on t2.site_master_id=t1.site_id left join location_master as t3 on t3.site_master_id=t1.site_id where import_batch_id IN(" + dataId + ")";
 
             List<WindUploadingFilegeneration2> _importedData = new List<WindUploadingFilegeneration2>();
-            _importedData = await Context.GetData<WindUploadingFilegeneration2>(qry).ConfigureAwait(false);
-
-            
+            try
+            {
+                _importedData = await Context.GetData<WindUploadingFilegeneration2>(qry).ConfigureAwait(false);
+                finalResult = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from uploading_file_generation and location_master, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                return 0;
+            }            
 
             string qry1 = " insert into daily_gen_summary(state, site,site_id, date, wtg, wind_speed, kwh, kwh_afterlineloss, feeder, ma_contractual, ma_actual, iga, ega, plf,plf_afterlineloss,capacity_kw, grid_hrs, lull_hrs, production_hrs, unschedule_hrs, unschedule_num, schedule_hrs, schedule_num, others, others_num, igbdh, igbdh_num, egbdh, egbdh_num, load_shedding, load_shedding_num, approve_status,import_batch_id) values";
             string values = "";
 
             foreach (var unit in _importedData)
             {
-                
-
                 values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "','" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','"+ unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','"+ unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id+"'),";
             }
 
@@ -6345,40 +6395,117 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
+                finalResult = 2;
             }
             catch (Exception ex)
             {
-                string strEx = ex.Message;
-                throw;
+                string msg = "Exception while deleting records from daily_gen_summary " + ex.ToString();
+                API_ErrorLog(msg);
+                return 0;
             }
             string temp = qry1.Substring(0, (qry1.Length - 1)) + ";";
-            int res = await Context.ExecuteNonQry<int>(temp).ConfigureAwait(false);
+            int res = 0;
+            try
+            {
+                res = await Context.ExecuteNonQry<int>(temp).ConfigureAwait(false);
+                finalResult = 3;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while inserting values into daily_gen_summary table, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                return 0;
+            }
             if (res > 0)
             {
                 string query = "UPDATE `import_batches` SET `approval_date` = NOW(),`approved_by`= " + approvedBy + ",`is_approved`=" + status + ",`approved_by_name`='" + approvedByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
-                return await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
+                int Updateres = 0;
+                try
+                {
+                    Updateres = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
+                    finalResult = 4;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while updating data in import_batches table, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return 0;
+                }
             }
             else
             {
-                return 0;
+                finalResult =  0;
             }
 
+            if(finalResult == 4)
+            {
+                string updateQry = "UPDATE uploading_file_breakdown SET approve_status = 1 WHERE import_batch_id IN (" + dataId + ")";
+                try
+                {
+                    int updateRes = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                    finalResult = 5;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while updating uploading_file_breakdown " + e.ToString();
+                    API_ErrorLog(msg);
+                    return 0;
+                }
+
+            }
+            return finalResult;
         }
         internal async Task<int> SetRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
         {
 
-          
+            int finalResult = 0;
             string query = "UPDATE `import_batches` SET `rejected_date` = NOW(),`rejected_by`= " + rejectedBy + ",`is_approved`=" + status + ",`rejected_by_name`='" + rejectByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
-            return await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
+            try
+            {
+                int updateBatchRes = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
+                finalResult = 1;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while updating import_batches, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                return finalResult;
+            }
+            if(finalResult == 1)
+            {
+                string updateQry = "UPDATE uploading_file_breakdown SET approve_status =" + status + " WHERE import_batch_id IN (" + dataId + ")";
+                try
+                {
+                    int updateRes = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                    finalResult = 2;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while updating uploading_file_breakdown " + e.ToString();
+                    API_ErrorLog(msg);
+                    return finalResult;
+                }
+            }
+            return finalResult;
            
         }
         internal async Task<int> SetSolarApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
-
+            int finalResult = 0;
             string qry = "select t1.*,t2.site,t2.country,t2.state from uploading_file_generation_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id=t1.site_id left join location_master_solar as t3 on t3.site_id=t1.site_id where import_batch_id IN(" + dataId + ")";
 
             List<SolarUploadingFileGeneration2> _importedData = new List<SolarUploadingFileGeneration2>();
-            _importedData = await Context.GetData<SolarUploadingFileGeneration2>(qry).ConfigureAwait(false);
+            try
+            {
+                _importedData = await Context.GetData<SolarUploadingFileGeneration2>(qry).ConfigureAwait(false);
+                finalResult = 1;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching data from uploading_file_generation_solar and location_master_solar, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                return 0;
+            }
 
             string qry1 = " insert into daily_gen_summary_solar(state, site,site_id, date,location_name, ghi, poa, expected_kwh, inv_kwh, plant_kwh, inv_pr, plant_pr, ma, iga,ega,inv_plf_ac, inv_plf_dc, plant_plf_ac, plant_plf_dc, pi, prod_hrs, lull_hrs_bd, usmh_bs, smh_bd, oh_bd, igbdh_bd,egbdh_bd,load_shedding_bd,total_bd_hrs,usmh,smh,oh,igbdh,egbdh,load_shedding,total_losses,	approve_status,inv_kwh_afterloss,plant_kwh_afterloss,inv_plf_afterloss,plant_plf_afterloss,import_batch_id) values";
             string values = "";
@@ -6395,29 +6522,96 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
+                finalResult = 2;
             }
             catch (Exception ex)
             {
-                string strEx = ex.Message;
-                throw;
-            }
-          
-            int res = await Context.ExecuteNonQry<int>(qry1.Substring(0, (qry1.Length - 1)) + ";").ConfigureAwait(false);
-            if (res > 0)
-            {
-                string query = "UPDATE `import_batches` SET `approval_date` = NOW(),`approved_by`= " + approvedBy + ",`is_approved`=" + status + ",`approved_by_name`='" + approvedByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
-                return await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
-            }
-            else
-            {
+                string msg = "Exception while deleting records from daily_gem_summary_solar table, due to : " + ex.ToString();
+                API_ErrorLog(msg);
                 return 0;
             }
 
+            int res = 0;
+            try
+            {
+                res = await Context.ExecuteNonQry<int>(qry1.Substring(0, (qry1.Length - 1)) + ";").ConfigureAwait(false);
+                finalResult = 3;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while inserting values into table daily_gen_summary_solar, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                return 0;
+            }
+            if (res > 0)
+            {
+                string query = "UPDATE `import_batches` SET `approval_date` = NOW(),`approved_by`= " + approvedBy + ",`is_approved`=" + status + ",`approved_by_name`='" + approvedByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
+                int updateBatchRes = 0;
+                try
+                {
+                    updateBatchRes = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
+                    finalResult = 4;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while updating values in import_batches table, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return 0;
+                }
+            }
+            else
+            {
+                finalResult = 0;
+            }
+            if(finalResult == 4)
+            {
+                string updateBDQry = "UPDATE uploading_file_breakdown_solar SET approve_status = 1 WHERE import_batch_id IN (" + dataId + ")";
+                try
+                {
+                    int updateBDRes = await Context.ExecuteNonQry<int>(updateBDQry).ConfigureAwait(false);
+                    finalResult = 5;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while updating uploading_file_breakdown_solar approved status, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return 0;
+                }
+            }
+
+            return finalResult;
         }
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
         {
+            int finalResult = 0;
             string query = "UPDATE `import_batches` SET `rejected_date` = NOW(),`rejected_by`= " + rejectedBy + ",`is_approved`=" + status + ",`rejected_by_name`='" + rejectByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
-            return await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
+            try
+            {
+                int updateBatchRes = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
+                finalResult = 1;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while updating import_batches for rejecting, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                return finalResult;
+            }
+            if(finalResult == 1)
+            {
+                string updateQry = "UPDATE uploading_file_breakdown_solar SET approve_status =" + status + " WHERE import_batch_id IN (" + dataId + ")";
+                try
+                {
+                    int updateRes = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                    finalResult = 2;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while updating uploading_file_breakdown_solar, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return finalResult;
+                }
+            }
+            return finalResult;
            
         }
         public async Task<List<CountryList>> GetCountryData()
