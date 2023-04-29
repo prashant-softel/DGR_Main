@@ -4429,7 +4429,7 @@ bd_remarks, action_taken
                             allBreakdown = "PCD";
                         }
                         //condition 3 & condition 4
-                        else if (unit.manual_bd == "-" && (unit.status_code == 0 || unit.status_code == 1) && (unit.restructive_WTG == 0 || unit.restructive_WTG == 25 || unit.restructive_WTG == 50 || unit.restructive_WTG == 125))
+                        else if (unit.manual_bd == "-" && (unit.status_code == 0 || unit.status_code == 1) && (unit.restructive_WTG == 0 || unit.restructive_WTG == 25 || unit.restructive_WTG == 50 || unit.restructive_WTG == 125 ))
                         {
                             allBreakdown = "USMH";
                         }
@@ -9365,23 +9365,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 double ghi = 0;
                 //if (avg_ghi > 0 && avg_poa > 0)
                 //{
-                    string poaqry = "select sum(avg_poa) as avg_poa, sum(avg_ghi) as avg_ghi from uploading_pyranometer_1_min_solar where date_time between '" + fromDate + " " + startTime + "' and date_time<='" + toDate + " " + stopTime + "' AND site_id = " + site;
+                    string poaqry = "select sum(avg_poa) as avg_poa, sum(avg_ghi) as avg_ghi from uploading_pyranometer_1_min_solar where date_time >= '" + fromDate + " " + startTime + "' and date_time<='" + toDate + " " + stopTime + "' AND site_id = " + site;
                 try
                 {
                     List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(poaqry).ConfigureAwait(false);
                     //AVG POA FOR BREAKDOWN
                     poa = _SolarUploadingPyranoMeter1Min[0].avg_poa / 60000;
-                    poa = 4;
+                    //poa = 4;
 
                     ghi = _SolarUploadingPyranoMeter1Min[0].avg_ghi / 60000;
-                    ghi = 5;
+                    //ghi = 5;
                 }
                 catch(Exception e)
                 {
                     string msg = e.Message;
                     throw new Exception("Exception in SolarCalculate function : Exception : "+ msg);
-                }
-                   
+                }              
 
                 //}
                 //else
