@@ -7,6 +7,7 @@ namespace DGRA_V1.Models
 {
     public class InsertWindTMLData
     {
+        public string onm_wtg { get; set; }
         public string WTGs { get; set; }
         public int wtg_id { get; set; }
         public string site { get; set; }

@@ -8,6 +8,7 @@ namespace DGRAPIs.Models
     public class InsertWindTMLData
     {
         public int uploading_file_TMR_Data_id { get; set; }
+        public string onm_wtg { get; set; }
         public string WTGs { get; set; }
         public int wtg_id { get; set; }
         public string site { get; set; }
@@ -15,6 +16,7 @@ namespace DGRAPIs.Models
         public dynamic timestamp { get; set; }
         public double avg_active_power { get; set; }
         public double avg_wind_speed { get; set; }
+        public double calculated_ws { get; set; }
         public int restructive_WTG { get; set; }
         public string date { get; set; }
         public dynamic from_time { get; set; }

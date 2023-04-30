@@ -4144,12 +4144,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         bool skipRow = false;
                         rowNumber++;
-                        //this will be onm_wtgs.
-                        //Need to make new hash table for WTGs and onm_WTGs.
-
-                        addUnit.WTGs = dr["WTGs"] is DBNull || string.IsNullOrEmpty((string)dr["WTGs"]) ? "Nil" : (string)(dr["WTGs"]);
-                        if (addUnit.WTGs == "" || addUnit.WTGs == null)
+                        addUnit.onm_wtg = dr["WTGs"] is DBNull || string.IsNullOrEmpty((string)dr["WTGs"]) ? "Nil" : (string)(dr["WTGs"]);
+                        if (addUnit.onm_wtg == "" || addUnit.onm_wtg == null)
                         {
+                            addUnit.WTGs = onm2equipmentName.ContainsKey(addUnit.onm_wtg) ? onm2equipmentName[addUnit.onm_wtg].ToString() : "";
                             m_ErrorLog.SetError(", WTGs column of " + rowNumber + " row is empty.");
                             errorCount++;
                             continue;
@@ -4186,10 +4184,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                             previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
                             dataDate = addUnit.date;
                         }
-                        if(!(dataDate == addUnit.date))
+                        if(dataDate != addUnit.date)
                         {
-                            m_ErrorLog.SetError(", Row <" + rowNumber + "> column <Time Stamp> : <" + dataDate + "> and Date <" + addUnit.date + "> missmatched");
-                            errorCount++;
+                            previousTime = "00:00:00";
+                            //m_ErrorLog.SetError(", Row <" + rowNumber + "> column <Time Stamp> : <" + dataDate + "> and Date <" + addUnit.date + "> missmatched");
+                            //errorCount++;
                         }
                         addUnit.from_time = previousTime;
                         addUnit.to_time = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
@@ -4421,35 +4420,84 @@ namespace DGRA_V1.Areas.admin.Controllers
 
             if (ds.Tables.Count > 0)
             {
-                List<InsertWindTMR> addSet = new List<InsertWindTMR>();
+                List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
+                string previousTime = "00:00:00";
+                string dataDate = "";
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
-                    InsertWindTMR addUnit = new InsertWindTMR();
+                    InsertWindTMLData addUnit = new InsertWindTMLData();
                     try
                     {
                         bool skipRow = false;
                         rowNumber++;
 
-                        addUnit.onmWTG = tabName;
-                        addUnit.wtg = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
+                        addUnit.onm_wtg = tabName;
+                        addUnit.WTGs = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
                         //error handling
-                        addUnit.wtg_id = equipmentId.ContainsKey(addUnit.wtg) ? Convert.ToInt32(equipmentId[addUnit.wtg]) : 0;
-
+                        //addUnit.wtg_id = equipmentId.ContainsKey(addUnit.wtg) ? Convert.ToInt32(equipmentId[addUnit.wtg]) : 0;
+                        if (addUnit.WTGs != " ")
+                        {
+                            addUnit.wtg_id = equipmentId.ContainsKey(addUnit.WTGs) ? Convert.ToInt32(equipmentId[addUnit.WTGs]) : 0;
+                            //addUnit.wtg = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
+                            addUnit.site = SiteByWtg.ContainsKey(addUnit.WTGs) ? SiteByWtg[addUnit.WTGs].ToString() : "";
+                            if (addUnit.site != " ")
+                            {
+                                addUnit.site_id = Convert.ToInt32(siteNameId[addUnit.site]);
+                            }
+                            else
+                            {
+                                addUnit.site_id = 0;
+                            }
+                        }
                         bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
                         if (isdateEmpty)
                         {
                             m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
                             continue;
                         }
-                        addUnit.date_time = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd HH:mm:ss");
-                        errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
-                        errorFlag.Add(dateNullValidation(addUnit.date_time, "Time stamp", rowNumber));
+                        addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd HH:mm:ss");
+                        //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
+                        errorFlag.Add(dateNullValidation(addUnit.timestamp, "Date", rowNumber));
 
-                        addUnit.avgActivePower = dr["Average Active Power 10M (kW)"] is DBNull ? 0 : Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
+                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("dd-MMM-yy");
+                        //string temp_date = temp.Substring(0, 10);
+                        if (rowNumber == 2)
+                        {
+                            previousTime = Convert.ToDateTime(dr["Date"]).ToString("HH:mm:ss");
+                            dataDate = addUnit.date;
+                        }
+                        if (dataDate != addUnit.date)
+                        {
+                            previousTime = "00:00:00";
+                            //m_ErrorLog.SetError(", Row <" + rowNumber + "> column <Time Stamp> : <" + dataDate + "> and Date <" + addUnit.date + "> missmatched");
+                            //errorCount++;
+                        }
+                        addUnit.from_time = previousTime;
+                        addUnit.to_time = Convert.ToDateTime(dr["Date"]).ToString("HH:mm:ss");
 
-                        addUnit.avgWindSpeed = dr["Average Wind Speed 10M (m/s)"] is DBNull ? 0 : Convert.ToDouble(dr["Average Wind Speed 10M (m/s)"]);
+                        previousTime = Convert.ToDateTime(dr["Date"]).ToString("HH:mm:ss");
 
-                        addUnit.mostRestructiveWTG = dr["Most restrictive WTG Status 10M"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
+                        bool isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Average Active Power 10M (kW)"]) || dr["Average Active Power 10M (kW)"] is DBNull;
+
+                        if (!isActivePowerEmpty)
+                        {
+                            addUnit.avg_active_power = Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
+                            //addUnit.status = "Available";
+                            addUnit.status_code = 0;
+                            //Change to 1;
+                        }
+
+                        if (isActivePowerEmpty)
+                        {
+                            //addUnit.status = "Missing";
+                            addUnit.status_code = 1;
+                        }
+
+                        //addUnit.avgActivePower = dr["Average Active Power 10M (kW)"] is DBNull ? 0 : Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
+
+                        addUnit.avg_wind_speed = dr["Average Wind Speed 10M (m/s)"] is DBNull ? 0 : Convert.ToDouble(dr["Average Wind Speed 10M (m/s)"]);
+
+                        addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
 
                         errorFlag.Clear();
                         if (!(skipRow))
@@ -4470,14 +4518,24 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
                     var json = JsonConvert.SerializeObject(addSet);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMR";
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData";
                     using (var client = new HttpClient())
                     {
                         var response = await client.PostAsync(url, data);
+                        string returnResponse = response.Content.ReadAsStringAsync().Result;
                         if (response.IsSuccessStatusCode)
                         {
-                            m_ErrorLog.SetInformation(",Wind TMR API SuccessFul,");
+                            if (returnResponse == "5")
+                            {
+                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetError(",Error in Calculation.");
+                            }
+                            //m_ErrorLog.SetInformation(",Wind TMR API SuccessFul,");
                             return responseCode = (int)response.StatusCode;
+
                         }
                         else
                         {

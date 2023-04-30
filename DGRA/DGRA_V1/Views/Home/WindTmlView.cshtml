@@ -127,6 +127,7 @@
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
@@ -389,20 +390,27 @@
             }
         });
 
-        
+
         console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final);
         monthlychart(data);
     }
 
     function monthlychart(data) {
-        console.log("Inside Monthly chart function and data received is : " + data + " hello : " + data[0].expected_final);
+        console.log("Inside Monthly chart function and data received is : " + data + " hello : " + data[0]);
         let chartStatus = Chart.getChart("Waterfall"); // <canvas> id
-
         if (chartStatus != undefined) {
             chartStatus.destroy();
         }
         anychart.onDocumentReady(function () {
             //create a waterfall chart with the data
+        var dataRef = [
+            { x: "Starting Value", value: 100 },
+            { x: "Positive 1", value: 50 },
+            { x: "Positive 2", value: 20 },
+            { x: "Negative 1", value: -30 },
+            { x: "Negative 2", value: -40 },
+            { x: "Ending Value", value: 100 }
+        ];
             var chart = anychart.waterfall();
             //set the chart title
             chart.title('TML Data');
@@ -410,9 +418,17 @@
             chart.legend(false);
             //tooltips disabled
             chart.tooltip(false);
+            chart.yScale().minimum(0);
+            chart.yScale().maximum(200);
             // create a series and set the data
-            var series = chart.waterfall(data);
+            var chart = anychart.waterfall(data, { base: 0 });
+            var series = chart.waterfall(dataRef);
             // set color
+            //series.normal().relative(0, 0);
+            //series.normal().risingRelativeToPrevious(false);
+            //series.normal().risingRelativeTo(0,0);
+            //series.normal().relativeStart(0).relativeEnd(0);
+            series.rising('relative');
             series.normal().fill('#77CAE7');
             series.normal().hatchFill('forward-diagonal', '#77CAE7');
 
@@ -430,6 +446,49 @@
             chart.draw();
         });
     }
+
+    /*
+    function monthlychart(data) {
+        console.log("Inside Monthly chart function and data received is : ", data);
+        var dataRef = [
+            { x: "Starting Value", value: 100 },
+            { x: "Positive 1", value: 50 },
+            { x: "Positive 2", value: 20 },
+            { x: "Negative 1", value: -30 },
+            { x: "Negative 2", value: -40 },
+            { x: "Ending Value", value: 100 }
+        ];
+        let chartStatus = Chart.getChart("Waterfall"); // <canvas> id
+
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+
+        anychart.onDocumentReady(function () {
+            // create a waterfall chart with the data
+            var chart = anychart.waterfall(dataRef);
+
+            // set chart title, legend, and tooltip
+            chart.title('TML Data');
+            chart.legend(false);
+            chart.tooltip(false);
+            var series = chart.waterfall(dataRef);
+            // set fill and stroke colors for rising and falling columns
+            series.normal().fill('#77CAE7');
+            series.normal().hatchFill('forward-diagonal', '#77CAE7');
+            series.fallingFill('#EE403D');
+            series.fallingStroke('#EE403D');
+            series.risingFill('#77CAE7');
+            series.risingStroke('#77CAE7');
+
+            // set the chart container
+            chart.container('Waterfall');
+
+            // draw the chart
+            chart.draw();
+        });
+    }
+    */
 
     function clearRecords() {
         console.log("Inside clear onclick function.");
