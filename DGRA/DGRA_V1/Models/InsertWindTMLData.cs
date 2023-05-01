@@ -21,6 +21,10 @@ namespace DGRA_V1.Models
         public dynamic to_time { get; set; }
         public string status { get; set; }
         public int status_code { get; set; }
+        public dynamic variable { get; set; }
+        public string PLC_min { get; set; }
+        public string PLC_max { get; set; }
+        public int PC_validity { get; set; }
     }
     public class GetWindTMLGraphData
     {
