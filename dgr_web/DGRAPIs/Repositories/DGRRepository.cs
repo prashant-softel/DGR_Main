@@ -2675,24 +2675,10 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 filter += wtgs.TrimEnd(',') + ")";
 
             }
-            //
-            //SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type  where  (date >= '2023-04-28'  and date<= '2023-04-28') and t1.site_id in (224) and approve_status = 1;
-            string qry = @"SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type ";
-
-            //t3.site=t2.site  where t1.approve_status="+approve_status+"";
-
-            if (!string.IsNullOrEmpty(filter))
-            {
-                qry += " where  " + filter;
-            }
-            qry += " and approve_status = 1;";
+            
             List<WindDailyBreakdownReport> _windBDList = new List<WindDailyBreakdownReport>();
 
-            _windBDList =  await Context.GetData<WindDailyBreakdownReport>(qry).ConfigureAwait(false);
-
-            //SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id where (date >= '2023-04-28' and date<= '2023-04-28') and t1.site_id in (224) and t5.is_approved = 1;
-            if(_windBDList.Count == 0)
-            {
+            
                 string fetchQry = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1";
 
                 try
@@ -2703,8 +2689,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 {
                     string msg = "Exception while getting data form uploading_file_breakdown, due to : " + e.ToString();
                     API_ErrorLog(msg);
-                }
-            }
+                }      
 
             return _windBDList;
         }
@@ -3443,32 +3428,9 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 chkfilter = 1;
             }
 
-            string qry = @"SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id ";
-
-            //FROM daily_bd_loss_solar t1 left join site_master_solar t2 on t2.site=t1.site where t1.approve_status="+ approve_status;
-
-            if (!string.IsNullOrEmpty(filter))
-            {
-                qry += " where " + filter;
-            }
-            string final = qry;
-            string data =qry;
-            //SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id  where (date >= '2023-04-28'  and date<= '2023-04-28') and t1.site_id in (14);
-            qry += " and approve_status = 1;";
+        
             List<SolarDailyBreakdownReport> _solarBDList = new List<SolarDailyBreakdownReport>();
-            try
-            {
-                _solarBDList = await Context.GetData<SolarDailyBreakdownReport>(qry).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while fetching records from uploading_file_breakdown_solar, due to : " + e.ToString();
-                API_ErrorLog(msg);
-            }
-
-            if (_solarBDList.Count == 0)
-            {
-                //SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id where (date >= '2023-04-28' and date<= '2023-04-28') and t1.site_id in (14) AND t5.is_approved = 1;
+           
 
                 string fetchQry = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1";
 
@@ -3479,9 +3441,9 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 catch (Exception e)
                 {
                     string msg = "Exception while getting data form uploading_file_breakdown, due to : " + e.ToString();
-                    API_ErrorLog(msg);
+                   API_ErrorLog(msg);
                 }
-            }
+            
             return _solarBDList;
         }
         internal async Task<int> MailSend(string fname)
