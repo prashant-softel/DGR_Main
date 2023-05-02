@@ -9536,6 +9536,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //    throw;
 
                 //}
+                string updQuery = " update `uploading_file_tracker_loss` set tracker_loss = " + gen_loss + ", date_of_mod = NOW(), breakdown_tra_capacity = " + breakdown_tracker_cap + ", actual_poa = " + poa + ", actual_ghi = " + ghi + ", target_aop_pr = " + prTarget + "  where uploading_file_tracker_loss_id = " + _eachRow.uploading_file_tracker_loss_id + " AND site_id = " + site ;
+                try
+                {
+                    int result = await Context.ExecuteNonQry<int>(updQuery).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    string strEx = ex.Message;
+                    API_ErrorLog("Error while updating tracker_loss, breakdown_tar_capacity, actual_poa & actual_gho due to Exception : " + ex.ToString());
+                    throw new Exception("Failed to update tracker_loss, breakdown_tar_capacity, actual_poa & actual_ghi due to Exception : " + strEx);
+
+                }
                 totalGenLoss += gen_loss;
                 totalBreakdown_tracker_cap += breakdown_tracker_cap;
                 totalActualPOA += poa;
@@ -9543,6 +9555,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 totalprTarget += prTarget;
 
             }
+            /*
             string findQry = " select * from `uploading_file_tracker_loss` where site_id = " + site+" and date ='"+fromDate+"' ";
             List<InsertSolarTrackerLoss> data2 = await Context.GetData<InsertSolarTrackerLoss>(findQry).ConfigureAwait(false);
             if (data2.Count == 0)
@@ -9574,7 +9587,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 }
             }
-
+            */
             return true;
         }
         internal async Task<List<SolarUploadingPyranoMeter1Min>> GetModuleTemperature(string site, string fromDate, string toDate)

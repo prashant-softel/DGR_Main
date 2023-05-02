@@ -7,6 +7,7 @@ namespace DGRAPIs.Models
 {
     public class InsertSolarTrackerLoss
     {
+        public int uploading_file_tracker_loss_id { get; set; }
         public string site { get; set; }
         public int site_id { get; set; }
         public double ac_capacity { get; set; }

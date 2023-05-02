@@ -116,6 +116,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     siteName.Clear();
                     eqSiteId.Clear();
                     finalResponse = "";
+                    fileSheets.Clear();
                     string response = await ExcelDataReaderAndUpload(HttpContext.Request.Form.Files[i], FileUpload);
                     finalResponse = response;
                 }
@@ -151,7 +152,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
             }
             //windSiteList = HttpContextAccessor.HttpContext.Session.GetString("UserAccess");
-            siteUserRole = HttpContext.Session.GetString("role");
+                siteUserRole = HttpContext.Session.GetString("role");
             m_ErrorLog.SetImportInformation("" + siteUserRole + " ,");
             DateTime today = DateTime.Now;
             m_ErrorLog.SetImportInformation("" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ",");
@@ -165,6 +166,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 isGamesa = 1;
             }*/
+            int isInox = 0;
+            if (file.FileName.ToString().StartsWith("TenMinLog"))
+            {
+                isInox = 1;
+                //fileSheets.Add("Sheet1");
+            }
             importData[0] = fileUploadType;
             importData[1] = csvFileName;
             string status = "";
@@ -666,9 +673,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
-                                else if (excelSheet == FileSheetType.Inox_TMD)
+                                else if (excelSheet == FileSheetType.Sheet1 && isInox == 1)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.imporFileType_Inox_TMD;
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Sheet1;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
@@ -4780,10 +4787,29 @@ namespace DGRA_V1.Areas.admin.Controllers
                 int RowNo_pc_validity = 0;
                 int RowNo_windspeed = 0;
                 int finalResult = 0;
+                string LogTime = "";
+                //TenMinLog_05_01.04.2023
+                
                 //KBs-10.xlsx
-                string fileNameNew = fileName.Substring(0, (fileName.Length - 5));
+                //string fileNameNew = fileName.Substring(0, (fileName.Length - 5));
+
+                //TenMinLog_KBS05_01.04.2023
+                string inputString = fileName;
+                char separator = '_';
+                string[] substrings = inputString.Split(separator);
+                string fileNameNew = substrings[1];
+
                 string wtgName = onm2equipmentName.ContainsKey(fileNameNew) ? onm2equipmentName[fileNameNew].ToString() : "";
+                if(wtgName == "")
+                {
+                    wtgName = fileNameNew;
+                }
                 int wtgId = equipmentId.ContainsKey(wtgName) ? Convert.ToInt32(equipmentId[wtgName]) : 0;
+                if(wtgId == 0)
+                {
+                    m_ErrorLog.SetError(",Invalid WTG name.");
+                    errorCount++;
+                }
                 string siteName = SiteByWtg.ContainsKey(wtgName) ? SiteByWtg[wtgName].ToString() : "";
                 int siteId = siteNameId.ContainsKey(siteName) ? Convert.ToInt32(siteNameId[siteName]) : 0;
 
@@ -4801,7 +4827,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             {
                                 try
                                 {
-                                    if(ds.Tables[0].Rows[row][columnCount].ToString() == "Variable")
+                                    if(dc.ColumnName.ToString() == "Variable")
                                     {
                                         RowNo_variable = row; //0
                                     }
@@ -4849,30 +4875,31 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addUnit.wtg_id = wtgId;
                                 addUnit.site = siteName;
 
-                                addUnit.variable = ds.Tables[0].Rows[RowNo_variable][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_variable][columnCount]) ? "Null" : ds.Tables[0].Rows[RowNo_variable][columnCount].ToString();
+                                addUnit.variable = dc.ColumnName is DBNull || string.IsNullOrEmpty((string)dc.ColumnName) ? "Null" : dc.ColumnName.ToString();
 
-                                bool isdateEmpty = ds.Tables[0].Rows[RowNo_timestamp][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_timestamp][columnCount]);
-                                if (isdateEmpty)
-                                {
-                                    m_ErrorLog.SetInformation(", Timestamp value is empty. The row would be skiped.");
-                                    continue;
-                                }
-                                addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(ds.Tables[0].Rows[RowNo_timestamp][columnCount]).ToString("yyyy-MM-dd HH:mm:ss");
+                                string input = addUnit.variable;
+                                char sep = '-';
+                                string[] substr = input.Split(sep);
+                                string fromTime = substr[0];
+                                string toTime = substr[1];
 
-                                addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(addUnit.timestamp).ToString("dd-MMM-yy");
-                                if (rowNumber == 2)
+                                if(columnCount == 1)
                                 {
-                                    previousTime = Convert.ToDateTime(addUnit.timestamp).ToString("HH:mm:ss");
-                                    dataDate = addUnit.date;
+                                    bool isdateEmpty = ds.Tables[0].Rows[RowNo_timestamp][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_timestamp][columnCount]);
+                                    if (isdateEmpty)
+                                    {
+                                        m_ErrorLog.SetError(", Log Time (Local) value is empty.");
+                                        errorCount++;
+                                    }
+                                    LogTime = isdateEmpty ? "Nil" : Convert.ToDateTime(ds.Tables[0].Rows[RowNo_timestamp][columnCount]).ToString("yyyy-MM-dd");
                                 }
-                                if (dataDate != addUnit.date)
-                                {
-                                    previousTime = "00:00:00";
-                                }
-                                addUnit.from_time = previousTime;
-                                addUnit.to_time = Convert.ToDateTime(addUnit.timestamp).ToString("HH:mm:ss");
+                                addUnit.timestamp = LogTime + " " + toTime;
 
-                                previousTime = Convert.ToDateTime(addUnit.timestamp).ToString("HH:mm:ss");
+                                bool isTimeEmpty = addUnit.timestamp == "" || addUnit.timestamp is DBNull || addUnit.timestamp == " " ? true : false ;
+                                addUnit.date = isTimeEmpty ? "Nil" : Convert.ToDateTime(addUnit.timestamp).ToString("dd-MMM-yy");
+                                
+                                addUnit.from_time = fromTime;
+                                addUnit.to_time = toTime;
 
                                 bool isActivePowerEmpty = string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_activePower][columnCount]) || ds.Tables[0].Rows[RowNo_activePower][columnCount] is DBNull;
 
@@ -4916,6 +4943,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
                     var json = JsonConvert.SerializeObject(addSet);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    /*
                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData";
                     using (var client = new HttpClient())
                     {
@@ -4954,7 +4982,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                             return responseCode = (int)response.StatusCode;
                         }
-                    }
+                    } */
                 }
                 else
                 {
