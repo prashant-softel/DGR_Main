@@ -990,11 +990,11 @@ namespace DGRAPIs.Controllers
         //InsertWindTMLData
         [Route("InsertWindTMLData")]
         [HttpPost]
-        public async Task<IActionResult> InsertWindTMLData(List<InsertWindTMLData> InsertWindTMLData)
+        public async Task<IActionResult> InsertWindTMLData(List<InsertWindTMLData> InsertWindTMLData, int type)
         {
             try
             {
-                var data = await _dgrBs.InsertWindTMLData(InsertWindTMLData);
+                var data = await _dgrBs.InsertWindTMLData(InsertWindTMLData, type);
                 return Ok(data);
 
             }
@@ -1030,6 +1030,23 @@ namespace DGRAPIs.Controllers
             try
             {
                 var data = await _dgrBs.InsertWindBDCodeGamesa(InsertWindBDCodeGamesa);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        //ImportWindBDCodeINOX
+        [Route("ImportWindBDCodeINOX")]
+        [HttpPost]
+        public async Task<IActionResult> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> ImportWindBDCodeINOX)
+        {
+            try
+            {
+                var data = await _dgrBs.ImportWindBDCodeINOX(ImportWindBDCodeINOX);
                 return Ok(data);
 
             }

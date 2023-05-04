@@ -46,6 +46,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         static int batchIdDGRAutomation = 0;
         string siteUserRole;
         int previousSite = 0;
+        int isInox = 0;
         static string[] importData = new string[2];
         string generationDate = "";
         static bool isGenValidationSuccess = false;
@@ -166,7 +167,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 isGamesa = 1;
             }*/
-            int isInox = 0;
+            
             if (file.FileName.ToString().StartsWith("TenMinLog"))
             {
                 isInox = 1;
@@ -673,9 +674,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
-                                else if (excelSheet == FileSheetType.Sheet1 && isInox == 1)
+                                else if (isInox == 1)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.imporFileType_Sheet1;
+                                    //fileImportType = FileSheetType.FileImportType.imporFileType_Sheet1;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
@@ -688,6 +689,24 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetInformation(", Importing Wind Inox_TMD Worksheet :");
                                             statusCode = await ImportWindInoxTMD(status, ds, file.FileName);
+                                        }
+                                    }
+                                }
+                                else if (excelSheet == FileSheetType.BD_Code_INOX)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_BD_Code_INOX;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if(ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Soalr")
+                                        {
+                                            m_ErrorLog.SetError(",BD_Code_INOX filecannot be imported for Solar.");
+                                            status = "wrong file upload type selected for BD_Code_INOX import.";
+                                        }
+                                        else
+                                        {
+                                            m_ErrorLog.SetInformation(", Importing Wind BD_Code_INOX Worksheet :");
+                                            statusCode = await ImportWindBDCodeINOX(status, ds);
                                         }
                                     }
                                 }
@@ -959,6 +978,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                         isGKK = true;
                     }
                     if (FileSheetType.sheetList.Contains(worksheet.Name) || isGKK)
+                    {
+                        _worksheetList.Add(worksheet.Name);
+                    }
+                    if(isInox == 1)
                     {
                         _worksheetList.Add(worksheet.Name);
                     }
@@ -4764,6 +4787,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //ImportWindInoxTMD
+        Hashtable bcCodeTypeHash = new Hashtable();
         private async Task<int> ImportWindInoxTMD(string status, DataSet ds, string fileName)
         {
             List<bool> errorFlag = new List<bool>();
@@ -4773,8 +4797,10 @@ namespace DGRA_V1.Areas.admin.Controllers
 
             if (ds.Tables.Count > 0)
             {
+                Hashtable bdCodeHash = await bdCodeINOX();
+
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
-                string previousTime = "00:00:00";
+                string previoustoTime = "00:00:00";
                 string dataDate = "";
                 int columnCount = 0;
                 int rowCount = ds.Tables[0].Rows.Count;
@@ -4788,8 +4814,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                 int RowNo_windspeed = 0;
                 int finalResult = 0;
                 string LogTime = "";
+                string finalToTime = "";
                 //TenMinLog_05_01.04.2023
-                
+
                 //KBs-10.xlsx
                 //string fileNameNew = fileName.Substring(0, (fileName.Length - 5));
 
@@ -4869,6 +4896,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             if (finalResult == 1)
                             {
+                                addUnit.file_name = fileName;
                                 addUnit.onm_wtg = fileNameNew;
                                 addUnit.WTGs = wtgName;
                                 addUnit.site_id = siteId;
@@ -4899,7 +4927,54 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addUnit.date = isTimeEmpty ? "Nil" : Convert.ToDateTime(addUnit.timestamp).ToString("dd-MMM-yy");
                                 
                                 addUnit.from_time = fromTime;
+
+                                //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into closest.
+                                if(addUnit.to_time != "")
+                                {
+                                    //00:10:00
+                                    string inputStrings = toTime;
+                                    char sepre = ':';
+                                    string[] output = inputStrings.Split(sepre);
+                                    if (output.Length > 0)
+                                    {
+                                        int minute = Convert.ToInt32(output[1]);
+                                        int remainder = minute % 10;
+
+                                        if (remainder > 0)
+                                        {
+                                            minute = minute + (10 - remainder);
+                                            if (remainder < 9)
+                                            {
+                                                finalToTime = output[0] + minute.ToString() + output[2];
+                                            }
+                                            else
+                                            {
+                                                if (remainder == 9)
+                                                {
+                                                    int hour = Convert.ToInt32(output[0]);
+                                                    if (hour <= 23)
+                                                    {
+                                                        hour++;
+                                                        finalToTime = hour + minute.ToString() + output[2];
+                                                    }
+                                                    else
+                                                    {
+                                                        finalToTime = inputStrings;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            finalToTime = inputStrings;
+                                        }
+                                    }
+                                }
+                                
                                 addUnit.to_time = toTime;
+                                previoustoTime = addUnit.to_time;
+
+                                //checking if the active power is present or not 0 = Available 1 = Missing.
 
                                 bool isActivePowerEmpty = string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_activePower][columnCount]) || ds.Tables[0].Rows[RowNo_activePower][columnCount] is DBNull;
 
@@ -4916,19 +4991,108 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
 
                                 addUnit.PLC_max = ds.Tables[0].Rows[RowNo_plcMax][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_plcMax][columnCount]) ? "Nill" : Convert.ToString(ds.Tables[0].Rows[RowNo_plcMax][columnCount]);
+                                bool isPlcMax = addUnit.PLC_max is DBNull || string.IsNullOrEmpty((string)addUnit.PLC_max) ? false : true;
 
                                 addUnit.PLC_min = ds.Tables[0].Rows[RowNo_plcMin][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_plcMin][columnCount]) ? "Nill" : Convert.ToString(ds.Tables[0].Rows[RowNo_plcMin][columnCount]);
+                                bool isPlcMin = addUnit.PLC_min is DBNull || string.IsNullOrEmpty((string)addUnit.PLC_min) ? false : true;
 
                                 addUnit.PC_validity = ds.Tables[0].Rows[RowNo_pc_validity][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_pc_validity][columnCount]) ? 0 : Convert.ToInt32(ds.Tables[0].Rows[RowNo_pc_validity][columnCount]);
 
                                 addUnit.avg_wind_speed = ds.Tables[0].Rows[RowNo_windspeed][columnCount] is DBNull ? 0 : Convert.ToDouble(ds.Tables[0].Rows[RowNo_windspeed][columnCount]);
                                 
+                                //Calculation of PLC_state Code.
+                                if(isPlcMax || isPlcMin)
+                                {
+                                    //condition 1
+                                    if(addUnit.PLC_max == "(7) Production" && addUnit.PLC_min == "(7) Production" && (addUnit.PC_validity == 3 || addUnit.PC_validity == 2))
+                                    {
+                                        addUnit.plc_state_code = "7";
+                                    }
+                                    //condition 2
+                                    else if (addUnit.PLC_max == "(7) Production" && addUnit.PLC_min == "(7) Production" && addUnit.PC_validity == 1)
+                                    {
+                                        addUnit.plc_state_code = "14";
+                                    }
+                                    //Condition 3
+                                    else if (addUnit.PLC_max == "(7) Production" && addUnit.PLC_min != "(7) Production")
+                                    {
+                                        addUnit.plc_state_code = bdCodeHash.ContainsKey(addUnit.PLC_min) ? Convert.ToString(bdCodeHash[addUnit.PLC_min]) : "Nil";
+                                    }
+                                    else
+                                    {
+                                        addUnit.plc_state_code = bdCodeHash.ContainsKey(addUnit.PLC_max) ? Convert.ToString(bdCodeHash[addUnit.PLC_max]) : "Nil";
+                                    }
+                                }
+
+                                //Calculating all bd
+
+                                if(addUnit.status_code == 0)
+                                {
+                                    addUnit.all_bd = bcCodeTypeHash.ContainsKey(addUnit.plc_state_code) ? Convert.ToString(bcCodeTypeHash[addUnit.plc_state_code]) : "NC";
+                                }
+
                                 if (!(skipRow))
                                 {
                                     addSet.Add(addUnit);
                                 }
+
+                                //Code to get the missing samples.
+
+                                string nextVariable = ds.Tables[0].Columns[columnCount + 1].ColumnName.ToString();
+                                string[] nextTime = nextVariable.Split(sep);
+                                string nextFrom = nextTime[0];
+                                string nextTo = nextTime[1];
+                                if(addUnit.from_time != nextFrom)
+                                {
+                                    int insideCount = 0;
+                                    string missingTo = "";
+                                    string missingFrom = "";
+                                    do
+                                    {
+                                        TimeSpan fromTimeSpan = new TimeSpan();
+                                        TimeSpan nextFromFinal = new TimeSpan();
+                                        TimeSpan nextToFinal = new TimeSpan();
+
+                                        if (insideCount == 0)
+                                        {
+                                            fromTimeSpan = TimeSpan.Parse(addUnit.from_time);
+                                        }
+                                        if(insideCount > 0)
+                                        {
+                                            fromTimeSpan = TimeSpan.Parse(missingFrom);
+                                        }
+                                        
+                                        nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
+                                        nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+
+                                        InsertWindTMLData addMissingUnit = new InsertWindTMLData();
+
+                                        addMissingUnit.file_name = fileName;
+                                        addMissingUnit.onm_wtg = fileNameNew;
+                                        addMissingUnit.WTGs = wtgName;
+                                        addMissingUnit.site_id = siteId;
+                                        addMissingUnit.wtg_id = wtgId;
+                                        addMissingUnit.site = siteName;
+                                        addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
+                                        addMissingUnit.timestamp = LogTime + " " + toTime;
+                                        bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
+                                        addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
+                                        addMissingUnit.from_time = nextFromFinal.ToString();
+                                        addMissingUnit.to_time = nextToFinal.ToString();
+                                        addMissingUnit.status_code = 1;
+                                        addMissingUnit.avg_wind_speed = 0;
+                                        missingTo = addMissingUnit.to_time;
+                                        missingFrom = addMissingUnit.from_time;
+
+                                        addSet.Add(addMissingUnit);
+
+                                        insideCount++;
+                                    }
+                                    while (missingTo != nextFrom);
+                                }
                             }
                         }
+
                         columnCount++;
                     }
                     catch (Exception e)
@@ -4943,8 +5107,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
                     var json = JsonConvert.SerializeObject(addSet);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    /*
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData";
+                    
+                    //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
                     using (var client = new HttpClient())
                     {
                         var response = await client.PostAsync(url, data);
@@ -4982,7 +5147,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                             return responseCode = (int)response.StatusCode;
                         }
-                    } */
+                    }
                 }
                 else
                 {
@@ -4992,6 +5157,36 @@ namespace DGRA_V1.Areas.admin.Controllers
             return responseCode;
         }
 
+        //get bd_code_INOX into hashtable.
+        public async Task<Hashtable> bdCodeINOX()
+        {
+            Hashtable bdCodeHash = new Hashtable();
+            DataTable dTable = new DataTable();
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindBdCodeINOX";
+            var result = string.Empty;
+            WebRequest request = WebRequest.Create(url);
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                Stream receiveStream = response.GetResponseStream();
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    result = readStream.ReadToEnd();
+                }
+                dTable = JsonConvert.DeserializeObject<DataTable>(result);
+            }
+
+            bdCodeHash.Clear();
+            bcCodeTypeHash.Clear();
+            foreach (DataRow dr in dTable.Rows)
+            {
+                string code = (string)Convert.ToString(dr["code"]);//D
+                bdCodeHash.Add((string)dr["plc_state"], code);
+                bcCodeTypeHash.Add(code, dr["type"]);
+            }
+
+            return bdCodeHash;
+        }
         //InsertWindPowerCurve
         private async Task<int> InsertWindPowerCurve(string status, DataSet ds)
         {
@@ -5101,10 +5296,10 @@ namespace DGRA_V1.Areas.admin.Controllers
 
             if (ds.Tables.Count > 0)
             {
-                List<InsertWindBDCodeGamesa> addSet = new List<InsertWindBDCodeGamesa>();
+                List<InsertWindBDCodesGamesa> addSet = new List<InsertWindBDCodesGamesa>();
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
-                    InsertWindBDCodeGamesa addUnit = new InsertWindBDCodeGamesa();
+                    InsertWindBDCodesGamesa addUnit = new InsertWindBDCodesGamesa();
                     try
                     {
                         bool skipRow = false;
@@ -5184,6 +5379,101 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return responseCode;
         }
+
+        //ImportWindBDCodeINOX
+        private async Task<int> ImportWindBDCodeINOX(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+
+            if (ds.Tables.Count > 0)
+            {
+                List<ImportWindBDCodeINOX> addSet = new List<ImportWindBDCodeINOX>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    ImportWindBDCodeINOX addUnit = new ImportWindBDCodeINOX();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+                        addUnit.site = dr["Sites"] is DBNull || string.IsNullOrEmpty((string)dr["Sites"]) ? "Nil" : Convert.ToString(dr["Sites"]);
+                        if (addUnit.site == "" || addUnit.site == null)
+                        {
+                            m_ErrorLog.SetError(", Site column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+
+                        addUnit.site_id = dr["Sites"] is DBNull || string.IsNullOrEmpty((string)dr["Sites"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+
+                        objImportBatch.importSiteId = addUnit.site_id;//C
+
+                        addUnit.plc_state = dr["PLC-State"] is DBNull || string.IsNullOrEmpty((string)dr["PLC-State"]) ? "Nil" : Convert.ToString(dr["PLC-State"]);
+
+                        addUnit.code = dr["Code"] is DBNull || string.IsNullOrEmpty((string)dr["Code"]) ? "Nil" : Convert.ToString(dr["Code"]);
+
+                        addUnit.type = dr["Type"] is DBNull || string.IsNullOrEmpty((string)dr["Type"]) ? "Nil" : Convert.ToString(dr["Type"]);
+
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindBDCodeGamesa,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeGamesa: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Wind BD Code INOX Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/ImportWindBDCodeINOX";
+                    using (var client = new HttpClient())
+                    {
+                        var response = await client.PostAsync(url, data);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            m_ErrorLog.SetInformation(",BD code INOX API SuccessFul,");
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",BD Code INOX API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else if (deleteStatus == 0)
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", File not uploaded");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Wind BD Code INOX Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
+
         //InsertWindSpeed_TMD
         private async Task<int> InsertWindSpeedTMD(string status, DataSet ds)
         {

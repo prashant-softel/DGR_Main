@@ -35,12 +35,13 @@ namespace DGRA_V1.Common
         public const string Reference_WTGs = "Reference_WTGs";
         public const string Suzlon_TMD = "Suzlon_TMD";
         public const string Inox_TMD = "Inox_TMD";
-        public const string Sheet1 = "Sheet1";
+        public const string BD_Code_INOX = "BD_Code_INOX";
+        
 
 
         public static List<string> sheetList = new List<string>()
         {
-            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity", "Solar_tracker_loss","Solar_tracker_loss_monthly", "Solar_soiling_loss", "Solar_PVSyst_loss", "GKK", "TML_Data","Power_Curve","WindSpeed_TMD","BD_Code_Gamesa","Reference_WTGs","Suzlon_TMD","Inox_TMD","Sheet1"
+            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity", "Solar_tracker_loss","Solar_tracker_loss_monthly", "Solar_soiling_loss", "Solar_PVSyst_loss", "GKK", "TML_Data","Power_Curve","WindSpeed_TMD","BD_Code_Gamesa","Reference_WTGs","Suzlon_TMD","Inox_TMD","BD_Code_INOX",
         };
 
         public enum FileImportType
@@ -68,7 +69,8 @@ namespace DGRA_V1.Common
             imporFileType_Reference_WTGs,
             imporFileType_Suzlon_TMD,
             imporFileType_Inox_TMD,
-            imporFileType_Sheet1,
+            imporFileType_BD_Code_INOX,
+
         }
 
         enum uiPageType

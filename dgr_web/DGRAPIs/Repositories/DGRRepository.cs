@@ -3819,8 +3819,9 @@ bd_remarks, action_taken
         }
 
         //InsertWindTMLData.
-        internal async Task<int> InsertWindTMLData(List<InsertWindTMLData> set)
+        internal async Task<int> InsertWindTMLData(List<InsertWindTMLData> set, int type)
         {
+            //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
             int finalResult = 0;
             string date = "";
             int site_id = 0;
@@ -3988,6 +3989,10 @@ bd_remarks, action_taken
         //Calculation for inserting data into windspeed TMD table.
         internal async Task<int> InsertMainWindSpeedTMD(List<InsertWindTMLData> set, string date, int site_id, int importFormat)
         {
+            //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+            //Incase of INOX insert all_bd as well
+
+
             //importFormat = 1 : WTGs data in one excel sheet. Template file name : Badnawar_TML_Data
             //importFormat = 2 : WTGs data in different sheets for each WTG. Template file name : Wind_TMR_Gamesa.
             //importFormat = 3 :
@@ -4247,6 +4252,8 @@ bd_remarks, action_taken
         //Get Manual Breakdown from uploading_file_breakdown table for TML_Data_Calculations.
         internal async Task<int> UpdateManualBdForTMLData(List<InsertWindTMLData> set, string date, int site_id)
         {
+            //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+            //Some changes for INOX sucj as update all_bd as well with manual_bd column.
             int finalRes = 0;
             //14-Mar-23
             string original_date = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
@@ -4266,6 +4273,7 @@ bd_remarks, action_taken
             TimeSpan bdStopFrom = new TimeSpan();
             TimeSpan bdStopTo = new TimeSpan();
 
+            //Update the all_bd column in case of INOX.
             try
             {
                 _WindBreakdownReport = await Context.GetData<WindDailyBreakdownReport>(getQry).ConfigureAwait(false);
@@ -4359,6 +4367,9 @@ bd_remarks, action_taken
         }
         internal async Task<int> UpdateReconAndOther(string date, int site_id)
         {
+            //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+            //Check for the conditions in case of INOX.
+
             int finalResult = 0;
             string UpdateQry = "";
             string updateQryValues = "";
@@ -5352,6 +5363,42 @@ bd_remarks, action_taken
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
             }
             return val;
+        }
+        //ImportWindBDCodeINOX
+        internal async Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> set)
+        {
+            int val = 0;
+            string qry = " INSERT INTO wind_bd_codes_inox ( site, site_id, plc_state, code, type) VALUES";
+            string insertValues = "";
+            int counter = 0;
+            string site = "";
+            int site_id = 0;
+            foreach (var unit in set)
+            {
+                if (counter == 0)
+                {
+                    site = unit.site;
+                    site_id = unit.site_id;
+                }
+                insertValues += "('" + unit.site + "', " + unit.site_id + ", '" + unit.plc_state + "', '" + unit.code + "', '" + unit.type + "'),";
+            }
+
+            string deleteQry = "DELETE FROM wind_bd_codes_inox WHERE site ='" + site + "' AND site_id =" + site_id + ";";
+            qry += insertValues;
+
+            await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            if (!(string.IsNullOrEmpty(insertValues)))
+            {
+                val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+            }
+            return val;
+        }
+        //Get BD code INOX data for hashtable
+        internal async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX()
+        {
+            string qry = "Select * from wind_bd_codes_inox ;";
+            return await Context.GetData<ImportWindBDCodeINOX>(qry).ConfigureAwait(false);
+
         }
         //InsertWindSpeedTMD
         internal async Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> set)
@@ -9657,7 +9704,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(getPower).ConfigureAwait(false);
-                        _dataElement.Pexpected = data1min[0].P_exp;
+                        _dataElement.Pexpected = data1min[0].P_exp /4;
                     }
                     catch (Exception e)
                     {
@@ -9702,7 +9749,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             //Get Site Data
             List<SolarSiteMaster> siteData = new List<SolarSiteMaster>();
-            string qry2 = "select dc_capacity, doc as commissioning_date from `site_master_solar` where site_master_solar_id = " + site;
+            string qry2 = "select dc_capacity, ac_capacity, doc as commissioning_date from `site_master_solar` where site_master_solar_id = " + site;
             try
             {
                 siteData = await Context.GetData<SolarSiteMaster>(qry2).ConfigureAwait(false);
@@ -9763,7 +9810,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 break;
                             }
                         }
-                        degradation = (((start - commDate).TotalDays) * LossData.yoy_degradation) / 365;
+                        degradation = (((start - commDate).TotalDays - 1) * LossData.yoy_degradation) / 365; //start date - 1 day.
 
                         string qry3 = "select *,date_time as stringdatetime from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + start.Year.ToString() + "-" + start.Month.ToString() + "-" + start.Day + "' order by date_time asc";
                         List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
@@ -9784,7 +9831,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             dailyPexpected += localPexpected;*/
                             //double degradation = (((_temp1mindata.date - commDate).TotalDays) * LossData.yoy_degradation) / 365;
                             double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                            T_cell = Math.Round(T_cell, 5);
                             double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa) * (1 - degradation) * (1 - LossData.Loss_factor) * (1 - (LossData.alpha * (T_cell - LossData.tstc))) / 1000 ;
+                            if((siteData[0].ac_capacity * 1000) < localPexpected)
+                            {
+                                localPexpected = siteData[0].ac_capacity * 1000;
+                            }
                             dailyPexpected += localPexpected;
 
                             string updateQry = " update `uploading_pyranometer_15_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.stringdatetime.ToString("yyyy-MM-dd HH:mm:ss")+"' ";

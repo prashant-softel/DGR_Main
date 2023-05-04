@@ -73,11 +73,13 @@ namespace DGRAPIs.BS
         Task<int> InsertWindJMR(List<WindMonthlyJMR> set);
         Task<int> InsertWindUploadingFileGeneration(List<WindUploadingFileGeneration> set, int batchId);
         Task<int> InsertWindUploadingFileBreakDown(List<WindUploadingFileBreakDown> set, int batchId);
-        Task<int> InsertWindTMLData(List<InsertWindTMLData> set);
+        Task<int> InsertWindTMLData(List<InsertWindTMLData> set, int type);
         //InsertWindPowerCurve
         Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> set);
         //InsertWindBDCodeGamesa
         Task<int> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> set);
+        //ImportWindBDCodeINOX
+        Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> set);
         //InsertWindSpeedTMD
         Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> set);
         //ImportWindReferenceWtgs
@@ -1207,13 +1209,13 @@ namespace DGRAPIs.BS
         }
 
         //InsertWindTMLData
-        public async Task<int> InsertWindTMLData(List<InsertWindTMLData> InsertWindTMLData)
+        public async Task<int> InsertWindTMLData(List<InsertWindTMLData> InsertWindTMLData, int type)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.InsertWindTMLData(InsertWindTMLData);
+                    return await repos.InsertWindTMLData(InsertWindTMLData, type);
 
                 }
             }
@@ -1247,6 +1249,22 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.InsertWindBDCodeGamesa(InsertWindBDCodeGamesa);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //ImportWindBDCodeINOX
+        public async Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> ImportWindBDCodeINOX)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.ImportWindBDCodeINOX(ImportWindBDCodeINOX);
 
                 }
             }
