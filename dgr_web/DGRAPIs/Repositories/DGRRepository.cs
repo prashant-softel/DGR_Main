@@ -8833,7 +8833,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 lastYear = ltodate;
             }
-            var startDate = new DateTime(dt.Year, dt.Month, 1);
+            var startDate = new DateTime(ltodate.Year, ltodate.Month, 1);
             var endDate = startDate.AddMonths(1).AddDays(-1);
             string mfromDate = startDate.ToString("yyyy-MM-dd");
             string mtodate = ltodate.ToString("yyyy-MM-dd");
@@ -9356,7 +9356,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 lastYear = ltodate;
             }
-            var startDate = new DateTime(dt.Year, dt.Month, 1);
+            var startDate = new DateTime(ltodate.Year, ltodate.Month, 1);
             var endDate = startDate.AddMonths(1).AddDays(-1);
             string mfromDate = startDate.ToString("yyyy-MM-dd");
             string mtodate = ltodate.ToString("yyyy-MM-dd");
