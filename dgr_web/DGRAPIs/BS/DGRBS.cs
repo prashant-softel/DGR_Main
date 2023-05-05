@@ -80,6 +80,8 @@ namespace DGRAPIs.BS
         Task<int> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> set);
         //ImportWindBDCodeINOX
         Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> set);
+        //GetWindBdCodeINOX
+        Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX();
         //InsertWindSpeedTMD
         Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> set);
         //ImportWindReferenceWtgs
@@ -368,21 +370,7 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
-        public async Task<List<WindLocationMaster>> GetWindLocationMaster(string site)
-        {
-            try
-            {
-                using (var repos = new DGRRepository(getDB))
-                {
-                    return await repos.GetWindLocationMaster(site);
-
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+        
         public async Task<List<SolarSiteMaster>> GetSolarSiteMaster(string site)
         {
             try
@@ -1273,6 +1261,39 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+        //GetWindBdCodeINOX //GetWindBdCodeINOX
+        public async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindBdCodeINOX();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<WindLocationMaster>> GetWindLocationMaster(string site)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindLocationMaster(site);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         //InsertWindSpeedTMD
         public async Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> InsertWindSpeedTMD)
         {

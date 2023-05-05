@@ -346,9 +346,16 @@
                     let cal_data = [];
                     var cnt = 0;
                     for (var i = 0; i < result.length; i++) {
+                        let ma = 1 - ((result[i].usmh + result[i].smh) / result[i].pexpected);                        let iga = 1 - ((result[i].igbdh) / result[i].pexpected);                        let ega = 1 - ((result[i].egbdh + result[i].load_shedding) / result[i].pexpected);                        //let usmh = (1 - (result[i].usmh / result[i].pexpected));
+                        console.log(ma);
+                        console.log(iga);
+                        console.log(ega);
+                        //console.log(usmh);
+
                         let pr_value = 0;
                         let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
                         pr_value = result[i].inv_kwh - total_breakdown;
+
                         var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td  class="text-left">' + formattedDate + '</td>';
@@ -364,9 +371,9 @@
                         tbl += '<td class="text-right">' + (result[i].load_shedding/1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (pr_value/1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].inv_kwh / 1000000).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (ma*100).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (iga*100).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (ega*100).toFixed(2) + '</td>';
                         tbl += '</tr>';
 
                         cnt++;

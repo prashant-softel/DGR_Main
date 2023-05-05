@@ -1242,18 +1242,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             return await Context.GetData<WindSiteMaster>(qry).ConfigureAwait(false);
 
         }
-        internal async Task<List<WindLocationMaster>> GetWindLocationMaster(string site)
-        {
-            string filter = "";
-            if (!string.IsNullOrEmpty(site))
-            {
-                filter += " where site_master_id IN(" + site + ") ";
-            }
-            string qry = "Select * from location_master" + filter;
-
-            return await Context.GetData<WindLocationMaster>(qry).ConfigureAwait(false);
-
-        }
+        
         internal async Task<List<SolarSiteMaster>> GetSolarSiteMaster( string site)
         {
             string filter = "";
@@ -3958,17 +3947,17 @@ bd_remarks, action_taken
                     //importFormat = 1 : WTGs data in one excel sheet. Template file name : Badnawar_TML_Data
                     //importFormat = 2 : WTGs data in different sheets for each WTG. Template file name : Wind_TMR_Gamesa.
                     //importFormat = 3 :
-                    insertMainWindSpeedtmdRes = await InsertMainWindSpeedTMD(set, date, site_id, 1);
+                    insertMainWindSpeedtmdRes = await InsertMainWindSpeedTMD(set, date, site_id, 1, type);
                 }
                 if(insertMainWindSpeedtmdRes == 8)
                 {
                     finalResult = 3;
-                    UpdateManualBdForTMLDataRes = await UpdateManualBdForTMLData(set, date, site_id);
+                    UpdateManualBdForTMLDataRes = await UpdateManualBdForTMLData(set, date, site_id, type);
                 }
                 if(UpdateManualBdForTMLDataRes == 2)
                 {
                     finalResult = 4;
-                    UpdateReconWSAndOtherRes = await UpdateReconAndOther(date, site_id);
+                    UpdateReconWSAndOtherRes = await UpdateReconAndOther(date, site_id, type);
                 }
                 if(UpdateReconWSAndOtherRes == 8)
                 {
@@ -3987,7 +3976,7 @@ bd_remarks, action_taken
             return finalResult;
         }
         //Calculation for inserting data into windspeed TMD table.
-        internal async Task<int> InsertMainWindSpeedTMD(List<InsertWindTMLData> set, string date, int site_id, int importFormat)
+        internal async Task<int> InsertMainWindSpeedTMD(List<InsertWindTMLData> set, string date, int site_id, int importFormat, int type)
         {
             //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
             //Incase of INOX insert all_bd as well
@@ -4144,7 +4133,14 @@ bd_remarks, action_taken
                                 return finalResult;
                             }
                         }
-                        insertValues += "('" + unit.onm_wtg + "', '" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.calculated_ws + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
+                        if(type == 1)
+                        {
+                            insertValues += "('" + unit.onm_wtg + "', '" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.calculated_ws + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
+                        }
+                        else if (type == 2)
+                        {
+                            insertValues += "('" + unit.file_name + "', '" + unit.variable + "', '" + unit.PC_validity + "', '" + unit.PLC_max + "', '" + unit.PLC_min + "', '" + unit.plc_state_code + "', '" + unit.onm_wtg + "', '" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.calculated_ws + ", " + unit.restructive_WTG + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + ", '" + unit.all_bd + "'),";
+                        }
                         /*
                         if (unit.status_code == 0)
                         {
@@ -4159,7 +4155,15 @@ bd_remarks, action_taken
                         {
                             if (insertValues != "")
                             {
-                                updateWindspeedTMDQry += insertValues;
+                                if(type == 1)
+                                {
+                                    updateWindspeedTMDQry += insertValues;
+                                }
+                                else if (type == 2)
+                                {
+                                    updateWindspeedTMDQry = "INSERT INTO uploading_file_tmr_data (file_name, variable, PC_validity, PLC_max, PLC_min, PLC_state_code, onm_wtg, WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, calculated_ws, restructive_WTG, date, from_time, to_time, status, status_code, all_bd) VALUES ";
+                                    updateWindspeedTMDQry += insertValues;
+                                }
                                 try
                                 {
                                     deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
@@ -4201,7 +4205,15 @@ bd_remarks, action_taken
             {
                 if (insertValues != "")
                 {
-                    updateWindspeedTMDQry += insertValues;
+                    if (type == 1)
+                    {
+                        updateWindspeedTMDQry += insertValues;
+                    }
+                    else if (type == 2)
+                    {
+                        updateWindspeedTMDQry = "INSERT INTO uploading_file_tmr_data (file_name, variable, PC_validity, PLC_max, PLC_min, PLC_state_code, onm_wtg, WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, calculated_ws, restructive_WTG, date, from_time, to_time, status, status_code, all_bd) VALUES ";
+                        updateWindspeedTMDQry += insertValues;
+                    }
                     try
                     {
                         deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
@@ -4250,7 +4262,7 @@ bd_remarks, action_taken
         }
         
         //Get Manual Breakdown from uploading_file_breakdown table for TML_Data_Calculations.
-        internal async Task<int> UpdateManualBdForTMLData(List<InsertWindTMLData> set, string date, int site_id)
+        internal async Task<int> UpdateManualBdForTMLData(List<InsertWindTMLData> set, string date, int site_id, int type)
         {
             //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
             //Some changes for INOX sucj as update all_bd as well with manual_bd column.
@@ -4295,13 +4307,18 @@ bd_remarks, action_taken
 
                     //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00";
                     //can add this in insert qry. check for this..
-                    addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
+                    if (type == 1)
+                    {
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
+                    }
+                    else if (type == 2)
+                    {
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
+                    }
                 }
                 try
                 {
-                    string addManualBdQry2 = "UPDATE uploading_file_tmr_data SET manual_bd = '-' WHERE manual_bd IS NULL AND date = '" + date + "' AND site_id = " + site_id + ";";
                     updateManualRes = await Context.ExecuteNonQry<int>(addManualBdQry).ConfigureAwait(false);
-                    updateManualRes2 = await Context.ExecuteNonQry<int>(addManualBdQry2).ConfigureAwait(false);
                     finalRes = 2;
                 }
                 catch(Exception e)
@@ -4353,6 +4370,20 @@ bd_remarks, action_taken
                     } */
                 }
             }
+
+            try
+            {
+                string addManualBdQry2 = "UPDATE uploading_file_tmr_data SET manual_bd = '-' WHERE manual_bd IS NULL AND date = '" + date + "' AND site_id = " + site_id + ";";
+                updateManualRes2 = await Context.ExecuteNonQry<int>(addManualBdQry2).ConfigureAwait(false);
+                finalRes = 2;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while updating null to '-' manual_bd column of uploading_file_tmr_data, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                return finalRes;
+            }
+
             //finalRes = 0 : Failed
             //finalRes = 1 : Fetched Records from uploading_file_breakdown table.
             //finalRes = 2 : Updated Manual Breakdown Column of table uploading_file_tmr_data.
@@ -4365,7 +4396,7 @@ bd_remarks, action_taken
             //finalRes = 8 : Successfully updated All Breakdown Code of table uploading_file_tmr_data.
             return finalRes;
         }
-        internal async Task<int> UpdateReconAndOther(string date, int site_id)
+        internal async Task<int> UpdateReconAndOther(string date, int site_id, int type)
         {
             //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
             //Check for the conditions in case of INOX.
@@ -4575,55 +4606,70 @@ bd_remarks, action_taken
                     }
 
                     //Calculate All Breakdown.
-
-                    try
+                    //no need to calculate all_bd here for INOX already calculated before.
+                    if(type == 1)
                     {
-                        string allBreakdown = "NC";
-                        //condition 1
-                        if (unit.manual_bd != "-" && unit.manual_bd != "")
+                        try
                         {
-                            allBreakdown = unit.manual_bd;
-                        }
-                        //condition 2
-                        else if (unit.manual_bd == "-" && unit.status_code == 0 && unit.restructive_WTG == 100)
-                        {
-                            allBreakdown = "PCD";
-                        }
-                        //condition 3 & condition 4
-                        else if (unit.manual_bd == "-" && (unit.status_code == 0 || unit.status_code == 1) && (unit.restructive_WTG == 0 || unit.restructive_WTG == 25 || unit.restructive_WTG == 50 || unit.restructive_WTG == 125 ))
-                        {
-                            allBreakdown = "USMH";
-                        }
-                        //condition 5
-                        else if (unit.manual_bd == "-" && unit.restructive_WTG == 75 && unit.loss_kw <= 0)
-                        {
-                            allBreakdown = "LULL";
-                        }
-                        //condition 6
-                        else if (unit.manual_bd == "-" && unit.restructive_WTG == 75 && unit.status_code == 0 && unit.loss_kw > 0)
-                        {
-                            allBreakdown = "PCD";
-                        }
-                        else
-                        {
-                            allBreakdown = "NC";
-                        }
-                        unit.all_bd = allBreakdown;
-                        finalResult = 7;
+                            string allBreakdown = "NC";
+                            //condition 1
+                            if (unit.manual_bd != "-" && unit.manual_bd != "")
+                            {
+                                allBreakdown = unit.manual_bd;
+                            }
+                            //condition 2
+                            else if (unit.manual_bd == "-" && unit.status_code == 0 && unit.restructive_WTG == 100)
+                            {
+                                allBreakdown = "PCD";
+                            }
+                            //condition 3 & condition 4
+                            else if (unit.manual_bd == "-" && (unit.status_code == 0 || unit.status_code == 1) && (unit.restructive_WTG == 0 || unit.restructive_WTG == 25 || unit.restructive_WTG == 50 || unit.restructive_WTG == 125 ))
+                            {
+                                allBreakdown = "USMH";
+                            }
+                            //condition 5
+                            else if (unit.manual_bd == "-" && unit.restructive_WTG == 75 && unit.loss_kw <= 0)
+                            {
+                                allBreakdown = "LULL";
+                            }
+                            //condition 6
+                            else if (unit.manual_bd == "-" && unit.restructive_WTG == 75 && unit.status_code == 0 && unit.loss_kw > 0)
+                            {
+                                allBreakdown = "PCD";
+                            }
+                            else
+                            {
+                                allBreakdown = "NC";
+                            }
+                            unit.all_bd = allBreakdown;
+                            finalResult = 7;
 
+                        }
+                        catch(Exception e)
+                        {
+                            string msg = "" + e.ToString();
+                            API_ErrorLog(msg);
+                            return finalResult;
+                        }
                     }
-                    catch(Exception e)
+                    else if (type == 2)
                     {
-                        string msg = "" + e.ToString();
-                        API_ErrorLog(msg);
-                        return finalResult;
+                        finalResult = 7;
                     }
 
                     if(finalResult == 7)
                     {
                         //addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
                         //uploading_file_tmr_data (WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, restructive_WTG, date, from_time, to_time, status, status_code)
-                        UpdateQry += "UPDATE uploading_file_tmr_data SET recon_wind_speed = " + unit.recon_wind_speed + ", exp_power_kw = " + unit.exp_power_kw + ", deviation_kw = " + unit.deviation_kw + ", loss_kw = " + unit.loss_kw + ", all_bd = '" + unit.all_bd + "' WHERE uploading_file_TMR_Data_id = " + unit.uploading_file_TMR_Data_id + ";";
+                        //for INOX remove all_bd field from this updateQry.
+                        if (type == 1)
+                        {
+                            UpdateQry += "UPDATE uploading_file_tmr_data SET recon_wind_speed = " + unit.recon_wind_speed + ", exp_power_kw = " + unit.exp_power_kw + ", deviation_kw = " + unit.deviation_kw + ", loss_kw = " + unit.loss_kw + ", all_bd = '" + unit.all_bd + "' WHERE uploading_file_TMR_Data_id = " + unit.uploading_file_TMR_Data_id + ";";
+                        }
+                        else if(type == 2)
+                        {
+                            UpdateQry += "UPDATE uploading_file_tmr_data SET recon_wind_speed = " + unit.recon_wind_speed + ", exp_power_kw = " + unit.exp_power_kw + ", deviation_kw = " + unit.deviation_kw + ", loss_kw = " + unit.loss_kw + " WHERE uploading_file_TMR_Data_id = " + unit.uploading_file_TMR_Data_id + ";";
+                        }
                     }
                     if(qryCounter > 10000)
                     {
@@ -5398,6 +5444,18 @@ bd_remarks, action_taken
         {
             string qry = "Select * from wind_bd_codes_inox ;";
             return await Context.GetData<ImportWindBDCodeINOX>(qry).ConfigureAwait(false);
+
+        }
+        internal async Task<List<WindLocationMaster>> GetWindLocationMaster(string site)
+        {
+            string filter = "";
+            if (!string.IsNullOrEmpty(site))
+            {
+                filter += " where site_master_id IN(" + site + ") ";
+            }
+            string qry = "Select * from location_master" + filter;
+
+            return await Context.GetData<WindLocationMaster>(qry).ConfigureAwait(false);
 
         }
         //InsertWindSpeedTMD
@@ -9680,7 +9738,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (prType == "AOP")
             {
                 //qry1 = "select site, t1.site_id, t1. date, pr, toplining_pr, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma) as ma, avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter +                    " group by t1.site, t1.date ";
-                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
             }
             else if(prType == "toplining")
             {

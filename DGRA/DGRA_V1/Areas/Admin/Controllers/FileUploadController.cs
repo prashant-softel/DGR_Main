@@ -4788,8 +4788,10 @@ namespace DGRA_V1.Areas.admin.Controllers
 
         //ImportWindInoxTMD
         Hashtable bcCodeTypeHash = new Hashtable();
+        Hashtable bdCodeHash = new Hashtable();
         private async Task<int> ImportWindInoxTMD(string status, DataSet ds, string fileName)
         {
+            bdCodeINOX();
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
@@ -4797,8 +4799,6 @@ namespace DGRA_V1.Areas.admin.Controllers
 
             if (ds.Tables.Count > 0)
             {
-                Hashtable bdCodeHash = await bdCodeINOX();
-
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
                 string previoustoTime = "00:00:00";
                 string dataDate = "";
@@ -4929,7 +4929,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addUnit.from_time = fromTime;
 
                                 //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into closest.
-                                if(addUnit.to_time != "")
+                                if(toTime != "")
                                 {
                                     //00:10:00
                                     string inputStrings = toTime;
@@ -4945,7 +4945,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             minute = minute + (10 - remainder);
                                             if (remainder < 9)
                                             {
-                                                finalToTime = output[0] + minute.ToString() + output[2];
+                                                finalToTime = output[0] + ":" + minute.ToString() + ":" + output[2];
                                             }
                                             else
                                             {
@@ -4971,7 +4971,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     }
                                 }
                                 
-                                addUnit.to_time = toTime;
+                                addUnit.to_time = finalToTime;
                                 previoustoTime = addUnit.to_time;
 
                                 //checking if the active power is present or not 0 = Available 1 = Missing.
@@ -5037,58 +5037,61 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
 
                                 //Code to get the missing samples.
-
-                                string nextVariable = ds.Tables[0].Columns[columnCount + 1].ColumnName.ToString();
-                                string[] nextTime = nextVariable.Split(sep);
-                                string nextFrom = nextTime[0];
-                                string nextTo = nextTime[1];
-                                if(addUnit.from_time != nextFrom)
+                                if (columnCount < ColumnCount-1)
                                 {
-                                    int insideCount = 0;
-                                    string missingTo = "";
-                                    string missingFrom = "";
-                                    do
+                                    string nextVariable = ds.Tables[0].Columns[columnCount + 1].ColumnName.ToString();
+                                    string[] nextTime = nextVariable.Split(sep);
+                                    string nextFrom = nextTime[0];
+                                    string nextTo = nextTime[1];
+                                    if(addUnit.to_time != nextFrom)
                                     {
-                                        TimeSpan fromTimeSpan = new TimeSpan();
-                                        TimeSpan nextFromFinal = new TimeSpan();
-                                        TimeSpan nextToFinal = new TimeSpan();
+                                        int insideCount = 0;
+                                        string missingTo = "";
+                                        string missingFrom = "";
+                                        do
+                                        {
+                                            TimeSpan fromTimeSpan = new TimeSpan();
+                                            TimeSpan nextFromFinal = new TimeSpan();
+                                            TimeSpan nextToFinal = new TimeSpan();
 
-                                        if (insideCount == 0)
-                                        {
-                                            fromTimeSpan = TimeSpan.Parse(addUnit.from_time);
-                                        }
-                                        if(insideCount > 0)
-                                        {
-                                            fromTimeSpan = TimeSpan.Parse(missingFrom);
-                                        }
+                                            if (insideCount == 0)
+                                            {
+                                                fromTimeSpan = TimeSpan.Parse(addUnit.from_time);
+                                            }
+                                            if(insideCount > 0)
+                                            {
+                                                fromTimeSpan = TimeSpan.Parse(missingFrom);
+                                            }
                                         
-                                        nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
-                                        nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+                                            nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
+                                            nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
 
-                                        InsertWindTMLData addMissingUnit = new InsertWindTMLData();
+                                            InsertWindTMLData addMissingUnit = new InsertWindTMLData();
 
-                                        addMissingUnit.file_name = fileName;
-                                        addMissingUnit.onm_wtg = fileNameNew;
-                                        addMissingUnit.WTGs = wtgName;
-                                        addMissingUnit.site_id = siteId;
-                                        addMissingUnit.wtg_id = wtgId;
-                                        addMissingUnit.site = siteName;
-                                        addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
-                                        addMissingUnit.timestamp = LogTime + " " + toTime;
-                                        bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
-                                        addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
-                                        addMissingUnit.from_time = nextFromFinal.ToString();
-                                        addMissingUnit.to_time = nextToFinal.ToString();
-                                        addMissingUnit.status_code = 1;
-                                        addMissingUnit.avg_wind_speed = 0;
-                                        missingTo = addMissingUnit.to_time;
-                                        missingFrom = addMissingUnit.from_time;
+                                            addMissingUnit.file_name = fileName;
+                                            addMissingUnit.onm_wtg = fileNameNew;
+                                            addMissingUnit.WTGs = wtgName;
+                                            addMissingUnit.site_id = siteId;
+                                            addMissingUnit.wtg_id = wtgId;
+                                            addMissingUnit.site = siteName;
+                                            addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
+                                            addMissingUnit.timestamp = LogTime + " " + nextToFinal.ToString();
+                                            bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
+                                            addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
+                                            addMissingUnit.from_time = nextFromFinal.ToString();
+                                            addMissingUnit.to_time = nextToFinal.ToString();
+                                            addMissingUnit.status_code = 1;
+                                            addMissingUnit.avg_wind_speed = 0;
+                                            missingTo = addMissingUnit.to_time;
+                                            missingFrom = addMissingUnit.from_time;
+                                            previoustoTime = addMissingUnit.to_time;
 
-                                        addSet.Add(addMissingUnit);
+                                            addSet.Add(addMissingUnit);
 
-                                        insideCount++;
+                                            insideCount++;
+                                        }
+                                        while (missingTo != nextFrom);
                                     }
-                                    while (missingTo != nextFrom);
                                 }
                             }
                         }
@@ -5112,6 +5115,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
                     using (var client = new HttpClient())
                     {
+                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                         var response = await client.PostAsync(url, data);
                         string returnResponse = response.Content.ReadAsStringAsync().Result;
                         if (response.IsSuccessStatusCode)
@@ -5151,21 +5155,20 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 else
                 {
-                    m_ErrorLog.SetError(",Solar PVSyst Loss Validation Failed,");
+                    m_ErrorLog.SetError(",Wind INOX TML Validation Failed,");
                 }
             }
             return responseCode;
         }
 
         //get bd_code_INOX into hashtable.
-        public async Task<Hashtable> bdCodeINOX()
+        public void bdCodeINOX()
         {
-            Hashtable bdCodeHash = new Hashtable();
             DataTable dTable = new DataTable();
             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindBdCodeINOX";
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
-
+            request.Method = "POST";
             using (var response = (HttpWebResponse)request.GetResponse())
             {
                 Stream receiveStream = response.GetResponseStream();
@@ -5184,9 +5187,38 @@ namespace DGRA_V1.Areas.admin.Controllers
                 bdCodeHash.Add((string)dr["plc_state"], code);
                 bcCodeTypeHash.Add(code, dr["type"]);
             }
-
-            return bdCodeHash;
         }
+
+        public void masterHashtable_WtgToWtgId()
+        {
+            //fills a hashtable with key = wtg and value = location_master_id from table : Wind Location Master
+            //gets equipmentID from equipmentName in Wind Location Master
+            DataTable dTable = new DataTable();
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindLocationMaster";
+            var result = string.Empty;
+            WebRequest request = WebRequest.Create(url);
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                Stream receiveStream = response.GetResponseStream();
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    result = readStream.ReadToEnd();
+                }
+                dTable = JsonConvert.DeserializeObject<DataTable>(result);
+            }
+
+            foreach (DataRow dr in dTable.Rows)
+            {
+                int wtgId = (int)Convert.ToInt64(dr["location_master_id"]);//D
+                equipmentId.Add((string)dr["wtg"], wtgId);
+                onm2equipmentName.Add((string)dr["wtg_onm"], (string)dr["wtg"]);
+                SiteByWtg.Add((string)dr["wtg"], (string)dr["site"]);
+                double max_kWh = Convert.ToDouble(dr["max_kwh_day"]);
+                maxkWhMap_wind.Add(wtgId, max_kWh);
+            }
+        }
+
         //InsertWindPowerCurve
         private async Task<int> InsertWindPowerCurve(string status, DataSet ds)
         {
@@ -5782,35 +5814,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
         }
         //HashTable List
-        public void masterHashtable_WtgToWtgId()
-        {
-            //fills a hashtable with key = wtg and value = location_master_id from table : Wind Location Master
-            //gets equipmentID from equipmentName in Wind Location Master
-            DataTable dTable = new DataTable();
-            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindLocationMaster";
-            var result = string.Empty;
-            WebRequest request = WebRequest.Create(url);
-
-            using (var response = (HttpWebResponse)request.GetResponse())
-            {
-                Stream receiveStream = response.GetResponseStream();
-                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
-                {
-                    result = readStream.ReadToEnd();
-                }
-                dTable = JsonConvert.DeserializeObject<DataTable>(result);
-            }
-
-            foreach (DataRow dr in dTable.Rows)
-            {
-                int wtgId = (int)Convert.ToInt64(dr["location_master_id"]);//D
-                equipmentId.Add((string)dr["wtg"], wtgId);
-                onm2equipmentName.Add((string)dr["wtg_onm"], (string)dr["wtg"]);
-                SiteByWtg.Add((string)dr["wtg"], (string)dr["site"]);
-                double max_kWh = Convert.ToDouble(dr["max_kwh_day"]);
-                maxkWhMap_wind.Add(wtgId, max_kWh);
-            }
-        }
+        
         public void masterHashtable_BDNameToBDId()
         {
             //fills a hashtable with key = bdTypeName and value = bdTypeId from table : BDType 

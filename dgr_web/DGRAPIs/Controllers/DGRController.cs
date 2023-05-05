@@ -71,22 +71,6 @@ namespace DGRAPIs.Controllers
             }
         }
 
-        [Route("GetWindLocationMaster")]
-        [HttpGet]
-        public async Task<IActionResult> GetWindLocationMaster(string site)
-        {
-            try
-            {
-                var data = await _dgrBs.GetWindLocationMaster(site);
-                return Ok(data);
-
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
         [Route("GetSolarSiteList")]
         [HttpGet]
         public async Task<IActionResult> GetSolarSiteList(string state, string spvdata, string site)
@@ -1056,6 +1040,41 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //GetWindBdCodeINOX
+        [Route("GetWindBdCodeINOX")]
+        [HttpPost]
+        public async Task<IActionResult> GetWindBdCodeINOX()
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindBdCodeINOX();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("GetWindLocationMaster")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindLocationMaster(string site)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindLocationMaster(site);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         //InsertWindSpeedTMD
         [Route("InsertWindSpeedTMD")]
         [HttpPost]

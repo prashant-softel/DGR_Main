@@ -29,6 +29,12 @@ namespace DGRAPIs.Models
         public double loss_kw { get; set; }
         public string manual_bd { get; set; }
         public string all_bd { get; set; }
+        public string file_name { get; set; }
+        public dynamic variable { get; set; }
+        public string PLC_min { get; set; }
+        public string PLC_max { get; set; }
+        public int PC_validity { get; set; }
+        public string plc_state_code { get; set; }
         public dynamic created_on { get; set; }
     }
     public class WindSpeedData
