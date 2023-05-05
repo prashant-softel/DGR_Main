@@ -413,10 +413,15 @@
 
             }
         }
-        //if (userRole == "User" &&  !ssite_list) {
-           // $('#solar_site').multipleSelect();
-            //return;
-        //}
+        if (ssite_list != '' && wsite_list == '') {
+            chartSelection(1);
+        }
+        else if (ssite_list == '' && wsite_list != '') {
+            chartSelection(1);
+        }
+        else {
+            chartSelection(1);
+        }
 
 
 
@@ -514,10 +519,12 @@
                 $('#wind_site').multipleSelect("setSelects", site_ids.split(","));
                 document.getElementById("total_mw").innerHTML = "(" + wind_total_mw.toFixed(0) + " MW)";
                 GetWindDataByLastDay();
+
+
                 //GetWindDataByCurrentMonth();
                 //GetWindDataByYearly();
                 //if ($('#customRadio1').is(':checked')) {
-                chartSelection(1);
+               //chartSelection(1);
 
                // }
             }
@@ -559,7 +566,7 @@
                 GetSolarDataByLastDay();
                // GetSolarDataByCurrentMonth();
                 //GetSolarDataByYearly();
-                chartSelection(1);
+               // chartSelection(1);
 
             }
         });
@@ -1154,6 +1161,7 @@
     }
     // chart
     function chartSelection(type) {
+
 
         if (type == 1) {
             chartTitle = "Last 10 Days";
