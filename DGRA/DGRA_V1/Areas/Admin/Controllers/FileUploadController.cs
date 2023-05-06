@@ -544,7 +544,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
-                                
                                 else if (excelSheet == FileSheetType.Solar_PVSyst_loss)
                                 {
                                     fileImportType = FileSheetType.FileImportType.imporFileType_Solar_PVSyst_loss;
@@ -559,6 +558,23 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             status = "Wrong file upload type selected for PVSyst_Loss import";
+                                        }
+                                    }
+                                }
+                                else if (excelSheet == FileSheetType.Estimated_Hourly_Data)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Estimated_Hourly_Data;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if (ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Solar")
+                                        {
+                                            m_ErrorLog.SetInformation(",Reviewing Solar Estimated_Hourly_Data WorkSheet:");
+                                            statusCode = await InsertSolarEstimatedHourlyData(status, ds);
+                                        }
+                                        else
+                                        {
+                                            status = "Wrong file upload type selected for Estimated_Hourly_Data import";
                                         }
                                     }
                                 }
@@ -4196,6 +4212,136 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     m_ErrorLog.SetError(",Solar PVSyst Loss Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
+
+        //InsertSolarEstimatedHourlyData
+        private async Task<int> InsertSolarEstimatedHourlyData(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+
+            if (ds.Tables.Count > 0)
+            {
+                List<InsertSolarEstimatedHourlyData> addSet = new List<InsertSolarEstimatedHourlyData>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    InsertSolarEstimatedHourlyData addUnit = new InsertSolarEstimatedHourlyData();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+
+                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
+                        if (addUnit.site == "" || addUnit.site == null)
+                        {
+                            m_ErrorLog.SetError(", Site column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+
+                        addUnit.site_id = Convert.ToInt32(siteNameId[addUnit.site]);
+
+                        bool isFy = dr["FY Date"] is DBNull || string.IsNullOrEmpty((string)dr["FY Date"]) ? false : true;
+                        if (!isFy)
+                        {
+                            m_ErrorLog.SetError(", FY Date column of <" + rowNumber + "> row is empty.");
+                            errorCount++;
+                        }
+                        addUnit.fy_date = isFy ? (string)(dr["FY Date"]) : "Nil";
+
+                        addUnit.month = isFy ? Convert.ToDateTime(addUnit.fy_date).ToString("MMM") : "Nil";
+
+                        addUnit.month_no = isFy ? int.Parse(Convert.ToDateTime(addUnit.fy_date).ToString("MM")) : 0;
+
+                        int year = isFy ? int.Parse(Convert.ToDateTime(addUnit.fy_date).ToString("yyyy")) : 0;
+
+                        addUnit.year = (addUnit.month_no > 3) ? year : year += 1;
+
+                        addUnit.glob_hor = dr["GlobHor"] is DBNull || string.IsNullOrEmpty((string)dr["GlobHor"]) ? 0 : Convert.ToDouble(dr["GlobHor"]);
+
+                        addUnit.glob_inc = dr["GlobInc"] is DBNull || string.IsNullOrEmpty((string)dr["GlobInc"]) ? 0 : Convert.ToDouble(dr["GlobInc"]);
+
+                        addUnit.t_amb = dr["T_Amb"] is DBNull || string.IsNullOrEmpty((string)dr["T_Amb"]) ? 0 : Convert.ToDouble(dr["T_Amb"]);
+
+                        addUnit.t_array = dr["Tarray"] is DBNull || string.IsNullOrEmpty((string)dr["Tarray"]) ? 0 : Convert.ToDouble(dr["Tarray"]);
+
+                        addUnit.e_out_inv = dr["EOutInv"] is DBNull || string.IsNullOrEmpty((string)dr["EOutInv"]) ? 0 : Convert.ToDouble(dr["EOutInv"]);
+
+                        addUnit.e_grid = dr["E_Grid"] is DBNull || string.IsNullOrEmpty((string)dr["E_Grid"]) ? 0 : Convert.ToDouble(dr["E_Grid"]);
+
+                        addUnit.phi_ang = dr["PhiAng"] is DBNull || string.IsNullOrEmpty((string)dr["PhiAng"]) ? 0 : Convert.ToDouble(dr["PhiAng"]);
+
+                        if(addUnit.glob_hor == 0 && addUnit.glob_inc == 0 && addUnit.t_amb == 0 && addUnit.t_array == 0 && addUnit.e_out_inv == 0 && addUnit.e_grid == 0 && addUnit.phi_ang == 0)
+                        {
+                            m_ErrorLog.SetInformation(", All data at <" + rowNumber + "> row is 0.");
+                        }
+                        errorFlag.Clear();
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        //developer errorlog
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarPVSystLoss,");
+                        ErrorLog(",Exception Occurred In Function: InsertSolarPVSystLoss: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Solar Estimated Hourly Data Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarEstimatedHourlyData";
+                    using (var client = new HttpClient())
+                    {
+                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                        var response = await client.PostAsync(url, data);
+                        string returnResponse = response.Content.ReadAsStringAsync().Result;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            if(returnResponse == "1")
+                            {
+                                m_ErrorLog.SetError(",Error Deleting records form database.");
+                            }else if(returnResponse == "2")
+                            {
+                                m_ErrorLog.SetInformation(",Solar Estimated Hourly Data imported SuccessFully,");
+                            }
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",Solar Estimated Hourly Data API Failure,: responseCode <" + (int)response.StatusCode + "> Reason : " + returnResponse);
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else if (deleteStatus == 0)
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", File not uploaded");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Solar Estimated Hourly Data Validation Failed,");
                 }
             }
             return responseCode;

@@ -5938,8 +5938,73 @@ bd_remarks, action_taken
             }
             return val;
         }
-        //
-        
+
+        //InsertSolarEstimatedHourlyData
+        internal async Task<int> InsertSolarEstimatedHourlyData(List<InsertSolarEstimatedHourlyData> set)
+        {
+            int finalResult = 0;
+            int deleteRes = 0;
+            int insertRes = 0;
+            //pending delete qry and code clean up
+            string qry = " insert into uploading_file_estimated_hourly_loss (site, site_id, fy_date, year, month, month_no, time, glob_hor, glob_inc, t_amb, t_array, e_out_inv, e_grid, phi_ang) values";
+            string insertValues = "";
+            //Sstring deleteValues = "";
+            //string month = "(";
+            string id = "(";
+            string financialyear = "(";
+            foreach (var unit in set)
+            {
+                insertValues += "('" + unit.site + "', " + unit.site_id + ", '" + unit.fy_date + "', " + unit.year + ", '" + unit.month + "', " + unit.month_no + ", '" + unit.time + "', " + unit.glob_hor + ", " + unit.glob_inc + ", " + unit.t_amb + ", " + unit.t_array + ", " + unit.e_out_inv + ", " + unit.e_grid + ", " + unit.phi_ang + "),";
+                //DELETE FROM uploading_file_pvsyst_loss WHERE site_id IN (3,9) and month In ('Apr','Mar');
+                //month += "'" + unit.month + "',";
+                id += unit.site_id + ",";
+                financialyear += "'" + unit.fy_date + "',";
+            }
+            string idTemp = id.Substring(0, (id.Length - 1)) + ")";
+            //string monthTemp = month.Substring(0, (month.Length - 1)) + ")";
+            string financialyearTemp = financialyear.Substring(0, (financialyear.Length - 1)) + ")";
+
+            string deleteQry = "DELETE FROM uploading_file_estimated_hourly_loss WHERE site_id IN " + idTemp + " AND fy_date IN " + financialyearTemp + ";";
+            qry += insertValues;
+
+            try
+            {
+                deleteRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                if(deleteRes >= 0)
+                {
+                    finalResult = 1;
+                }
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while deleting records form uploading_file_estimated_hourly_loss table, due to  : " + e.ToString();
+                API_ErrorLog(msg);
+                return finalResult;
+            }
+            if (!(string.IsNullOrEmpty(insertValues)))
+            {
+                try
+                {
+                    insertRes = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                    if (insertRes > 0)
+                    {
+                        finalResult = 2;
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while inserting values into uploading_file_estimated_hourly_loss table, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return finalResult;
+                }
+            }
+            //finalResult = 0 : Complete Failure.
+            //finalResult = 1 : Deleted completed Then Failed.
+            //finalResult = 2 : Insertion in table done successfully. Successful.
+
+            return finalResult;
+        }
+
         internal async Task<int> InsertSolarDailyBDloss(List<SolarDailyBDloss> solarDailyBDloss)
         {
 

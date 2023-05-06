@@ -99,6 +99,7 @@ namespace DGRAPIs.BS
 
         Task<int> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> set);
         Task<int> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> set);
+        Task<int> InsertSolarEstimatedHourlyData(List<InsertSolarEstimatedHourlyData> set);
         Task<int> InsertWindTMR(List<InsertWindTMR> set);
         Task<int> InsertSolarDailyBDloss(List<SolarDailyBDloss> set);
         Task<int> InsertSolarUploadingPyranoMeter1Min(List<SolarUploadingPyranoMeter1Min> set, int batchId);
@@ -1187,6 +1188,23 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.InsertSolarPVSystLoss(InsertSolarPVSystLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertSolarEstimatedHourlyData
+        public async Task<int> InsertSolarEstimatedHourlyData(List<InsertSolarEstimatedHourlyData> InsertSolarEstimatedHourlyData)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarEstimatedHourlyData(InsertSolarEstimatedHourlyData);
 
                 }
             }

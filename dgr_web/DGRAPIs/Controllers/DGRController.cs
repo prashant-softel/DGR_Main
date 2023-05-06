@@ -1317,6 +1317,24 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        //InsertSolarEstimatedHourlyData
+        [Route("InsertSolarEstimatedHourlyData")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarEstimatedHourlyData(List<InsertSolarEstimatedHourlyData> InsertSolarEstimatedHourlyData)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarEstimatedHourlyData(InsertSolarEstimatedHourlyData);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         //InsertWindTMR
         [Route("InsertWindTMR")]
         [HttpPost]
