@@ -178,7 +178,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             string status = "";
             int statusCode = 400;   //Bad request
             DataSet dataSetMain = new DataSet();
-            var allowedExtensions = new[] { ".xlsx", ".xls" };
+            var allowedExtensions = new[] { ".xlsx", ".xls", ".csv", ".txt" };
             var ext = Path.GetExtension(file.FileName);
 
             if (allowedExtensions.Contains(ext))
@@ -949,6 +949,53 @@ namespace DGRA_V1.Areas.admin.Controllers
                             ErrorLog("Inside" + ex.ToString());
                         }
                     }
+                    else if (ext == ".txt" || ext == ".csv")
+                    {
+                        try
+                        {
+                            using (var stream = new FileStream(@"\TempFile\docupload.csv", FileMode.Create))
+                            {
+                                file.CopyTo(stream);
+                            }
+                            DataTable dt = null;
+
+                            string _filePath = @"C:\TempFile\docupload.csv";
+                            dataSetMain = GetDataTableFromTxtOrCsv(_filePath, true, ref fileSheets);
+                            if (dataSetMain == null)
+                            {
+                                m_ErrorLog.SetError(",Unable to extract imported file data for importing,");
+                            }
+                            ErrorLog("datSetMain null " + dataSetMain);
+
+                            //masterHashtable_SiteName_To_SiteId();//C
+                            masterHashtable_SiteIdToSiteName();
+                            if (fileUploadType == "Wind")
+                            {
+                                masterHashtable_WtgToWtgId();
+                                masterHashtable_WtgToSiteId();
+                            }
+                            /*
+                            if (fileUploadType == "Solar")
+                            {
+                                masterInverterList();
+                            }
+                            */
+
+                            //Status Codes:
+                            //200 = Success ; 400 = Failure(BadRequest)
+                            if (fileUploadType == "Wind")
+                            {
+                                m_ErrorLog.SetInformation(",Reviewing Wind file for TML data import:");
+                                //statusCode = await InsertWindRejen(status, dataSetMain);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            status = "Exception Caught Debugging Required";
+                            m_ErrorLog.SetError("," + status + ":" + ex.Message);
+                            ErrorLog("Inside" + ex.ToString());
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1049,6 +1096,45 @@ namespace DGRA_V1.Areas.admin.Controllers
                         // add rows
                     }
                 }
+                return dataSet;
+            }
+            catch (Exception ex)
+            {
+                status = "Something went wrong : Exception Caught Debugging Required";
+                m_ErrorLog.SetError("," + status + ",");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        private DataSet GetDataTableFromTxtOrCsv(string filePath, bool hasHeader, ref List<string> _worksheetList)
+        {
+            string status = "";
+            try
+            {
+                DataSet dataSet = new DataSet();
+                DataTable dt = new DataTable();
+
+                var dataTable = new DataTable();
+                using (var reader = new StreamReader(filePath))
+                {
+                    string[] headers = reader.ReadLine().Split('\t');
+                    foreach (string header in headers)
+                    {
+                        dataTable.Columns.Add(header);
+                    }
+
+                    while (!reader.EndOfStream)
+                    {
+                        string[] rows = reader.ReadLine().Split('\t');
+                        DataRow dataRow = dataTable.NewRow();
+                        for (int i = 0; i < headers.Length; i++)
+                        {
+                            dataRow[i] = rows[i];
+                        }
+                        dataTable.Rows.Add(dataRow);
+                    }
+                }
+                dataSet.Tables.Add(dataTable);
                 return dataSet;
             }
             catch (Exception ex)
@@ -4130,13 +4216,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //errorFlag.Add(numericNullValidation(addUnit.conversion_loss, "Conversion loss", rowNumber));
 
                         //addUnit.plant_aux = Convert.ToInt32(dr["Plant Auxiliary"]);
-                        addUnit.plant_aux = dr["Plant Auxiliary"] is DBNull || string.IsNullOrEmpty((string)dr["Plant Auxiliary"]) ? "Nill" : Convert.ToString(dr["Plant Auxiliary"]);
+                        addUnit.plant_aux = dr["Plant Auxiliary"] is DBNull || string.IsNullOrEmpty((string)dr["Plant Auxiliary"]) ? 0 : Convert.ToDouble(dr["Plant Auxiliary"]);
                         //errorFlag.Add(numericNullValidation(addUnit.plant_aux, "Plant Auxiliary", rowNumber));
 
                         addUnit.system_unavailability = dr["System unavailability"] is DBNull || string.IsNullOrEmpty((string)dr["System unavailability"]) ? "Nill" : Convert.ToString(dr["System unavailability"]);
                         //errorFlag.Add(numericNullValidation(addUnit.system_unavailability, "System unavailability", rowNumber));
 
-                        addUnit.ac_ohmic = dr["AC Ohmic"] is DBNull || string.IsNullOrEmpty((string)dr["AC Ohmic"]) ? "Nill" : Convert.ToString(dr["AC Ohmic"]);
+                        addUnit.ac_ohmic = dr["AC Ohmic"] is DBNull || string.IsNullOrEmpty((string)dr["AC Ohmic"]) ? 0 : Convert.ToDouble(dr["AC Ohmic"]);
                         //errorFlag.Add(numericNullValidation(addUnit.ac_ohmic, "AC Ohmic", rowNumber));
 
                         addUnit.external_transformer = dr["External Transformer"] is DBNull || string.IsNullOrEmpty((string)dr["External Transformer"]) ? "Nill" : Convert.ToString(dr["External Transformer"]);
@@ -4157,6 +4243,33 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.tcnd = Convert.ToInt32(dr["Tcnd"]);
                         errorFlag.Add(numericNullValidation(addUnit.tcnd, "Tcnd", rowNumber));
+
+                        addUnit.far_shedding = dr["Far Shading"] is DBNull || string.IsNullOrEmpty((string)dr["Far Shading"]) ? 0 : Convert.ToDouble(dr["Far Shading"]);
+                        
+                        addUnit.pv_loss_dueto_temp = dr["PV Loss due to Temperature"] is DBNull || string.IsNullOrEmpty((string)dr["PV Loss due to Temperature"]) ? 0 : Convert.ToDouble(dr["PV Loss due to Temperature"]);
+
+                        addUnit.module_quality_loss = dr["Module Quality Loss"] is DBNull || string.IsNullOrEmpty((string)dr["Module Quality Loss"]) ? 0 : Convert.ToDouble(dr["Module Quality Loss"]);
+
+                        addUnit.electrical_loss = dr["Electrical Loss acc. to strings"] is DBNull || string.IsNullOrEmpty((string)dr["Electrical Loss acc. to strings"]) ? 0 : Convert.ToDouble(dr["Electrical Loss acc. to strings"]);
+
+                        addUnit.inv_loss_over_power = dr["Inverter Loss over nominal inv. power"] is DBNull || string.IsNullOrEmpty((string)dr["Inverter Loss over nominal inv. power"]) ? 0 : Convert.ToDouble(dr["Inverter Loss over nominal inv. power"]);
+
+                        addUnit.inv_loss_max_input_current = dr["Inverter Loss due to max. input current"] is DBNull || string.IsNullOrEmpty((string)dr["Inverter Loss due to max. input current"]) ? 0 : Convert.ToDouble(dr["Inverter Loss due to max. input current"]);
+                        
+                        addUnit.inv_loss_voltage = dr["Inverter Loss over nominal inv. Voltage"] is DBNull || string.IsNullOrEmpty((string)dr["Inverter Loss over nominal inv. Voltage"]) ? 0 : Convert.ToDouble(dr["Inverter Loss over nominal inv. Voltage"]);
+                        
+                        addUnit.inv_loss_power_threshold = dr["Inverter Loss due to power threshold"] is DBNull || string.IsNullOrEmpty((string)dr["Inverter Loss due to power threshold"]) ? 0 : Convert.ToDouble(dr["Inverter Loss due to power threshold"]);
+                        
+                        addUnit.inv_loss_voltage_threshold = dr["Inverter Loss due to voltage threshold"] is DBNull || string.IsNullOrEmpty((string)dr["Inverter Loss due to voltage threshold"]) ? 0 : Convert.ToDouble(dr["Inverter Loss due to voltage threshold"]);
+                        
+                        addUnit.night_consumption = dr["Night consumption"] is DBNull || string.IsNullOrEmpty((string)dr["Night consumption"]) ? 0 : Convert.ToDouble(dr["Night consumption"]);
+                        
+                        addUnit.idt = dr["IDT"] is DBNull || string.IsNullOrEmpty((string)dr["IDT"]) ? 0 : Convert.ToDouble(dr["IDT"]);
+
+                        addUnit.line_losses = dr["Line Losses"] is DBNull || string.IsNullOrEmpty((string)dr["Line Losses"]) ? 0 : Convert.ToDouble(dr["Line Losses"]);
+
+                        addUnit.unused_energy = dr["Unused energy"] is DBNull || string.IsNullOrEmpty((string)dr["Unused energy"]) ? 0 : Convert.ToDouble(dr["Unused energy"]);
+
 
                         errorFlag.Clear();
                         if (!(skipRow))

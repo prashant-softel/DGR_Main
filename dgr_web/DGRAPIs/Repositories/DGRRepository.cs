@@ -5910,7 +5910,7 @@ bd_remarks, action_taken
         {
             int val = 0;
             //pending delete qry and code clean up
-            string qry = " insert into uploading_file_pvsyst_loss (site_name, site_id, year, month_no, fy, month, alpha, near_sheding, iam_factor, soiling_factor, pv_loss, lid, array_missmatch, dc_ohmic, conversion_loss, plant_auxilary, system_unavailability, ac_ohmic, external_transformer, yoy_degradation, module_degradation, tstc, tcnd) values";
+            string qry = " insert into uploading_file_pvsyst_loss (site_name, site_id, year, month_no, fy, month, alpha, near_sheding, iam_factor, soiling_factor, pv_loss, lid, array_missmatch, dc_ohmic, conversion_loss, plant_auxilary, system_unavailability, ac_ohmic, external_transformer, yoy_degradation, module_degradation, tstc, tcnd, far_shedding, pv_loss_dueto_temp, module_quality_loss, electrical_loss, inv_loss_over_power, inv_loss_max_input_current, inv_loss_voltage, inv_loss_power_threshold, inv_loss_voltage_threshold, night_consumption, idt, line_losses, unused_energy) values";
             string insertValues = "";
             string deleteValues = "";
             string month = "(";
@@ -5918,7 +5918,7 @@ bd_remarks, action_taken
             string financialyear = "(";
             foreach (var unit in set)
             {
-                insertValues += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.year + "','" + unit.month_no + "','" + unit.FY + "','" + unit.month + "','" + unit.alpha + "','" + unit.near_shading + "','" + unit.IAM_factor + "','" + unit.soiling_factor + "','" + unit.pv_loss + "','" + unit.lid + "','" + unit.array_missmatch + "','" + unit.dc_ohmic + "','" + unit.conversion_loss + "','" + unit.plant_aux + "','" + unit.system_unavailability + "','" + unit.ac_ohmic + "','" + unit.external_transformer + "','" + unit.yoy_degradation + "','" + unit.module_degradation + "','" + unit.tstc + "','" + unit.tcnd + "'),";
+                insertValues += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.year + "','" + unit.month_no + "','" + unit.FY + "','" + unit.month + "','" + unit.alpha + "','" + unit.near_shading + "','" + unit.IAM_factor + "','" + unit.soiling_factor + "','" + unit.pv_loss + "','" + unit.lid + "','" + unit.array_missmatch + "','" + unit.dc_ohmic + "','" + unit.conversion_loss + "','" + unit.plant_aux + "','" + unit.system_unavailability + "','" + unit.ac_ohmic + "','" + unit.external_transformer + "','" + unit.yoy_degradation + "','" + unit.module_degradation + "','" + unit.tstc + "','" + unit.tcnd + "', " + unit.far_shedding + "," + unit.pv_loss_dueto_temp + "," + unit.module_quality_loss + "," + unit.electrical_loss + "," + unit.inv_loss_over_power + "," + unit.inv_loss_max_input_current + "," + unit.inv_loss_voltage + "," + unit.inv_loss_power_threshold + "," + unit.inv_loss_voltage_threshold + "," + unit.night_consumption + "," + unit.idt + "," + unit.line_losses + "," + unit.unused_energy + "),"; 
                 //DELETE FROM uploading_file_pvsyst_loss WHERE site_id IN (3,9) and month In ('Apr','Mar');
                 month += "'" + unit.month + "',";
                 id += unit.site_id + ",";
