@@ -4188,47 +4188,47 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.site_id = Convert.ToInt32(siteNameId[addUnit.site_name]);
 
-                        addUnit.alpha = dr["α"] is DBNull || string.IsNullOrEmpty((string)dr["α"]) ? "Nill" : Convert.ToString(dr["α"]);
+                        addUnit.alpha = dr["α"] is DBNull || string.IsNullOrEmpty((string)dr["α"]) ? 0 : Convert.ToDouble(dr["α"]);
                         //errorFlag.Add(numericNullValidation(addUnit.alpha, "α", rowNumber));
 
-                        addUnit.near_shading = dr["Near Shading"] is DBNull || string.IsNullOrEmpty((string)dr["Near Shading"]) ? "Nill" : Convert.ToString(dr["Near Shading"]);
+                        addUnit.near_shading = dr["Near Shading"] is DBNull || string.IsNullOrEmpty((string)dr["Near Shading"]) ? 0 : Convert.ToDouble(dr["Near Shading"]);
                         //errorFlag.Add(numericNullValidation(addUnit.near_shading, "10 Days", rowNumber));
 
-                        addUnit.IAM_factor = dr["IAM factor"] is DBNull || string.IsNullOrEmpty((string)dr["IAM factor"]) ? "Nill" : Convert.ToString(dr["IAM factor"]);
+                        addUnit.IAM_factor = dr["IAM factor"] is DBNull || string.IsNullOrEmpty((string)dr["IAM factor"]) ? 0 : Convert.ToDouble(dr["IAM factor"]);
                         //errorFlag.Add(numericNullValidation(addUnit.IAM_factor, "IAM factor", rowNumber));
 
-                        addUnit.soiling_factor = dr["Soiling factor"] is DBNull || string.IsNullOrEmpty((string)dr["Soiling factor"]) ? "Nill" : Convert.ToString(dr["Soiling factor"]);
+                        addUnit.soiling_factor = dr["Soiling factor"] is DBNull || string.IsNullOrEmpty((string)dr["Soiling factor"]) ? 0 : Convert.ToDouble(dr["Soiling factor"]);
                         //errorFlag.Add(numericNullValidation(addUnit.soiling_factor, "Soiling factor", rowNumber));
 
-                        addUnit.pv_loss = dr["PV loss due to Irradiance level"] is DBNull || string.IsNullOrEmpty((string)dr["PV loss due to Irradiance level"]) ? "Nill" : Convert.ToString(dr["PV loss due to Irradiance level"]);
+                        addUnit.pv_loss = dr["PV loss due to Irradiance level"] is DBNull || string.IsNullOrEmpty((string)dr["PV loss due to Irradiance level"]) ? 0 : Convert.ToDouble(dr["PV loss due to Irradiance level"]);
                         //errorFlag.Add(numericNullValidation(addUnit.pv_loss, "PV loss due to Irradiance level", rowNumber));
 
-                        addUnit.lid = dr["LID"] is DBNull || string.IsNullOrEmpty((string)dr["LID"]) ? "Nill" : Convert.ToString(dr["LID"]);
+                        addUnit.lid = dr["LID"] is DBNull || string.IsNullOrEmpty((string)dr["LID"]) ? 0 : Convert.ToDouble(dr["LID"]);
                         //errorFlag.Add(numericNullValidation(addUnit.lid, "LID", rowNumber));
 
-                        addUnit.array_missmatch = dr["Array mismatch"] is DBNull || string.IsNullOrEmpty((string)dr["Array mismatch"]) ? "Nill" : Convert.ToString(dr["Array mismatch"]);
+                        addUnit.array_missmatch = dr["Array mismatch"] is DBNull || string.IsNullOrEmpty((string)dr["Array mismatch"]) ? 0 : Convert.ToDouble(dr["Array mismatch"]);
                         //errorFlag.Add(numericNullValidation(addUnit.array_missmatch, "Array mismatch", rowNumber));
 
-                        addUnit.dc_ohmic = dr["DC Ohmic"] is DBNull || string.IsNullOrEmpty((string)dr["DC Ohmic"]) ? "Nill" : Convert.ToString(dr["DC Ohmic"]);
+                        addUnit.dc_ohmic = dr["DC Ohmic"] is DBNull || string.IsNullOrEmpty((string)dr["DC Ohmic"]) ? 0 : Convert.ToDouble(dr["DC Ohmic"]);
                         //errorFlag.Add(numericNullValidation(addUnit.dc_ohmic, "DC Ohmic", rowNumber));
 
-                        addUnit.conversion_loss = dr["Conversion loss"] is DBNull || string.IsNullOrEmpty((string)dr["Conversion loss"]) ? "Nill" : Convert.ToString(dr["Conversion loss"]);
+                        addUnit.conversion_loss = dr["Conversion loss"] is DBNull || string.IsNullOrEmpty((string)dr["Conversion loss"]) ? 0 : Convert.ToDouble(dr["Conversion loss"]);
                         //errorFlag.Add(numericNullValidation(addUnit.conversion_loss, "Conversion loss", rowNumber));
 
                         //addUnit.plant_aux = Convert.ToInt32(dr["Plant Auxiliary"]);
                         addUnit.plant_aux = dr["Plant Auxiliary"] is DBNull || string.IsNullOrEmpty((string)dr["Plant Auxiliary"]) ? 0 : Convert.ToDouble(dr["Plant Auxiliary"]);
                         //errorFlag.Add(numericNullValidation(addUnit.plant_aux, "Plant Auxiliary", rowNumber));
 
-                        addUnit.system_unavailability = dr["System unavailability"] is DBNull || string.IsNullOrEmpty((string)dr["System unavailability"]) ? "Nill" : Convert.ToString(dr["System unavailability"]);
+                        addUnit.system_unavailability = dr["System unavailability"] is DBNull || string.IsNullOrEmpty((string)dr["System unavailability"]) ? 0 : Convert.ToDouble(dr["System unavailability"]);
                         //errorFlag.Add(numericNullValidation(addUnit.system_unavailability, "System unavailability", rowNumber));
 
                         addUnit.ac_ohmic = dr["AC Ohmic"] is DBNull || string.IsNullOrEmpty((string)dr["AC Ohmic"]) ? 0 : Convert.ToDouble(dr["AC Ohmic"]);
                         //errorFlag.Add(numericNullValidation(addUnit.ac_ohmic, "AC Ohmic", rowNumber));
 
-                        addUnit.external_transformer = dr["External Transformer"] is DBNull || string.IsNullOrEmpty((string)dr["External Transformer"]) ? "Nill" : Convert.ToString(dr["External Transformer"]);
+                        addUnit.external_transformer = dr["External Transformer"] is DBNull || string.IsNullOrEmpty((string)dr["External Transformer"]) ? 0 : Convert.ToDouble(dr["External Transformer"]);
                         //errorFlag.Add(numericNullValidation(addUnit.external_transformer, "External Transformer", rowNumber));
 
-                        addUnit.yoy_degradation = dr["YoY degradation"] is DBNull || string.IsNullOrEmpty((string)dr["YoY degradation"]) ? "Nill" : Convert.ToString(dr["YoY degradation"]);
+                        addUnit.yoy_degradation = dr["YoY degradation"] is DBNull || string.IsNullOrEmpty((string)dr["YoY degradation"]) ? 0 : Convert.ToDouble(dr["YoY degradation"]);
                         //errorFlag.Add(numericNullValidation(addUnit.yoy_degradation, "YoY degradation", rowNumber));
 
                         addUnit.module_degradation = dr["Module Degradation"] is DBNull || string.IsNullOrEmpty((string)dr["Module Degradation"]) ? "Nill" : Convert.ToString(dr["Module Degradation"]);
