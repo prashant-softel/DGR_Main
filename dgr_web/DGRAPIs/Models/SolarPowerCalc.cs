@@ -30,6 +30,16 @@ namespace DGRAPIs.Models
         //For POA
         public double tstc { get; set; }
         public double tcnd { get; set; }
+
+        public double far_shading { get; set; }
+        public double module_quality_loss { get; set; }
+        public double electrical_loss { get; set; }
+        public double night_consumption { get; set; }
+        public double idt { get; set; }
+        public double line_losses { get; set; }
+
+
+
         public string module_degradarion { get; set; }
         //TBCalculated
         public double Loss_factor { get; set; }

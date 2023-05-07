@@ -4244,7 +4244,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.tcnd = Convert.ToInt32(dr["Tcnd"]);
                         errorFlag.Add(numericNullValidation(addUnit.tcnd, "Tcnd", rowNumber));
 
-                        addUnit.far_shedding = dr["Far Shading"] is DBNull || string.IsNullOrEmpty((string)dr["Far Shading"]) ? 0 : Convert.ToDouble(dr["Far Shading"]);
+                        addUnit.far_shading = dr["Far Shading"] is DBNull || string.IsNullOrEmpty((string)dr["Far Shading"]) ? 0 : Convert.ToDouble(dr["Far Shading"]);
                         
                         addUnit.pv_loss_dueto_temp = dr["PV Loss due to Temperature"] is DBNull || string.IsNullOrEmpty((string)dr["PV Loss due to Temperature"]) ? 0 : Convert.ToDouble(dr["PV Loss due to Temperature"]);
 

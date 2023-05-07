@@ -5910,7 +5910,7 @@ bd_remarks, action_taken
         {
             int val = 0;
             //pending delete qry and code clean up
-            string qry = " insert into uploading_file_pvsyst_loss (site_name, site_id, year, month_no, fy, month, alpha, near_sheding, iam_factor, soiling_factor, pv_loss, lid, array_missmatch, dc_ohmic, conversion_loss, plant_auxilary, system_unavailability, ac_ohmic, external_transformer, yoy_degradation, module_degradation, tstc, tcnd, far_shedding, pv_loss_dueto_temp, module_quality_loss, electrical_loss, inv_loss_over_power, inv_loss_max_input_current, inv_loss_voltage, inv_loss_power_threshold, inv_loss_voltage_threshold, night_consumption, idt, line_losses, unused_energy) values";
+            string qry = " insert into uploading_file_pvsyst_loss (site_name, site_id, year, month_no, fy, month, alpha, near_sheding, iam_factor, soiling_factor, pv_loss, lid, array_missmatch, dc_ohmic, conversion_loss, plant_auxilary, system_unavailability, ac_ohmic, external_transformer, yoy_degradation, module_degradation, tstc, tcnd, far_shading, pv_loss_dueto_temp, module_quality_loss, electrical_loss, inv_loss_over_power, inv_loss_max_input_current, inv_loss_voltage, inv_loss_power_threshold, inv_loss_voltage_threshold, night_consumption, idt, line_losses, unused_energy) values";
             string insertValues = "";
             string deleteValues = "";
             string month = "(";
@@ -5918,7 +5918,7 @@ bd_remarks, action_taken
             string financialyear = "(";
             foreach (var unit in set)
             {
-                insertValues += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.year + "','" + unit.month_no + "','" + unit.FY + "','" + unit.month + "','" + unit.alpha + "','" + unit.near_shading + "','" + unit.IAM_factor + "','" + unit.soiling_factor + "','" + unit.pv_loss + "','" + unit.lid + "','" + unit.array_missmatch + "','" + unit.dc_ohmic + "','" + unit.conversion_loss + "','" + unit.plant_aux + "','" + unit.system_unavailability + "','" + unit.ac_ohmic + "','" + unit.external_transformer + "','" + unit.yoy_degradation + "','" + unit.module_degradation + "','" + unit.tstc + "','" + unit.tcnd + "', " + unit.far_shedding + "," + unit.pv_loss_dueto_temp + "," + unit.module_quality_loss + "," + unit.electrical_loss + "," + unit.inv_loss_over_power + "," + unit.inv_loss_max_input_current + "," + unit.inv_loss_voltage + "," + unit.inv_loss_power_threshold + "," + unit.inv_loss_voltage_threshold + "," + unit.night_consumption + "," + unit.idt + "," + unit.line_losses + "," + unit.unused_energy + "),"; 
+                insertValues += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.year + "','" + unit.month_no + "','" + unit.FY + "','" + unit.month + "','" + unit.alpha + "','" + unit.near_shading + "','" + unit.IAM_factor + "','" + unit.soiling_factor + "','" + unit.pv_loss + "','" + unit.lid + "','" + unit.array_missmatch + "','" + unit.dc_ohmic + "','" + unit.conversion_loss + "','" + unit.plant_aux + "','" + unit.system_unavailability + "','" + unit.ac_ohmic + "','" + unit.external_transformer + "','" + unit.yoy_degradation + "','" + unit.module_degradation + "','" + unit.tstc + "','" + unit.tcnd + "', " + unit.far_shading + "," + unit.pv_loss_dueto_temp + "," + unit.module_quality_loss + "," + unit.electrical_loss + "," + unit.inv_loss_over_power + "," + unit.inv_loss_max_input_current + "," + unit.inv_loss_voltage + "," + unit.inv_loss_power_threshold + "," + unit.inv_loss_voltage_threshold + "," + unit.night_consumption + "," + unit.idt + "," + unit.line_losses + "," + unit.unused_energy + "),"; 
                 //DELETE FROM uploading_file_pvsyst_loss WHERE site_id IN (3,9) and month In ('Apr','Mar');
                 month += "'" + unit.month + "',";
                 id += unit.site_id + ",";
@@ -9822,12 +9822,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string date = Convert.ToDateTime(_dataElement.date).ToString("yyyy-MM-dd");
                     // Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd")
 
-                    string getPower = " select sum(P_exp) as P_exp from `uploading_pyranometer_15_min_solar` where site_id = " + site_id + " and date(date_time) = date('" + date + "') ";
+                    string getPower = " select sum(P_exp_degraded) as P_exp from `uploading_pyranometer_15_min_solar` where site_id = " + site_id + " and date(date_time) = date('" + date + "') ";
                     List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
+
+
+
                     try
                     {
                         data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(getPower).ConfigureAwait(false);
-                        _dataElement.Pexpected = data1min[0].P_exp /4;
+                        _dataElement.Pexpected = (data1min[0].P_exp / 4);
+              
                     }
                     catch (Exception e)
                     {
@@ -9884,7 +9888,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (SolarPowerCalc _dataElement in data)
             {
-                _dataElement.Loss_factor = 1 - ((1 + _dataElement.near_sheding) * (1 + _dataElement.iam_factor) * (1 + _dataElement.soiling_factor) * (1 + _dataElement.pv_loss) * (1 + _dataElement.lid) * (1 + _dataElement.array_missmatch) * (1 + _dataElement.dc_ohmic) * (1 + _dataElement.conversion_loss) * (1 + _dataElement.plant_auxilary) * (1 + _dataElement.system_unavailability) * (1 + _dataElement.ac_ohmic) * (1 + _dataElement.external_transformer));
+                _dataElement.Loss_factor = 1 - ((1 + _dataElement.near_sheding) * (1 + _dataElement.iam_factor) * (1 + _dataElement.soiling_factor) * (1 + _dataElement.pv_loss) * (1 + _dataElement.lid) * (1 + _dataElement.array_missmatch) * (1 + _dataElement.dc_ohmic) * (1 + _dataElement.conversion_loss) * (1 + _dataElement.plant_auxilary) * (1 + _dataElement.system_unavailability) * (1 + _dataElement.ac_ohmic) * (1 + _dataElement.far_shading) * (1+ _dataElement.module_quality_loss)* (1 + _dataElement.electrical_loss)*(1+_dataElement.night_consumption)* (1 + _dataElement.idt));
 
                 //_dataElement.Loss_factor = 1 - ((1 + _dataElement.near_sheding / 100) * (1 + _dataElement.iam_factor / 100) * (1 + _dataElement.soiling_factor / 100) * (1 + _dataElement.pv_loss / 100) * (1 + _dataElement.lid / 100) * (1 + _dataElement.array_missmatch / 100) * (1 + _dataElement.dc_ohmic / 100) * (1 + _dataElement.conversion_loss / 100) * (1 + _dataElement.plant_auxilary / 100) * (1 + _dataElement.system_unavailability / 100) * (1 + _dataElement.ac_ohmic / 100) * (1 + _dataElement.external_transformer / 100));
 
@@ -9956,13 +9960,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
                             T_cell = Math.Round(T_cell, 5);
                             double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa) * (1 - degradation) * (1 - LossData.Loss_factor) * (1 - (LossData.alpha * (T_cell - LossData.tstc))) / 1000 ;
-                            if((siteData[0].ac_capacity * 1000) < localPexpected)
+                            
+                            if ((siteData[0].ac_capacity * 1000) < localPexpected)
                             {
                                 localPexpected = siteData[0].ac_capacity * 1000;
+
                             }
+                            double localPexpectedDegraded = localPexpected * (1 + data[0].line_losses) * (1 + data[0].external_transformer);
                             dailyPexpected += localPexpected;
 
-                            string updateQry = " update `uploading_pyranometer_15_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.stringdatetime.ToString("yyyy-MM-dd HH:mm:ss")+"' ";
+                            string updateQry = " update `uploading_pyranometer_15_min_solar` set P_exp = " + localPexpected + ", P_exp_degraded = " +localPexpectedDegraded +" where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.stringdatetime.ToString("yyyy-MM-dd HH:mm:ss")+"' ";
                                 try {
                                     await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
                                 }
@@ -9978,7 +9985,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         obj.date = start.Date.ToString("yyyy-MM-dd");
                         //obj.Pexpected = dailyPexpected;
                         //Will be divide by 60 for 1 min data.
-                        obj.Pexpected = dailyPexpected / 4 ;
+                        obj.Pexpected =( dailyPexpected / 4 ) *(1+data[0].line_losses)*(1+data[0].external_transformer) ;
                         result.Add(obj);
                         start = start.AddDays(1);
                     }

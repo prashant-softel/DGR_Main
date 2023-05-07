@@ -30,7 +30,7 @@ namespace DGRAPIs.Models
         public string module_degradation { get; set; }
         public int tstc { get; set; }
         public int tcnd { get; set; }
-        public double far_shedding { get; set; }
+        public double far_shading { get; set; }
         public double pv_loss_dueto_temp { get; set; }
         public double module_quality_loss { get; set; }
         public double electrical_loss { get; set; }
