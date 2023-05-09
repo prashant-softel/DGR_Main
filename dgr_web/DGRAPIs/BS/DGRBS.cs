@@ -61,6 +61,11 @@ namespace DGRAPIs.BS
         Task<List<SolarDailyBreakdownReport>> GetSolarDailyBreakdownReport(string fromDate, string toDate, string country, string state, string spv, string site, string inv);
         Task<bool> CalculateDailyWindKPI(string fromDate, string toDate, string site);
         Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName);
+        Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string logFileName);
+        Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType);
+        Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate);
+        Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
+        Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate);
         Task<int> InsertDailyTargetKPI(List<WindDailyTargetKPI> set);
         Task<int> InsertMonthlyTargetKPI(List<WindMonthlyTargetKPI> set);
         Task<int> InsertMonthlyUploadingLineLosses(List<WindMonthlyUploadingLineLosses> set);
@@ -68,6 +73,19 @@ namespace DGRAPIs.BS
         Task<int> InsertWindJMR(List<WindMonthlyJMR> set);
         Task<int> InsertWindUploadingFileGeneration(List<WindUploadingFileGeneration> set, int batchId);
         Task<int> InsertWindUploadingFileBreakDown(List<WindUploadingFileBreakDown> set, int batchId);
+        Task<int> InsertWindTMLData(List<InsertWindTMLData> set, int type);
+        //InsertWindPowerCurve
+        Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> set);
+        //InsertWindBDCodeGamesa
+        Task<int> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> set);
+        //ImportWindBDCodeINOX
+        Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> set);
+        //GetWindBdCodeINOX
+        Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX();
+        //InsertWindSpeedTMD
+        Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> set);
+        //ImportWindReferenceWtgs
+        Task<int> ImportWindReferenceWtgs(List<ImportWindReferenceWtgs> set);
         Task<List<SolarSiteMaster>> GetSolarSiteList(string state, string spvdata, string site);
         //Task<int> InsertDailyJMR(List<WindDailyJMR> set);
         Task<int> InsertSolarDailyTargetKPI(List<SolarDailyTargetKPI> set);
@@ -76,6 +94,13 @@ namespace DGRAPIs.BS
         Task<int> InsertSolarJMR(List<SolarMonthlyJMR> set);
         Task<int> InsertSolarDailyLoadShedding(List<SolarDailyLoadShedding> set);
         Task<int> InsertSolarInvAcDcCapacity(List<SolarInvAcDcCapacity> set);
+        Task<int> InsertSolarTrackerLoss(List<InsertSolarTrackerLoss> set);
+        Task<string> InsertSolarTrackerLossMonthly(List<InsertSolarTrackerLoss> set);
+
+        Task<int> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> set);
+        Task<int> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> set);
+        Task<int> InsertSolarEstimatedHourlyData(List<InsertSolarEstimatedHourlyData> set);
+        Task<int> InsertWindTMR(List<InsertWindTMR> set);
         Task<int> InsertSolarDailyBDloss(List<SolarDailyBDloss> set);
         Task<int> InsertSolarUploadingPyranoMeter1Min(List<SolarUploadingPyranoMeter1Min> set, int batchId);
         Task<int> InsertSolarUploadingPyranoMeter15Min(List<SolarUploadingPyranoMeter15Min> set, int batchId);
@@ -160,6 +185,9 @@ namespace DGRAPIs.BS
         Task<int> DeleteWindSite(int siteid);
         Task<int> DeleteSolarSite(int siteid);
         Task<List<SolarOpertionalHead1>> GetTotalMWforDashbord(string w_site, string s_site);
+
+        //Task<List<SolarDailyGenReports3>> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr);
+        //Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType);
         //Task<WindOpertionalHead> GetOperationHeadData(string site);
     }
     public class DGRBS : IDGRBS
@@ -772,13 +800,40 @@ namespace DGRAPIs.BS
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    API_InformationLog("CalculateDailySolarKPI  successful ");
                     return await repos.CalculateDailySolarKPI(site, fromDate, toDate, logFileName);
                 }
             }
             catch (Exception ex)
             {
-                API_ErrorLog("Failed CalculateDailySolarKPI" + ex.ToString());
+                throw;
+            }
+        }
+
+        public async Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string logFileName)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.PowerExpected(site, fromDate, toDate, logFileName, "", "");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetSolarExpectedReport(site, fromDate, toDate, prType);
+                }
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
         }
@@ -1089,6 +1144,222 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+
+        public async Task<int> InsertSolarTrackerLoss(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarTrackerLoss(InsertSolarTrackerLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertSolarTrackerLossMonthly
+        public async Task<string> InsertSolarTrackerLossMonthly(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarTrackerLossMonthly(InsertSolarTrackerLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> InsertSolarSoilingLoss)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarSoilingLoss(InsertSolarSoilingLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertSolarPVSystLoss
+        public async Task<int> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> InsertSolarPVSystLoss)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarPVSystLoss(InsertSolarPVSystLoss);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertSolarEstimatedHourlyData
+        public async Task<int> InsertSolarEstimatedHourlyData(List<InsertSolarEstimatedHourlyData> InsertSolarEstimatedHourlyData)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertSolarEstimatedHourlyData(InsertSolarEstimatedHourlyData);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertWindTMLData
+        public async Task<int> InsertWindTMLData(List<InsertWindTMLData> InsertWindTMLData, int type)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertWindTMLData(InsertWindTMLData, type);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertWindPowerCurve
+        public async Task<int> InsertWindPowerCurve(List<InsertWindPowerCurve> InsertWindPowerCurve)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertWindPowerCurve(InsertWindPowerCurve);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //InsertWindBDCodeGamesa
+        public async Task<int> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> InsertWindBDCodeGamesa)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertWindBDCodeGamesa(InsertWindBDCodeGamesa);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //ImportWindBDCodeINOX
+        public async Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> ImportWindBDCodeINOX)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.ImportWindBDCodeINOX(ImportWindBDCodeINOX);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //GetWindBdCodeINOX //GetWindBdCodeINOX
+        public async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindBdCodeINOX();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertWindSpeedTMD
+        public async Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> InsertWindSpeedTMD)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertWindSpeedTMD(InsertWindSpeedTMD);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //ImportWindReferenceWtgs
+        public async Task<int> ImportWindReferenceWtgs(List<ImportWindReferenceWtgs> ImportWindReferenceWtgs)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.ImportWindReferenceWtgs(ImportWindReferenceWtgs);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //InsertWindTMR
+        public async Task<int> InsertWindTMR(List<InsertWindTMR> InsertWindTMR)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertWindTMR(InsertWindTMR);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<int> InsertSolarDailyBDloss(List<SolarDailyBDloss> solarDailyBDloss)
         {
             try
@@ -2242,16 +2513,88 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+        /*public async Task<List<SolarDailyGenReports3>> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetActualVSExpected(fromDate, toDate, spv, site, pr);
 
-        private void API_ErrorLog(string Message)
-        {
-            //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "DGRA BS **Error**:" + Message + "\r\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
-        private void API_InformationLog(string Message)
+        public async Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string pr)
         {
-            //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "DGRA BS **Info**:" + Message + "\r\n");
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetActualVSExpectedYearly(fromDate, toDate, spv, site, pr);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }*/
+        public async Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetSolarTrackerLoss(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        //Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
+        public async Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindTMLData(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        //GetWindTMLGraphData
+        public async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindTMLGraphData(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
     }
 }

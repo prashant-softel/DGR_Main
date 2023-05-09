@@ -7,6 +7,7 @@
         public string site { get; set; }
         public int site_id { get; set; }
         public string wtg { get; set; }
+        public string wtg_onm { get; set; }
         public double feeder { get; set; }
         public double max_kwh_day { get; set; }
 

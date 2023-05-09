@@ -24,8 +24,10 @@ namespace DGRAPIs.Models
         public double iga { get; set; }
 
         public double ega { get; set; }
- 
-            public double inv_plf_ac { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
+
+        public double inv_plf_ac { get; set; }
  
             public double inv_plf_dc { get; set; }
  

@@ -787,7 +787,23 @@ namespace DGRAPIs.Controllers
             try
             {
                 var data = await _dgrBs.CalculateDailySolarKPI(site, fromDate, toDate, logFileName);
-                API_InformationLog("Inside CalculateDailySolarKPI Successful :" + data);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("PowerExpected")]
+        [HttpGet]
+        public async Task<IActionResult> PowerExpected(string site, string fromDate, string toDate, string logFileName)
+        {
+            try
+            {
+                var data = await _dgrBs.PowerExpected(site, fromDate, toDate, logFileName);
                 return Ok(data);
 
             }
@@ -798,6 +814,72 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("SolarExpectedReport")]
+        [HttpGet]
+        public async Task<IActionResult> SolarExpectedReport(string site, string fromDate, string toDate, string prType)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarExpectedReport(site, fromDate, toDate, prType);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("GetSolarTrackerLoss")]
+        [HttpGet]
+        public async Task<IActionResult> GetSolarTrackerLoss(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarTrackerLoss(site, fromDate, toDate);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("GetWindTMLData")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindTMLData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindTMLData(site, fromDate, toDate);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        //GetWindTMLGraphData
+        [Route("GetWindTMLGraphData")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindTMLGraphData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindTMLGraphData(site, fromDate, toDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         [Route("CalculateDailyWindKPI")]
         [HttpGet]
@@ -914,14 +996,14 @@ namespace DGRAPIs.Controllers
             }
         }
 
-
-       /*[Route("InsertDailyJMR")]
+        //InsertWindTMLData
+        [Route("InsertWindTMLData")]
         [HttpPost]
-        public async Task<IActionResult> InsertDailyJMR(List<WindDailyJMR> windDailyJMR)
+        public async Task<IActionResult> InsertWindTMLData(List<InsertWindTMLData> InsertWindTMLData, int type)
         {
             try
             {
-                var data = await _dgrBs.InsertDailyJMR(windDailyJMR);
+                var data = await _dgrBs.InsertWindTMLData(InsertWindTMLData, type);
                 return Ok(data);
 
             }
@@ -930,7 +1012,127 @@ namespace DGRAPIs.Controllers
 
                 return BadRequest(ex.Message);
             }
-        }*/
+        }
+
+        //InsertWindPowerCurve
+        [Route("InsertWindPowerCurve")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindPowerCurve(List<InsertWindPowerCurve> InsertWindPowerCurve)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindPowerCurve(InsertWindPowerCurve);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        //InsertWindBDCodeGamesa
+        [Route("InsertWindBDCodeGamesa")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> InsertWindBDCodeGamesa)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindBDCodeGamesa(InsertWindBDCodeGamesa);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        //ImportWindBDCodeINOX
+        [Route("ImportWindBDCodeINOX")]
+        [HttpPost]
+        public async Task<IActionResult> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> ImportWindBDCodeINOX)
+        {
+            try
+            {
+                var data = await _dgrBs.ImportWindBDCodeINOX(ImportWindBDCodeINOX);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        //GetWindBdCodeINOX
+        [Route("GetWindBdCodeINOX")]
+        [HttpPost]
+        public async Task<IActionResult> GetWindBdCodeINOX()
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindBdCodeINOX();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertWindSpeedTMD
+        [Route("InsertWindSpeedTMD")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindSpeedTMD(List<InsertWindSpeedTMD> InsertWindSpeedTMD)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindSpeedTMD(InsertWindSpeedTMD);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        //ImportWindReferenceWtgs
+        [Route("ImportWindReferenceWtgs")]
+        [HttpPost]
+        public async Task<IActionResult> ImportWindReferenceWtgs(List<ImportWindReferenceWtgs> ImportWindReferenceWtgs)
+        {
+            try
+            {
+                var data = await _dgrBs.ImportWindReferenceWtgs(ImportWindReferenceWtgs);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        /*[Route("InsertDailyJMR")]
+         [HttpPost]
+         public async Task<IActionResult> InsertDailyJMR(List<WindDailyJMR> windDailyJMR)
+         {
+             try
+             {
+                 var data = await _dgrBs.InsertDailyJMR(windDailyJMR);
+                 return Ok(data);
+
+             }
+             catch (Exception ex)
+             {
+
+                 return BadRequest(ex.Message);
+             }
+         }*/
 
         [Route("InsertSolarDailyTargetKPI")]
         [HttpPost]
@@ -1034,6 +1236,130 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("InsertSolarTrackerLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarTrackerLoss(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarTrackerLoss(InsertSolarTrackerLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertSolarTrackerLossMonthly
+        [Route("InsertSolarTrackerLossMonthly")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarTrackerLossMonthly(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarTrackerLossMonthly(InsertSolarTrackerLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //CalculateTrackerLosses
+        //[Route("CalculateTrackerLosses")]
+        //[HttpPost]
+        //public async Task<IActionResult> CalculateTrackerLosses(List<InsertSolarTrackerLoss> InsertSolarTrackerLoss)
+        //{
+        //    try
+        //    {
+        //        var data = await _dgrBs.CalculateTrackerLosses(InsertSolarTrackerLoss);
+        //        return Ok(data);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+
+        //InsertSolarSoilingLoss
+        [Route("InsertSolarSoilingLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarSoilingLoss(List<InsertSolarSoilingLoss> InsertSolarSoilingLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarSoilingLoss(InsertSolarSoilingLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertSolarPVSystLoss
+        [Route("InsertSolarPVSystLoss")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarPVSystLoss(List<InsertSolarPVSystLoss> InsertSolarPVSystLoss)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarPVSystLoss(InsertSolarPVSystLoss);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertSolarEstimatedHourlyData
+        [Route("InsertSolarEstimatedHourlyData")]
+        [HttpPost]
+        public async Task<IActionResult> InsertSolarEstimatedHourlyData(List<InsertSolarEstimatedHourlyData> InsertSolarEstimatedHourlyData)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertSolarEstimatedHourlyData(InsertSolarEstimatedHourlyData);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //InsertWindTMR
+        [Route("InsertWindTMR")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindTMR(List<InsertWindTMR> InsertWindTMR)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindTMR(InsertWindTMR);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         [Route("InsertSolarDailyBDloss")]
         [HttpPost]
@@ -2277,6 +2603,37 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+		/*[Route("GetActualVSExpected")]
+        [HttpGet]
+        public async Task<IActionResult> GetActualVSExpected(string fromDate, string toDate, string spv,string site,string pr)
+        {
+            try
+            {
+                var data = await _dgrBs.GetActualVSExpected(fromDate, toDate, spv, site, pr);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetActualVSExpectedYearly")]
+        public async Task<IActionResult> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType)
+        {
+            try
+            {
+                var data = await _dgrBs.GetActualVSExpectedYearly(fromDate, toDate, spv, site, prType);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }*/
         [Route("PPTCreate")]
         [HttpGet]
         public async Task<IActionResult> PPTCreate()

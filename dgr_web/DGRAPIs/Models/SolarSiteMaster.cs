@@ -11,15 +11,12 @@ namespace DGRAPIs.Models
         public string country { get; set; }
        
             public string site { get; set; }
- 
+ 			public dynamic doc { get; set; }
             public string spv { get; set; }
-  
             public string state { get; set; }
- 
             public double dc_capacity { get; set; }
- 
             public double ac_capacity { get; set; }
-        public double total_tarrif { get; set; }
-  
+        	public double total_tarrif { get; set; }
+			public dynamic commissioning_date { get; set; }
     }
 }
