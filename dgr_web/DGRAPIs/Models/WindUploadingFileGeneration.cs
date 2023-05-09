@@ -81,6 +81,8 @@ namespace DGRAPIs.Models
         public double ma_contractual { get; set; }
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public dynamic unschedule_hrs { get; set; }
         public dynamic unschedule_num { get; set; }
         public dynamic schedule_hrs { get; set; }

@@ -864,7 +864,9 @@
                 tbl1 += '<th style="font-size: 12px;text-align: center;">MA(Act)</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">MA(Con)</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">IGA</th>';
-                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA</th>';
+                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA (A)</th>';
+                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA (B)</th>';
+                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA (C)</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">PLF</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">Grid Hrs</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">Lull Hrs</th>';
@@ -924,6 +926,8 @@
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ma_contractual.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].iga.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ega.toFixed(2) + '</td>';
+                        tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ega_b.toFixed(2) + '</td>';
+                        tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ega_c.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].plf.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].grid_hrs.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].lull_hrs.toFixed(2) + '</td>';
@@ -1023,7 +1027,9 @@
                 tbl1 += '<th style="font-size: 12px;text-align: center;">Plant PR (%)</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">MA (%)</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">IGA (%)</th>';
-                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA (%)</th>';
+                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA (A) (%)</th>';
+                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA (B) (%)</th>';
+                tbl1 += '<th style="font-size: 12px;text-align: center;">EGA (C) (%)</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">Inv Plf AC (%)</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">PI</th>';
                 tbl1 += '<th style="font-size: 12px;text-align: center;">Prod_hrs</th>';
@@ -1073,6 +1079,8 @@
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ma.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].iga.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ega.toFixed(2) + '</td>';
+                        tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ega_b.toFixed(2) + '</td>';
+                        tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ega_c.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].inv_plf_ac.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].pi + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].prod_hrs.toFixed(2)+ '</td>';

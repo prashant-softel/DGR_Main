@@ -8,6 +8,8 @@ namespace DGRAPIs.Models
     public class SolarUploadingPyranoMeter1Min
     {
         public dynamic date_time { get; set; }
+        public dynamic stringdatetime { get; set; }
+        public dynamic date { get; set; }
         public int site_id { get; set; }
         public dynamic ghi_1 { get; set; }
         public dynamic ghi_2 { get; set; }
@@ -22,6 +24,7 @@ namespace DGRAPIs.Models
         public double avg_poa { get; set; }
         public dynamic amb_temp { get; set; }
         public dynamic mod_temp { get; set; }
+        public double P_exp { get; set; }
     }
     public class SolarUploadingPyranoMeter1Min_1
     {

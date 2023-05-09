@@ -39,6 +39,8 @@ namespace DGRAPIs.Models
 
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double prod_hrs { get; set; }
         public double usmh { get; set; }
         public double smh { get; set; }
@@ -94,6 +96,8 @@ namespace DGRAPIs.Models
 
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double gen_hrs { get; set; }
         public double usmh { get; set; }
         public double smh { get; set; }
@@ -148,6 +152,8 @@ namespace DGRAPIs.Models
 
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double prod_hrs { get; set; }
         public double usmh { get; set; }
         public double smh { get; set; }
@@ -156,7 +162,7 @@ namespace DGRAPIs.Models
         public double egbdh { get; set; }
         public double load_shedding { get; set; }
         public double lull_hrs { get; set; }
-        public string tracker_losses { get; set; }
+        public double tracker_losses { get; set; }
         public double total_losses { get; set; }
 
 
@@ -168,7 +174,21 @@ namespace DGRAPIs.Models
         public double egbdh_bd { get; set; }
         public double load_shedding_bd { get; set; }
         public double total_bd_hrs { get; set; }
-
-
+    }
+    public class SolarDailyGenReports3
+    {
+        public string site { get; set; }
+        public dynamic date { get; set; }
+        public double inv_kwh { get; set; }
+        public double plant_kwh { get; set; }
+        public double expected_kwh { get; set; }
+        public double plant_pr { get; set; }
+        public double usmh { get; set; }
+        public double smh { get; set; }
+        public double oh { get; set; }
+        public double igbdh { get; set; }
+        public double egbdh { get; set; }
+        public double targer_kwh { get; set; }
+        
     }
 }

@@ -26,7 +26,8 @@ namespace DGRAPIs.Models
         public double iga { get; set; }
       
         public double ega { get; set; }
-     
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double plf { get; set; }
         public double plf_afterlineloss { get; set; }
         public double grid_hrs { get; set; }     

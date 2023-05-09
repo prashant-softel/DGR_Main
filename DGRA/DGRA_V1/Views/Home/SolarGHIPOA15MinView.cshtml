@@ -84,11 +84,28 @@
                     </div>
                     <div class="col-md-1"></div>
                 </div>
-               
+                <div class="card" id="wms_comparision" style="display:none">
+                    <div class="card-header border-0">
+                        <h3 class="card-title text-center"> WMS Comparison</h3>
+                        <!-- card tools -->
+                        <div class="card-tools" style=" margin-top: -23px;">
+
+                            <button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse" title="Collapse" style="font-size: 0.6rem;">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <!-- /.card-tools -->
+                    </div>
+                    <div class="col-md-12 card-body " id="chart" style="display:none">
+                        <canvas id="line-chart" style="width:100%; max-width:100%"></canvas>
+                    </div>
+
+                </div>
                 <hr>
                 <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
+            <!--<canvas id="line-chart" width="800" height="450"></canvas>-->
         </div>
     </section>
 
@@ -115,10 +132,11 @@
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
     $(document).ready(function () {
+       // dummychart();
         $('#daterange').daterangepicker(
             {
                 maxDate: new Date(),
@@ -126,7 +144,24 @@
                     format: 'DD/MM/YYYY',
                 }
             });
+      
+        $("#hide").click(function () {
+            $("#chart").hide();
+            $("#show").css('display', 'block');
+        });
+        $("#show").click(function () {
+            $("chart").show();
+            $("#hide").css('display', 'none');
+        });
+      
     });
+    var ghi_arr = [];
+    var poa_arr = [];
+    var amp_temp_arr = [];
+    var mod_arr_arr = [];
+    var time_arr_arr = [];
+    let date_arr_arr = [];
+
     window.onload = function () {
         var state = "";
         var spv = "";
@@ -202,7 +237,29 @@
                 tbl += '<th>Mod Temp</th>';
                 tbl += '<th>Weather Type</th>';
                 tbl += '</tr></thead>';
-
+                let time_arr_arr = [];
+                ghi_arr1 = [];
+                ghi_arr2 = [];
+                poa_arr1 = [];
+                poa_arr2 = [];
+                poa_arr3 = [];
+                poa_arr4 = [];
+                poa_arr5 = [];
+                poa_arr6 = [];
+                poa_arr7 = [];
+                amp_temp_arr = [];
+                mod_arr_arr = [];
+                let ghiZeroArr1 = [];
+                let ghiZeroArr2 = [];
+                let poaZeroArr1 = [];
+                let poaZeroArr2 = [];
+                let poaZeroArr3 = [];
+                let poaZeroArr4 = [];
+                let poaZeroArr5 = [];
+                let poaZeroArr6 = [];
+                let poaZeroArr7 = [];
+                let ampTempZeroArr = [];
+                let modZeroArr = [];
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         let weather = "";
@@ -215,30 +272,112 @@
                         //var tempDate = new Date(result[i].date);
                         //var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
                         var formattedDate = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm:ss');
-                        tbl += '<tr>';
-                        tbl += '<td  class="text-left">' + formattedDate + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
-                        tbl += '<td class="text-left" >' + weather + '</td>';
-                        tbl += '</tr>';
+                        var formattedDate1 = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm');
+                        var formattedtime = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('HH:mm');
+                       // console.log(formattedtime);
+                        if (formattedtime >= "04:59" && formattedtime <= "19:00") {
+                            tbl += '<tr>';
+                            tbl += '<td  class="text-left">' + formattedDate + '</td>';
+                            tbl += '<td  class="text-left">' + result[i].site + '</td>';
+                            tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
+                            tbl += '<td class="text-left" >' + weather + '</td>';
+                            tbl += '</tr>';
+                           
+                            date_arr_arr.push(formattedDate1);
+                            time_arr_arr.push(formattedDate1);
+                            ghi_arr1.push(Number(result[i].ghi_1.toFixed(1)));
+                            ghi_arr2.push(Number(result[i].ghi_1.toFixed(1)));
+                            poa_arr1.push(Number(result[i].poa_1.toFixed(1)));
+                            poa_arr2.push(Number(result[i].poa_2.toFixed(1)));
+                            poa_arr3.push(Number(result[i].poa_3.toFixed(1)));
+                            poa_arr4.push(Number(result[i].poa_4.toFixed(1)));
+
+                            poa_arr5.push(Number(result[i].poa_5.toFixed(1)));
+                            poa_arr6.push(Number(result[i].poa_6.toFixed(1)));
+                            poa_arr7.push(Number(result[i].poa_7.toFixed(1)));
+                            amp_temp_arr.push(Number(result[i].amb_temp.toFixed(1)));
+
+                            mod_arr_arr.push(Number(result[i].mod_temp.toFixed(1)));
+                            
+                           
+                        }
                     }
                 }
                 else {
 
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
+
+                for (var i = 0; i <= ghi_arr1.length; i++) {
+                    if (ghi_arr1[i] === 0) {
+                        ghiZeroArr1.push(i);
+                    }
+                }
+                for (var i = 0; i <= ghi_arr2.length; i++) {
+                    if (ghi_arr2[i] === 0) {
+                        ghiZeroArr2.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr1.length; i++) {
+                    if (poa_arr1[i] === 0) {
+                        poaZeroArr1.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr2.length; i++) {
+                    if (poa_arr2[i] === 0) {
+                        poaZeroArr2.push(i);
+                    }
+
+                }
+                for (var i = 0; i <= poa_arr3.length; i++) {
+                    if (poa_arr3[i] === 0) {
+                        poaZeroArr3.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr4.length; i++) {
+                    if (poa_arr4[i] === 0) {
+                        poaZeroArr4.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr5.length; i++) {
+                    if (poa_arr5[i] === 0) {
+                        poaZeroArr5.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr6.length; i++) {
+                    if (poa_arr6[i] === 0) {
+                        poaZeroArr6.push(i);
+                    }
+                }
+                for (var i = 0; i <= poa_arr7.length; i++) {
+                    if (poa_arr7[i] === 0) {
+                        poaZeroArr7.push(i);
+                    }
+                }
+                for (var i = 0; i <= amp_temp_arr.length; i++) {
+                    if (amp_temp_arr[i] === 0) {
+                        ampTempZeroArr.push(i);
+                    }
+                }
+                for (var i = 0; i <= mod_arr_arr.length; i++) {
+                    if (mod_arr_arr[i] === 0) {
+                        modZeroArr.push(i);
+                    }
+                }
+
+                FifteenMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr)
                 tbl += '</table>';
                // $("#DailyGenView").html(tbl);
                 $("#DailyGenView").html("").html(tbl);
@@ -258,14 +397,14 @@
                     buttons: [
                         {
                             extend: 'excel',
-                            title: 'Solar Generation Summary',
+                            title: 'Pyranometer 15 Min',
                             exportOptions: {
                                 columns: ':visible'
                             }
                         },
                         {
                             extend: 'csv',
-                            title: 'Solar Generation Summary',
+                            title: 'Pyranometer 15 Min',
                             exportOptions: {
                                 columns: ':visible'
                             }
@@ -283,9 +422,77 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                $('#example1').wrap("<div class='scrolledTable'></div>");
-              
-                //$('#example1').removeClass('dataTable');
+    }
+  
+    function FifteenMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
+        let dataset_arr = [];
+
+        if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
+
+            dataset_arr.push({ yAxisID: 'A', label: "GHI 1", data: ghi_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1});
+        }
+        if (ghi_arr2.length > 0 && ghi_arr2.length != ghiZeroArr2.length) {
+
+            dataset_arr.push({ yAxisID: 'A', label: "GHI 2", data: ghi_arr2, pointRadius: 0.8, borderColor: "#86C466", fill: false, borderWidth: 1});
+        }
+        if (poa_arr1.length > 0 && poa_arr1.length != poaZeroArr1.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 1", data: poa_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1});
+        }
+        if (poa_arr2.length > 0 && poa_arr2.length != poaZeroArr2.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 2", data: poa_arr2, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr3.length > 0 && poa_arr3 != poaZeroArr3.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 3", data: poa_arr3, pointRadius: 0.8, borderColor: "#76D7C4", fill: false, borderWidth: 1 });
+        }
+        if (poa_arr4.length > 0 && poa_arr4.length != poaZeroArr4.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 4", data: poa_arr4, pointRadius: 0.8, borderColor: "#58D68D", fill: false, borderWidth: 1});
+        }
+        if (poa_arr5.length > 0 && poa_arr5.length != poaZeroArr5.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 5", data: poa_arr5, pointRadius: 0.8, borderColor: "#F39C12", fill: false, borderWidth: 1});
+        }
+        if (poa_arr6.length > 0 && poa_arr6.length != poaZeroArr6.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 6", data: poa_arr6, pointRadius: 0.8, borderColor: "#27F9F3", fill: false, borderWidth: 1});
+        }
+        if (poa_arr7.length > 0 && poa_arr7.length != poaZeroArr7.length) {
+            dataset_arr.push({ yAxisID: 'A', label: "POA 7", data: poa_arr7, pointRadius: 0.8, borderColor: "#F98027", fill: false, borderWidth: 1 });
+        }
+       
+        dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.8, borderColor: "#FFCA5A", fill: false, borderWidth: 1});
+        dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1});
+      
+        console.log(dataset_arr);
+        new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: time_arr_arr,
+                datasets: dataset_arr,
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'WMS Compatison'
+                },
+                responsive: true,
+                tooltips: {
+                    mode: 'index'
+                },
+                legend: {
+                    display: true,
+                    position: "bottom"
+                },
+                scales: {
+                    yAxes: [{
+                        id: 'A',
+                        type: 'linear',
+                        position: 'left',
+                    }, {
+                        id: 'B',
+                        type: 'linear',
+                        position: 'right',
+                        
+                    }]
+                }
+
             }
         });
     }
