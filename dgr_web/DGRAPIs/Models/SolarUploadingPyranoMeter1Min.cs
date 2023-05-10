@@ -25,6 +25,20 @@ namespace DGRAPIs.Models
         public dynamic amb_temp { get; set; }
         public dynamic mod_temp { get; set; }
         public double P_exp { get; set; }
+        public double P_exp_degraded { get; set; }
+        public double mod_tXavg_poa { get; set; }
+        public double actModWtTemp { get; set; }
+        
+    }
+    public class estimated1Hour
+    {
+        public double mod_tXavg_poa { get; set; }
+        public double glob_inc { get; set; }
+        public double t_array { get; set; }
+        public double estModTemp { get; set; }
+        public double mod_temp { get; set; }
+        
+
     }
     public class SolarUploadingPyranoMeter1Min_1
     {

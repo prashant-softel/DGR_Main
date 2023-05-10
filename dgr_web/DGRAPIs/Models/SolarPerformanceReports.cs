@@ -34,6 +34,7 @@ namespace DGRAPIs.Models
     }
     public class SolarPerformanceReports1
     {
+        public dynamic date { get; set; }
         public string site { get; set; }
         public int site_id { get; set; }
         public string spv { get; set; }
@@ -42,7 +43,9 @@ namespace DGRAPIs.Models
         public double total_tarrif { get; set; }
         public double tar_kwh { get; set; }
         public double expected_kwh { get; set; }
+        public double plant_kwh { get; set; }
         public double act_kwh { get; set; }
+        public double act_kwh_afterloss { get; set; }
         public double lineloss { get; set; }
         public double tar_ghi { get; set; }
         public double act_ghi { get; set; }
