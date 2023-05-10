@@ -9984,9 +9984,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                     string getPower = " select sum(P_exp_degraded) as P_exp from `uploading_pyranometer_15_min_solar` where site_id = " + site_id + " and date(date_time) = date('" + date + "') ";
                     List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
-
-
-
                     try
                     {
                         data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(getPower).ConfigureAwait(false);
@@ -9998,12 +9995,156 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         string msg = e.Message;
                     }
                 }
+
             }
             catch (Exception e)
             {
                 string msg = e.Message;
             }
             return data;
+        }
+        internal async Task<List<TemperatureCorrectedPR>> getTemperatureCorrectedPR(string site, string fromDate, string toDate)
+        {
+            string[] fromDateSplt = fromDate.Split('-');
+            string[] toDateSplt = toDate.Split('-');
+            DateTime start = new DateTime(Int32.Parse(fromDateSplt[0]), Int32.Parse(fromDateSplt[1]), Int32.Parse(fromDateSplt[2]));
+            DateTime end = new DateTime(Int32.Parse(toDateSplt[0]), Int32.Parse(toDateSplt[1]), Int32.Parse(toDateSplt[2]));
+            List<TemperatureCorrectedPR> returnData = new List<TemperatureCorrectedPR>();
+            returnData.Add(new TemperatureCorrectedPR());
+            double avg_POA = 0;
+            while (start <= end)
+            {
+                string datestring = start.ToString("yyyy-MM-dd");
+                string qry = "select sum(`mod_temp*avg_poa`) as mod_tXavg_poa from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + datestring + "' ";
+
+                string qryPOA = "Select sum(avg_poa) as avg_poa from uploading_pyranometer_15_min_solar where site_id = " + site + " and date(date_time) = '" + datestring + "'";
+                List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryPOA).ConfigureAwait(false);
+                double sum_POA = 0;
+                foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min)
+                {
+                    sum_POA = SolarPyranoMeterData.avg_poa;
+                    avg_POA = SolarPyranoMeterData.avg_poa / 4000;//change 4000
+                }
+
+
+                string qry2 = "select sum(mod_temp)/count(mod_temp) as mod_temp  from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + datestring + "' and mod_temp>0 ";
+
+                List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
+                List<SolarUploadingPyranoMeter1Min> mod_temp = new List<SolarUploadingPyranoMeter1Min>();
+                try
+                {
+                    data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qry).ConfigureAwait(false);
+                    mod_temp = await Context.GetData<SolarUploadingPyranoMeter1Min>(qry2).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                }
+                data1min[0].actModWtTemp = data1min[0].mod_tXavg_poa / sum_POA;
+                returnData[0].actModWtTemp = data1min[0].actModWtTemp;
+
+                data1min[0].mod_temp = mod_temp[0].mod_temp;
+                returnData[0].act_avg_mod_temp = data1min[0].mod_temp;
+
+
+                //Hourly estimated
+                string qry3 = "select sum(`mod_temp*avg_poa`) as mod_tXavg_poa, sum(glob_inc) as glob_inc from `uploading_file_estimated_hourly_loss` where site_id = " + site + " and fy_date='" + datestring + "' ";
+                string qry4 = "select sum(t_array)/count(t_array) as t_array  from `uploading_file_estimated_hourly_loss` where site_id = " + site + " and fy_date='" + datestring + "' and t_array>0 ";
+                List<estimated1Hour> est1HourData = new List<estimated1Hour>();
+                List<estimated1Hour> est1HourDataModTemp = new List<estimated1Hour>();
+                try
+                {
+                    est1HourData = await Context.GetData<estimated1Hour>(qry3).ConfigureAwait(false);
+                    est1HourDataModTemp = await Context.GetData<estimated1Hour>(qry4).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                }
+                est1HourData[0].estModTemp = est1HourData[0].mod_tXavg_poa / est1HourData[0].glob_inc;
+                returnData[0].estModTemp = est1HourData[0].estModTemp;
+
+
+                est1HourData[0].t_array = est1HourDataModTemp[0].t_array;
+                returnData[0].est_avg_mod_temp = est1HourData[0].t_array;
+
+                string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_kwh)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_kwh) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site+" and t1.date = '"+datestring+"' group by t1.date ,t1.site";
+                List<SolarPerformanceReports1> siteData = new List<SolarPerformanceReports1>();
+                try
+                {
+                    siteData = await Context.GetData<SolarPerformanceReports1>(qry5).ConfigureAwait(false);
+                    
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                }
+
+                string qry6 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no >= MONTH('" + datestring + "') and month_no<= MONTH('" + datestring + "')";
+                List<SolarPowerCalc> pvsystdata = new List<SolarPowerCalc>();
+                try
+                {
+                    pvsystdata = await Context.GetData<SolarPowerCalc>(qry6).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    throw new Exception("Exception occured in power expected function. " + msg);
+                }
+
+                returnData[0].plantTempPR = siteData[0].plant_kwh / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha*(returnData[0].actModWtTemp - returnData[0].estModTemp)) );
+
+                returnData[0].jmrTempPR = siteData[0].act_kwh_afterloss / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
+                start = start.AddDays(1);
+            }
+            return returnData;
+        }
+        internal async Task<bool> TemperatureCorrectedPRCalc(string site, string fromDate, string toDate)
+        {
+            
+           
+            string[] fromDateSplt = fromDate.Split('-');
+            string[] toDateSplt = toDate.Split('-');
+            DateTime start = new DateTime(Int32.Parse(fromDateSplt[0]), Int32.Parse(fromDateSplt[1]), Int32.Parse(fromDateSplt[2]));
+            DateTime end = new DateTime(Int32.Parse(toDateSplt[0]), Int32.Parse(toDateSplt[1]), Int32.Parse(toDateSplt[2]));
+
+            while (start <= end)
+            {
+                string datestring = start.ToString("yyyy-MM-dd");
+                //string qry3 = "select * from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='"+datestring+"' ";
+
+                //List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
+                //foreach (SolarUploadingPyranoMeter1Min _dataElement in data1min)
+                //{
+
+                //}
+                string updateQry = " update `uploading_pyranometer_15_min_solar` set `mod_temp*avg_poa` = avg_poa*mod_temp where site_id = " + site + " and date(date_time) = '" + datestring + "' ";
+                try
+                {
+                    await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string errmsg = e.Message;
+                    return false;
+                }
+                string updateQry1Hour = " update `uploading_file_estimated_hourly_loss` set `mod_temp*avg_poa` = t_array*glob_inc where site_id = " + site + " and fy_date= '" +datestring+ "'";
+                try
+                {
+                    await Context.ExecuteNonQry<int>(updateQry1Hour).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string errmsg = e.Message;
+                    return false;
+                }
+
+
+
+                start = start.AddDays(1);
+            }
+
+            return true;
         }
         internal async Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string type, string months, string fy)
         {
@@ -10274,6 +10415,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName)
         {
+
+             await TemperatureCorrectedPRCalc(site, fromDate, toDate);
+             //await getTemperatureCorrectedPR(site, fromDate, toDate);
             DateTime thisTime = new DateTime();
             thisTime = DateTime.Now;
             //API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called.. Code Line No. 7573");
