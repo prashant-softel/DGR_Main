@@ -1738,6 +1738,11 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         string sActionTaken = dr["ActionTaken"] is DBNull || string.IsNullOrEmpty((string)dr["ActionTaken"]) ? "Nil" : Convert.ToString(dr["ActionTaken"]);
                         sActionTaken = validateAndCleanSpChar(rowNumber, "Action_Taken", sActionTaken);
+                        if (sActionTaken.Length > 44)
+                        {
+                            sActionTaken = sActionTaken.Substring(0, 44);
+                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 45 character length.");
+                        }
                         addUnit.action_taken = sActionTaken;
                         errorFlag.Add(validationObject.validateBreakDownData(rowNumber, addUnit.from_bd, addUnit.to_bd, addUnit.igbd));
                         if (addUnit.action_taken == "" || addUnit.action_taken == "nil")
@@ -1870,6 +1875,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.error_description = errorDescription;
                         string sActionTaken = dr["Action Taken"] is DBNull || string.IsNullOrEmpty((string)dr["Action Taken"]) ? "Nil" : Convert.ToString(dr["Action Taken"]);
                         sActionTaken = validateAndCleanSpChar(rowNumber, "Action Taken", sActionTaken);
+                        if(sActionTaken.Length > 44)
+                        {
+                            sActionTaken = sActionTaken.Substring(0, 44);
+                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 45 character length.");
+                        }
                         addUnit.action_taken = sActionTaken;
                         errorFlag.Add(ValidationObject.validateBreakDownData(rowNumber, addUnit.bd_type, addUnit.wtg, addUnit.stop_from, addUnit.stop_to));
                         foreach (bool item in errorFlag)
