@@ -82,7 +82,7 @@ namespace DGRA_V1
             services.AddRazorPages()
                  .AddMicrosoftIdentityUI();
             services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
             services.AddSingleton<IHostedService, SchedulerService>();
             //services.AddHostedService<SchedulerService>();
