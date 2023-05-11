@@ -3575,6 +3575,14 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 List<IFormFile> list = new List<IFormFile>();
                 list.Add(formFile);
                 request.Attachments = list;
+                if(list.Count > 0)
+                {
+                    PPT_InformationLog("List of files attached : " + list[0].ToString());
+                }
+                else
+                {
+                    PPT_InformationLog("List of Attachments is empty : ");
+                }
                 PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File opened for reading at path :" + file);
             }
             catch(Exception ex)
@@ -11708,10 +11716,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "<th style='text-align:center; padding:0.5rem; background-color:#FFCA5A'>EGA</th>";
             tb += "</tr></thead><tbody style='font-size: 10px;text-align:center'>";
 
-
-
-
-
             double jmr_var_yr = 0;
             double tar_mu_yr = 0;
             double wind_var_yr = 0;
@@ -11833,7 +11837,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     wind_var_yr = ((yearlypr[i].act_Wind - yearlypr[i].tar_wind) / yearlypr[i].tar_wind) * 100;
                 }
-
               
                 tb += "<td style='padding:0.5rem; text-align:left'>&nbsp;&nbsp;" + yearlypr[i].site + "&nbsp;&nbsp;</td>";
                 tb += "<td style='padding:0.5rem; text-align: center;'>&nbsp;&nbsp;" + Math.Round(yearlypr[i].total_mw, 1) + "&nbsp;&nbsp;</td>";
