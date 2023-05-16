@@ -87,7 +87,7 @@ namespace DGRAPIs.Helper
                             bool WindMailSuccess = false;
                             try
                             {
-                                string apiUrlSolar = hostName+ "/api/DGR/EmailSolarReport?fy=" + fy +"&fromDate="+ datetimenow.ToString("yyyy-MM-dd") +"&site=";
+                                string apiUrlSolar = hostName + "/api/DGR/EmailSolarReport?fy=" + fy + "&fromDate=" + datetimenow.ToString("yyyy-MM-dd") + "&site=";
                                 PPT_InformationLog("From Scheduler Service : For Daily Mail Send Solar : API URL " + apiUrlSolar);
                                 CallAPI(apiUrlSolar);
                                // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
@@ -239,24 +239,33 @@ namespace DGRAPIs.Helper
 
         public void CallAPI (string apiUrl)
         {
-            Uri address = new Uri(apiUrl);
-            PPT_InformationLog("From Scheduler Service : Inside CallAPI function : Api Url :" + apiUrl);
-            // Create the web request
-            HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
-
-            // Set type to POST
-            request.Method = "GET";
-            request.ContentType = "text/xml";
-
-            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            try
             {
-                // Get the response stream
-                StreamReader reader = new StreamReader(response.GetResponseStream());
+                Uri address = new Uri(apiUrl);
+                PPT_InformationLog("From Scheduler Service : Inside CallAPI function : Api Url :" + apiUrl);
+                // Create the web request
+                HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
 
-                // Console application output
-                string strOutputXml = reader.ReadToEnd();
-                PPT_InformationLog("From Scheduler Service : Inside CallAPI function : " + reader.ReadToEnd());
+                // Set type to POST
+                request.Method = "GET";
+                request.ContentType = "text/xml";
 
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+                {
+                    // Get the response stream
+                    StreamReader reader = new StreamReader(response.GetResponseStream());
+
+                    // Console application output
+                    string strOutputXml = reader.ReadToEnd();
+                    PPT_InformationLog("From Scheduler Service : Inside CallAPI function : " + reader.ReadToEnd());
+
+                }
+            }
+            catch (Exception e)
+            {
+                string msg = e.Message;
+                PPT_ErrorLog("inside callApi Function: " + msg);
+            
             }
         }
 

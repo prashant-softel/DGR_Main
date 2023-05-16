@@ -10017,6 +10017,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<string> AddTo = new List<string>();
             List<string> AddCc = new List<string>();
 
+            PPT_InformationLog("email html : " + data);
+
+
             string qry = "";
             if (reportTitle.Contains("Solar"))
             {
@@ -10060,15 +10063,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
             }
 
-
-
             // private MailServiceBS mailService;
             MailRequest request = new MailRequest();
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-           // AddTo.Add("tanvi@softeltech.in");          
-        
+            //AddTo.Add("tanvi@softeltech.in");
+            //AddTo.Add("tanviik28@gmail.com");
+
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
             request.Subject = reportTitle;
