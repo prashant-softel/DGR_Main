@@ -334,22 +334,15 @@
 
                     if (result[i].to_Daily_Solar == 1) {
                         $(".emailDT").attr('checked', true);
-                        console.log("if ");
                     }
                     if (result[i].cc_Daily_Solar == 1) {
                         $(".emailDC").attr('checked', true);
-                        console.log("if ");
-
                     }
                     if (result[i].to_Weekly_Solar == 1) {
                         $(".emailWT").attr('checked', true);
-                        console.log("if ");
-
                     }
                     if (result[i].cc_Weekly_Solar == 1) {
                         $(".emailWC").attr('checked', true);
-                        console.log("if ");
-
                     }
                 }
                     
@@ -670,6 +663,8 @@
             }
         });
         console.log(import_approval);
+        console.log("Email Array : " + email_arr);
+        console.log(email_arr);
 
         $.ajax({
             type: "POST",

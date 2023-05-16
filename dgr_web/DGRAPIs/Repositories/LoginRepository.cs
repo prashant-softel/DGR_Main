@@ -490,7 +490,7 @@ namespace DGRAPIs.Repositories
                 else if(site == 2)
                 {
             
-                    delAccess = "UPDATE login SET To_Daily_Wind=0, Cc_Daily_Wind=0, To_Weekly_Wind=0, Cc_Weekly_Wind=0 where login_id = '" + login_id + "'";
+                    delAccess = "UPDATE login SET To_Daily_Solar=0, Cc_Daily_Solar=0, To_Weekly_Solar=0, Cc_Weekly_Solar=0 where login_id = '" + login_id + "'";
                     await Context.ExecuteNonQry<int>(delAccess).ConfigureAwait(false);
 
                     foreach (var notification in notArray)
