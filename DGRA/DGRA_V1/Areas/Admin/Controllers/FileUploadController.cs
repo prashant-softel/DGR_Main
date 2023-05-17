@@ -768,7 +768,25 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             m_ErrorLog.SetInformation(", Importing Wind BD_Code_INOX Worksheet :");
-                                            statusCode = await ImportWindBDCodeINOX(status, ds);
+                                            statusCode = await InsertWindBDCodeINOX(status, ds);
+                                        }
+                                    }
+                                }
+                                else if (excelSheet == FileSheetType.BD_Code_REGEN)
+                                {
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_BD_Code_REGEN;
+                                    ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
+                                    if (ds.Tables.Count > 0)
+                                    {
+                                        if (fileUploadType == "Soalr")
+                                        {
+                                            m_ErrorLog.SetError(",BD_Code_REGEN filecannot be imported for Solar.");
+                                            status = "wrong file upload type selected for BD_Code_REGEN import.";
+                                        }
+                                        else
+                                        {
+                                            m_ErrorLog.SetInformation(", Importing Wind BD_Code_REGEN Worksheet :");
+                                            statusCode = await InsertWindBDCodeREGEN(status, ds);
                                         }
                                     }
                                 }
@@ -1214,7 +1232,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 var dataTable = new DataTable();
                 using (var reader = new StreamReader(filePath))
                 {
-                    string[] headers = reader.ReadLine().Split('\t');
+                    //string[] headers = reader.ReadLine().Split('\t');
+                    string[] headers = reader.ReadLine().Split(';');
                     foreach (string header in headers)
                     {
                         dataTable.Columns.Add(header);
@@ -1222,7 +1241,8 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                     while (!reader.EndOfStream)
                     {
-                        string[] rows = reader.ReadLine().Split('\t');
+                        //string[] rows = reader.ReadLine().Split('\t');
+                        string[] rows = reader.ReadLine().Split(';');
                         DataRow dataRow = dataTable.NewRow();
                         for (int i = 0; i < headers.Length; i++)
                         {
@@ -5736,6 +5756,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
                 string previousTime = "00:00:00";
                 string dataDate = "";
+                int rowCount = ds.Tables[0].Rows.Count;
+                int ColumnCount = ds.Tables[0].Columns.Count;
+                int rowcount = 0;
+                string LogTime = "";
 
                 string inputString = fileName;
                 char separator = '_';
@@ -5785,14 +5809,16 @@ namespace DGRA_V1.Areas.admin.Controllers
                         string year = "20" + file_time.Substring(0,2);
                         string month = file_time.Substring(2, 2);
                         string date = file_time.Substring(4, 2);
-                        string totime = file_time.Substring(7, 2) + ":" + file_time.Substring(9, 2);
-                        string fullDate = year + "-" + month + "-" + date + " " + totime;
+                        string fromtime = file_time.Substring(7, 2) + ":" + file_time.Substring(9, 2) + ":00";
+                        string fullDate = year + "-" + month + "-" + date + " " + fromtime;
 
                         //DateTime result = DateTime.ParseExact(file_time, "yyyyMMdd_HHmm", CultureInfo.InvariantCulture);
                         DateTime result = Convert.ToDateTime(fullDate);
                         string timeStamp = result.ToString("yyyy-MM-dd HH:mm:ss");
 
                         addUnit.timestamp = timeStamp;
+                        
+                        LogTime = Convert.ToDateTime(addUnit.timestamp).ToString("yyyy-MM-dd");
 
                         bool isdateEmpty = timeStamp == "" || string.IsNullOrEmpty((string)addUnit.timestamp) ? true : false;
 
@@ -5800,7 +5826,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         if (rowNumber == 2)
                         {
-                            previousTime = totime;
+                            previousTime = fromtime;
                             dataDate = addUnit.date;
                         }
                         if (dataDate != addUnit.date)
@@ -5809,10 +5835,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                             //m_ErrorLog.SetError(", Row <" + rowNumber + "> column <Time Stamp> : <" + dataDate + "> and Date <" + addUnit.date + "> missmatched");
                             //errorCount++;
                         }
-                        addUnit.from_time = previousTime;
-                        addUnit.to_time = totime;
+                        addUnit.from_time = fromtime;
+                        if(addUnit.from_time != "23:50:")
+                        {
+                            addUnit.to_time = Convert.ToString(TimeSpan.Parse(fromtime).Add(TimeSpan.FromMinutes(10)));
+                        }
+                        else
+                        {
+                            addUnit.to_time = "23:59:59";
+                        }
 
-                        previousTime = totime;
+                        previousTime = addUnit.to_time;
 
                         bool isActivePowerEmpty = dr["active_power_avg"] is DBNull || string.IsNullOrEmpty((string)dr["active_power_avg"]);
 
@@ -5830,10 +5863,89 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.avg_wind_speed = dr["wind_speed_avg"] is DBNull || string.IsNullOrEmpty((string)dr["wind_speed_avg"]) ? 0 : Convert.ToDouble(dr["wind_speed_avg"]);
 
+                        addUnit.operation_mode = dr["operation_mode"] is DBNull || string.IsNullOrEmpty((string)dr["operation_mode"]) ? 10000 : Convert.ToInt32(dr["operation_mode"]);
+
+                        addUnit.low_wind_period = dr["low_wind_period_10m"] is DBNull || string.IsNullOrEmpty((string)dr["low_wind_period_10m"]) ? 10000 : Convert.ToInt32(dr["low_wind_period_10m"]);
+
+                        addUnit.service = dr["service_10m"] is DBNull || string.IsNullOrEmpty((string)dr["service_10m"]) ? 10000 : Convert.ToInt32(dr["service_10m"]);
+
+                        addUnit.visit = dr["visit_10m"] is DBNull || string.IsNullOrEmpty((string)dr["visit_10m"]) ? 10000 : Convert.ToInt32(dr["visit_10m"]);
+
+                        addUnit.error = dr["error_10m"] is DBNull || string.IsNullOrEmpty((string)dr["error_10m"]) ? 10000 : Convert.ToInt32(dr["error_10m"]);
+
+                        addUnit.operation = dr["operation_10m"] is DBNull || string.IsNullOrEmpty((string)dr["operation_10m"]) ? 10000 : Convert.ToInt32(dr["operation_10m"]);
+
+                        addUnit.power_production = dr["power_production_10m"] is DBNull || string.IsNullOrEmpty((string)dr["power_production_10m"]) ? 10000 : Convert.ToInt32(dr["power_production_10m"]);
+
                         errorFlag.Clear();
                         if (!(skipRow))
                         {
                             addSet.Add(addUnit);
+                        }
+
+                        //Code to get the missing samples.
+                        if (rowcount < rowCount - 1)
+                        {
+                            string nextTime = ds.Tables[0].Rows[rowcount + 1]["time"].ToString();
+                            string nextVariable = nextTime.Substring(7, 2) + ":" + nextTime.Substring(9, 2) + ":00";
+
+                            string nextFrom = Convert.ToDateTime(nextVariable).ToString("HH:mm:ss");
+                            if (addUnit.to_time != nextFrom)
+                            {
+                                int insideCount = 0;
+                                string missingTo = "";
+                                string missingFrom = "";
+                                do
+                                {
+                                    TimeSpan fromTimeSpan = new TimeSpan();
+                                    TimeSpan nextFromFinal = new TimeSpan();
+                                    TimeSpan nextToFinal = new TimeSpan();
+
+                                    if (insideCount == 0)
+                                    {
+                                        fromTimeSpan = TimeSpan.Parse(addUnit.from_time);
+                                    }
+                                    if (insideCount > 0)
+                                    {
+                                        fromTimeSpan = TimeSpan.Parse(missingFrom);
+                                    }
+
+                                    nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
+                                    nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+
+                                    InsertWindTMLData addMissingUnit = new InsertWindTMLData();
+
+                                    addMissingUnit.file_name = fileName;
+                                    addMissingUnit.onm_wtg = fileNameNew;
+                                    addMissingUnit.WTGs = wtgName;
+                                    addMissingUnit.site_id = siteId;
+                                    addMissingUnit.wtg_id = wtgId;
+                                    addMissingUnit.site = siteName;
+                                    addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
+                                    addMissingUnit.timestamp = LogTime + " " + nextToFinal.ToString();
+                                    bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
+                                    addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
+                                    addMissingUnit.from_time = nextFromFinal.ToString();
+                                    addMissingUnit.to_time = nextToFinal.ToString();
+                                    addMissingUnit.status_code = 1;
+                                    addMissingUnit.avg_wind_speed = 0;
+                                    addMissingUnit.operation_mode = 10000;
+                                    addMissingUnit.low_wind_period = 10000;
+                                    addMissingUnit.service = 10000;
+                                    addMissingUnit.visit = 10000;
+                                    addMissingUnit.error = 10000;
+                                    addMissingUnit.operation = 10000;
+                                    addMissingUnit.power_production = 10000;
+                                    missingTo = addMissingUnit.to_time;
+                                    missingFrom = addMissingUnit.from_time;
+                                    previousTime = addMissingUnit.to_time;
+
+                                    addSet.Add(addMissingUnit);
+
+                                    insideCount++;
+                                }
+                                while (missingTo != nextFrom);
+                            }
                         }
                     }
                     catch (Exception e)
@@ -5843,54 +5955,56 @@ namespace DGRA_V1.Areas.admin.Controllers
                         ErrorLog(",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.Message + ",");
                         errorCount++;
                     }
+
+                    rowcount++;
                 }
                 if (errorCount == 0)
                 {
                     m_ErrorLog.SetInformation(",Wind TML Data Validation SuccessFul,");
                     var json = JsonConvert.SerializeObject(addSet);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
-                    using (var client = new HttpClient())
-                    {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
-                        {
-                            m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
+                    //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=4";
+                    //using (var client = new HttpClient())
+                    //{
+                    //    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    //    var response = await client.PostAsync(url, data);
+                    //    string returnResponse = response.Content.ReadAsStringAsync().Result;
+                    //    if (response.IsSuccessStatusCode)
+                    //    {
+                    //        m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
 
-                            if (returnResponse == "5")
-                            {
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetError(",Error in Calculation.");
-                            }
-                            return responseCode = (int)response.StatusCode;
-                        }
-                        else
-                        {
-                            m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + "> due to exception : " + returnResponse);
+                    //        if (returnResponse == "5")
+                    //        {
+                    //            m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                    //        }
+                    //        else
+                    //        {
+                    //            m_ErrorLog.SetError(",Error in Calculation.");
+                    //        }
+                    //        return responseCode = (int)response.StatusCode;
+                    //    }
+                    //    else
+                    //    {
+                    //        m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + "> due to exception : " + returnResponse);
 
-                            //for solar 0, wind 1, other 2;
-                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
-                            if (deleteStatus == 1)
-                            {
-                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
-                            }
-                            else if (deleteStatus == 0)
-                            {
-                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetInformation(", File not uploaded");
-                            }
+                    //        //for solar 0, wind 1, other 2;
+                    //        int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                    //        if (deleteStatus == 1)
+                    //        {
+                    //            m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                    //        }
+                    //        else if (deleteStatus == 0)
+                    //        {
+                    //            m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                    //        }
+                    //        else
+                    //        {
+                    //            m_ErrorLog.SetInformation(", File not uploaded");
+                    //        }
 
-                            return responseCode = (int)response.StatusCode;
-                        }
-                    }
+                    //        return responseCode = (int)response.StatusCode;
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -6094,7 +6208,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //ImportWindBDCodeINOX
-        private async Task<int> ImportWindBDCodeINOX(string status, DataSet ds)
+        private async Task<int> InsertWindBDCodeINOX(string status, DataSet ds)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -6182,6 +6296,107 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     m_ErrorLog.SetError(",Wind BD Code INOX Validation Failed,");
+                }
+            }
+            return responseCode;
+        }
+
+        //InserttWindBDCodeREGEN
+        private async Task<int> InsertWindBDCodeREGEN(string status, DataSet ds)
+        {
+            List<bool> errorFlag = new List<bool>();
+            long rowNumber = 1;
+            int errorCount = 0;
+            int responseCode = 400;
+
+            if (ds.Tables.Count > 0)
+            {
+                List<InsertWindBDCodeREGEN> addSet = new List<InsertWindBDCodeREGEN>();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    InsertWindBDCodeREGEN addUnit = new InsertWindBDCodeREGEN();
+                    try
+                    {
+                        bool skipRow = false;
+                        rowNumber++;
+                        addUnit.site = dr["Sites"] is DBNull || string.IsNullOrEmpty((string)dr["Sites"]) ? "Nil" : Convert.ToString(dr["Sites"]);
+                        if (addUnit.site == "" || addUnit.site == null)
+                        {
+                            m_ErrorLog.SetError(", Site column of <" + rowNumber + "> row is empty");
+                            errorCount++;
+                            continue;
+                        }
+
+                        addUnit.site_id = dr["Sites"] is DBNull || string.IsNullOrEmpty((string)dr["Sites"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
+                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+
+                        objImportBatch.importSiteId = addUnit.site_id;//C
+
+                        addUnit.code = dr["Code"] is DBNull || string.IsNullOrEmpty((string)dr["Code"]) ? 100 : Convert.ToInt32(dr["Code"]);
+
+                        if(addUnit.code != 100)
+                        {
+                            addUnit.operation_mode = dr["Operation Mode"] is DBNull || string.IsNullOrEmpty((string)dr["Operation Mode"]) ? "Nil" : Convert.ToString(dr["Operation Mode"]);
+                        }
+                        else
+                        {
+                            addUnit.operation_mode = "Nil";
+                        }
+
+                        addUnit.conditions = dr["Conditions"] is DBNull || string.IsNullOrEmpty((string)dr["Conditions"]) ? "Nil" : Convert.ToString(dr["Conditions"]);
+
+                        if (!(skipRow))
+                        {
+                            addSet.Add(addUnit);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindBDCodeREGEN,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeREGEN: " + e.Message + ",");
+                        errorCount++;
+                    }
+                }
+                if (!(errorCount > 0))
+                {
+                    m_ErrorLog.SetInformation(",Wind BD Code REGEN Validation SuccessFul,");
+                    var json = JsonConvert.SerializeObject(addSet);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindBDCodeREGEN";
+                    using (var client = new HttpClient())
+                    {
+                        var response = await client.PostAsync(url, data);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            m_ErrorLog.SetInformation(",BD code REGEN API SuccessFul,");
+                            return responseCode = (int)response.StatusCode;
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(",BD Code REGEN API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                            //for solar 0, wind 1, other 2;
+                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                            if (deleteStatus == 1)
+                            {
+                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                            }
+                            else if (deleteStatus == 0)
+                            {
+                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(", File not uploaded");
+                            }
+
+                            return responseCode = (int)response.StatusCode;
+                        }
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetError(",Wind BD Code REGEN Validation Failed,");
                 }
             }
             return responseCode;

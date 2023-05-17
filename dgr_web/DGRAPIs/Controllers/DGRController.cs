@@ -1065,6 +1065,25 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //InsertWindBDCodeREGEN
+        [Route("InsertWindBDCodeREGEN")]
+        [HttpPost]
+        public async Task<IActionResult> InsertWindBDCodeREGEN(List<InsertWindBDCodeREGEN> InsertWindBDCodeREGEN)
+        {
+            try
+            {
+                var data = await _dgrBs.InsertWindBDCodeREGEN(InsertWindBDCodeREGEN);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         //GetWindBdCodeINOX
         [Route("GetWindBdCodeINOX")]
         [HttpPost]

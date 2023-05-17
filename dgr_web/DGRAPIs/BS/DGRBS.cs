@@ -80,6 +80,7 @@ namespace DGRAPIs.BS
         Task<int> InsertWindBDCodeGamesa(List<InsertWindBDCodeGamesa> set);
         //ImportWindBDCodeINOX
         Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> set);
+        Task<int> InsertWindBDCodeREGEN(List<InsertWindBDCodeREGEN> set);
         //GetWindBdCodeINOX
         Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX();
         //InsertWindSpeedTMD
@@ -1293,6 +1294,24 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+
+        //InsertWindBDCodeREGEN
+        public async Task<int> InsertWindBDCodeREGEN(List<InsertWindBDCodeREGEN> InsertWindBDCodeREGEN)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.InsertWindBDCodeREGEN(InsertWindBDCodeREGEN);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         //GetWindBdCodeINOX //GetWindBdCodeINOX
         public async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX()
         {

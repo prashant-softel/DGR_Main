@@ -4172,6 +4172,10 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             //"INSERT INTO uploading_file_tmr_data (file_name, onm_wtg, WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, calculated_ws, date, from_time, to_time, status, status_code) VALUES ";
                             insertValues += "('" + unit.file_name + "', '" + unit.onm_wtg + "', '" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.calculated_ws + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + "),";
                         }
+                        else if (type == 4)
+                        {
+                            insertValues += "('" + unit.file_name + "', '" + unit.onm_wtg + "', '" + unit.WTGs + "', " + unit.wtg_id + ", '" + unit.site + "', " + unit.site_id + ", '" + unit.timestamp + "', " + unit.avg_active_power + ", " + unit.avg_wind_speed + ", " + unit.calculated_ws + ", '" + unit.date + "', '" + unit.from_time + "', '" + unit.to_time + "', '" + unit.status + "', " + unit.status_code + ", " + unit.operation_mode + ", " + unit.low_wind_period + ", " + unit.service + ", " + unit.visit + ", " + unit.error + ", " + unit.operation + ", " + unit.power_production + "),";
+                        }
                         /*
                         if (unit.status_code == 0)
                         {
@@ -4198,6 +4202,11 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                                 else if(type == 3)
                                 {
                                     updateWindspeedTMDQry = "INSERT INTO uploading_file_tmr_data (file_name, onm_wtg, WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, calculated_ws, date, from_time, to_time, status, status_code) VALUES ";
+                                    updateWindspeedTMDQry += insertValues;
+                                }
+                                else if (type == 4)
+                                {
+                                    updateWindspeedTMDQry = "INSERT INTO uploading_file_tmr_data (file_name, onm_wtg, WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, calculated_ws, date, from_time, to_time, status, status_code, operation_mode, low_wind_period, service, visit, error, operation, power_production) VALUES ";
                                     updateWindspeedTMDQry += insertValues;
                                 }
                                 try
@@ -4253,6 +4262,11 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     else if (type == 3)
                     {
                         updateWindspeedTMDQry = "INSERT INTO uploading_file_tmr_data (file_name, onm_wtg, WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, calculated_ws, date, from_time, to_time, status, status_code) VALUES ";
+                        updateWindspeedTMDQry += insertValues;
+                    }
+                    else if (type == 4)
+                    {
+                        updateWindspeedTMDQry = "INSERT INTO uploading_file_tmr_data (file_name, onm_wtg, WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, calculated_ws, date, from_time, to_time, status, status_code, operation_mode, low_wind_period, service, visit, error, operation, power_production) VALUES ";
                         updateWindspeedTMDQry += insertValues;
                     }
                     try
@@ -4347,8 +4361,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     bdStopTo = unit.stop_to;
 
                     //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00";
-                    //can add this in insert qry. check for this..
-                    if (type == 1)
+                    if (type == 1 || type == 4 )
                     {
                         addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
                     }
@@ -4723,13 +4736,69 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             return finalResult;
                         }
                     }
+                    else if (type == 4)
+                    {
+                        try
+                        {
+                            string allBreakdown = "NC";
+                            if(unit.manual_bd != "-")
+                            {
+                                allBreakdown = unit.manual_bd;
+                            }
+                            else if(unit.manual_bd == "-" && unit.status_code == 0 && unit.power_production == 600 && unit.operation_mode == 5)
+                            {
+                                allBreakdown = "PCD";
+                            }
+                            else if (unit.manual_bd == "-" && unit.status_code == 0 && unit.power_production < 600 && unit.operation_mode == 5 && ((unit.service + unit.visit + unit.error) == 0))
+                            {
+                                allBreakdown = "PCD";
+                            }
+                            else if (unit.manual_bd == "-" && unit.status_code == 0 && unit.power_production < 600 && unit.operation_mode == 5 && ((unit.service + unit.visit + unit.error) != 0))
+                            {
+                                allBreakdown = "USMH";
+                            }
+                            else if(unit.manual_bd == "-" && unit.status_code == 0 && (unit.operation_mode == 1 || unit.operation_mode == 9) )
+                            {
+                                allBreakdown = "USMH";
+                            }
+                            else if(unit.manual_bd == "-" && unit.status_code == 0 && unit.operation_mode == 0)
+                            {
+                                allBreakdown = "Initilization";
+                            }
+                            else if(unit.manual_bd == "-" && unit.status_code == 0 && unit.operation_mode == 3)
+                            {
+                                allBreakdown = "Startup";
+                            }
+                            else if(unit.manual_bd == "-" && unit.status_code == 0 && unit.operation_mode == 2)
+                            {
+                                allBreakdown = "LULL";
+                            }
+                            else if(unit.manual_bd == "-" && unit.status_code == 0 && unit.operation_mode == 4)
+                            {
+                                allBreakdown = "Runup";
+                            }
+                            else
+                            {
+                                allBreakdown = "NC";
+                            }
+
+                            unit.all_bd = allBreakdown;
+                            finalResult = 7;
+                        }
+                        catch(Exception e)
+                        {
+                            string msg = "Exception while calculating Regen refined bd." + e.ToString();
+                            API_ErrorLog(msg);
+                            return finalResult;
+                        }
+                    }
 
                     if(finalResult == 7)
                     {
                         //addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
                         //uploading_file_tmr_data (WTGs, wtg_id, site, site_id, Time_stamp, avg_active_power, avg_wind_speed, restructive_WTG, date, from_time, to_time, status, status_code)
                         //for INOX remove all_bd field from this updateQry.
-                        if (type == 1 || type == 3 )
+                        if ( type == 1 || type == 3 || type == 4 )
                         {
                             UpdateQry += "UPDATE uploading_file_tmr_data SET recon_wind_speed = " + unit.recon_wind_speed + ", exp_power_kw = " + unit.exp_power_kw + ", deviation_kw = " + unit.deviation_kw + ", loss_kw = " + unit.loss_kw + ", all_bd = '" + unit.all_bd + "' WHERE uploading_file_TMR_Data_id = " + unit.uploading_file_TMR_Data_id + ";";
                         }
@@ -5497,6 +5566,34 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             }
 
             string deleteQry = "DELETE FROM wind_bd_codes_inox WHERE site ='" + site + "' AND site_id =" + site_id + ";";
+            qry += insertValues;
+
+            await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            if (!(string.IsNullOrEmpty(insertValues)))
+            {
+                val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+            }
+            return val;
+        }
+        internal async Task<int> InsertWindBDCodeREGEN(List<InsertWindBDCodeREGEN> set)
+        {
+            int val = 0;
+            string qry = " INSERT INTO wind_bd_codes_regen ( site, site_id, code, operation_mode, conditions) VALUES";
+            string insertValues = "";
+            int counter = 0;
+            string site = "";
+            int site_id = 0;
+            foreach (var unit in set)
+            {
+                if (counter == 0)
+                {
+                    site = unit.site;
+                    site_id = unit.site_id;
+                }
+                insertValues += "('" + unit.site + "', " + unit.site_id + ", " + unit.code + ", '" + unit.operation_mode + "', '" + unit.conditions + "'),";
+            }
+
+            string deleteQry = "DELETE FROM wind_bd_codes_regen WHERE site ='" + site + "' AND site_id =" + site_id + ";";
             qry += insertValues;
 
             await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);

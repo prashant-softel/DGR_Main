@@ -35,6 +35,13 @@ namespace DGRAPIs.Models
         public string PLC_max { get; set; }
         public int PC_validity { get; set; }
         public string plc_state_code { get; set; }
+        public int operation_mode { get; set; }
+        public int low_wind_period { get; set; }
+        public int service { get; set; }
+        public int visit { get; set; }
+        public int error { get; set; }
+        public int operation { get; set; }
+        public int power_production { get; set; }
         public dynamic created_on { get; set; }
     }
     public class WindSpeedData
