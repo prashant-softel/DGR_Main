@@ -24,4 +24,14 @@ namespace DGRAPIs.Models
         public string code { get; set; }
         public string type { get; set; }
     }
+
+    public class InsertWindBDCodeREGEN
+    {
+        public int wind_bd_codes_regen_id { get; set; }
+        public string site { get; set; }
+        public int site_id { get; set; }
+        public int code { get; set; }
+        public string operation_mode { get; set; }
+        public string conditions { get; set; }
+    }
 }
