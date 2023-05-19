@@ -4010,7 +4010,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
         internal async Task<int> InsertMainWindSpeedTMD(List<InsertWindTMLData> set, string date, int site_id, int importFormat, int type)
         {
             //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon; type = 4 : Regen
-            //Incase of INOX insert all_bd as well
+            //Incase of INOX insert all_bd as well.
 
 
             //importFormat = 1 : WTGs data in one excel sheet. Template file name : Badnawar_TML_Data
@@ -4367,19 +4367,72 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 {
                     bdStopFrom = unit.stop_from;
                     bdStopTo = unit.stop_to;
+                    string finalFrom = "";
+                    string finalTo = "";
 
+                    string inputStrings = bdStopFrom.ToString();
+                    char sepre = ':';
+                    string[] output = inputStrings.Split(sepre);
+                    if(output.Length > 0)
+                    {
+                        int minute = Convert.ToInt32(output[1]);
+                        int remainder = minute % 10;
+                        if(minute >= 10)
+                        {
+                            minute = minute - remainder;
+                            finalFrom = output[0] + ":" + minute + ":" + output[2];
+                        }
+                        else
+                        {
+                            minute = 0;
+                            finalFrom = output[0] + ":00:" + output[2];
+                        }
+                    }
+                    inputStrings = bdStopTo.ToString();
+                    string[] toOutput = inputStrings.Split(sepre);
+                    if(output.Length > 0)
+                    {
+                        int minute = Convert.ToInt32(toOutput[1]);
+                        int remainder = minute % 10;
+                        int hour = Convert.ToInt32(output[0]);
+                        if(remainder > 0)
+                        {
+                            minute = minute + (10 - remainder);
+                        }
+                        if (minute < 60)
+                        {
+                            finalTo = toOutput[0] + ":" + minute.ToString() + ":" + toOutput[2];
+                        }
+                        else
+                        {
+                            if (minute == 60)
+                            {
+                                if (hour <= 23)
+                                {
+                                    if (hour == 23 && minute == 60) //Convert.ToInt32(output[1]) > 55
+                                    {
+                                        finalTo = hour.ToString() + ":" + output[1] + ":" + output[2];
+                                    }
+                                    hour++;
+                                    finalTo = hour + ":" + "00" + ":" + output[2];
+                                }
+                            }
+                        }
+                        
+                    }
                     //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00";
                     if (type == 1 || type == 4 )
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' ;";
                     }
                     else if (type == 2 || type == 3)
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + bdStopFrom + "' AND from_time <= '" + bdStopTo + "' ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' ;";
                     }
                 }
                 try
                 {
+                    API_InformationLog("Query : " + addManualBdQry);
                     updateManualRes = await Context.ExecuteNonQry<int>(addManualBdQry).ConfigureAwait(false);
                     finalRes = 2;
                 }
