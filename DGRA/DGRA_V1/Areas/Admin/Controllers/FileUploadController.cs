@@ -4789,6 +4789,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
                 string previousTime = "00:00:00";
+                string previousWTG = "";
                 string dataDate = "";
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
@@ -4842,14 +4843,22 @@ namespace DGRA_V1.Areas.admin.Controllers
                             previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
                             dataDate = addUnit.date;
                         }
-                        if (dataDate != addUnit.date)
+                        if ( rowNumber > 2 && ( dataDate != addUnit.date || previousWTG != addUnit.WTGs))
                         {
                             previousTime = "00:00:00";
                             //m_ErrorLog.SetError(", Row <" + rowNumber + "> column <Time Stamp> : <" + dataDate + "> and Date <" + addUnit.date + "> missmatched");
                             //errorCount++;
                         }
                         addUnit.from_time = previousTime;
+                        if(addUnit.from_time == "23:40:00")
+                        {
+                            previousTime = "00:00:00";
+                        }
                         addUnit.to_time = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
+                        if(addUnit.to_time == "23:50:00")
+                        {
+                            previousTime = "00:00:00";
+                        }
 
                         previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
 
@@ -4876,6 +4885,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.restructive_WTG = Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
                         errorFlag.Add(numericNullValidation(addUnit.restructive_WTG, "Most restrictive WTG Status 10M", rowNumber));
 
+                        previousWTG = addUnit.WTGs;
                         errorFlag.Clear();
                         if (!(skipRow))
                         {
@@ -5692,8 +5702,18 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 string input = addUnit.variable;
                                 char sep = '-';
                                 string[] substr = input.Split(sep);
-                                string fromTime = substr[0];
-                                string toTime = substr[1];
+                                string toTime = "";
+                                string fromTime = "";
+                                if (substr.Length > 0)
+                                {
+                                    fromTime = substr[0];
+                                    toTime = substr[1];
+                                }
+                                else
+                                {
+                                    ErrorLog("substr array is blank.");
+                                }
+
                                 if(toTime == "24:00:00")
                                 {
                                     toTime = "23:59:00";
