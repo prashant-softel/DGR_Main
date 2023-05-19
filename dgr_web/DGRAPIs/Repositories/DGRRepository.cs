@@ -2645,19 +2645,35 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             }
             
             List<WindDailyBreakdownReport> _windBDList = new List<WindDailyBreakdownReport>();
+            List<WindDailyBreakdownReport> _windBDList2 = new List<WindDailyBreakdownReport>();
 
-            
-                string fetchQry = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1";
+
+            string fetchQry1 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type WHERE " + filter + " AND t1.approve_status = 1 ORDER BY t1.date ASC";
+
+            try
+            {
+                _windBDList = await Context.GetData<WindDailyBreakdownReport>(fetchQry1).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while getting data form uploading_file_breakdown, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
+
+            string fetchQry2 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
 
                 try
                 {
-                    _windBDList = await Context.GetData<WindDailyBreakdownReport>(fetchQry).ConfigureAwait(false);
+                    _windBDList2 = await Context.GetData<WindDailyBreakdownReport>(fetchQry2).ConfigureAwait(false);
                 }
                 catch(Exception e)
                 {
                     string msg = "Exception while getting data form uploading_file_breakdown, due to : " + e.ToString();
                     API_ErrorLog(msg);
-                }      
+                }
+
+            _windBDList.AddRange(_windBDList2);
 
             return _windBDList;
         }
