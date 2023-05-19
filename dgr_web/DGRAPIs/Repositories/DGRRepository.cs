@@ -3870,10 +3870,15 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 int qryCounter = 0;
                 int count = 0;
                 int previousWtgId = 0;
+                string fileName = "";
+
                 foreach (var unit in set)
                 {
                     if (count == 0)
                     {
+                        fileName = unit.file_name;
+                        API_InformationLog("Starting insertion and calculation of TML data file Name : " + fileName);
+
                         previousWtgId = unit.wtg_id;
                         deleteWindSpeedTmdValues += unit.wtg_id.ToString() + ",";
                     }
@@ -3900,7 +3905,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                         catch (Exception e)
                         {
                             string msg = e.ToString();
-                            API_ErrorLog("Exception while deleting records from windspeed tmd table. Due to : " + msg);
+                            API_ErrorLog("Exception while deleting records of WTGs <" + deleteWindSpeedTmdValues.Substring(0, (deleteWindSpeedTmdValues.Length - 1)) + "> from windspeed tmd table. Due to : " + msg);
                             return finalResult;
                         }
                         try
@@ -3937,7 +3942,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     catch (Exception e)
                     {
                         string msg = e.ToString();
-                        API_ErrorLog("Exception while deleting records from windspeed tmd table. Due to : " + msg);
+                        API_ErrorLog("Exception while deleting WTGs <"+ deleteWindSpeedTmdValues.Substring(0, (deleteWindSpeedTmdValues.Length - 1)) + "> records from windspeed tmd table. Due to : " + msg);
                         return finalResult;
                     }
                     try
@@ -4048,12 +4053,14 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             }
             if (fetchReferenceWtgRes > 0)
             {
+                string referenceWtgs = "";
                 try
                 {
                     foreach (var unit in referenceList)
                     {
-                        string referenceWtgs = "'" + unit.ref1 + "', '" + unit.ref2 + "', '" + unit.ref3 + "'";
-                        ReferenceWtgHash.Add(unit.wtg, referenceWtgs);
+                        string referenceWTGs = "'" + unit.ref1 + "', '" + unit.ref2 + "', '" + unit.ref3 + "'";
+                        referenceWtgs = referenceWTGs;
+                        ReferenceWtgHash.Add(unit.wtg, referenceWTGs);
                         finalResult = 3;
                     }
                     finalResult = 3;
@@ -4061,7 +4068,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 catch (Exception e)
                 {
                     string msg = e.ToString();
-                    API_ErrorLog("Error while adding data into hash table of reference wtgs. Due to : " + msg);
+                    API_ErrorLog("Error while adding data into hash table of reference <" + referenceWtgs + "> wtgs. Due to : " + msg);
                     return finalResult;
                 }
             }
@@ -4074,6 +4081,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             {
                 if (count == 0)
                 {
+                    API_InformationLog("Calculating and Inserting data into TML data table : " + unit.file_name);
                     previousWtgId = unit.wtg_id;
                     deleteFromTMDValues += unit.wtg_id.ToString() + ",";
                     loopDate = unit.date;
@@ -4107,7 +4115,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             catch (Exception e)
                             {
                                 string msg = e.ToString();
-                                API_ErrorLog("Exception while getting average of reference WTGS : " + referenceWtgs + " due to : " + msg);
+                                API_ErrorLog("Exception while getting average of reference WTGS : <" + referenceWtgs + "> during iteration <" + count + "> due to : " + msg);
                             }
                         }
                         if (unit.avg_wind_speed == 0 && unit.calculated_ws == 0)
@@ -4123,7 +4131,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             catch (Exception e)
                             {
                                 string msg = e.ToString();
-                                API_ErrorLog("Exception while getting all windfarm average from TML data table Due to  : " + msg);
+                                API_ErrorLog("Exception while getting all windfarm average from TML data table during iteration <" + count + "> Due to  : " + msg);
                                 return finalResult;
                             }
                         }
@@ -4155,7 +4163,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             catch (Exception e)
                             {
                                 string msg = e.ToString();
-                                API_ErrorLog("Error while fetching average of five hrs before and next, due to : " + msg);
+                                API_ErrorLog("Error while fetching average of five hrs before and next during iteration <" + count + "> , due to : " + msg);
                                 return finalResult;
                             }
                         }
@@ -4218,7 +4226,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                                 catch (Exception e)
                                 {
                                     string msg = e.ToString();
-                                    API_ErrorLog("Exception while deleting records from TMD table. Due to : " + msg);
+                                    API_ErrorLog("Exception while deleting WTGs <" + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + "> records from TMD table. Due to : " + msg);
                                     return finalResult;
                                 }
                                 try
@@ -4278,7 +4286,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     catch (Exception e)
                     {
                         string msg = e.ToString();
-                        API_ErrorLog("Exception while deleting records from TMD table. Due to : " + msg);
+                        API_ErrorLog("Exception while deleting WTGs <" + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + "> records from TMD table. Due to : " + msg);
                         return finalResult;
                     }
                     try
@@ -4339,7 +4347,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             int updateAllBdIDRes = 0;
             TimeSpan bdStopFrom = new TimeSpan();
             TimeSpan bdStopTo = new TimeSpan();
-
+            API_InformationLog("Updating manual Breakdown Column.");
             //Update the all_bd column in case of INOX.
             try
             {
@@ -4472,7 +4480,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             int fetchAverageWindSpeedRes = 0;
             int getPowerCurveRes = 0;
             double averageWindSpeed = 0;
-
+            API_InformationLog("Calculating and updating Reconstructed and other columns.");
             try
             {
                 UpdatedTMLDataList = await Context.GetData<InsertWindTMLData>(fetchUpdatedTMLDataQry).ConfigureAwait(false);
@@ -4517,6 +4525,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 }
                 if (getPowerCurveRes > 0)
                 {
+                    int incount = 0;
                     foreach (var uni in PowerCurveList)
                     {
                         try
@@ -4525,11 +4534,12 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                         }
                         catch (Exception e)
                         {
-                            string msg = "Exception while adding records to hashtable. due to " + e.ToString();
+                            string msg = "Exception while adding records to hashtable during iteration <" + incount + ">. due to " + e.ToString();
                             API_ErrorLog(msg);
                             return finalResult;
                         }
                         PowerCurveHashRows = PowerCurveHash.Count;
+                        incount++;
                     }
                 }
 
@@ -4556,7 +4566,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             catch (Exception e)
                             {
                                 string msg = e.ToString();
-                                API_ErrorLog("Exception while getting average of reference WTGS from uploading_file_tmr_data in function UpdateReconAndOther calculating recon_windspeed using condition 1  : " + referenceWtgs + " due to : " + msg);
+                                API_ErrorLog("Exception while getting average of reference WTGS from uploading_file_tmr_data in function UpdateReconAndOther calculating recon_windspeed using condition 1  : <" + referenceWtgs + "> during iteration <" + counter + "> due to : " + msg);
                             }
                             //reconstructedWS = averageWindSpeed;
                         }
@@ -4577,7 +4587,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             catch (Exception e)
                             {
                                 string msg = e.ToString();
-                                API_ErrorLog("Exception while getting average of reference WTGS from uploading_file_tmr_data in function UpdateReconAndOther calculating recon_windspeed using condition 1  : " + referenceWtgs + " due to : " + msg);
+                                API_ErrorLog("Exception while getting average of reference WTGS from uploading_file_tmr_data in function UpdateReconAndOther calculating recon_windspeed using condition 1  : <" + referenceWtgs + "> during iteration <" + counter + "> due to : " + msg);
                             }
                             //reconstructedWS = averageWindSpeed;
                         }
@@ -4591,7 +4601,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     }
                     catch(Exception e)
                     {
-                        string msg = "Exception while calculating reconstructed windspeed. " + e.ToString();
+                        string msg = "Exception while calculating reconstructed windspeed during iteration <" + counter + "> . " + e.ToString();
                         API_ErrorLog(msg);
                         return finalResult;
                     }
@@ -4613,7 +4623,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     }
                     catch(Exception e)
                     {
-                        string msg = "Exception while calculating Expected power, due to : " + e.ToString();
+                        string msg = "Exception while calculating Expected power during iteration <" + counter + ">, due to : " + e.ToString();
                         API_ErrorLog(msg);
                         return finalResult;
                     }
@@ -4636,7 +4646,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     }
                     catch(Exception e)
                     {
-                        string msg = "Exception while calculating deviation due to : " + e.ToString();
+                        string msg = "Exception while calculating deviation during iteration <" + counter + "> due to : " + e.ToString();
                         API_ErrorLog(msg);
                         return finalResult;
                     }
@@ -4648,14 +4658,14 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                         loss = unit.deviation_kw / 6;
                         unit.loss_kw = loss;    
                         finalResult = 6;
-                        if(unit.deviation_kw < 0)
-                        {
-                            API_InformationLog("Deviation less than 0 : " + unit.deviation_kw);
-                        }
+                        //if(unit.deviation_kw < 0)
+                        //{
+                        //    API_InformationLog("Deviation less than 0 : " + unit.deviation_kw);
+                        //}
                     }
                     catch(Exception e)
                     {
-                        string msg = "Exception while calculating loss kw, due to : " + e.ToString();
+                        string msg = "Exception while calculating loss kw during iteration <" + counter + "> , due to : " + e.ToString();
                         API_ErrorLog(msg);
                         return finalResult;
                     }
@@ -4702,7 +4712,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                         }
                         catch(Exception e)
                         {
-                            string msg = "" + e.ToString();
+                            string msg = "Exception while calculating all BD for Gamesa during iteration <" + counter + "> " + e.ToString();
                             API_ErrorLog(msg);
                             return finalResult;
                         }
@@ -4731,7 +4741,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                         }
                         catch(Exception e)
                         {
-                            string msg = "Exception while calculating Suzlon refined bd." + e.ToString();
+                            string msg = "Exception while calculating Suzlon refined bd during iteration <" + counter + "." + e.ToString();
                             API_ErrorLog(msg);
                             return finalResult;
                         }
@@ -4787,7 +4797,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                         }
                         catch(Exception e)
                         {
-                            string msg = "Exception while calculating Regen refined bd." + e.ToString();
+                            string msg = "Exception while calculating Regen refined bd. during iteration <" + counter + "> Due to : " + e.ToString();
                             API_ErrorLog(msg);
                             return finalResult;
                         }
@@ -4945,9 +4955,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
             }
             
             return FinalResult;
-        } */
-
-                
+        } */   
 
         //Old Calculations method for Wind TML Data.
         /*
@@ -5483,8 +5491,6 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
         }
 
         */
-
-
 
 
         //InsertWindPowerCurve
@@ -8669,7 +8675,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (var unit in _importedData)
             {
-                values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "','" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','"+ unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','"+ unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id+"'),";
+                values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "'," + unit.ega_b + ", " + unit.ega_c + ",'" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','"+ unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','"+ unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id+"'),";
             }
 
             qry1 += values;
