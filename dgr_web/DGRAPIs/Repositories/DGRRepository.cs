@@ -4390,11 +4390,11 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     }
                     inputStrings = bdStopTo.ToString();
                     string[] toOutput = inputStrings.Split(sepre);
-                    if(output.Length > 0)
+                    if(toOutput.Length > 0)
                     {
                         int minute = Convert.ToInt32(toOutput[1]);
                         int remainder = minute % 10;
-                        int hour = Convert.ToInt32(output[0]);
+                        int hour = Convert.ToInt32(toOutput[0]);
                         if(remainder > 0)
                         {
                             minute = minute + (10 - remainder);
@@ -4411,10 +4411,10 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                                 {
                                     if (hour == 23 && minute == 60) //Convert.ToInt32(output[1]) > 55
                                     {
-                                        finalTo = hour.ToString() + ":" + output[1] + ":" + output[2];
+                                        finalTo = hour.ToString() + ":" + toOutput[1] + ":" + toOutput[2];
                                     }
                                     hour++;
-                                    finalTo = hour + ":" + "00" + ":" + output[2];
+                                    finalTo = hour + ":" + "00" + ":" + toOutput[2];
                                 }
                             }
                         }
@@ -4733,7 +4733,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             //condition 1
                             if (unit.manual_bd != "-" && unit.manual_bd != "")
                             {
-                                allBreakdown = unit.manual_bd;
+                                allBreakdown = unit.manual_bd.ToString();
                             }
                             //condition 2
                             else if (unit.manual_bd == "-" && unit.status_code == 0 && unit.restructive_WTG == 100)
@@ -4784,7 +4784,11 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             {
                                 allBreakdown = "PCD";
                             }
-                            else
+                            else if(unit.manual_bd != "-")
+                            {
+                                allBreakdown = unit.manual_bd.ToString();
+                            }
+                            else 
                             {
                                 allBreakdown = "NC";
                             }
@@ -4806,7 +4810,7 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                             string allBreakdown = "NC";
                             if(unit.manual_bd != "-")
                             {
-                                allBreakdown = unit.manual_bd;
+                                allBreakdown = unit.manual_bd.ToString();
                             }
                             else if(unit.manual_bd == "-" && unit.status_code == 0 && unit.power_production == 600 && unit.operation_mode == 5)
                             {
