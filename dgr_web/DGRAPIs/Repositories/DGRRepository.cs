@@ -3411,12 +3411,17 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                 filter += invs.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
+            List<SolarDailyBreakdownReport> _solarBDList1 = new List<SolarDailyBreakdownReport>();
 
-        
+
+            string fetchQry1 = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id  WHERE " + filter + " AND t1.approve_status = 1 and t1.import_batch_id= 0 ORDER BY t1.date ASC";
+
+            _solarBDList1 = await Context.GetData<SolarDailyBreakdownReport>(fetchQry1).ConfigureAwait(false);
+
             List<SolarDailyBreakdownReport> _solarBDList = new List<SolarDailyBreakdownReport>();
            
 
-                string fetchQry = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1";
+                string fetchQry = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
 
                 try
                 {
@@ -3427,8 +3432,10 @@ where    " + filter + " group by t1.state, t2.spv, t1.site  ";
                     string msg = "Exception while getting data form uploading_file_breakdown, due to : " + e.ToString();
                    API_ErrorLog(msg);
                 }
-            
-            return _solarBDList;
+
+            _solarBDList1.AddRange(_solarBDList);
+
+            return _solarBDList1;
         }
         internal async Task<int> MailSend(string fname)
         {
