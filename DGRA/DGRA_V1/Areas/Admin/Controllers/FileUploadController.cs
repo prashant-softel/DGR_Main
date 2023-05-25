@@ -688,7 +688,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                             else
                             {
-                                m_ErrorLog.SetError(",Import Operation Failed:");
+                                m_ErrorLog.SetError(",Import Operation Failed.");
                             }
                         }
                         catch (Exception ex)
@@ -1219,6 +1219,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
             int responseCode = 400;
+            DateTime dateValidate = DateTime.MinValue;
 
             if (ds.Tables.Count > 0)
             {
@@ -1305,10 +1306,10 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         string sActionTaken = dr["ActionTaken"] is DBNull || string.IsNullOrEmpty((string)dr["ActionTaken"]) ? "Nil" : Convert.ToString(dr["ActionTaken"]);
                         sActionTaken = validateAndCleanSpChar(rowNumber, "Action_Taken", sActionTaken);
-                        if (sActionTaken.Length > 44)
+                        if (sActionTaken.Length > 300)
                         {
-                            sActionTaken = sActionTaken.Substring(0, 44);
-                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 45 character length.");
+                            sActionTaken = sActionTaken.Substring(0, 300);
+                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 300 character length.");
                         }
                         addUnit.action_taken = sActionTaken;
                         errorFlag.Add(validationObject.validateBreakDownData(rowNumber, addUnit.from_bd, addUnit.to_bd, addUnit.igbd));
@@ -1376,6 +1377,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
             int responseCode = 400;
+            DateTime dateValidate = DateTime.MinValue;
 
             if (ds.Tables.Count > 0)
             {
@@ -1396,6 +1398,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.date =  isdateEmpty ? "Nil" : Convert.ToString(dr["Date"]);
                         errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
                         addUnit.date = errorFlag[0] ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+
+                        objImportBatch.importSiteId = addUnit.site_id;
+                        //dateValidate = Convert.ToDateTime((string)dr["Date"]).ToString("yyyy-MM-dd");
+                        if (rowNumber == 2)
+                        {
+                            objImportBatch.automationDataDate = addUnit.date;
+                            dateValidate = Convert.ToDateTime(dr["Date"]);
+                            errorFlag.Add(importDateValidation(1, addUnit.site_id, dateValidate));
+                        }
 
                         //last if last row is Blank then skip? delete the row
                         if (addUnit.wtg == "" && addUnit.bd_type == "" && addUnit.stop_from == "" && addUnit.stop_to == "" && addUnit.error_description == "" && addUnit.action_taken == "")
@@ -1442,10 +1453,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.error_description = errorDescription;
                         string sActionTaken = dr["Action Taken"] is DBNull || string.IsNullOrEmpty((string)dr["Action Taken"]) ? "Nil" : Convert.ToString(dr["Action Taken"]);
                         sActionTaken = validateAndCleanSpChar(rowNumber, "Action Taken", sActionTaken);
-                        if(sActionTaken.Length > 44)
+                        if(sActionTaken.Length > 300)
                         {
-                            sActionTaken = sActionTaken.Substring(0, 44);
-                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 45 character length.");
+                            sActionTaken = sActionTaken.Substring(0, 300);
+                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 300 character length.");
                         }
                         addUnit.action_taken = sActionTaken;
                         errorFlag.Add(ValidationObject.validateBreakDownData(rowNumber, addUnit.bd_type, addUnit.wtg, addUnit.stop_from, addUnit.stop_to));
@@ -4010,8 +4021,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     // file date is incorrect
-                    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                    //retValue = true;
+                    m_ErrorLog.SetError(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+                    retValue = true;
                 }
 
             }
