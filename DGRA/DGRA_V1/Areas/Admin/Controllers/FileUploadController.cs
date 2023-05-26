@@ -1309,7 +1309,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (sActionTaken.Length > 300)
                         {
                             sActionTaken = sActionTaken.Substring(0, 300);
-                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 300 character length.");
+                            m_ErrorLog.SetError(",String at <" + rowNumber + "> has trimed to 300 character length.");
                         }
                         addUnit.action_taken = sActionTaken;
                         errorFlag.Add(validationObject.validateBreakDownData(rowNumber, addUnit.from_bd, addUnit.to_bd, addUnit.igbd));
@@ -1456,7 +1456,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if(sActionTaken.Length > 300)
                         {
                             sActionTaken = sActionTaken.Substring(0, 300);
-                            m_ErrorLog.SetInformation(",String at <" + rowNumber + "> has trimed to 300 character length.");
+                            m_ErrorLog.SetError(",String at <" + rowNumber + "> has trimed to 300 character length.");
                         }
                         addUnit.action_taken = sActionTaken;
                         errorFlag.Add(ValidationObject.validateBreakDownData(rowNumber, addUnit.bd_type, addUnit.wtg, addUnit.stop_from, addUnit.stop_to));

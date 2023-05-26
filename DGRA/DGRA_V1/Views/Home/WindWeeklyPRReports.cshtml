@@ -322,7 +322,8 @@
         var fromDate = GetWeeklyDays(seldate);
 
         var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-        var fy = fyear;//$('select#fy option:selected').val();
+        var dateForFy = new Date(toDate);
+        var fy = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
 
         $.ajax({
@@ -669,7 +670,8 @@
         //console.log("Start Date :", monthdate.startdate);
         var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
         var fromDate = monthdate.startdate;
-        var fy = fyear;//$('select#fy option:selected').val();
+        var dateForFy = new Date(toDate);
+        var fy = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         $.ajax({
             type: "GET",
@@ -971,15 +973,16 @@
         var diff_MUs_yr = 0;
         var total_capacity_yr = 0;
         var total_tarriff_yr = 0;
-       // var daterange = $('#daterange').val();
+        var daterange = $('#daterange').val();
        // var arr1 = new Array();
        // arr1 = daterange.split("-");
 
        // var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        var fy = fyear;//$('select#fy option:selected').val();
-        var daterange = $('#daterange').val();
+      //  var fy = fyear;//$('select#fy option:selected').val();
         const dateArr = daterange.split("/");
-        var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+        var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;        
+        var dateForFy = new Date(toDate);
+        var fy = getFinancialYear(dateForFy);
         var FyDate = getFinancialYearDate(fy);
         var FyDate1 = FyDate.startdate;
         const fydateArr = FyDate1.split("-");
@@ -2305,7 +2308,8 @@
         var seldate = new Date(dateArr[2], dateArr[1] - 1, dateArr[0]);
         var fromDate = GetWeeklyDays(seldate);
         var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-        var fyear1 = fyear;//$('select#fy option:selected').val();
+        var dateForFy = new Date(toDate);
+        var fyear1 = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
 
         var leble = [];
@@ -2921,7 +2925,8 @@
         var seldate = new Date(dateArr[2], dateArr[1] - 1, dateArr[0]);
         var fromDate = GetWeeklyDays(seldate);
         var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-        var fyear1 = fyear;//$('select#fy option:selected').val();
+        var dateForFy = new Date(toDate);
+        var fyear1 = getFinancialYear(dateForFy);
         var reporthead = "Site Wise Reports";
         var Energy_Dataset = [];
         var Wind_Dataset = [];
