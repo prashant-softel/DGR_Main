@@ -54,7 +54,7 @@
     <section class="content">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title text-center">Solar GHI & POA 15 Minute</h3>
+                <h3 class="card-title text-center">Solar Tracker Loss</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -197,21 +197,20 @@
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th  style="width: 10%;">Site</th>';
-                tbl += '<th>AC Capacity (MW)</th>';
                 tbl += '<th style="width: 10%;">Date</th>';
+                tbl += '<th  style="width: 10%;">Site</th>';
                 tbl += '<th>From Time</th>';
                 tbl += '<th>To Time</th>';
+                tbl += '<th>AC Capacity (MW)</th>';
                 tbl += '<th>No of Trackers in Breakdown (Nos)</th>';
                 tbl += '<th>Nos. of Module &#64; Tracker (Nos) </th>';
-                tbl += '<th>Module Wp (Watt)</th>';
-                tbl += '<th>Breakdown Tracker Capacity (KW)</th>';
-                tbl += '<th>Actual POA</th>';
-                tbl += '<th>Actual GHI</th>';
+                tbl += '<th>Module (Wp)</th>';
+                tbl += '<th>Breakdown Tracker Capacity (kW)</th>';
+                tbl += '<th>Actual POA (kWh/m^2)</th>';
+                tbl += '<th>Actual GHI (kWh/m^2)</th>';
                 tbl += '<th>Tracker AOP PR</th>';
-                tbl += '<th>Gen Losses</th>';
+                tbl += '<th>Gen Losses (kWh)</th>';
                 tbl += '<th>Remarks </th>';
-                tbl += '<th>Month</th>';
                 tbl += '</tr></thead>';
                
                 if (result.length > 0) {
@@ -222,11 +221,11 @@
                        var stop_time = toHoursAndMinutes(result[i].to_time.totalSeconds);
                         tbl += '<tr>';
                        
-                        tbl += '<td  class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
                        tbl += '<td  class="text-right">' + formattedDate + '</td>';
+                        tbl += '<td  class="text-left">' + result[i].site + '</td>';
                        tbl += '<td class="text-right">' + start_time+'</td>';
                        tbl += '<td class="text-right">' + stop_time+'</td>';
+                        tbl += '<td  class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
                        tbl += '<td class="text-right">' + result[i].trackers_in_BD.toFixed(2) + '</td>';
                        tbl += '<td class="text-right">' + result[i].module_tracker.toFixed(2) + '</td>';
                        tbl += '<td class="text-right">' + result[i].module_WP.toFixed(2) + '</td>';
@@ -236,7 +235,6 @@
                        tbl += '<td class="text-right">' + result[i].target_aop_pr.toFixed(2) + '</td>';
                        tbl += '<td class="text-right">' + result[i].tracker_loss.toFixed(2) + '</td>';
                        tbl += '<td class="text-right">' + result[i].remark + '</td>';
-                       tbl += '<td class="text-left" >' + month+'</td>';
                         tbl += '</tr>';
                            
                       

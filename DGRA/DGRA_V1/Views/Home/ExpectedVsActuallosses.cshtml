@@ -185,6 +185,42 @@
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
+<style>
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -60px;
+        }
+
+            .tooltip .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: black transparent transparent transparent;
+            }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+</style>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#daterange').daterangepicker(
@@ -202,6 +238,17 @@
         fdate = getFinancialYearDateStartDate(fyear);
         console.log(fdate);
         GetSPV();
+    }
+    function handleMouseHover() {
+        console.log("mose over");
+        var container = $('<div class="export-container">hiii</div>');
+        //$('.dataTables_wrapper').prepend(container);
+        var a = document.getElementById("info");
+        //a.style.display = "flex";
+    }
+    function handleMouseOut() {
+        console.log("mouse out");
+        //document.getElementById("info").style.display = 'none';
     }
 
     function GetSPV() {
@@ -302,7 +349,7 @@
             success: function (result, status, xhr) {
                 //console.log(result);
                 document.getElementById("loader").style.display = 'none';
-                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 100%;">';
+                var tbl = '<div id="info" style="display: none; flex-direction: column;">Hello</div><table id="example1" class="table table-bordered table-striped" style="width: 100%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th style="width: 12%;">Date</th>';
                 tbl += '<th>Site</th>';
@@ -316,9 +363,9 @@
                 tbl += '<th>Curtaiment</th>';
                 tbl += '<th>PR</th>';
                 tbl += '<th>Actual</th>';
-                tbl += '<th>MA</th>';
-                tbl += '<th>IGA</th>';
-                tbl += '<th>EGA</th>';
+                tbl += '<th>MA (%)<span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>IGA (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                     let total_target = 0;
@@ -476,7 +523,16 @@
                         }
                     },
                     'colvis'
-                ]
+                ],
+                initComplete: function () {
+                    $('.dt-buttons').append('<div style="text-align: center; margin-left: 20px; justify: center"><p style="text-align: center; justify: center">Note : Data Showing In Million Units</p></div>');
+                    this.api().columns().header().to$().each(function () {
+                        //$(this).attr('title', 'title for ' + $(this).text())
+                        if ($(this).text() == "MA (%)i" || $(this).text() == "IGA (%) i" || $(this).text() == "EGA (%) i") {
+                            $(this).attr('title', 'Energy Based Availability')
+                        }
+                    })
+                }
             });
             $(".dt-buttons").addClass('btn-group flex-wrap');
             $(".dt-buttons > button").addClass('btn btn-secondary');

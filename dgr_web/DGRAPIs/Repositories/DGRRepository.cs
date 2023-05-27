@@ -7487,6 +7487,7 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
             return await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);*/
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
+            string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
             string filter = "";
             if (!string.IsNullOrEmpty(site))
             {
@@ -7525,16 +7526,31 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
             List<SolarPerformanceReports1> newdata = new List<SolarPerformanceReports1>();
             newdata = await Context.GetData<SolarPerformanceReports1>(qry6).ConfigureAwait(false);
 
-            string qry = @"SELECT site,
+            string qry = @"SELECT site,  
 (SELECT ac_capacity FROM site_master_solar where site=t1.site and state=t1.state)as capacity,
 (SELECT dc_capacity FROM site_master_solar where site=t1.site and state=t1.state)as dc_capacity,
 (SELECT total_tarrif FROM site_master_solar where site=t1.site and state=t1.state)as total_tarrif,
 (SELECT  sum(gen_nos) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy='" + fy + "') as tar_kwh," +
-"(sum(expected_kwh)/1000000)as expected_kwh,(sum(inv_kwh_afterloss)/1000000)as act_kwh,(SELECT lineloss FROM monthly_line_loss_solar where site=t1.site and fy='" + fy + "' and month_no=month(t1.date)  order by monthly_line_loss_solar_id desc limit 1)as lineloss,(SELECT  sum(ghi)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ghi,sum(ghi)/count(*) as act_ghi,(SELECT  sum(poa)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_poa,sum(poa)/count(*) as act_poa,(SELECT  sum(plf)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_plf,sum(inv_plf_afterloss)/count(*) as act_plf,(SELECT  sum(pr)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_pr,sum(plant_pr)/count(*) as act_pr,(SELECT  sum(ma)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ma,sum(ma)/count(*) as act_ma,(SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_iga,sum(iga)/count(*) as act_iga,(SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + "  and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where  " + datefilter + " " + filter + " group by site order by site";
+"(sum(inv_kwh_afterloss)/1000000)as act_kwh,(SELECT lineloss FROM monthly_line_loss_solar where site=t1.site and fy='" + fy + "' and month_no=month(t1.date)  order by monthly_line_loss_solar_id desc limit 1)as lineloss,(SELECT  sum(ghi)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ghi,sum(ghi)/count(*) as act_ghi,(SELECT  sum(poa)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_poa,sum(poa)/count(*) as act_poa,(SELECT  sum(plf)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_plf,sum(inv_plf_afterloss)/count(*) as act_plf,(SELECT  sum(pr)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_pr,sum(plant_pr)/count(*) as act_pr,(SELECT  sum(ma)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ma,sum(ma)/count(*) as act_ma,(SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_iga,sum(iga)/count(*) as act_iga,(SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + "  and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where  " + datefilter + " " + filter + " group by site order by site";
 
             //and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where t1.approve_status=" + approve_status + " and " + datefilter + " group by site";
             List<SolarPerformanceReports1> data = new List<SolarPerformanceReports1>();
             data = await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);
+            
+
+                string getPower = "  select t2.site, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+                List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
+                try
+                {
+                    data1min = await Context.GetData<SolarPerformanceReports1>(getPower).ConfigureAwait(false);
+                    //_dataElement.Pexpected = (data1min[0].P_exp / 4);
+
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                }
+            
 
             foreach (SolarPerformanceReports1 _dataelement in data)
             {
@@ -7560,6 +7576,14 @@ sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as tota
                         _dataelement.act_kwh = _tempdataelement.act_kwh;
                         _dataelement.act_plf = _tempdataelement.act_plf;
 
+                    }
+                }
+
+                foreach (SolarPerformanceReports1 _tempdataelement in data1min)
+                {
+                    if (_dataelement.site == _tempdataelement.site)
+                    {
+                        _dataelement.expected_kwh = _tempdataelement.expected_kwh;
                     }
                 }
 
@@ -10191,7 +10215,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string date = Convert.ToDateTime(_dataElement.date).ToString("yyyy-MM-dd");
                     // Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd")
 
-                    string getPower = " select sum(P_exp_degraded) as P_exp from `uploading_pyranometer_15_min_solar` where site_id = " + site_id + " and date(date_time) = date('" + date + "') ";
+                    string getPower = "  select sum(P_exp_degraded) as P_exp from `uploading_pyranometer_15_min_solar` where site_id = " + site_id + " and date(date_time) = date('" + date + "') ";
                     List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
                     try
                     {
