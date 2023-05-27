@@ -1009,9 +1009,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (A) (%)</th>';
-                tbl += '<th>EGA (B) (%)</th>';
-                tbl += '<th>EGA (C) (%)</th>';
+                tbl += '<th>EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>USMH</th>';
                 tbl += '<th>SMH</th>';
@@ -1116,7 +1116,21 @@
                             }
                         },
                         'colvis'
-                    ]
+                    ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA (A) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA (B) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA (C) (%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                     /* "buttons": [
                          'copy', 'excel', 'csv', 'colvis'
                      ]*/
@@ -1219,9 +1233,9 @@
                 tbl += '<th>Plant PLF (%)</th>';
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (A) (%)</th>';
-                tbl += '<th>EGA (B) (%)</th>';
-                tbl += '<th>EGA (C) (%)</th>';
+                tbl += '<th>EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1335,7 +1349,21 @@
                             }
                         },
                         'colvis'
-                    ]
+                    ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA (A) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA (B) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA (C) (%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                     /* "buttons": [
                          'copy', 'excel', 'csv', 'colvis'
                      ]*/
@@ -1478,9 +1506,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (A) (%)</th>';
-                tbl += '<th>EGA (B) (%)</th>';
-                tbl += '<th>EGA (C) (%)</th>';
+                tbl += '<th>EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
 
@@ -1606,7 +1634,21 @@
                             }
                         },
                         'colvis'
-                    ]
+                    ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA (A) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA (B) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA (C) (%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                     /* "buttons": [
                          'copy', 'excel', 'csv', 'colvis'
                      ]*/
@@ -1725,9 +1767,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (A) (%)</th>';
-                tbl += '<th>EGA (B) (%)</th>';
-                tbl += '<th>EGA (C) (%)</th>';
+                tbl += '<th>EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1845,7 +1887,21 @@
                             }
                         },
                         'colvis'
-                    ]
+                    ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA (A) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA (B) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA (C) (%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                     /* "buttons": [
                          'copy', 'excel', 'csv', 'colvis'
                      ]*/
@@ -1977,7 +2033,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -2027,6 +2085,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].gen_hrs.toFixed(2) + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
@@ -2095,7 +2155,21 @@
                             }
                         },
                         'colvis'
-                    ]
+                    ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA (A) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA (B) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA (C) (%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                     /* "buttons": [
                          'copy', 'excel', 'csv', 'colvis'
                      ]*/
@@ -2207,7 +2281,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
+                tbl += '<th>EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -2256,6 +2332,8 @@
                         tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
@@ -2364,7 +2442,21 @@
                             }
                         },
                         'colvis'
-                    ]
+                    ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA (A) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA (B) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA (C) (%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                     /* "buttons": [
                          'copy', 'excel', 'csv', 'colvis'
                      ]*/
