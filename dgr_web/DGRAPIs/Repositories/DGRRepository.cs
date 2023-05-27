@@ -1897,7 +1897,7 @@ where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
                 filter += months.TrimEnd(',') + ")";
             }
             string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site,
-dc_capacity, ac_capacity, sum(expected_kwh) as expected_kwh, sum(ghi)/count(ghi) as ghi, sum(poa)/count(poa) as poa, sum(inv_kwh) as inv_kwh, sum(plant_kwh) as plant_kwh, sum(inv_pr)/count(CASE WHEN inv_pr > 0 THEN inv_pr END) as inv_pr, sum(plant_pr)/count(CASE WHEN plant_pr > 0 THEN plant_pr END) as plant_pr, (sum(inv_plf_ac)/count(inv_plf_ac))as inv_plf, (sum(plant_plf_ac)/count(plant_plf_ac))as plant_plf, (sum(ma)/count(*))as ma_actual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, sum(prod_hrs)as prod_hrs, sum(lull_hrs_bd)as lull_hrs_bd, sum(usmh_bs)as usmh_bs, sum(smh_bd)as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd)as egbdh_bd, sum(load_shedding_bd)as load_shedding_bd, sum(total_bd_hrs)as total_bd_hrs, sum(usmh)as usmh, sum(smh)as smh, sum(oh)as oh, sum(igbdh)as igbdh, sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on t1.site_id=t2.site_master_solar_id where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
+dc_capacity, ac_capacity, sum(expected_kwh) as expected_kwh, sum(ghi)/count(ghi) as ghi, sum(poa)/count(poa) as poa, sum(inv_kwh) as inv_kwh, sum(plant_kwh) as plant_kwh, sum(CASE WHEN inv_pr >= 60 and inv_pr <= 90 THEN inv_pr END)/count(CASE WHEN inv_pr >= 60 and inv_pr <= 90 THEN plant_pr END) as inv_pr, sum(CASE WHEN plant_pr >= 60 and plant_pr <= 90 THEN plant_pr END)/count(CASE WHEN plant_pr >= 60 and plant_pr <= 90 THEN plant_pr END) as plant_pr, (sum(inv_plf_ac)/count(inv_plf_ac))as inv_plf, (sum(plant_plf_ac)/count(plant_plf_ac))as plant_plf, (sum(ma)/count(*))as ma_actual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, sum(prod_hrs)as prod_hrs, sum(lull_hrs_bd)as lull_hrs_bd, sum(usmh_bs)as usmh_bs, sum(smh_bd)as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd)as egbdh_bd, sum(load_shedding_bd)as load_shedding_bd, sum(total_bd_hrs)as total_bd_hrs, sum(usmh)as usmh, sum(smh)as smh, sum(oh)as oh, sum(igbdh)as igbdh, sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on t1.site_id=t2.site_master_solar_id where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
 
 
             //where  t1.approve_status="+approve_status+" and " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
@@ -4828,7 +4828,7 @@ and t3.inverter=t1.location_name " + filter + " group by t1.site,location_name ,
             string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,
 t2.country,t1.state,t2.spv,t1.site,(t2.dc_capacity)as dc_capacity,
 (t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh,
-sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(inv_pr)) as inv_pr,(sum(plant_pr)/count(plant_pr)) as plant_pr,
+sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,sum(CASE WHEN inv_pr >= 60 and inv_pr <= 90 THEN inv_pr END)/count(CASE WHEN inv_pr >= 60 and inv_pr <= 90 THEN plant_pr END) as inv_pr, sum(CASE WHEN plant_pr >= 60 and plant_pr <= 90 THEN plant_pr END)/count(CASE WHEN plant_pr >= 60 and plant_pr <= 90 THEN plant_pr END) as plant_pr,
 sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf,
 sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual,
 (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,sum(prod_hrs) as prod_hrs,
@@ -5064,7 +5064,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,date,
 t2.country,t1.state,t2.spv,t1.site,(t2.dc_capacity)as dc_capacity,
 (t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh,
-sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(inv_pr)) as inv_pr,(sum(plant_pr)/count(plant_pr)) as plant_pr,
+sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,sum(CASE WHEN inv_pr >= 60 and inv_pr <= 90 THEN inv_pr END)/count(CASE WHEN inv_pr >= 60 and inv_pr <= 90 THEN plant_pr END) as inv_pr, sum(CASE WHEN plant_pr >= 60 and plant_pr <= 90 THEN plant_pr END)/count(CASE WHEN plant_pr >= 60 and plant_pr <= 90 THEN plant_pr END) as plant_pr,
 sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf,
 sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual,
 (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,sum(prod_hrs) as prod_hrs,
