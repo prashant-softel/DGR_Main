@@ -24,7 +24,8 @@ namespace DGRAPIs.Repositories
 {
 
     public class DGRRepository : GenericRepository
-    {
+    {   
+
         private readonly DatabaseProvider databaseProvider;
         private MYSQLDBHelper getDB;
 
@@ -44,7 +45,8 @@ namespace DGRAPIs.Repositories
             getDB = sqlDBHelper;
         }
 
-        internal async Task<List<FinancialYear>> GetFinancialYear()
+        
+    internal async Task<List<FinancialYear>> GetFinancialYear()
         {
             List<FinancialYear> _FinancialYear = new List<FinancialYear>();
             _FinancialYear.Add(new FinancialYear { financial_year = "2020-21" });
@@ -317,10 +319,9 @@ namespace DGRAPIs.Repositories
                         }
                     }
 
-
-
                 }
             }
+
             return _WindDashboardData;
 
            /* string qry = @"select t1.site_id,t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site, (sum(t1.wind_speed) / count(*)) as Wind, sum(kwh_afterlineloss) as jmrkwh, (t2.kwh) as tarkwh, avg(t2.wind_speed) as tarwind from daily_gen_summary t1 left join daily_target_kpi as t2 on t2.site_id = t1.site_id and t2.date = t1.date and t2.fy = '" + FY + "' where " + filter + " group by "+ groupby + " order by t1.date asc";
@@ -7920,7 +7921,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                     Final_Time = result.TimeOfDay;
 
-
                     /*if (iBreakdownCount == 1)
                     {
                         sLastInv = sCurrentInv;
@@ -8217,9 +8217,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             string ext_bd = sBreakdown.ext_bd;
                             if (ext_bd != "EGBD")
                             {
-                                throw new Exception("EX_BD " + ext_bd + " shoudl be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
+                                throw new Exception("EX_BD " + ext_bd + " should be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
                             }
-                            if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
+                            if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
                             {
                                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                                 {
@@ -8228,7 +8228,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                     {
                                         SolarDevice.EGBD_2 += Final_Time;
                                         SolarDevice.EGBD += Final_Time;
-
 
                                         SolarDevice.EGBD_lostPOA += poa;
                                     }
@@ -8460,10 +8459,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                             //Pending : error reporting
                             throw new Exception("Unsupported BD_TYPE " + bd_type_id + " For WTG " + sCurrentInv + " for date " + fromDate);
-                            break;
+                          
 
                     }
 
+                  //break;
                 } // end of foreach
                   //double siteShutdownEGBDLossPerString = siteShutdownEGBDLoss / _SolarLocationMaster_Calc.Count;
                   //double siteShutdownLullLossPerString = siteShutdownLullLoss / _SolarLocationMaster_Calc.Count;
