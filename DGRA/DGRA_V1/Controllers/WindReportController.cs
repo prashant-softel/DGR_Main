@@ -287,7 +287,7 @@ namespace DGRA_V1.Controllers
         }
         public async Task<IActionResult> GetWindDailyGenerationReportWTGWise(string fromDate, string toDate, string country, string state, string spv, string site, string wtg)
         {
-            string reportType = "";
+            string reportType = "WTG";
             string line = "";
             try
             {
