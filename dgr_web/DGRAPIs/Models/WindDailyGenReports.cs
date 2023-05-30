@@ -41,6 +41,12 @@ namespace DGRAPIs.Models
         public double egbdh_num { get; set; }
         public dynamic load_shedding { get; set; }
         public double load_shedding_num { get; set; }
+        public double usmh_loss { get; set; }
+        public double smh_loss { get; set; }
+        public double others_loss { get; set; }
+        public double igbdh_loss {get;set;}
+        public double egbdh_loss { get; set; }
+        public double load_Shedding_loss { get; set; }
     }
     public class WindDailyGenReports1
     {
@@ -61,6 +67,8 @@ namespace DGRAPIs.Models
         public double ma_contractual { get; set; }
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double grid_hrs { get; set; }
         public double lull_hrs { get; set; }
         public dynamic unschedule_hrs { get; set; }
@@ -75,6 +83,12 @@ namespace DGRAPIs.Models
         public double egbdh_num { get; set; }
         public dynamic load_shedding { get; set; }
         public double load_shedding_num { get; set; }
+        public double usmh_loss { get; set; }
+        public double smh_loss { get; set; }
+        public double others_loss { get; set; }
+        public double igbdh_loss { get; set; }
+        public double egbdh_loss { get; set; }
+        public double load_Shedding_loss { get; set; }
     }
     public class WindDailyGenReports2
     {
@@ -95,6 +109,8 @@ namespace DGRAPIs.Models
         public double ma_contractual { get; set; }
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double grid_hrs { get; set; }
         public double lull_hrs { get; set; }
         public dynamic unschedule_hrs { get; set; }
@@ -109,5 +125,11 @@ namespace DGRAPIs.Models
         public double egbdh_num { get; set; }
         public dynamic load_shedding { get; set; }
         public double load_shedding_num { get; set; }
+        public double usmh_loss { get; set; }
+        public double smh_loss { get; set; }
+        public double others_loss { get; set; }
+        public double igbdh_loss { get; set; }
+        public double egbdh_loss { get; set; }
+        public double load_Shedding_loss { get; set; }
     }
 }
