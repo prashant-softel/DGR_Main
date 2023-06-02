@@ -864,6 +864,38 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Route("GetWindPowerCurveData")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindPowerCurveData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindPowerCurveData(site, fromDate, toDate);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetWindTmlPowerCurveData")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindTmlPowerCurveData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindTmlPowerCurveData(site, fromDate, toDate);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         //GetWindTMLGraphData
         [Route("GetWindTMLGraphData")]
         [HttpGet]

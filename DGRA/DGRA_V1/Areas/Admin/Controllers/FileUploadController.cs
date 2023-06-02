@@ -812,7 +812,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }*/
-                                else if (excelSheet.ToString().StartsWith("GKK"))
+                                //GA, GS, GG, BD, NEW, NL, GK, GBR, G114
+                                else if (excelSheet.ToString().StartsWith("GKK") || excelSheet.ToString().StartsWith("GA") ||excelSheet.ToString().StartsWith("GS") ||excelSheet.ToString().StartsWith("GG") ||excelSheet.ToString().StartsWith("BD") ||excelSheet.ToString().StartsWith("NEW") ||excelSheet.ToString().StartsWith("NL") ||excelSheet.ToString().StartsWith("GK") || excelSheet.ToString().StartsWith("GBR") || excelSheet.ToString().StartsWith("G114"))
                                 {
                                     fileImportType = FileSheetType.FileImportType.imporFileType_GKK;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
@@ -1143,6 +1144,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         private DataSet GetDataTableFromExcel(string filePath, bool hasHeader, ref List<string> _worksheetList)
         {
             string status = "";
+            bool isGKK = false;
             try
             {
                 DataSet dataSet = new DataSet();
@@ -1151,12 +1153,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 var excel = new ExcelPackage(excelFile);
                 foreach (var worksheet in excel.Workbook.Worksheets)
                 {
-                    bool isGKK = false;
-                    if (worksheet.Name.StartsWith("GKK"))
+                    //GA, GS, GG, BD, NEW, NL, GK, GBR, G114
+                    if (worksheet.Name.StartsWith("GKK") || worksheet.Name.StartsWith("GA") || worksheet.Name.StartsWith("GS") || worksheet.Name.StartsWith("GG") || worksheet.Name.StartsWith("BD") || worksheet.Name.StartsWith("NEW") || worksheet.Name.StartsWith("NL") || worksheet.Name.StartsWith("GK") || worksheet.Name.StartsWith("GBR") || worksheet.Name.StartsWith("G114"))
                     {
                         isGKK = true;
                     }
-                    if (FileSheetType.sheetList.Contains(worksheet.Name) || isGKK)
+                    if (isGKK)
                     {
                         _worksheetList.Add(worksheet.Name);
                     }
@@ -1178,6 +1180,21 @@ namespace DGRA_V1.Areas.admin.Controllers
                         dt = new DataTable();
                         dt.TableName = li;
                         ExcelWorksheet workSheet = package.Workbook.Worksheets[li];
+
+                        if (isGKK)
+                        {
+                            int rowsToDelete = 4;
+                            int totalRows = workSheet.Dimension.End.Row;
+
+                            //for (int rN = totalRows; rN > totalRows - rowsToDelete; rN--)
+                            //{
+                            //    workSheet.DeleteRow(rN);
+                            //}
+
+                            workSheet.DeleteRow(1, rowsToDelete);
+                            workSheet.DeleteColumn(1);
+                        }
+
                         //add column header
                         try
                         {
@@ -5760,6 +5777,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
                 string previousTime = "00:00:00";
                 string dataDate = "";
+                m_ErrorLog.SetInformation("Reviewing sheet : " + tabName);
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     InsertWindTMLData addUnit = new InsertWindTMLData();
@@ -5814,27 +5832,62 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         previousTime = Convert.ToDateTime(dr["Date"]).ToString("HH:mm:ss");
 
-                        bool isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Average Active Power 10M (kW)"]) || dr["Average Active Power 10M (kW)"] is DBNull;
+                        bool isActivePowerEmpty = false;
+
+                        if (dr.Table.Columns.Contains("Average Active Power 10M (kW)"))
+                        {
+                            isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Average Active Power 10M (kW)"]) || dr["Average Active Power 10M (kW)"] is DBNull;
+                        }else if(dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
+                        {
+                            isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Average Active Power 10M \n(kW)"]) || dr["Average Active Power 10M \n(kW)"] is DBNull;
+                        }
 
                         if (!isActivePowerEmpty)
                         {
-                            addUnit.avg_active_power = Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
-                            //addUnit.status = "Available";
-                            addUnit.status_code = 0;
-                            //Change to 1;
+                            if (dr.Table.Columns.Contains("Average Active Power 10M (kW)"))
+                            {
+                                addUnit.avg_active_power = Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
+                                addUnit.status_code = 0;
+                            }else if(dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
+                            {
+                                addUnit.avg_active_power = Convert.ToDouble(dr["Average Active Power 10M \n(kW)"]);
+                                addUnit.status_code = 0;
+                            }
                         }
 
                         if (isActivePowerEmpty)
                         {
-                            //addUnit.status = "Missing";
-                            addUnit.status_code = 1;
+                            if (dr.Table.Columns.Contains("Average Active Power 10M (kW)"))
+                            {
+                                addUnit.avg_active_power = 0;
+                                addUnit.status_code = 1;
+                            }
+                            else if (dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
+                            {
+                                addUnit.avg_active_power = 0;
+                                addUnit.status_code = 1;
+                            }
                         }
 
                         //addUnit.avgActivePower = dr["Average Active Power 10M (kW)"] is DBNull ? 0 : Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
+                        if (dr.Table.Columns.Contains("Average Wind Speed 10M (m/s)"))
+                        {
+                            addUnit.avg_wind_speed = dr["Average Wind Speed 10M (m/s)"] is DBNull || string.IsNullOrEmpty((string)dr["Average Wind Speed 10M (m/s)"]) ? 0 : Convert.ToDouble(dr["Average Wind Speed 10M (m/s)"]);
+                        }
+                        else if (dr.Table.Columns.Contains("Average Wind Speed 10M \n(m/s)"))
+                        {
+                            addUnit.avg_wind_speed = dr["Average Wind Speed 10M \n(m/s)"] is DBNull || string.IsNullOrEmpty((string)dr["Average Wind Speed 10M \n(m/s)"]) ? 0 : Convert.ToDouble(dr["Average Wind Speed 10M \n(m/s)"]);
+                        }
 
-                        addUnit.avg_wind_speed = dr["Average Wind Speed 10M (m/s)"] is DBNull ? 0 : Convert.ToDouble(dr["Average Wind Speed 10M (m/s)"]);
+                        if(dr.Table.Columns.Contains("Most restrictive WTG Status 10M ()"))
+                        {
+                            addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
+                        }
+                        else if(dr.Table.Columns.Contains("Most restrictive WTG Status 10M \n()"))
+                        {
+                            addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M \n()"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M \n()"]);
+                        }
 
-                        addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
 
                         errorFlag.Clear();
                         if (!(skipRow))
@@ -5855,7 +5908,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
                     var json = JsonConvert.SerializeObject(addSet);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData";
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
                     using (var client = new HttpClient())
                     {
                         var response = await client.PostAsync(url, data);
@@ -6717,7 +6770,8 @@ namespace DGRA_V1.Areas.admin.Controllers
             if (ds.Tables.Count > 0)
             {
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
-                string previoustoTime = "00:00:00";
+                string previoustoTime = "00:10:00";
+                string previousFromTime = "00:00:00";
                 string dataDate = "";
                 int columnCount = 0;
                 int rowCount = ds.Tables[0].Rows.Count;
@@ -6812,7 +6866,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         }
                         if (columnCount > 0 && columnCount < ColumnCount - 1)
                         {
-                            if (columnCount > 100)
+                            if (columnCount == 1)
                             {
                                 int tempp = 0;
                             }
@@ -6861,8 +6915,6 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                                 bool isTimeEmpty = addUnit.timestamp == "" || addUnit.timestamp is DBNull || addUnit.timestamp == " " ? true : false;
                                 addUnit.date = isTimeEmpty ? "Nil" : Convert.ToDateTime(addUnit.timestamp).ToString("dd-MMM-yy");
-
-                                addUnit.from_time = fromTime;
 
                                 //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into closest.
                                 if (toTime != "")
@@ -6914,9 +6966,55 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
-
+                                
+                                //Check if the from time is 10, 20, 30, 40, 50 if not convert it into the same.
+                                string finalFrom = "";
+                                if(fromTime != "" || finalToTime != "")
+                                {
+                                    string inputFrom = fromTime;
+                                    char sepr = ':';
+                                    string[] output = inputFrom.Split(sepr);
+                                    if(output.Length > 0)
+                                    {
+                                        int hrs = Convert.ToInt32(output[0]);
+                                        int mins = Convert.ToInt32(output[1]);
+                                        int secs = Convert.ToInt32(output[2]);
+                                        int remainder = mins % 10;
+                                        if(remainder != 0)
+                                        {
+                                            TimeSpan actFrom = new TimeSpan();
+                                            TimeSpan subFrom = new TimeSpan();
+                                            actFrom = TimeSpan.Parse(finalToTime);
+                                            if(columnCount == 1)
+                                            {
+                                                finalFrom = "00:10:00";
+                                            }
+                                            if(columnCount > 1)
+                                            {
+                                                subFrom = actFrom.Subtract(TimeSpan.FromMinutes(10));
+                                                finalFrom = subFrom.ToString();
+                                                if(finalFrom != "")
+                                                {
+                                                    //if(finalFrom != previoustoTime)
+                                                    //{
+                                                    //    TimeSpan fromAsPrev = new TimeSpan();
+                                                    //    fromAsPrev = TimeSpan.Parse(previoustoTime);
+                                                    //    subFrom = fromAsPrev.Add(TimeSpan.FromMinutes(10));
+                                                    //    finalFrom = subFrom.ToString();
+                                                    //}
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            finalFrom = fromTime;
+                                        }
+                                    }
+                                }
+                                addUnit.from_time = finalFrom;
                                 addUnit.to_time = finalToTime;
                                 previoustoTime = addUnit.to_time;
+                                previousFromTime = addUnit.from_time;
 
                                 //checking if the active power is present or not 0 = Available 1 = Missing.
 
@@ -6979,6 +7077,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     addSet.Add(addUnit);
                                 }
+                                if(columnCount > 70)
+                                {
+                                    int trml = 0;
+                                }
 
                                 //Code to get the missing samples.
                                 if (columnCount < ColumnCount - 2)
@@ -6987,6 +7089,25 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     string[] nextTime = nextVariable.Split(sep);
                                     string nextFrom = nextTime[0];
                                     string nextTo = nextTime[1];
+
+                                    string inputFrom = nextFrom;
+                                    char sepr = ':';
+                                    string[] output = inputFrom.Split(sepr);
+                                    if(output.Length > 0)
+                                    {
+                                        int hrs = Convert.ToInt32(output[0]);
+                                        int mins = Convert.ToInt32(output[1]);
+                                        int seconds = Convert.ToInt32(output[2]);
+                                        int remainder = mins % 10;
+                                        if(remainder != 0)
+                                        {
+                                            TimeSpan nextfromtemp = new TimeSpan();
+                                            nextfromtemp = TimeSpan.Parse(nextTo).Subtract(TimeSpan.FromMinutes(10));
+                                            nextFrom = nextfromtemp.ToString();
+                                        }
+
+                                    }
+
                                     if (addUnit.to_time != nextFrom)
                                     {
                                         int insideCount = 0;

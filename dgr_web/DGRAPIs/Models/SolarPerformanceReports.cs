@@ -55,6 +55,8 @@ namespace DGRAPIs.Models
         public double act_plf { get; set; }
         public double tar_pr { get; set; }
         public double act_pr { get; set; }
+        public double tar_temp_pr { get; set; }
+        public double act_temp_pr { get; set; }
         public double tar_ma { get; set; }
         public double act_ma { get; set; }
         public double tar_iga { get; set; }

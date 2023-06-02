@@ -4,7 +4,7 @@
 @model DGRA_V1.Models.DailyGenSummary
 
 @{
-    ViewData["Title"] = "Wind TML View";
+    ViewData["Title"] = "Wind Power Curve";
 }
 @{
     string windSiteList = "";
@@ -49,19 +49,11 @@
     <section class="content">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title text-center">Wind Expected Vs Actual</h3>
+                <h3 class="card-title text-center">Wind Power Curve</h3>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-left">Site : </label>
-                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-md-5">
                         <div class="input-group row">
                             <label class="col-sm-3 col-form-label">Date Range : </label>
@@ -73,6 +65,25 @@
                             <input type="text" class="form-control float-right" id="daterange" name="daterange">
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" value="" onchange="GetWTG(true)" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+    <div class="col-sm-4">
+
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-2 col-form-label text-right">WTG : </label>
+                <select class="form-control  col-sm-8" id="wtg" name="wtg" multiple></select>
+            </div>
+        </div>
+    </div>
+    -->
                     <div class="col-md-1"></div>
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
@@ -86,7 +97,8 @@
                 <hr>
                 <br>
                 <div class="col-sm-12">
-                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <div id="chartContainer" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    @*<canvas id="myChart"></canvas>*@
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
                 <hr>
@@ -128,7 +140,9 @@
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-bundle.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
@@ -179,9 +193,35 @@
 
         });
     }
+    let pc_data = [];
+    let tml_data = [];
+    function getTmlData(site_id, fromDate, toDate) {
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWindTmlPowerCurveData", "WindReport")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+
+            success: function (result, status, xhr) {
+                //console.log(result);
+                console.log("GetWindTmlData fetched successfully.");
+                //document.getElementById("loader").style.display = 'none';
+
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        tml_data.push({ windSpeed: result[i].avg_wind_speed, activePower: result[i].avg_active_power});
+                    }
+                }
+                else {
+                    alert("No Data in TML");
+                }
+            }
+        });
+    }
 
     function getReport() {
-
+        
         let site_id = "";
         var site = $('select#site option:selected').each(function () {
             site_id += $(this).val() + ",";
@@ -198,10 +238,10 @@
         arr1 = daterange.split("-");
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-
+        getTmlData(site_id, fromDate, toDate);
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWindTMLData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            url: '@Url.Action("GetWindPowerCurveData", "WindReport")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
 
@@ -210,14 +250,16 @@
                 console.log("GetWindTmlData fetched successfully.");
                 document.getElementById("loader").style.display = 'none';
                 //calling function of getting data for chart.
-                getChartData(site_id, fromDate, toDate);
+                //getChartData(site_id, fromDate, toDate);
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th  style="width: 10%;">Site</th>';
+                tbl += '<th>Wind Speed</th>';
+                tbl += '<th>Active Power</th>';
+                tbl += '</tr></thead>';
+                /*
                 tbl += '<th style="width: 5%;">Date</th>';
-                tbl += '<th>File Name</th>';
-                tbl += '<th>WTG</th>';
                 tbl += '<th>From Time</th>';
                 tbl += '<th>To Time</th>';
                 tbl += '<th>Avg Active Power</th>';
@@ -233,37 +275,33 @@
                 tbl += '<th>Loss kW</th>';
                 tbl += '<th>Manual Breakdown </th>';
                 tbl += '<th>All Breakdown</th>';
-                tbl += '</tr></thead>';
+                */
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
-                        var status = "";
-                        if (result[i].status_code === 1) {
-                            status = "Missing";
-                        }
-                        if (result[i].status_code === 0) {
-                            status = "Available";
-                        }
+                        pc_data.push({ windSpeed: result[i].wind_speed, activePower: result[i].active_power });
                         tbl += '<tr>';
-                       tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].date + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].file_name + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].site + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].wind_speed + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].active_power + '</td>';
+                        /*
                         tbl += '<td  class="text-center">' + result[i].wtGs + '</td>';
                         tbl += '<td  class="text-center">' + toHoursAndMinutes(result[i].from_time.totalSeconds) + '</td>';
                         tbl += '<td class="text-center">' + toHoursAndMinutes(result[i].to_time.totalSeconds) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].avg_active_power.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].avg_wind_speed.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].restructive_WTG + '</td>';
+                        tbl += '<td class="text-center">' + result[i].avg_active_power.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].avg_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].restructive_WTG + '</td>';
                         tbl += '<td class="text-center">' + result[i].plC_max + '</td>';
                         tbl += '<td class="text-center">' + result[i].plC_min + '</td>';
                         tbl += '<td class="text-center">' + result[i].plc_state_code + '</td>';
-                       tbl += '<td class="text-center">' + status + '</td>';
-                       tbl += '<td class="text-center">' + result[i].recon_wind_speed.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].exp_power_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].deviation_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].loss_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].manual_bd + '</td>';
-                       tbl += '<td class="text-center">' + result[i].all_bd + '</td>';
+                        tbl += '<td class="text-center">' + status + '</td>';
+                        tbl += '<td class="text-center">' + result[i].recon_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].exp_power_kw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].deviation_kw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].loss_kw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].manual_bd + '</td>';
+                        tbl += '<td class="text-center">' + result[i].all_bd + '</td>';
+                        */
                         tbl += '</tr>';
                     }
                 }
@@ -290,14 +328,14 @@
                     buttons: [
                         {
                             extend: 'excel',
-                            title: 'Wind Expected Vs Actual',
+                            title: 'Wind Power Curve',
                             exportOptions: {
                                 columns: ':visible'
                             }
                         },
                         {
                             extend: 'csv',
-                            title: 'Wind Expected Vs Actual',
+                            title: 'Wind Power Curve',
                             exportOptions: {
                                 columns: ':visible'
                             }
@@ -311,12 +349,154 @@
                 $('#example1').wrap("<div class='scrolledTable'></div>");
                 //document.getElementById("wms_comparision").style.display = 'block';
                 //$('#example1').removeClass('dataTable');
+
+                createChart();
+            }
+        });
+    }
+
+    function createChart() {
+        console.log("arrays : -");
+        console.log(pc_data);
+        console.log(tml_data);
+        //const data = {
+        //    datasets: [
+        //        {
+        //            label: 'Power Curve',
+        //            data: pc_data,
+        //            borderColor: 'blue',
+        //            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        //            fill: false,
+        //            type: 'line'
+        //        },
+        //        {
+        //            label: 'Actual Data',
+        //            data: tml_data,
+        //            borderColor: 'orange',
+        //            backgroundColor: 'orange',
+        //            pointRadius: 6,
+        //            pointHoverRadius: 8,
+        //            type: 'scatter'
+        //        }
+        //    ]
+        //};
+
+        //const config = {
+        //    type: 'line',
+        //    data: data,
+        //    options: {
+        //        scales: {
+        //            x: {
+        //                type: 'linear',
+        //                position: 'bottom'
+        //            },
+        //            y: {
+        //                type: 'linear',
+        //                position: 'left'
+        //            }
+        //        }
+        //    }
+        //};
+
+        //const myChart = new Chart(document.getElementById('myChart'), config);
+
+        // Create a data table for power curve data
+        //const powerCurveTable = anychart.data.table();
+        //powerCurveTable.addData(pc_data);
+
+        //// Create a scatter series for power curve
+        //const powerCurveSeries = chart.line(powerCurveTable);
+        //powerCurveSeries.name('Power Curve');
+        //powerCurveSeries.stroke('blue');
+
+        //// Create a data table for actual data
+        //const actualDataTable = anychart.data.table();
+        //actualDataTable.addData(tml_data);
+
+        //// Create a scatter series for actual data
+        //const actualDataSeries = chart.marker(actualDataTable);
+        //actualDataSeries.name('Actual Data');
+        //actualDataSeries.type('scatter');
+        //actualDataSeries.fill('orange');
+
+        //// Set the chart title
+        //chart.title('Comparison Chart');
+
+        //// Set the chart container
+        //chart.container('chartContainer');
+
+        //// Draw the chart
+        //chart.draw();
+
+        // Create a data set for power curve data
+        const powerCurveDataSet = anychart.data.set(pc_data);
+
+        // Create a scatter series for power curve
+        const powerCurveSeries = chart.line(powerCurveDataSet);
+        powerCurveSeries.name('Power Curve');
+        powerCurveSeries.stroke('blue');
+
+        // Create a data set for actual data
+        const actualDataSet = anychart.data.set(tml_data);
+
+        // Create a scatter series for actual data
+        const actualDataSeries = chart.marker(actualDataSet);
+        actualDataSeries.name('Actual Data');
+        actualDataSeries.type('scatter');
+        actualDataSeries.fill('orange');
+
+        // Set the chart title
+        chart.title('Comparison Chart');
+
+        // Set the chart container
+        chart.container('chartContainer');
+
+        // Draw the chart
+        chart.draw();
+
+    }
+
+    function GetWTG(fliterVal) {
+        let siteid = "";
+        //$('select#site option:selected').each(function () {
+        //    siteid += $(this).val() + ",";
+        //});
+        //siteid = siteid != "" ? siteid.slice(0, -1) : siteid;
+
+         if (fliterVal == false) {
+             siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
+            }
+            else {
+             $('select#site option:selected').each(function () {
+                 siteid += $(this).val() + ",";
+                 });
+                siteid = siteid != "" ? siteid.slice(0, -1) : siteid;
+            }
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid,
+            contentType: "application/json; charset=utf-8",
+            // data: '{"state":"' + val + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].wtg + '">' + result[k].wtg + '</option>';
+                }
+                $("#wtg").multipleSelect('destroy');
+                $("#wtg").html("").html(options);
+                $('select#wtg').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Site(s)",
+                    filter:true
+                });
+
             }
         });
     }
 
     var data = [];
-    function getChartData(site_id, fromDate, toDate) {
+    @*function getChartData(site_id, fromDate, toDate) {
         var expected_final = 0.0;
         var lineloss_final = 0.0;
         var target_final = 0.0;
@@ -401,7 +581,7 @@
 
         console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final);
         monthlychart(data);
-    }
+    }*@
 
     function monthlychart(data) {
         console.log("Inside Monthly chart function and data received is : " + data + " hello : " + data[0]);
