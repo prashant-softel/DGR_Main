@@ -375,7 +375,7 @@ namespace DGRA_V1.Controllers
         public async Task<IActionResult> GetWindMonthlyGenerationReportSiteWise(string fy, string month, string country, string state, string spv, string site, string wtg, string reportType)
         {
 
-
+        
             string line = "";
             try
             {
@@ -698,6 +698,53 @@ namespace DGRA_V1.Controllers
                     {
                         line = readStream.ReadToEnd().Trim();
                         //  breakdown.list = JsonConvert.DeserializeObject<List<WindBreakdownReports>>(line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+
+        public async Task<IActionResult> GetWindPowerCurveData(string site, string fromDate, string toDate)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPowerCurveData?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetWindTmlPowerCurveData(string site, string fromDate, string toDate)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindTmlPowerCurveData?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
                     }
                 }
             }

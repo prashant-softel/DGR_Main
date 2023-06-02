@@ -29,6 +29,7 @@ namespace DGRAPIs.Models
         public double tar_ega { get; set; }
         public double act_ega { get; set; }
         public double revenue { get; set; }
+        public double exp_power { get; set; }
        
     }
     public class WindOpertionalHead

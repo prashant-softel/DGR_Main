@@ -283,15 +283,17 @@
                 var tbl = '<table id="example1"  class="table table-bordered table-striped" style="width: 130%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th rowspan="2" style="width: 10%;">SPV</th><th rowspan="2">Capacity<br> (MW)</th>';
-                tbl += '<th colspan="3" class="text-center">JMR Energy (in MU)</th><th>Revenue</th>';
+                tbl += '<th colspan="5" class="text-center">JMR Energy (in MU)</th><th>Revenue</th>';
                 tbl += '<th colspan="3" class="text-center">Wind Speed (m/s)</th><th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">MA Actual (%)</th><th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr>';
                 //tbl += '<tr><th>&nbsp;</th>';
                // tbl += '<th>(MW)</th>';
                 tbl += '<tr><th>Tar</th>';
+                tbl += '<th>Exp</th>';
                 tbl += '<th>Act</th>';
-                tbl += '<th>Var (%)</th>';
+                tbl += '<th>T.Var (%)</th>';
+                tbl += '<th>E.Var (%)</th>';
                 tbl += '<th>(MINR)</th>';
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
@@ -316,6 +318,7 @@
                     let total_capacity = 0;
                     let total_capTarMu = 0;
                     let total_tar_mu = 0;
+                    let total_exp_power = 0;
                     let total_act_jmr_kwh_mu = 0;
                     let avg_jmr_var = 0;
                     let total_revenue = 0;
@@ -349,6 +352,7 @@
                         leble.push(result[i].spv);
                         let revenue = 0;
                         let jmr_var = 0;
+                        let e_var = 0;
                         let wind_var = 0;
                         let plf_var = 0;
                         let ma_act_var = 0;
@@ -359,6 +363,13 @@
                         revenue = ((result[i].act_jmr_kwh_mu - tar_mu) * result[i].total_tarrif);
                         if (result[i].act_jmr_kwh_mu != 0 || result[i].tar_kwh_mu != 0) {
                             jmr_var = ((result[i].act_jmr_kwh_mu - tar_mu) / tar_mu) * 100;
+                        }
+                        if (result[i].exp_power != 0) {
+                            e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                            //if (result[i].site == "Maragutti") {
+                            //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
+                            //    //    console.log(temp_e_var);
+                            //}
                         }
                         if (result[i].act_Wind != 0 || result[i].tar_wind != 0) {
                             wind_var = ((result[i].act_Wind - result[i].tar_wind) / result[i].tar_wind) * 100;
@@ -372,6 +383,7 @@
 			            total_capacity += result[i].total_mw;
                         total_tar_mu += tar_mu;
                         total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
+                        total_exp_power += result[i].exp_power/1000000;
                         total_revenue += revenue;
                         total_tar_wind += result[i].tar_wind;
                         total_act_wind += result[i].act_Wind;
@@ -399,8 +411,10 @@
                         tbl += '<td class="text-left">' + result[i].spv + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + tar_mu.toFixed(2)+'</td>';
+                        tbl += '<td class="text-right">' + (result[i].exp_power / 1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_jmr_kwh_mu.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + jmr_var.toFixed(2)+'</td>';
+                        tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + revenue.toFixed(2)+'</td>';
                         tbl += '<td class="text-right">' + result[i].tar_wind.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_Wind.toFixed(2) + '</td>';
@@ -421,6 +435,7 @@
                         tbl += '</tr>';
                     }
                     let avg_tar_mu = 0;
+                    let avg_e_var = 0;
                     let avg_tar_wind = 0;
                     let avg_tar_plf = 0;
                     let avg_tar_ma = 0;
@@ -453,6 +468,9 @@
                     if (avg_tar_wind != 0) {
                         avg_wind_var = ((avg_act_wind.toFixed(2) - avg_tar_wind.toFixed(2)) / avg_tar_wind.toFixed(2)) * 100;
                     }
+                    if (total_exp_power != 0) {
+                        avg_e_var = (((total_act_jmr_kwh_mu.toFixed(2) - total_exp_power.toFixed(2)) / total_exp_power.toFixed(2)) * 100);
+                    }
 
                     avg_plf_var = (avg_act_plf - avg_tar_plf);
                     avg_ma_var = (avg_act_ma - avg_tar_ma);
@@ -463,8 +481,10 @@
                     tbl += '<th rowspan="1"  style="width: 10%; font-weight: bold;">Grand Total</th>';
                     tbl += '<td class="text-right" style="font-weight: bold;"><b>' + total_capacity.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + total_tar_mu.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + total_exp_power.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + total_act_jmr_kwh_mu.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_jmr_var.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_e_var.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + total_revenue.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_tar_wind.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_wind.toFixed(2) + '</b></td>';
@@ -524,57 +544,63 @@
                                             return 'JMR Energy (in MU)  Tar';
                                         }
                                         else if (columnIdx == 3) {
-                                            return 'JMR Energy (in MU)  Act';
+                                            return 'JMR Energy (in MU)  Exp';
                                         }
                                         else if (columnIdx == 4) {
-                                            return 'JMR Energy (in MU)  Var (%)';
+                                            return 'JMR Energy (in MU)  Act';
                                         }
                                         else if (columnIdx == 5) {
-                                            return 'Revenue (MINR) ';
+                                            return 'JMR Energy (in MU)  T.Var (%)';
                                         }
                                         else if (columnIdx == 6) {
-                                            return 'Wind Speed (m/s)  Tar';
+                                            return 'JMR Energy (in MU)  E.Var (%)';
                                         }
                                         else if (columnIdx == 7) {
-                                            return 'Wind Speed (m/s)  Act ';
+                                            return 'Revenue (MINR) ';
                                         }
                                         else if (columnIdx == 8) {
-                                            return 'Wind Speed (m/s)  Var (%) ';
+                                            return 'Wind Speed (m/s)  Tar';
                                         }
                                         else if (columnIdx == 9) {
-                                            return 'PLF (%)  Tar';
+                                            return 'Wind Speed (m/s)  Act ';
                                         }
                                         else if (columnIdx == 10) {
-                                            return 'PLF (%)  Act ';
+                                            return 'Wind Speed (m/s)  Var (%) ';
                                         }
                                         else if (columnIdx == 11) {
-                                            return 'PLF (%)  Var (%) ';
+                                            return 'PLF (%)  Tar';
                                         }
                                         else if (columnIdx == 12) {
-                                            return 'MA Actual (%)  Tar';
+                                            return 'PLF (%)  Act ';
                                         }
                                         else if (columnIdx == 13) {
-                                            return 'MA Actual (%)  Act ';
+                                            return 'PLF (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 14) {
-                                            return 'MA Actual (%)  Var (%) ';
+                                            return 'MA Actual (%)  Tar';
                                         }
                                         else if (columnIdx == 15) {
-                                            return 'IGA (%)  Tar';
+                                            return 'MA Actual (%)  Act ';
                                         }
                                         else if (columnIdx == 16) {
-                                            return 'IGA (%)  Act ';
+                                            return 'MA Actual (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 17) {
-                                            return 'IGA (%)  Var (%) ';
+                                            return 'IGA (%)  Tar';
                                         }
                                         else if (columnIdx == 18) {
-                                            return 'EGA (%)  Tar';
+                                            return 'IGA (%)  Act ';
                                         }
                                         else if (columnIdx == 19) {
-                                            return 'EGA (%)  Act ';
+                                            return 'IGA (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 20) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 22) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -604,57 +630,63 @@
                                             return 'JMR Energy (in MU)  Tar';
                                         }
                                         else if (columnIdx == 3) {
-                                            return 'JMR Energy (in MU)  Act';
+                                            return 'JMR Energy (in MU)  Exp';
                                         }
                                         else if (columnIdx == 4) {
-                                            return 'JMR Energy (in MU)  Var (%)';
+                                            return 'JMR Energy (in MU)  Act';
                                         }
                                         else if (columnIdx == 5) {
-                                            return 'Revenue (MINR) ';
+                                            return 'JMR Energy (in MU)  T.Var (%)';
                                         }
                                         else if (columnIdx == 6) {
-                                            return 'Wind Speed (m/s)  Tar';
+                                            return 'JMR Energy (in MU)  E.Var (%)';
                                         }
                                         else if (columnIdx == 7) {
-                                            return 'Wind Speed (m/s)  Act ';
+                                            return 'Revenue (MINR) ';
                                         }
                                         else if (columnIdx == 8) {
-                                            return 'Wind Speed (m/s)  Var (%) ';
+                                            return 'Wind Speed (m/s)  Tar';
                                         }
                                         else if (columnIdx == 9) {
-                                            return 'PLF (%)  Tar';
+                                            return 'Wind Speed (m/s)  Act ';
                                         }
                                         else if (columnIdx == 10) {
-                                            return 'PLF (%)  Act ';
+                                            return 'Wind Speed (m/s)  Var (%) ';
                                         }
                                         else if (columnIdx == 11) {
-                                            return 'PLF (%)  Var (%) ';
+                                            return 'PLF (%)  Tar';
                                         }
                                         else if (columnIdx == 12) {
-                                            return 'MA Actual (%)  Tar';
+                                            return 'PLF (%)  Act ';
                                         }
                                         else if (columnIdx == 13) {
-                                            return 'MA Actual (%)  Act ';
+                                            return 'PLF (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 14) {
-                                            return 'MA Actual (%)  Var (%) ';
+                                            return 'MA Actual (%)  Tar';
                                         }
                                         else if (columnIdx == 15) {
-                                            return 'IGA (%)  Tar';
+                                            return 'MA Actual (%)  Act ';
                                         }
                                         else if (columnIdx == 16) {
-                                            return 'IGA (%)  Act ';
+                                            return 'MA Actual (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 17) {
-                                            return 'IGA (%)  Var (%) ';
+                                            return 'IGA (%)  Tar';
                                         }
                                         else if (columnIdx == 18) {
-                                            return 'EGA (%)  Tar';
+                                            return 'IGA (%)  Act ';
                                         }
                                         else if (columnIdx == 19) {
-                                            return 'EGA (%)  Act ';
+                                            return 'IGA (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 20) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 22) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -675,57 +707,63 @@
                                     return 'JMR Energy (in MU)  Tar';
                                 }
                                 else if (idx == 3) {
-                                    return 'JMR Energy (in MU)  Act';
+                                    return 'JMR Energy (in MU)  Exp';
                                 }
                                 else if (idx == 4) {
-                                    return 'JMR Energy (in MU)  Var (%)';
+                                    return 'JMR Energy (in MU)  Act';
                                 }
                                 else if (idx == 5) {
-                                    return 'Revenue (MINR) ';
+                                    return 'JMR Energy (in MU)  T.Var (%)';
                                 }
                                 else if (idx == 6) {
-                                    return 'Wind Speed (m/s)  Tar';
+                                    return 'JMR Energy (in MU)  E.Var (%)';
                                 }
                                 else if (idx == 7) {
-                                    return 'Wind Speed (m/s)  Act ';
+                                    return 'Revenue (MINR) ';
                                 }
                                 else if (idx == 8) {
-                                    return 'Wind Speed (m/s)  Var (%) ';
+                                    return 'Wind Speed (m/s)  Tar';
                                 }
                                 else if (idx == 9) {
-                                    return 'PLF (%)  Tar';
+                                    return 'Wind Speed (m/s)  Act ';
                                 }
                                 else if (idx == 10) {
-                                    return 'PLF (%)  Act ';
+                                    return 'Wind Speed (m/s)  Var (%) ';
                                 }
                                 else if (idx == 11) {
-                                    return 'PLF (%)  Var (%) ';
+                                    return 'PLF (%)  Tar';
                                 }
                                 else if (idx == 12) {
-                                    return 'MA Actual (%)  Tar';
+                                    return 'PLF (%)  Act ';
                                 }
                                 else if (idx == 13) {
-                                    return 'MA Actual (%)  Act ';
+                                    return 'PLF (%)  Var (%) ';
                                 }
                                 else if (idx == 14) {
-                                    return 'MA Actual (%)  Var (%) ';
+                                    return 'MA Actual (%)  Tar';
                                 }
                                 else if (idx == 15) {
-                                    return 'IGA (%)  Tar';
+                                    return 'MA Actual (%)  Act ';
                                 }
                                 else if (idx == 16) {
-                                    return 'IGA (%)  Act ';
+                                    return 'MA Actual (%)  Var (%) ';
                                 }
                                 else if (idx == 17) {
-                                    return 'IGA (%)  Var (%) ';
+                                    return 'IGA (%)  Tar';
                                 }
                                 else if (idx == 18) {
-                                    return 'EGA (%)  Tar';
+                                    return 'IGA (%)  Act ';
                                 }
                                 else if (idx == 19) {
-                                    return 'EGA (%)  Act ';
+                                    return 'IGA (%)  Var (%) ';
                                 }
                                 else if (idx == 20) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 21) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 22) {
                                     return 'EGA (%)  Var (%) ';
                                 }
                                 else {
@@ -786,15 +824,17 @@
                 var tbl = '<table id="example2"  class="table table-bordered table-striped" style="width: 130%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th rowspan="2"  style="width: 10%;">Site</th><th  rowspan="2">Capacity<br> (MW)</th>';
-                tbl += '<th colspan="3" class="text-center">JMR Energy (in MU)</th><th>Revenue</th>';
+                tbl += '<th colspan="5" class="text-center">JMR Energy (in MU)</th><th>Revenue</th>';
                 tbl += '<th colspan="3" class="text-center">Wind Speed (m/s)</th><th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">MA Actual (%)</th><th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr>';
                // tbl += '<tr><th>&nbsp;</th>';
                 //tbl += '<th>(MW)</th>';
                 tbl += '<tr><th>Tar</th>';
+                tbl += '<th>Exp</th>';
                 tbl += '<th>Act</th>';
-                tbl += '<th>Var (%)</th>';
+                tbl += '<th>T.Var (%)</th>';
+                tbl += '<th>E.Var (%)</th>';
                 tbl += '<th>(MINR)</th>';
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
@@ -825,6 +865,7 @@
                     let neg_wind_var = [];
 	                let total_capacity = 0;
                     let total_capTarMu = 0;
+                    let total_exp_power = 0;
                     let total_tar_mu = 0;
                     let total_act_jmr_kwh_mu = 0;
                     let avg_jmr_var = 0;
@@ -858,6 +899,7 @@
                     for (var i = 0; i < result.length; i++) {
                         let revenue = 0;
                         let jmr_var = 0;
+                        let e_var = 0;
                         let wind_var = 0;
                         let plf_var = 0;
                         let ma_act_var = 0;
@@ -871,6 +913,13 @@
                         }
                         if (result[i].act_Wind != 0 || result[i].tar_wind != 0) {
                             wind_var = ((result[i].act_Wind.toFixed(2) - result[i].tar_wind.toFixed(2)) / result[i].tar_wind.toFixed(2)) * 100;
+                        }
+                        if (result[i].exp_power != 0) {
+                            e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                            //if (result[i].site == "Maragutti") {
+                            //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
+                            //    //    console.log(temp_e_var);
+                            //}
                         }
 
                         plf_var = (result[i].act_plf - result[i].tar_plf);
@@ -908,6 +957,7 @@
                         total_capacity += result[i].total_mw;
                         total_tar_mu += tar_mu;
                         total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
+                        total_exp_power += result[i].exp_power / 1000000;
                         total_revenue += revenue;
                         total_tar_wind += result[i].tar_wind;
                         total_act_wind += result[i].act_Wind;
@@ -935,8 +985,10 @@
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + tar_mu.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].exp_power / 1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_jmr_kwh_mu.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + jmr_var.toFixed(2)+'</td>';
+                        tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + revenue.toFixed(2)+'</td>';
                         tbl += '<td class="text-right">' + result[i].tar_wind.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_Wind.toFixed(2) + '</td>';
@@ -958,6 +1010,7 @@
                     }
                     let avg_tar_mu = 0;
                     let avg_tar_wind = 0;
+                    let avg_e_var = 0;
                     let avg_tar_plf = 0;
                     let avg_tar_ma = 0;
                     let avg_tar_iga = 0;
@@ -989,6 +1042,9 @@
                     if (avg_tar_wind != 0) {
                         avg_wind_var = ((avg_act_wind.toFixed(2) - avg_tar_wind.toFixed(2)) / avg_tar_wind.toFixed(2)) * 100;
                     }
+                    if (total_exp_power != 0) {
+                        avg_e_var = (((total_act_jmr_kwh_mu.toFixed(2) - total_exp_power.toFixed(2)) / total_exp_power.toFixed(2)) * 100);
+                    }
 
                     avg_plf_var = (avg_act_plf - avg_tar_plf);
                     avg_ma_var = (avg_act_ma - avg_tar_ma);
@@ -999,8 +1055,10 @@
                     tbl += '<th rowspan="1"  style="width: 10%; font-weight: bold;">Grand Total</th>';
                     tbl += '<td class="text-right"><b>' + total_capacity.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + total_tar_mu.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + total_exp_power.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + total_act_jmr_kwh_mu.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_jmr_var.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_e_var.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + total_revenue.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_tar_wind.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_wind.toFixed(2) + '</b></td>';
@@ -1063,57 +1121,63 @@
                                             return 'JMR Energy (in MU)  Tar';
                                         }
                                         else if (columnIdx == 3) {
-                                            return 'JMR Energy (in MU) Act';
+                                            return 'JMR Energy (in MU)  Exp';
                                         }
                                         else if (columnIdx == 4) {
-                                            return 'JMR Energy (in MU) Var (%)';
+                                            return 'JMR Energy (in MU) Act';
                                         }
                                         else if (columnIdx == 5) {
-                                            return 'Revenue (MINR) ';
+                                            return 'JMR Energy (in MU) T.Var (%)';
                                         }
                                         else if (columnIdx == 6) {
-                                            return 'Wind Speed (m/s) Tar';
+                                            return 'JMR Energy (in MU) E.Var (%)';
                                         }
                                         else if (columnIdx == 7) {
-                                            return 'Wind Speed (m/s) Act ';
+                                            return 'Revenue (MINR) ';
                                         }
                                         else if (columnIdx == 8) {
-                                            return 'Wind Speed (m/s) Var (%) ';
+                                            return 'Wind Speed (m/s) Tar';
                                         }
                                         else if (columnIdx == 9) {
-                                            return 'PLF (%) Tar';
+                                            return 'Wind Speed (m/s) Act ';
                                         }
                                         else if (columnIdx == 10) {
-                                            return 'PLF (%) Act ';
+                                            return 'Wind Speed (m/s) Var (%) ';
                                         }
                                         else if (columnIdx == 11) {
-                                            return 'PLF (%) Var (%) ';
+                                            return 'PLF (%) Tar';
                                         }
                                         else if (columnIdx == 12) {
-                                            return 'MA Actual (%) Tar';
+                                            return 'PLF (%) Act ';
                                         }
                                         else if (columnIdx == 13) {
-                                            return 'MA Actual (%) Act ';
+                                            return 'PLF (%) Var (%) ';
                                         }
                                         else if (columnIdx == 14) {
-                                            return 'MA Actual (%) Var (%) ';
+                                            return 'MA Actual (%) Tar';
                                         }
                                         else if (columnIdx == 15) {
-                                            return 'IGA (%) Tar';
+                                            return 'MA Actual (%) Act ';
                                         }
                                         else if (columnIdx == 16) {
-                                            return 'IGA (%) Act ';
+                                            return 'MA Actual (%) Var (%) ';
                                         }
                                         else if (columnIdx == 17) {
-                                            return 'IGA (%) Var (%) ';
+                                            return 'IGA (%) Tar';
                                         }
                                         else if (columnIdx == 18) {
-                                            return 'EGA (%) Tar';
+                                            return 'IGA (%) Act ';
                                         }
                                         else if (columnIdx == 19) {
-                                            return 'EGA (%) Act ';
+                                            return 'IGA (%) Var (%) ';
                                         }
                                         else if (columnIdx == 20) {
+                                            return 'EGA (%) Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'EGA (%) Act ';
+                                        }
+                                        else if (columnIdx == 22) {
                                             return 'EGA (%) Var (%) ';
                                         }
                                         else {
@@ -1143,57 +1207,63 @@
                                             return 'JMR Energy (in MU)  Tar';
                                         }
                                         else if (columnIdx == 3) {
-                                            return 'JMR Energy (in MU) Act';
+                                            return 'JMR Energy (in MU)  Exp';
                                         }
                                         else if (columnIdx == 4) {
-                                            return 'JMR Energy (in MU) Var (%)';
+                                            return 'JMR Energy (in MU) Act';
                                         }
                                         else if (columnIdx == 5) {
-                                            return 'Revenue (MINR) ';
+                                            return 'JMR Energy (in MU) T.Var (%)';
                                         }
                                         else if (columnIdx == 6) {
-                                            return 'Wind Speed (m/s) Tar';
+                                            return 'JMR Energy (in MU) E.Var (%)';
                                         }
                                         else if (columnIdx == 7) {
-                                            return 'Wind Speed (m/s) Act ';
+                                            return 'Revenue (MINR) ';
                                         }
                                         else if (columnIdx == 8) {
-                                            return 'Wind Speed (m/s) Var (%) ';
+                                            return 'Wind Speed (m/s) Tar';
                                         }
                                         else if (columnIdx == 9) {
-                                            return 'PLF (%) Tar';
+                                            return 'Wind Speed (m/s) Act ';
                                         }
                                         else if (columnIdx == 10) {
-                                            return 'PLF (%) Act ';
+                                            return 'Wind Speed (m/s) Var (%) ';
                                         }
                                         else if (columnIdx == 11) {
-                                            return 'PLF (%) Var (%) ';
+                                            return 'PLF (%) Tar';
                                         }
                                         else if (columnIdx == 12) {
-                                            return 'MA Actual (%) Tar';
+                                            return 'PLF (%) Act ';
                                         }
                                         else if (columnIdx == 13) {
-                                            return 'MA Actual (%) Act ';
+                                            return 'PLF (%) Var (%) ';
                                         }
                                         else if (columnIdx == 14) {
-                                            return 'MA Actual (%) Var (%) ';
+                                            return 'MA Actual (%) Tar';
                                         }
                                         else if (columnIdx == 15) {
-                                            return 'IGA (%) Tar';
+                                            return 'MA Actual (%) Act ';
                                         }
                                         else if (columnIdx == 16) {
-                                            return 'IGA (%) Act ';
+                                            return 'MA Actual (%) Var (%) ';
                                         }
                                         else if (columnIdx == 17) {
-                                            return 'IGA (%) Var (%) ';
+                                            return 'IGA (%) Tar';
                                         }
                                         else if (columnIdx == 18) {
-                                            return 'EGA (%) Tar';
+                                            return 'IGA (%) Act ';
                                         }
                                         else if (columnIdx == 19) {
-                                            return 'EGA (%) Act ';
+                                            return 'IGA (%) Var (%) ';
                                         }
                                         else if (columnIdx == 20) {
+                                            return 'EGA (%) Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'EGA (%) Act ';
+                                        }
+                                        else if (columnIdx == 22) {
                                             return 'EGA (%) Var (%) ';
                                         }
                                         else {
@@ -1214,57 +1284,63 @@
                                     return 'JMR Energy (in MU)  Tar';
                                 }
                                 else if (idx == 3) {
-                                    return 'JMR Energy (in MU) Act';
+                                    return 'JMR Energy (in MU)  Exp';
                                 }
                                 else if (idx == 4) {
-                                    return 'JMR Energy (in MU) Var (%)';
+                                    return 'JMR Energy (in MU) Act';
                                 }
                                 else if (idx == 5) {
-                                    return 'Revenue (MINR) ';
+                                    return 'JMR Energy (in MU) T.Var (%)';
                                 }
                                 else if (idx == 6) {
-                                    return 'Wind Speed (m/s) Tar';
+                                    return 'JMR Energy (in MU) E.Var (%)';
                                 }
                                 else if (idx == 7) {
-                                    return 'Wind Speed (m/s) Act ';
+                                    return 'Revenue (MINR) ';
                                 }
                                 else if (idx == 8) {
-                                    return 'Wind Speed (m/s) Var (%) ';
+                                    return 'Wind Speed (m/s) Tar';
                                 }
                                 else if (idx == 9) {
-                                    return 'PLF (%) Tar';
+                                    return 'Wind Speed (m/s) Act ';
                                 }
                                 else if (idx == 10) {
-                                    return 'PLF (%) Act ';
+                                    return 'Wind Speed (m/s) Var (%) ';
                                 }
                                 else if (idx == 11) {
-                                    return 'PLF (%) Var (%) ';
+                                    return 'PLF (%) Tar';
                                 }
                                 else if (idx == 12) {
-                                    return 'MA Actual (%) Tar';
+                                    return 'PLF (%) Act ';
                                 }
                                 else if (idx == 13) {
-                                    return 'MA Actual (%) Act ';
+                                    return 'PLF (%) Var (%) ';
                                 }
                                 else if (idx == 14) {
-                                    return 'MA Actual (%) Var (%) ';
+                                    return 'MA Actual (%) Tar';
                                 }
                                 else if (idx == 15) {
-                                    return 'IGA (%) Tar';
+                                    return 'MA Actual (%) Act ';
                                 }
                                 else if (idx == 16) {
-                                    return 'IGA (%) Act ';
+                                    return 'MA Actual (%) Var (%) ';
                                 }
                                 else if (idx == 17) {
-                                    return 'IGA (%) Var (%) ';
+                                    return 'IGA (%) Tar';
                                 }
                                 else if (idx == 18) {
-                                    return 'EGA (%) Tar';
+                                    return 'IGA (%) Act ';
                                 }
                                 else if (idx == 19) {
-                                    return 'EGA (%) Act ';
+                                    return 'IGA (%) Var (%) ';
                                 }
                                 else if (idx == 20) {
+                                    return 'EGA (%) Tar';
+                                }
+                                else if (idx == 21) {
+                                    return 'EGA (%) Act ';
+                                }
+                                else if (idx == 22) {
                                     return 'EGA (%) Var (%) ';
                                 }
                                 else {

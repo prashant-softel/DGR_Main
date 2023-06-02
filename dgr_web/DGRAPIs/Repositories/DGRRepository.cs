@@ -2936,9 +2936,11 @@ where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
 
             string filter = "";
+            string tmlFilter = " DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "'";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + site + ") ";
+                //tmlFilter += " t1.site_id IN(" + site + ")";
             }
             string qry1 = "create or replace view temp_view as select t1.date, t1.site_id, t2.site, t3.spv,t1.kwh, t1.wind_speed, t1.plf, t1.ma, t1.iga, t1.ega" +
                 " from daily_target_kpi t1, daily_gen_summary t2, site_master t3 " +
@@ -2986,7 +2988,24 @@ where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
 
             //daily_gen_summary t1 where t1.approve_status=" + approve_status + " and (date >= '" + fromDate + "'  and date<= '" + todate + "') group by site";
             List<WindPerformanceReports> data = new List<WindPerformanceReports>();
-            data = await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
+            try
+            {
+                data = await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while retrieving data for UI display, due to : " + e.ToString();
+            }
+            List<WindPerformanceReports> tmlData = new List<WindPerformanceReports>();
+            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE " + tmlFilter + " GROUP BY t1.site_id";
+            try
+            {
+                tmlData = await Context.GetData<WindPerformanceReports>(tmlQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+
+            }
             foreach (WindPerformanceReports _dataelement in data)
             {
                 foreach (WindPerformanceReports _tempdataelement in tempdata)
@@ -3011,6 +3030,13 @@ where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
                         
                     }
                 }
+                foreach (WindPerformanceReports _tempdataelement in tmlData)
+                {
+                    if (_dataelement.site == _tempdataelement.site)
+                    {
+                        _dataelement.exp_power = _tempdataelement.exp_power;                        
+                    }
+                }
             }
             return data; //await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);
 
@@ -3031,10 +3057,12 @@ where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string filter = "";
             string filter2 = "";
+            string tmlFilter = "";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + site + ") ";
                 filter2 += " where site_master_id IN(" + site + ") ";
+                tmlFilter += " t1.site_id IN(" + site + ")";
             }
             string qry1 = "create or replace view temp_viewSPV as select t1.date, t1.site_id, t2.site, t3.spv,t1.kwh, t1.wind_speed, t1.plf, t1.ma, t1.iga, t1.ega" +
                 " from daily_target_kpi t1, daily_gen_summary t2, site_master t3 " +
@@ -3126,7 +3154,17 @@ where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
             }
             catch (Exception e)
             {
-                //API_InformationLog("GetWindPerformanceReportBySPVWise function returned Exception while selecting data from daily_gen_summary table :" + e.Message);
+                string msg = "Exception while retriving data for displaying due to : " + e.ToString();
+            }
+            List<WindPerformanceReports> tmlData = new List<WindPerformanceReports>();
+            //SELECT t1.site, t1.site_id, t1.WTGs, t2.spv FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= "2023-04-06" AND DATE(t1.Time_stamp) <= "2023-04-06" GROUP BY t2.spv;
+            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "' GROUP BY t2.spv";
+            try
+            {
+                tmlData = await Context.GetData<WindPerformanceReports>(tmlQry).ConfigureAwait(false);
+            }catch(Exception e)
+            {
+                string msg = "Exception while retriving expected power data from tml table due to : " + e.ToString();
             }
 
             foreach (WindPerformanceReports _dataelement in data)
@@ -3158,6 +3196,15 @@ where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
                     if (_dataelement.spv == _tempdataelement.spv)
                     {
                         _dataelement.total_mw = _tempdataelement.total_mw;
+                       
+
+                    }
+                }
+                foreach (WindPerformanceReports _tempdataelement in tmlData)
+                {
+                    if (_dataelement.spv == _tempdataelement.spv)
+                    {
+                        _dataelement.exp_power = _tempdataelement.exp_power;
                        
 
                     }
@@ -5354,7 +5401,7 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
                 }
                 foreach (SolarPerformanceReports1 _tempdataelement in newdata)
                 {
-                    if (_dataelement.spv == _tempdataelement.spv)
+                    if (_dataelement.spv == _tempdataelement.spv) 
                     {
                         _dataelement.act_kwh = _tempdataelement.act_kwh;
                         _dataelement.act_plf = _tempdataelement.act_plf;
@@ -11132,15 +11179,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         double deviation = 0;
-                        if (unit.avg_active_power <= 0)
-                        {
-                            deviation = 0 - unit.exp_power_kw;
-                        }
-                        if (unit.avg_active_power > 0)
-                        {
-                            deviation = unit.avg_active_power - unit.exp_power_kw;
-                        }
 
+                        //if (unit.avg_active_power <= 0)
+                        //{
+                        //    deviation = 0 - unit.exp_power_kw;
+                        //}
+                        //if (unit.avg_active_power > 0)
+                        //{
+                        //    deviation = unit.avg_active_power - unit.exp_power_kw;
+                        //}
+
+                        deviation = unit.avg_active_power - unit.exp_power_kw;
                         unit.deviation_kw = deviation;
                         finalResult = 5;
                     }
@@ -12036,17 +12085,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int counter = 0;
             string site = "";
             int site_id = 0;
+            int previousSiteId = 0;
+            string siteIdList = "";
             foreach (var unit in set)
             {
                 if (counter == 0)
                 {
                     site = unit.site;
                     site_id = unit.site_id;
+                    previousSiteId = site_id;
+                    siteIdList = unit.site_id.ToString();
+                }
+                if(unit.site_id != previousSiteId)
+                {
+                    siteIdList += ", " + unit.site_id.ToString();
                 }
                 insertValues += "('" + unit.site + "', " + unit.site_id + ", " + unit.codes + ", '" + unit.description + "', '" + unit.conditions + "'),";
+                previousSiteId = unit.site_id;
+                counter++;
             }
 
-            string deleteQry = "DELETE FROM wind_bd_codes_gamesa WHERE site ='" + site + "' AND site_id =" + site_id + ";";
+            string deleteQry = "DELETE FROM wind_bd_codes_gamesa WHERE site_id IN(" + siteIdList + ");";
             qry += insertValues;
 
             await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
@@ -12065,17 +12124,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int counter = 0;
             string site = "";
             int site_id = 0;
+            int previousSiteId = 0;
+            string siteIdList = "";
             foreach (var unit in set)
             {
                 if (counter == 0)
                 {
                     site = unit.site;
                     site_id = unit.site_id;
+                    previousSiteId = site_id;
+                    siteIdList = unit.site_id.ToString();
+                }
+                if (unit.site_id != previousSiteId)
+                {
+                    siteIdList += ", " + unit.site_id.ToString();
                 }
                 insertValues += "('" + unit.site + "', " + unit.site_id + ", '" + unit.plc_state + "', '" + unit.code + "', '" + unit.type + "'),";
+                previousSiteId = unit.site_id;
+                counter++;
             }
 
-            string deleteQry = "DELETE FROM wind_bd_codes_inox WHERE site ='" + site + "' AND site_id =" + site_id + ";";
+            string deleteQry = "DELETE FROM wind_bd_codes_inox WHERE site_id IN(" + siteIdList + ");";
             qry += insertValues;
 
             await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
@@ -12093,17 +12162,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int counter = 0;
             string site = "";
             int site_id = 0;
+            int previousSiteId = 0;
+            string siteIdList = "";
             foreach (var unit in set)
             {
                 if (counter == 0)
                 {
                     site = unit.site;
                     site_id = unit.site_id;
+                    previousSiteId = site_id;
+                    siteIdList = unit.site_id.ToString();
+                }
+                if (unit.site_id != previousSiteId)
+                {
+                    siteIdList += ", " + unit.site_id.ToString();
                 }
                 insertValues += "('" + unit.site + "', " + unit.site_id + ", " + unit.code + ", '" + unit.operation_mode + "', '" + unit.conditions + "'),";
+                previousSiteId = unit.site_id;
+                counter++;
             }
 
-            string deleteQry = "DELETE FROM wind_bd_codes_regen WHERE site ='" + site + "' AND site_id =" + site_id + ";";
+            string deleteQry = "DELETE FROM wind_bd_codes_regen WHERE site_id IN(" + siteIdList + ");";
             qry += insertValues;
 
             await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
@@ -12519,6 +12598,72 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             catch (Exception e)
             {
                 string msg = "Exception while fetching records from tml_data table for displaying, due to  : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            return _windTMLDataList;
+        }
+
+        internal async Task<List<GetPowerCurveData>> GetWindPowerCurveData(string site, string fromDate, string toDate)
+        {
+
+            List<GetPowerCurveData> _powerCurve = new List<GetPowerCurveData>();
+            List<GetPowerCurveData> _windTMLDataList = new List<GetPowerCurveData>();
+            //string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
+            //string todate = Convert.ToDateTime(toDate).ToString("dd-MMM-yy");
+            string filter = "";
+            string tmlFilter = "";
+            //filter = "date >= '" + fdate + "'  and date <= '" + todate + "'";
+            if (!string.IsNullOrEmpty(site))
+            {
+                filter += " site_id IN(" + site + ") ";
+                tmlFilter += " site_id IN(" + site + ")";
+            }
+            filter += " ORDER BY site_id, wind_speed ;";
+            tmlFilter += " AND DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ORDER BY site_id, avg_wind_speed";
+
+            string fetchQry = "SELECT * FROM power_curve WHERE " + filter;
+            string tmlQry = "SELECT site, site_id, DATE(Time_stamp) as date, avg_active_power, avg_wind_speed FROM uploading_file_tmr_data WHERE " + tmlFilter;
+
+            try
+            {
+                _powerCurve = await Context.GetData<GetPowerCurveData>(fetchQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching records from tml_data table for displaying, due to  : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            try
+            {
+                _windTMLDataList = await Context.GetData<GetPowerCurveData>(tmlQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while retriving data from tml table, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            return _powerCurve;
+        }
+
+        internal async Task<List<GetPowerCurveData>> GetWindTmlPowerCurveData(string site, string fromDate, string toDate)
+        {
+            List<GetPowerCurveData> _windTMLDataList = new List<GetPowerCurveData>();
+            string tmlFilter = "";
+            if (!string.IsNullOrEmpty(site))
+            {
+                tmlFilter += " site_id IN(" + site + ")";
+            }
+            tmlFilter += " AND DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ORDER BY site_id, avg_wind_speed";
+
+            string tmlQry = "SELECT site, site_id, DATE(Time_stamp) as date, avg_active_power, avg_wind_speed FROM uploading_file_tmr_data WHERE " + tmlFilter;
+
+            try
+            {
+                _windTMLDataList = await Context.GetData<GetPowerCurveData>(tmlQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while retriving data from tml table, due to : " + e.ToString();
                 API_ErrorLog(msg);
             }
             return _windTMLDataList;
@@ -12994,7 +13139,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             while (start <= end)
             {
                 string datestring = start.ToString("yyyy-MM-dd");
-                string qry = "select sum(`mod_temp*avg_poa`) as mod_tXavg_poa from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + datestring + "' ";
+                string qry = "select sum(`temp_corrected_pr`) as mod_tXavg_poa from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + datestring + "' ";
 
                 string qryPOA = "Select sum(avg_poa) as avg_poa from uploading_pyranometer_15_min_solar where site_id = " + site + " and date(date_time) = '" + datestring + "'";
                 List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryPOA).ConfigureAwait(false);
@@ -13027,7 +13172,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                 //Hourly estimated
-                string qry3 = "select sum(`mod_temp*avg_poa`) as mod_tXavg_poa, sum(glob_inc) as glob_inc from `uploading_file_estimated_hourly_loss` where site_id = " + site + " and fy_date='" + datestring + "' ";
+                string qry3 = "select sum(`temp_corrected_pr`) as mod_tXavg_poa, sum(glob_inc) as glob_inc from `uploading_file_estimated_hourly_loss` where site_id = " + site + " and fy_date='" + datestring + "' ";
                 string qry4 = "select sum(t_array)/count(t_array) as t_array  from `uploading_file_estimated_hourly_loss` where site_id = " + site + " and fy_date='" + datestring + "' and t_array>0 ";
                 List<estimated1Hour> est1HourData = new List<estimated1Hour>();
                 List<estimated1Hour> est1HourDataModTemp = new List<estimated1Hour>();
@@ -13097,7 +13242,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //{
 
                 //}
-                string updateQry = " update `uploading_pyranometer_15_min_solar` set `mod_temp*avg_poa` = avg_poa*mod_temp where site_id = " + site + " and date(date_time) = '" + datestring + "' ";
+                string updateQry = " update `uploading_pyranometer_15_min_solar` set `temp_corrected_pr` = avg_poa*mod_temp where site_id = " + site + " and date(date_time) = '" + datestring + "' ";
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
@@ -13107,7 +13252,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string errmsg = e.Message;
                     return false;
                 }
-                string updateQry1Hour = " update `uploading_file_estimated_hourly_loss` set `mod_temp*avg_poa` = t_array*glob_inc where site_id = " + site + " and fy_date= '" + datestring + "'";
+                string updateQry1Hour = " update `uploading_file_estimated_hourly_loss` set `temp_corrected_pr` = t_array*glob_inc where site_id = " + site + " and fy_date= '" + datestring + "'";
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry1Hour).ConfigureAwait(false);

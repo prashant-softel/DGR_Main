@@ -65,6 +65,8 @@ namespace DGRAPIs.BS
         Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType);
         Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate);
         Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
+        Task<List<GetPowerCurveData>> GetWindPowerCurveData(string site, string fromDate, string toDate);
+        Task<List<GetPowerCurveData>> GetWindTmlPowerCurveData(string site, string fromDate, string toDate);
         Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate);
         Task<int> InsertDailyTargetKPI(List<WindDailyTargetKPI> set);
         Task<int> InsertMonthlyTargetKPI(List<WindMonthlyTargetKPI> set);
@@ -2606,6 +2608,39 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.GetWindTMLGraphData(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<List<GetPowerCurveData>> GetWindPowerCurveData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindPowerCurveData(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<GetPowerCurveData>> GetWindTmlPowerCurveData(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindTmlPowerCurveData(site, fromDate, toDate);
 
                 }
             }
