@@ -12645,13 +12645,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return _powerCurve;
         }
 
-        internal async Task<List<GetPowerCurveData>> GetWindTmlPowerCurveData(string site, string fromDate, string toDate)
+        internal async Task<List<GetPowerCurveData>> GetWindTmlPowerCurveData(string site, string fromDate, string toDate, string wtgs)
         {
             List<GetPowerCurveData> _windTMLDataList = new List<GetPowerCurveData>();
             string tmlFilter = "";
             if (!string.IsNullOrEmpty(site))
             {
                 tmlFilter += " site_id IN(" + site + ")";
+            }
+            if (!string.IsNullOrEmpty(wtgs))
+            {
+                tmlFilter += " AND WTGs IN(" + wtgs + ")";
             }
             tmlFilter += " AND DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ORDER BY site_id, avg_wind_speed";
 
