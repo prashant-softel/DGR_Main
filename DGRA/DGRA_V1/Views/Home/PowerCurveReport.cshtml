@@ -73,17 +73,15 @@
                             </div>
                         </div>
                     </div>
-                    <!--
-    <div class="col-sm-4">
+                    <div class="col-sm-4">
 
-        <div class="form-group">
-            <div class="row">
-                <label class="col-sm-2 col-form-label text-right">WTG : </label>
-                <select class="form-control  col-sm-8" id="wtg" name="wtg" multiple></select>
-            </div>
-        </div>
-    </div>
-    -->
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-right">WTG : </label>
+                                <select class="form-control  col-sm-8" id="wtg" name="wtg" multiple></select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-1"></div>
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
@@ -97,12 +95,14 @@
                 <hr>
                 <br>
                 <div class="col-sm-12">
-                    <div id="chartContainer" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <canvas id="scatterChart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px;"></canvas>
+                    @*<div id="chartContainer" style="overflow-x: auto; width: 100%; height: 400px;"></div>*@
                     @*<canvas id="myChart"></canvas>*@
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
                 <hr>
-                <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>
+                @*<div id="PowerCurveView" style="" class="PowerCurveView"></div>
+                <div id="TMLView" style="" class="TMLView"></div>*@
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
         </div>
@@ -143,6 +143,7 @@
 <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-bundle.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
@@ -166,7 +167,6 @@
 
     });
 
-
     window.onload = function () {
         var state = "";
         var spv = "";
@@ -189,17 +189,17 @@
                     "placeholder": "Select Site(s)",
                     filter:true
                 });
+                GetWTG(false);
             }
-
         });
     }
     let pc_data = [];
     let tml_data = [];
-    function getTmlData(site_id, fromDate, toDate) {
-
+    function getTmlData(site_id, fromDate, toDate, wtgs) {
+        console.log(wtgs);
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWindTmlPowerCurveData", "WindReport")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            url: '@Url.Action("GetWindTmlPowerCurveData", "WindReport")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&wtgs=' + wtgs,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
 
@@ -210,12 +210,73 @@
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
-                        tml_data.push({ windSpeed: result[i].avg_wind_speed, activePower: result[i].avg_active_power});
+                        tml_data.push({ x: result[i].avg_wind_speed, y: result[i].avg_active_power});
                     }
                 }
                 else {
                     alert("No Data in TML");
                 }
+                //var tbl = '<table id="example2" class="table table-bordered table-striped" style="">';
+                //tbl += '<thead class="tbl-head"><tr>';
+                //tbl += '<th>Date</th>';
+                //tbl += '<th>Site</th>';
+                //tbl += '<th>Wind Speed</th>';
+                //tbl += '<th>Active Power</th>';
+                //tbl += '</tr></thead>';
+
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        pc_data.push({ x: result[i].wind_speed, y: result[i].active_power });
+                        //tbl += '<tr>';
+                        //tbl += '<td  class="text-center">' + result[i].date + '</td>';
+                        //tbl += '<td  class="text-center">' + result[i].site + '</td>';
+                        //tbl += '<td  class="text-center">' + result[i].avg_wind_speed + '</td>';
+                        //tbl += '<td  class="text-center">' + result[i].avg_active_power + '</td>';
+                        //tbl += '</tr>';
+                    }
+                }
+                else {
+
+                    // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+                }
+                //tbl += '</table>';
+                //// $("#PowerCurveView").html(tbl);
+                //$("#TMLView").html("").html(tbl);
+                //$('#example2').DataTable({
+                //    dom: 'Bfrtip',
+                //    responsive: false,
+                //    lengthChange: false,
+                //    autoWidth: true,
+                //    paging: true,
+                //    lengthChange: false,
+                //    searching: true,
+                //    ordering: true,
+                //    info: true,
+                //    autoWidth: true,
+                //    responsive: false,
+                //    pageLength: 50,
+                //    buttons: [
+                //        {
+                //            extend: 'excel',
+                //            title: 'TML Data',
+                //            exportOptions: {
+                //                columns: ':visible'
+                //            }
+                //        },
+                //        {
+                //            extend: 'csv',
+                //            title: 'TML Data',
+                //            exportOptions: {
+                //                columns: ':visible'
+                //            }
+                //        },
+                //        'colvis'
+                //    ]
+                //});
+                //$(".dt-buttons").addClass('btn-group flex-wrap');
+                //$(".dt-buttons > button").addClass('btn btn-secondary');
+                //$(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                //$('#example2').wrap("<div class='scrolledTable'></div>");
             }
         });
     }
@@ -231,6 +292,12 @@
             alert("Please select site ");
             return false;
         }
+        let wtg = "";
+        $('select#wtg option:selected').each(function () {
+            wtg += "'" + $(this).val() + "',";
+        });
+        wtg = wtg != "" ? wtg.slice(0, -1) : wtg;
+        console.log(wtg);
         document.getElementById("loader").style.display = 'flex';
         console.log(site_id);
         var daterange = $('#daterange').val();
@@ -238,7 +305,9 @@
         arr1 = daterange.split("-");
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        getTmlData(site_id, fromDate, toDate);
+
+        getTmlData(site_id, fromDate, toDate, wtg);
+
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetWindPowerCurveData", "WindReport")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
@@ -249,106 +318,66 @@
                 //console.log(result);
                 console.log("GetWindTmlData fetched successfully.");
                 document.getElementById("loader").style.display = 'none';
-                //calling function of getting data for chart.
-                //getChartData(site_id, fromDate, toDate);
 
-                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
-                tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th  style="width: 10%;">Site</th>';
-                tbl += '<th>Wind Speed</th>';
-                tbl += '<th>Active Power</th>';
-                tbl += '</tr></thead>';
-                /*
-                tbl += '<th style="width: 5%;">Date</th>';
-                tbl += '<th>From Time</th>';
-                tbl += '<th>To Time</th>';
-                tbl += '<th>Avg Active Power</th>';
-                tbl += '<th>Avg Wind Speed</th>';
-                tbl += '<th>Restructive WTG</th>';
-                tbl += '<th style="width: 10%;">PLC Max</th>';
-                tbl += '<th style="width: 10%;">PLC Min</th>';
-                tbl += '<th>PLC State Code</th>';
-                tbl += '<th>Status</th>';
-                tbl += '<th>Reconstructed Windspeed</th>';
-                tbl += '<th>Expected Power</th>';
-                tbl += '<th>Deviation kW</th>';
-                tbl += '<th>Loss kW</th>';
-                tbl += '<th>Manual Breakdown </th>';
-                tbl += '<th>All Breakdown</th>';
-                */
+                //var tbl = '<table id="example1" class="table table-bordered table-striped" style="">';
+                //tbl += '<thead class="tbl-head"><tr>';
+                //tbl += '<th  style="width: 10%;">Site</th>';
+                //tbl += '<th>Wind Speed</th>';
+                //tbl += '<th>Active Power</th>';
+                //tbl += '</tr></thead>';
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
-                        pc_data.push({ windSpeed: result[i].wind_speed, activePower: result[i].active_power });
-                        tbl += '<tr>';
-                        tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].wind_speed + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].active_power + '</td>';
-                        /*
-                        tbl += '<td  class="text-center">' + result[i].wtGs + '</td>';
-                        tbl += '<td  class="text-center">' + toHoursAndMinutes(result[i].from_time.totalSeconds) + '</td>';
-                        tbl += '<td class="text-center">' + toHoursAndMinutes(result[i].to_time.totalSeconds) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].avg_active_power.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].avg_wind_speed.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].restructive_WTG + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_max + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_min + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plc_state_code + '</td>';
-                        tbl += '<td class="text-center">' + status + '</td>';
-                        tbl += '<td class="text-center">' + result[i].recon_wind_speed.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].exp_power_kw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].deviation_kw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].loss_kw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].manual_bd + '</td>';
-                        tbl += '<td class="text-center">' + result[i].all_bd + '</td>';
-                        */
-                        tbl += '</tr>';
+                        pc_data.push({ x: result[i].wind_speed, y: result[i].active_power });
+                        //tbl += '<tr>';
+                        //tbl += '<td  class="text-center">' + result[i].site + '</td>';
+                        //tbl += '<td  class="text-center">' + result[i].wind_speed + '</td>';
+                        //tbl += '<td  class="text-center">' + result[i].active_power + '</td>';
+                        //tbl += '</tr>';
                     }
                 }
                 else {
 
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
-                tbl += '</table>';
-               // $("#DailyGenView").html(tbl);
-                $("#DailyGenView").html("").html(tbl);
-                $('#example1').DataTable({
-                    dom: 'Bfrtip',
-                    responsive: false,
-                    lengthChange: false,
-                    autoWidth: true,
-                    paging: true,
-                    lengthChange: false,
-                    searching: true,
-                    ordering: true,
-                    info: true,
-                    autoWidth: true,
-                    responsive: false,
-                    pageLength: 50,
-                    buttons: [
-                        {
-                            extend: 'excel',
-                            title: 'Wind Power Curve',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        {
-                            extend: 'csv',
-                            title: 'Wind Power Curve',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        'colvis'
-                    ]
-                });
-                $(".dt-buttons").addClass('btn-group flex-wrap');
-                $(".dt-buttons > button").addClass('btn btn-secondary');
-                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-                $('#example1').wrap("<div class='scrolledTable'></div>");
-                //document.getElementById("wms_comparision").style.display = 'block';
-                //$('#example1').removeClass('dataTable');
+               // tbl += '</table>';
+               //// $("#PowerCurveView").html(tbl);
+               // $("#PowerCurveView").html("").html(tbl);
+               // $('#example1').DataTable({
+               //     dom: 'Bfrtip',
+               //     responsive: false,
+               //     lengthChange: false,
+               //     autoWidth: true,
+               //     paging: true,
+               //     lengthChange: false,
+               //     searching: true,
+               //     ordering: true,
+               //     info: true,
+               //     autoWidth: true,
+               //     responsive: false,
+               //     pageLength: 50,
+               //     buttons: [
+               //         {
+               //             extend: 'excel',
+               //             title: 'Wind Power Curve',
+               //             exportOptions: {
+               //                 columns: ':visible'
+               //             }
+               //         },
+               //         {
+               //             extend: 'csv',
+               //             title: 'Wind Power Curve',
+               //             exportOptions: {
+               //                 columns: ':visible'
+               //             }
+               //         },
+               //         'colvis'
+               //     ]
+               // });
+               // $(".dt-buttons").addClass('btn-group flex-wrap');
+               // $(".dt-buttons > button").addClass('btn btn-secondary');
+               // $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+               // $('#example1').wrap("<div class='scrolledTable'></div>");
 
                 createChart();
             }
@@ -357,103 +386,35 @@
 
     function createChart() {
         console.log("arrays : -");
-        console.log(pc_data);
-        console.log(tml_data);
-        //const data = {
-        //    datasets: [
-        //        {
-        //            label: 'Power Curve',
-        //            data: pc_data,
-        //            borderColor: 'blue',
-        //            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-        //            fill: false,
-        //            type: 'line'
-        //        },
-        //        {
-        //            label: 'Actual Data',
-        //            data: tml_data,
-        //            borderColor: 'orange',
-        //            backgroundColor: 'orange',
-        //            pointRadius: 6,
-        //            pointHoverRadius: 8,
-        //            type: 'scatter'
-        //        }
-        //    ]
-        //};
+        //console.log(pc_data);
+        //console.log(tml_data);
 
-        //const config = {
-        //    type: 'line',
-        //    data: data,
-        //    options: {
-        //        scales: {
-        //            x: {
-        //                type: 'linear',
-        //                position: 'bottom'
-        //            },
-        //            y: {
-        //                type: 'linear',
-        //                position: 'left'
-        //            }
-        //        }
-        //    }
-        //};
-
-        //const myChart = new Chart(document.getElementById('myChart'), config);
-
-        // Create a data table for power curve data
-        //const powerCurveTable = anychart.data.table();
-        //powerCurveTable.addData(pc_data);
-
-        //// Create a scatter series for power curve
-        //const powerCurveSeries = chart.line(powerCurveTable);
-        //powerCurveSeries.name('Power Curve');
-        //powerCurveSeries.stroke('blue');
-
-        //// Create a data table for actual data
-        //const actualDataTable = anychart.data.table();
-        //actualDataTable.addData(tml_data);
-
-        //// Create a scatter series for actual data
-        //const actualDataSeries = chart.marker(actualDataTable);
-        //actualDataSeries.name('Actual Data');
-        //actualDataSeries.type('scatter');
-        //actualDataSeries.fill('orange');
-
-        //// Set the chart title
-        //chart.title('Comparison Chart');
-
-        //// Set the chart container
-        //chart.container('chartContainer');
-
-        //// Draw the chart
-        //chart.draw();
-
-        // Create a data set for power curve data
-        const powerCurveDataSet = anychart.data.set(pc_data);
-
-        // Create a scatter series for power curve
-        const powerCurveSeries = chart.line(powerCurveDataSet);
-        powerCurveSeries.name('Power Curve');
-        powerCurveSeries.stroke('blue');
-
-        // Create a data set for actual data
-        const actualDataSet = anychart.data.set(tml_data);
-
-        // Create a scatter series for actual data
-        const actualDataSeries = chart.marker(actualDataSet);
-        actualDataSeries.name('Actual Data');
-        actualDataSeries.type('scatter');
-        actualDataSeries.fill('orange');
-
-        // Set the chart title
-        chart.title('Comparison Chart');
-
-        // Set the chart container
-        chart.container('chartContainer');
-
-        // Draw the chart
-        chart.draw();
-
+        var ctx = document.getElementById('scatterChart').getContext('2d');
+        var scatterChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Power',
+                        data: pc_data,
+                    },
+                    {
+                        label: 'AW',
+                        data: tml_data,
+                    }
+                ]
+            },
+            options: {
+                //responsive: true,
+                //maintainAspectRatio: false,
+                //scales: {
+                //    xAxes: [{
+                //        position: 'bottom',
+                //        // Customize other x-axis properties as needed
+                //    }]
+                //},
+            }
+        });
     }
 
     function GetWTG(fliterVal) {

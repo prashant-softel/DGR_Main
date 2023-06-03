@@ -731,12 +731,12 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetWindTmlPowerCurveData(string site, string fromDate, string toDate)
+        public async Task<IActionResult> GetWindTmlPowerCurveData(string site, string fromDate, string toDate, string wtgs)
         {
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindTmlPowerCurveData?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindTmlPowerCurveData?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&wtgs=" + wtgs;
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {

@@ -882,11 +882,11 @@ namespace DGRAPIs.Controllers
         }
         [Route("GetWindTmlPowerCurveData")]
         [HttpGet]
-        public async Task<IActionResult> GetWindTmlPowerCurveData(string site, string fromDate, string toDate)
+        public async Task<IActionResult> GetWindTmlPowerCurveData(string site, string fromDate, string toDate, string wtgs)
         {
             try
             {
-                var data = await _dgrBs.GetWindTmlPowerCurveData(site, fromDate, toDate);
+                var data = await _dgrBs.GetWindTmlPowerCurveData(site, fromDate, toDate, wtgs);
                 return Ok(data);
 
             }
