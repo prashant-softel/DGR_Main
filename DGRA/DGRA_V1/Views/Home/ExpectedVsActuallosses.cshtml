@@ -40,7 +40,15 @@
 <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
 <style>
     .anychart-credits {
-        display:none !important;
+        display: none !important;
+    }
+
+    .modebar .modebar--hover .ease-bg {
+        display: none !important;
+    }
+
+    .groups {
+        display: none !important;
     }
 </style>
 <!-- Content Wrapper. Contains page content -->
@@ -88,7 +96,7 @@
                             <div class="row">
                                 <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
                                 <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
-                            </select>-->
+                                </select>-->
                             </div>
                         </div>
                     </div>
@@ -149,10 +157,10 @@
             <!-- <canvas id="Waterfall" width="600" height="350"></canvas>-->
 
         </div>
-        <!-- <div id="WaterfallContainer" style="overflow-x: auto; width: 100%; height: 400px;"></div>-->
-
+        <div id="water" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+        <div id='myDiv'></div>
     </section>
-    
+
 </div>
 <!-- /.content-wrapper -->
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
@@ -176,14 +184,15 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/dist/js/comman.js"></script>
-<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>
+<!--<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>-->
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>-->
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
-<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
-<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!--<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>-->
+<!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
+<script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <style>
     .tooltip {
@@ -236,18 +245,18 @@
         var today = new Date();
         fyear = getFinancialYear(today);
         fdate = getFinancialYearDateStartDate(fyear);
-        console.log(fdate);
+        //console.log(fdate);
         GetSPV();
     }
     function handleMouseHover() {
-        console.log("mose over");
+        //console.log("mose over");
         var container = $('<div class="export-container">hiii</div>');
         //$('.dataTables_wrapper').prepend(container);
         var a = document.getElementById("info");
         //a.style.display = "flex";
     }
     function handleMouseOut() {
-        console.log("mouse out");
+        //console.log("mouse out");
         //document.getElementById("info").style.display = 'none';
     }
 
@@ -393,11 +402,11 @@
                     let cal_data = [];
                     var cnt = 0;
                     for (var i = 0; i < result.length; i++) {
-                        let ma = 1 - ((result[i].usmh + result[i].smh) / result[i].pexpected);                        let iga = 1 - ((result[i].igbdh) / result[i].pexpected);                        let ega = 1 - ((result[i].egbdh + result[i].load_shedding) / result[i].pexpected);                        //let usmh = (1 - (result[i].usmh / result[i].pexpected));
-                        console.log(ma);
-                        console.log(iga);
-                        console.log(ega);
-                        //console.log(usmh);
+                        let ma = 1 - ((result[i].usmh + result[i].smh) / result[i].pexpected);
+                        let iga = 1 - ((result[i].igbdh) / result[i].pexpected);
+                        let ega = 1 - ((result[i].egbdh + result[i].load_shedding) / result[i].pexpected);
+                        //let usmh = (1 - (result[i].usmh / result[i].pexpected));
+
 
                         let pr_value = 0;
                         let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
@@ -445,50 +454,15 @@
                     pr_cal = (total_pr / total_expected) * 100;
                     actual_cal = (total_actual / total_expected) * 100;
 
-                    // Push Dataset in chart
-                    cal_data.push("0", expected_cal.toFixed(1), usmh_cal.toFixed(1), smh_cal.toFixed(1), oh_cal.toFixed(1), igbd_cal.toFixed(1), egbd_cal.toFixed(1), curtailment_cal.toFixed(1), pr_cal.toFixed(1), actual_cal.toFixed(1));
 
-                    //main_data.push(total_target.toFixed(1), total_expected.toFixed(1), total_usmh.toFixed(1), total_smh.toFixed(1), total_oh.toFixed(1), total_igbd.toFixed(1), total_egbd.toFixed(1), total_curtaiment.toFixed(1), total_pr.toFixed(1), total_actual.toFixed(1));
+                   // main_data.push(parseInt(total_target.toFixed(1)), parseInt(total_expected.toFixed(1)), parseInt(total_usmh.toFixed(1)), parseInt(total_smh.toFixed(1)), parseInt(total_oh.toFixed(1)), parseInt(total_igbd.toFixed(1)), parseInt(total_egbd.toFixed(1)), parseInt(total_curtaiment.toFixed(1)), parseInt(total_pr.toFixed(1)), parseInt(total_actual.toFixed(1)));
 
                 // Waterfall Chart Data collection
-                // set the data
-                    /*let color = "#77CAE7";
 
-                    if (total_usmh < 0) {
-                        color = "#EE403D";
-                    }
-                    if (total_smh < 0) {
-                        color = "#EE403D";
-                    }
-                    if (total_oh < 0) {
-                        color = "#EE403D";
-                    }
-                    if (total_igbd < 0) {
-                        color = "#EE403D";
-                    }
-                    if (total_egbd < 0) {
-                        color = "#EE403D";
-                    }
-                    if (total_curtaiment < 0) {
-                        color = "#EE403D";
-                    }
-                    if (total_pr < 0) {
-                        color = "#EE403D";
-                    }*/
-                var data = [
-                    { x: 'Target', value: total_target.toFixed(1)},
-                    { x: 'Expected', value: total_expected.toFixed(1)},
-                    { x: 'USMH', value: total_usmh.toFixed(1)},
-                    { x: 'SMH', value: total_smh.toFixed(1)},
-                    { x: 'Other', value: total_oh.toFixed(1)},
-                    { x: 'IGBD', value: total_igbd.toFixed(1)},
-                    { x: 'EGBD', value: total_egbd.toFixed(1)},
-                    { x: 'Curtailment', value: total_curtaiment.toFixed(1)},
-                    { x: 'PR', value: total_pr.toFixed(1)},
-                    { x: 'Actual', value: total_actual.toFixed(1)}
-                ];
+
                 //Call function draw the chart
-                monthlychart(data);
+                    monthlychart(total_target.toFixed(1), total_expected.toFixed(1), total_usmh.toFixed(1), total_smh.toFixed(1), total_oh.toFixed(1), total_igbd.toFixed(1), total_egbd.toFixed(1), total_curtaiment.toFixed(1), total_pr.toFixed(1), total_actual.toFixed(1));
+
             }
             else {
             }
@@ -541,7 +515,94 @@
             getYearlyReport();
         }
     });
-}
+    }
+    function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+        var data = [
+            {
+                //name: "2018",
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute",
+                    "total"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "USMH",
+                    "SMH",
+                    "Other",
+                    "IGBD",
+                    "EGBD",
+                    "Curtailment",
+                    "PR",
+                    "Actual"
+                 ],
+                textposition: "outside",
+                //textposition: "inside",
+                text: [
+                    total_target,
+                    total_expected,
+                    total_usmh,
+                    total_smh,
+                    total_oh,
+                    total_igbd,
+                    total_egbd,
+                    total_curtaiment,
+                    total_pr,
+                    total_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_expected),
+                    Number(total_usmh),
+                    Number(total_smh),
+                    Number(total_oh),
+                    Number(total_igbd),
+                    Number(total_egbd),
+                    Number(total_curtaiment),
+                    Number(total_pr),
+                    Number(total_actual)
+                ],
+                //absolute: { marker: { color: "#77CAE7" } },
+               //relative: { marker: { color: "#77CAE7" } },
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
+            }
+        ];
+        layout = {
+            title: {
+                text: "Monthly"
+            },
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true
+            },
+            autosize: true,
+            showlegend: true
+        };
+        Plotly.newPlot('Waterfall', data, layout);
+        //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
+
+    }
 function getYearlyReport()
 {
     var data_Array1 = [];
@@ -632,36 +693,11 @@ function getYearlyReport()
                 pr_cal = (total_pr / total_expected) * 100;
                 actual_cal = (total_actual / total_expected) * 100;
 
-                //avg_pr = (total_pr / cnt);
-               /* data_Array = [{ label: "Target",Yaxis:0, backgroundColor: "#77CAE7", data: [total_target.toFixed(1)] },
-                    { label: "Expected", Yaxis: 0, backgroundColor: "#31576D", data: [total_expected.toFixed(1)] },
-                    { label: "USMH", backgroundColor: "#86C466", data: [total_usmh.toFixed(1)] },
-                    { label: "SMH", backgroundColor: "#FFCA5A", data: [total_smh.toFixed(1)] },
-                    { label: "Other", backgroundColor: "#76D7C4", data: [total_oh.toFixed(1)] },
-                    { label: "IGBD", backgroundColor: "#76D7C4", data: [total_igbd.toFixed(1)] },
-                    { label: "EGBD", backgroundColor: "#76D7C4", data: [total_egbd.toFixed(1)] },
-                    { label: "Curtailment", backgroundColor: "#76D7C4", data: [total_curtaiment.toFixed(1)] },
-                    { label: "PR", backgroundColor: "#58D68D", data: [total_pr.toFixed(1)] },
-                    { label: "Actual", backgroundColor: "#F39C12", data: [total_actual.toFixed(1)] }];
-                console.log("Data Array :", data_Array);
-                */
-                // Waterfall Chart Data collection
-                // set the data
-                var data = [
-                    { x: 'Target', value: total_target.toFixed(1) },
-                    { x: 'Expected', value: total_expected.toFixed(1) },
-                    { x: 'USMH', value: total_usmh.toFixed(1) },
-                    { x: 'SMH', value: total_smh.toFixed(1) },
-                    { x: 'Other', value: total_oh.toFixed(1) },
-                    { x: 'IGBD', value: total_igbd.toFixed(1) },
-                    { x: 'EGBD', value: total_egbd.toFixed(1) },
-                    { x: 'Curtailment', value: total_curtaiment.toFixed(1) },
-                    { x: 'PR', value: total_pr.toFixed(1) },
-                    { x: 'Actual', value: total_actual.toFixed(1) }
-                ];
-                cal_data.push("0", expected_cal.toFixed(1), usmh_cal.toFixed(1), smh_cal.toFixed(1), oh_cal.toFixed(1), igbd_cal.toFixed(1), egbd_cal.toFixed(1), curtailment_cal.toFixed(1), pr_cal.toFixed(1), actual_cal.toFixed(1));
-                // Call function draw the yearly chart 
-                yearlyChart(data);
+
+               
+                // Call function draw the yearly chart
+                yearlyChart(total_target.toFixed(1), total_expected.toFixed(1), total_usmh.toFixed(1), total_smh.toFixed(1), total_oh.toFixed(1), total_igbd.toFixed(1), total_igbd.toFixed(1), total_egbd.toFixed(1), total_pr.toFixed(1), total_actual.toFixed(1));
+
             }
             else {
             }
@@ -670,44 +706,92 @@ function getYearlyReport()
     });
     }
 
-    function monthlychart(data) {
-        console.log("inside monthly Chart function : " + data);
-        let chartStatus = Chart.getChart("Waterfall"); // <canvas> id
-        if (chartStatus != undefined) {
-            chartStatus.destroy();
-        }
-    anychart.onDocumentReady(function () {
-        //create a waterfall chart with the data
-        var chart = anychart.waterfall();
-        //set the chart title
-        chart.title('Monthly');
-        //legend disabled
-        chart.legend(false);
-        //tooltips disabled
-        chart.tooltip(false);
-        // create a series and set the data
-        var series = chart.waterfall(data);
-        // set color 
-        series.normal().fill('#77CAE7');
-        series.normal().hatchFill('forward-diagonal', '#77CAE7');
-       
-        // second, falling columns
-        series.normal().fallingFill('#EE403D');
-        series.normal().fallingStroke('#EE403D');
 
-        // third, rising columns
-        series.normal().risingFill('#77CAE7');
-        series.normal().risingStroke('#77CAE7');
-       
-        chart.container('Waterfall');
-      
-        //draw the resulting chart
-         chart.draw();
-    });
-}
 
-    function yearlyChart(ydata) {
-        let chartStatus = Chart.getChart("Waterfallyearly"); // <canvas> id
+    function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_igbd, total_egbd, total_pr, total_actual) {
+
+        var data = [
+            {
+                //name: "2018",
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute",
+                    "total"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "USMH",
+                    "SMH",
+                    "Other",
+                    "IGBD",
+                    "EGBD",
+                    "Curtailment",
+                    "PR",
+                    "Actual"
+                ],
+                textposition: "outside",
+                //textposition: "inside",
+                text: [
+                    total_target,
+                    total_expected,
+                    total_usmh,
+                    total_smh,
+                    total_oh,
+                    total_igbd,
+                    total_egbd,
+                    total_curtaiment,
+                    total_pr,
+                    total_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_expected),
+                    Number(total_usmh),
+                    Number(total_smh),
+                    Number(total_oh),
+                    Number(total_igbd),
+                    Number(total_egbd),
+                    Number(total_curtaiment),
+                    Number(total_pr),
+                    Number(total_actual)
+                ],
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
+            }
+        ];
+        layout = {
+            title: {
+                text: "Monthly"
+            },
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true
+            },
+            autosize: true,
+            showlegend: true
+        };
+        Plotly.newPlot('Waterfallyearly', data, layout);
+       /* let chartStatus = Chart.getChart("Waterfallyearly"); // <canvas> id
         if (chartStatus != undefined) {
             chartStatus.destroy();
         }
@@ -722,7 +806,7 @@ function getYearlyReport()
         chart.tooltip(false);
         // create a series and set the data
         var series = chart.waterfall(ydata);
-        // set color 
+        // set color
         series.normal().fill('#77CAE7');
         series.normal().hatchFill('forward-diagonal', '#77CAE7');
         // second, falling columns
@@ -731,38 +815,74 @@ function getYearlyReport()
         // third, rising columns
         series.normal().risingFill('#77CAE7');
         series.normal().risingStroke('#77CAE7');
-      
+
         chart.container('Waterfallyearly');
         //draw the resulting chart
         chart.draw();
-    });
+    });*/
 }
 
 </script>
 
 <script>
-/*anychart.onDocumentReady(function () {
-// set the data
-var data = [
-    { x: 'Total Revenue', value: 182527 },
-    { x: 'Cost of Revenue', value: -84732 },
-    { x: 'Gross Profit', isTotal: true },
-    { x: 'Operating Expenses', value: -56571 },
-    { x: 'Operating Income', isTotal: true },
-    { x: 'Interest Income', value: 8583 },
-    { x: 'Other Expenses', value: -1725 },
-    { x: 'Income Before Taxes', isTotal: true },
-    { x: 'Provision for Taxes', value: -7813 },
-    { x: 'Net Income', isTotal: true }
-];
+    /* var data = [
+            {
+                //name: "2018",
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "absolute",
+                    "absolute",
+                    "total",
+                    "relative",
+                    "relative",
+                    "total"
+                ],
+                x: [
+                    "Sales",
+                    "Consulting",
+                    "Net revenue",
+                    "Purchases",
+                    "Other expenses",
+                    "Profit before tax"
+                ],
+                textposition: "outside",
+                text: [
+                    "+60",
+                    "+80",
+                    "",
+                    "",
+                    "",
+                    "Total"
+                ],
+                y: [
+                    60,
+                    80,
+                    0,
+                    -40,
+                    -20,
+                    0
+                ],
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
+            }
+        ];
+        layout = {
+            title: {
+                text: "Profit and loss statement 2018"
+            },
+            xaxis: {
+                type: "category"
+            },
+            yaxis: {
+                type: "linear"
+            },
+            autosize: true,
+            showlegend: true
+        };
+        Plotly.newPlot('myDiv', data, layout);*/
 
-// create a waterfall chart with the data
-var chart = anychart.waterfall(data);
-// set the chart title
-chart.title('Income Statement for Alphabet Inc. (GOOGL), 2020');
-// set the container id for the waterfall chart
-chart.container('WaterfallContainer');
-// draw the resulting chart
-chart.draw();
-});*/
 </script>
