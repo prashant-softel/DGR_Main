@@ -1158,7 +1158,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         isGKK = true;
                     }
-                    if (isGKK)
+                    if (FileSheetType.sheetList.Contains(worksheet.Name) || isGKK)
                     {
                         _worksheetList.Add(worksheet.Name);
                     }
@@ -5018,23 +5018,36 @@ namespace DGRA_V1.Areas.admin.Controllers
             DateTime toDate;
             DateTime nextDate = DateTime.MinValue;
             string site = "";
-            try
-            {
-                fromDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
-                toDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
+            bool noData = false;
+            List<InsertSolarTrackerLoss> addSet = new List<InsertSolarTrackerLoss>();
 
-            }
-            catch (Exception e)
+            if (ds.Tables.Count > 1)
             {
-                //m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format MM-dd-yyyy");
-                m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format dd-MM-yyyy");
-                fromDate = DateTime.MaxValue;
-                toDate = DateTime.MinValue;
-            }
+                if (ds.Tables[0].Rows[0]["Site"] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[0]["Site"]) || ds.Tables[0].Rows[0]["Date"] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[0]["Date"]))
+                {
+                    noData = true;
+                }
 
-            if (ds.Tables.Count > 0)
-            {
-                List<InsertSolarTrackerLoss> addSet = new List<InsertSolarTrackerLoss>();
+                if (!noData)
+                {
+                    try
+                    {
+                        fromDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
+                        toDate = Convert.ToDateTime(ds.Tables[0].Rows[0]["Date"]);
+
+                    }
+                    catch (Exception e)
+                    {
+                        //m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format MM-dd-yyyy");
+                        m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format dd-MM-yyyy");
+                        fromDate = DateTime.MaxValue;
+                        toDate = DateTime.MinValue;
+                    }
+                }
+                else
+                {
+                    m_ErrorLog.SetInformation("No Data in Tracker Loss Sheet");
+                }
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     InsertSolarTrackerLoss addUnit = new InsertSolarTrackerLoss();
@@ -5124,6 +5137,20 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     m_ErrorLog.SetError(",Solar Tracker Loss Validation Failed,");
+                }
+            }
+            else
+            {
+                m_ErrorLog.SetInformation("No Data in Tracker Loss Sheet");
+                if (!(errorCount > 0))
+                {
+                    isTrackerLossvalidationSuccess = true;
+                    responseCode = 200;
+                    trackerJson = JsonConvert.SerializeObject(addSet);
+
+                    //var json = JsonConvert.SerializeObject(addSet);
+                    //var data = new StringContent(json, Encoding.UTF8, "application/json");
+
                 }
             }
             return responseCode;
@@ -7874,6 +7901,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             {
                                 m_ErrorLog.SetInformation(", File not uploaded");
                             }
+
 
                             return responseCode = (int)response.StatusCode;
                         }

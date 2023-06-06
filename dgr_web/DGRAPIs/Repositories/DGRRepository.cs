@@ -12334,29 +12334,32 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string date = "";
             int id = 0;
             int count = 0;
-            foreach (var unit in set)
+            if (set.Count > 0)
             {
-                insertValues += "('" + unit.site + "','" + unit.site_id + "','" + unit.ac_capacity + "','" + unit.date + "','" + unit.from_time + "','" + unit.to_time + "','" + unit.trackers_in_BD + "','" + unit.module_tracker + "','" + unit.module_WP + "','" + unit.remark + "'),";
-                if (count == 0)
+                foreach (var unit in set)
                 {
-                    id = unit.site_id;
-                    date = unit.date.ToString();
+                    insertValues += "('" + unit.site + "','" + unit.site_id + "','" + unit.ac_capacity + "','" + unit.date + "','" + unit.from_time + "','" + unit.to_time + "','" + unit.trackers_in_BD + "','" + unit.module_tracker + "','" + unit.module_WP + "','" + unit.remark + "'),";
+                    if (count == 0)
+                    {
+                        id = unit.site_id;
+                        date = unit.date.ToString();
+                    }
+                    count++;
                 }
-                count++;
-            }
-            deleteQry += " site_id = " + id + " and date = '" + date + "';";
+                deleteQry += " site_id = " + id + " and date = '" + date + "';";
 
-            qry += insertValues;
+                qry += insertValues;
 
-            await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
-            if (!(string.IsNullOrEmpty(insertValues)))
-            {
-                val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
-            }
-            if (val > 0)
-            {
-                //CalculateTrackerLosses(id, fromDate, toDate, logFileName)
-                //bool calculateTrackerLoss =  await CalculateTrackerLosses(id, fromDate, toDate, "log");
+                await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                if (!(string.IsNullOrEmpty(insertValues)))
+                {
+                    val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                }
+                if (val > 0)
+                {
+                    //CalculateTrackerLosses(id, fromDate, toDate, logFileName)
+                    //bool calculateTrackerLoss =  await CalculateTrackerLosses(id, fromDate, toDate, "log");
+                }
             }
             return val;
         }
@@ -13246,7 +13249,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //{
 
                 //}
-                string updateQry = " update `uploading_pyranometer_15_min_solar` set `temp_corrected_pr` = avg_poa*mod_temp where site_id = " + site + " and date(date_time) = '" + datestring + "' ";
+                string updateQry = " update `uploading_pyranometer_15_min_solar` set `temp_corrected_pr` = avg_poa * mod_temp where site_id = " + site + " and date(date_time) = '" + datestring + "' ";
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
