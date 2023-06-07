@@ -1214,7 +1214,7 @@
                 tbl += '<thead class="tbl-head"><tr>';
                // tbl += '<th >Year</th>';
                // tbl += '<th >Month</th>';
-                tbl += '<th style="width: 5%;" >Date</th>';
+                tbl += '<th style="width: 4%;" >Date</th>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
@@ -1253,6 +1253,7 @@
                 tbl += '<th>EGBD Loss</th>';
                 tbl += '<th>Load_She Loss</th>';
                 tbl += '<th>LULL Loss</th>';
+                tbl += '<th>Tracker Loss (kw)</th>';
                 tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
@@ -1260,6 +1261,7 @@
 
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        let totalFinal = result[i].total_losses + result[i].tracker_losses;
                         tbl += '<tr>';
                         //tbl += '<td class="text-left">' + result[i].year + '</td>';
                        // tbl += '<td class="text-left">' + result[i].month + '</td>';
@@ -1303,7 +1305,8 @@
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].unschedule_hrs['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].schedule_hrs['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].others['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
@@ -1778,7 +1781,6 @@
                 tbl += '<th>IGBD</th>';
                 tbl += '<th>EGBD</th>';
                 tbl += '<th>Load Shedding</th>';
-                //tbl += '<th>Tracker Loss (kw)</th>';
                 tbl += '<th>Total BD</th>';
 
 
@@ -1789,6 +1791,7 @@
                 tbl += '<th>EGBD Loss</th>';
                 tbl += '<th>Load_She Loss</th>';
                 tbl += '<th>LULL Loss</th>';
+                tbl += '<th>Tracker Loss (kw)</th>';
                 tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
                 console.log(result.length);
@@ -1796,6 +1799,7 @@
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        let totalFinal = result[i].total_losses + result[i].tracker_losses;
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + fyyear + '</td>';
                         tbl += '<td class="text-left">' + result[i].month + '</td>';
@@ -1847,8 +1851,8 @@
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
-                        //tbl += '<td class="text-right">' + result[i].tracker_losses+ '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2)+ '</td>';
+                        tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }
@@ -2262,7 +2266,7 @@
                 var tbl = '<div class="text-center"><h5></h5></div>';
                 tbl += '<table id="example3"  class="table table-bordered table-striped" style="width:285%">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width:4%">FY</th>';
+                tbl += '<th style="width:3%">FY</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
@@ -2292,7 +2296,6 @@
                 tbl += '<th>IGBD</th>';
                 tbl += '<th>EGBD</th>';
                 tbl += '<th>Load Shedding</th>';
-                //tbl += '<th>Tracker Loss</th>';
 
                 tbl += '<th>Total BD</th>';
 
@@ -2304,6 +2307,7 @@
                 tbl += '<th>EGBD Loss</th>';
                 tbl += '<th>Load_She Loss</th>';
                 tbl += '<th>LULL Loss</th>';
+                tbl += '<th>Tracker Loss (kw)</th>';
                 tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
@@ -2311,6 +2315,7 @@
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
                         // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        let TotalFinal = result[i].total_losses + result[i].tracker_losses;
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + fyyear + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -2354,8 +2359,8 @@
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
-                        //tbl += '<td class="text-right">' + result[i].tracker_losses+ '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + TotalFinal.toFixed(2) + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].unschedule_hrs['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].schedule_hrs['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].others['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';

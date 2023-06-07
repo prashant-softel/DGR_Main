@@ -1808,7 +1808,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
         {
             //sitewisewinddaily
 
-            string filter = " (date >= '" + fromDate + "'  and date<= '" + toDate + "') ";
+            string filter = " (t1.date >= '" + fromDate + "'  and t1.date<= '" + toDate + "') ";
             if (!string.IsNullOrEmpty(state))
             {
 
@@ -1882,41 +1882,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 filter += months.TrimEnd(',') + ")";
             }
 
-            string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site,
-dc_capacity, ac_capacity,
-sum(expected_kwh) as expected_kwh,
-sum(ghi)/count(ghi) as ghi,
-sum(poa)/count(poa) as poa,
-sum(inv_kwh) as inv_kwh,
-sum(plant_kwh) as plant_kwh,
-sum(inv_pr)/count(inv_pr) as inv_pr,
-sum(plant_pr)/count(plant_pr) as plant_pr,
-(sum(inv_plf_ac)/count(inv_plf_ac))as inv_plf,
-(sum(plant_plf_ac)/count(plant_plf_ac))as plant_plf,
-(sum(ma)/count(*))as ma_actual,
-(sum(iga)/count(*))as iga,
-(sum(ega)/count(*))as ega,
-(sum(ega_b)/count(*))as ega_b,
-(sum(ega_c)/count(*))as ega_c,
-sum(prod_hrs)as prod_hrs,
-sum(lull_hrs_bd)as lull_hrs_bd,
-sum(usmh_bs)as usmh_bs,
-sum(smh_bd)as smh_bd,
-sum(oh_bd) as oh_bd,
-sum(igbdh_bd) as igbdh_bd,
-sum(egbdh_bd)as egbdh_bd,
-sum(load_shedding_bd)as load_shedding_bd,
-sum(total_bd_hrs)as total_bd_hrs,
-
-sum(usmh)as usmh,
-sum(smh)as smh,
-sum(oh)as oh,
-sum(igbdh)as igbdh,
-sum(egbdh)as egbdh,
-sum(load_shedding)as load_shedding,
-sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join
-site_master_solar t2 on t1.site_id=t2.site_master_solar_id 
-where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
+            string qry = @"SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.dc_capacity, t2.ac_capacity, sum(t1.expected_kwh) as expected_kwh, sum(t1.ghi)/count(t1.ghi) as ghi, sum(t1.poa)/count(t1.poa) as poa, sum(t1.inv_kwh) as inv_kwh, sum(t1.plant_kwh) as plant_kwh, sum(t1.inv_pr)/count(t1.inv_pr) as inv_pr, sum(t1.plant_pr)/count(t1.plant_pr) as plant_pr, (sum(t1.inv_plf_ac)/count(t1.inv_plf_ac))as inv_plf, (sum(t1.plant_plf_ac)/count(t1.plant_plf_ac))as plant_plf, (sum(t1.ma)/count(*))as ma_actual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.prod_hrs)as prod_hrs, sum(t1.lull_hrs_bd)as lull_hrs_bd, sum(t1.usmh_bs)as usmh_bs, sum(t1.smh_bd)as smh_bd, sum(t1.oh_bd) as oh_bd, sum(t1.igbdh_bd) as igbdh_bd, sum(t1.egbdh_bd)as egbdh_bd, sum(t1.load_shedding_bd)as load_shedding_bd, sum(t1.total_bd_hrs)as total_bd_hrs, sum(t1.usmh)as usmh, sum(t1.smh)as smh, sum(t1.oh)as oh, sum(t1.igbdh)as igbdh, sum(t1.egbdh)as egbdh, sum(t1.load_shedding)as load_shedding, sum(t3.tracker_loss) as tracker_losses, (sum(t1.total_losses) + tracker_loss) as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on t1.site_id=t2.site_master_solar_id LEFT JOIN uploading_file_tracker_loss t3 ON t1.site_id = t3.site_id where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
 
 
             //where  t1.approve_status="+approve_status+" and " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
@@ -4817,7 +4783,7 @@ and t3.inverter=t1.location_name " + filter + " group by t1.site,location_name ,
                     int monthno = Int32.Parse(spmonth[i]);
                     string year = (Int32.Parse(fy) + 1).ToString();
                     string Qyear = (monthno > 3) ? fy : year;
-                    filter += "( month(date) = " + spmonth[i] + " and year(date) = '" + Qyear + "' )";
+                    filter += "( month(t1.date) = " + spmonth[i] + " and year(t1.date) = '" + Qyear + "' )";
                 }
                 filter += ") ";
                 chkfilter = 1;
@@ -4829,7 +4795,7 @@ and t3.inverter=t1.location_name " + filter + " group by t1.site,location_name ,
             }
             else
             {
-                filter += " where ((year(date) = '" + fy + "' and month(date)>3) || (year(date) = '" + (Convert.ToInt32(fy) + 1).ToString() + "' and month(date)<4))";
+                filter += " where ((year(t1.date) = '" + fy + "' and month(t1.date)>3) || (year(t1.date) = '" + (Convert.ToInt32(fy) + 1).ToString() + "' and month(t1.date)<4))";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(state) && state != "All~")
@@ -4897,20 +4863,7 @@ and t3.inverter=t1.location_name " + filter + " group by t1.site,location_name ,
                 filter += inverters.TrimEnd(',') + ")";
             }
 
-            string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,
-t2.country,t1.state,t2.spv,t1.site,(t2.dc_capacity)as dc_capacity,
-(t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh,
-sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(inv_pr)) as inv_pr,(sum(plant_pr)/count(plant_pr)) as plant_pr,
-sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf,
-sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual,
-(sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,sum(prod_hrs) as prod_hrs,
-sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd,
-sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd,
-sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh,
-sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh,
-sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as total_losses
- FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id
-" + filter + " group by t1.site ,month(date)";
+            string qry = @"SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, t2.country,t1.state,t2.spv,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(inv_pr)) as inv_pr,(sum(plant_pr)/count(plant_pr)) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(t3.tracker_loss) as tracker_losses, sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id LEFT JOIN uploading_file_tracker_loss t3 ON t1.site_id = t3.site_id " + filter + " group by t1.site ,month(t1.date)";
 
             //where t1.approve_status=" + approve_status + " and t2.state=t1.state  " + filter + " group by t1.site ,month(date)";
 
@@ -5133,20 +5086,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                 filter += months.TrimEnd(',') + ")";
             }
 
-            string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,date,
-t2.country,t1.state,t2.spv,t1.site,(t2.dc_capacity)as dc_capacity,
-(t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh,
-sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(inv_pr)) as inv_pr,(sum(plant_pr)/count(plant_pr)) as plant_pr,
-sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf,
-sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual,
-(sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,sum(prod_hrs) as prod_hrs,
-sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd,
-sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd,
-sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh,
-sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh,
-sum(load_shedding)as load_shedding,'' as tracker_losses,sum(total_losses)as total_losses
- FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id
- " + filter + " group by t1.site_id ";
+            string qry = @"SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date, t2.country,t1.state,t2.spv,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(inv_pr)) as inv_pr,(sum(plant_pr)/count(plant_pr)) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, SUM(t3.tracker_loss) as tracker_losses,sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id LEFT JOIN uploading_file_tracker_loss t3 ON t1.site_id = t3.site_id " + filter + " group by t1.site_id ";
 
             //where t1.approve_status=" + approve_status + " and t2.state=t1.state  " + filter + " group by t1.site ";
             try

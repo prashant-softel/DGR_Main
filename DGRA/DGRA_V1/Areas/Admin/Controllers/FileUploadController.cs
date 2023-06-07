@@ -6943,57 +6943,154 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 bool isTimeEmpty = addUnit.timestamp == "" || addUnit.timestamp is DBNull || addUnit.timestamp == " " ? true : false;
                                 addUnit.date = isTimeEmpty ? "Nil" : Convert.ToDateTime(addUnit.timestamp).ToString("dd-MMM-yy");
 
-                                //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into closest.
-                                if (toTime != "")
-                                {
-                                    //00:10:00
-                                    string inputStrings = toTime;
-                                    char sepre = ':';
-                                    string[] output = inputStrings.Split(sepre);
-                                    if (output.Length > 0)
-                                    {
-                                        int minute = Convert.ToInt32(output[1]);
-                                        int remainder = minute % 10;
-                                        int hour = Convert.ToInt32(output[0]);
+                                //check whether to time data needs to be converted into higher 10 min to lower 10 min ?
+                                bool toNeedToCorrect = false;
+                                bool isToHigher = true;
 
-                                        if (remainder > 0)
+                                if (columnCount < ColumnCount - 2)
+                                {
+                                    string inPut = toTime;
+                                    char seP = ':';
+                                    string[] outPut = inPut.Split(seP);
+                                    
+                                    string inPutFrom = fromTime;
+                                    char sePFrom = ':';
+                                    string[] outPutFrom = inPutFrom.Split(sePFrom);
+                                    if(outPut.Length > 0 && outPutFrom.Length > 0 )
+                                    {
+                                        int Hrs = Convert.ToInt32(outPut[0]);
+                                        int Min = Convert.ToInt32(outPut[1]);
+                                        int HrsFrom = Convert.ToInt32(outPutFrom[0]);
+                                        int MinFrom = Convert.ToInt32(outPutFrom[1]);
+                                        int difference = Min - 10;
+                                        if(difference != MinFrom)
                                         {
-                                            minute = minute + (10 - remainder);
-                                            if (remainder < 9)
+                                            toNeedToCorrect = true;
+                                            if (difference < MinFrom )
                                             {
-                                                finalToTime = output[0] + ":" + minute.ToString() + ":" + output[2];
+                                                isToHigher = true;
                                             }
-                                            else
+                                            if (difference >MinFrom )
                                             {
-                                                if (remainder == 9)
-                                                {
-                                                    if (hour <= 23)
-                                                    {
-                                                        if (hour == 23 && Convert.ToInt32(output[1]) > 55)
-                                                        {
-                                                            finalToTime = hour.ToString() + ":" + output[1] + ":" + output[2];
-                                                        }
-                                                        hour++;
-                                                        finalToTime = hour + ":" + "00" + ":" + output[2];
-                                                    }
-                                                    else
-                                                    {
-                                                        if (inputStrings == "24:00:00")
-                                                        {
-                                                            finalToTime = "23:59:00";
-                                                        }
-                                                        finalToTime = inputStrings;
-                                                    }
-                                                }
+                                                isToHigher = false;
                                             }
                                         }
                                         else
                                         {
-                                            finalToTime = inputStrings;
+                                            toNeedToCorrect = false;
                                         }
                                     }
                                 }
-                                
+                                if (toNeedToCorrect)
+                                {
+                                    if (toTime != "")
+                                    {
+                                        if (isToHigher)
+                                        {
+                                            //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into greater closest.
+                                            //00:10:00
+                                            string inputStrings = toTime;
+                                            char sepre = ':';
+                                            string[] output = inputStrings.Split(sepre);
+                                            if (output.Length > 0)
+                                            {
+                                                int minute = Convert.ToInt32(output[1]);
+                                                int remainder = minute % 10;
+                                                int hour = Convert.ToInt32(output[0]);
+
+                                                if (remainder > 0)
+                                                {
+                                                    minute = minute + (10 - remainder);
+                                                    if (remainder < 9)
+                                                    {
+                                                        finalToTime = output[0] + ":" + minute.ToString() + ":" + output[2];
+                                                    }
+                                                    else
+                                                    {
+                                                        if (remainder == 9)
+                                                        {
+                                                            if (hour <= 23)
+                                                            {
+                                                                if (hour == 23 && Convert.ToInt32(output[1]) > 55)
+                                                                {
+                                                                    finalToTime = hour.ToString() + ":" + output[1] + ":" + output[2];
+                                                                }
+                                                                hour++;
+                                                                finalToTime = hour + ":" + "00" + ":" + output[2];
+                                                            }
+                                                            else
+                                                            {
+                                                                if (inputStrings == "24:00:00")
+                                                                {
+                                                                    finalToTime = "23:59:00";
+                                                                }
+                                                                finalToTime = inputStrings;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    finalToTime = inputStrings;
+                                                }
+                                            }
+                                        }
+                                        if (!isToHigher)
+                                        {
+                                            //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into greater closest.
+                                            //00:10:00
+                                            string inputStrings = toTime;
+                                            char sepre = ':';
+                                            string[] output = inputStrings.Split(sepre);
+                                            if (output.Length > 0)
+                                            {
+                                                int minute = Convert.ToInt32(output[1]);
+                                                int remainder = minute % 10;
+                                                int hour = Convert.ToInt32(output[0]);
+
+                                                if (remainder > 0)
+                                                {
+                                                    minute = minute - (10 - remainder);
+                                                    if (remainder < 9)
+                                                    {
+                                                        finalToTime = output[0] + ":" + minute.ToString() + ":" + "00";
+                                                    }
+                                                    else
+                                                    {
+                                                        if (remainder == 9)
+                                                        {
+                                                            if (hour <= 23)
+                                                            {
+                                                                if (hour == 23 && Convert.ToInt32(output[1]) > 55)
+                                                                {
+                                                                    finalToTime = hour.ToString() + ":" + output[1] + ":" + "00";
+                                                                }
+                                                                hour--;
+                                                                finalToTime = hour + ":" + "00" + ":" + "00";
+                                                            }
+                                                            else
+                                                            {
+                                                                if (inputStrings == "24:00:00")
+                                                                {
+                                                                    finalToTime = "23:59:00";
+                                                                }
+                                                                finalToTime = inputStrings;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    finalToTime = inputStrings;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    finalToTime = toTime;
+                                }
                                 //Check if the from time is 10, 20, 30, 40, 50 if not convert it into the same.
                                 string finalFrom = "";
                                 if(fromTime != "" || finalToTime != "")

@@ -231,6 +231,7 @@
                 tbl += '<th colspan="3" class="text-center">GHI Vs POA Gain (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PR (%)</th>';
+                tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
                 tbl += '<th colspan="3" class="text-center">MA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr > ';
@@ -256,12 +257,19 @@
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
-                tbl += '<th>Tar (%)</th>';
-                tbl += '<th>Act (%)</th>';
-                tbl += '<th>Var (%)</th>';
+
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
+
+                tbl += '<th>Tar (%)</th>';
+                tbl += '<th>Act (%)</th>';
+                tbl += '<th>Var (%)</th>';
+
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
@@ -441,18 +449,27 @@
                         tbl += '<td class="text-right">' + gain_tar.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + gain_act.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + gain_var.toFixed(2) + '</td>';
+
                         tbl += '<td class="text-right">' + result[i].tar_plf.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_plf.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + plf_var.toFixed(2) + '</td>';
+
                         tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + act_prval.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
+
+                        tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + act_prval.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
+
                         tbl += '<td class="text-right">' + result[i].tar_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ma_var.toFixed(2) + '</td>';
+
                         tbl += '<td class="text-right">' + result[i].tar_iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + iga_var.toFixed(2) + '</td>';
+
                         tbl += '<td class="text-right">' + result[i].tar_ega.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_ega.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ega_var.toFixed(2) + '</td>';
@@ -546,17 +563,26 @@
                     tbl += '<td class="text-right"><b>' + avg_act_gain.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_gain_var.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_tar_plf.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_act_plf.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_plf_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
+
+                    tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_ma.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ma.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_ma_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_iga.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_iga.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_iga_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_ega.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ega.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_ega_var.toFixed(2) + '</b></td>';
@@ -1296,15 +1322,23 @@
                     tbl += '<td class="text-right"><b>' + avg_tar_plf.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_plf.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_plf_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
+
+                    tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_ma.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ma.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_ma_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_iga.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_iga.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_iga_var.toFixed(2) + '</b></td>';
+
                     tbl += '<td class="text-right"><b>' + avg_tar_ega.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ega.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_ega_var.toFixed(2) + '</b></td>';
