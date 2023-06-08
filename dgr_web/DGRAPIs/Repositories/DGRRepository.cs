@@ -5166,7 +5166,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             data = await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);
             
 
-                string getPower = "  select t2.site, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+                string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh, SUM(t1.temp_corrected_pr)/4 as temp_corrected_pr from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
                 List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
                 try
                 {
@@ -5213,6 +5213,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                     if (_dataelement.site == _tempdataelement.site)
                     {
                         _dataelement.expected_kwh = _tempdataelement.expected_kwh;
+                        _dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
                     }
                 }
 

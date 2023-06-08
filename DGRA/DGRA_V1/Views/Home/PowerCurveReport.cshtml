@@ -226,6 +226,7 @@
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
+                        //pc_data.clear();
                         pc_data.push({ x: result[i].wind_speed, y: result[i].active_power });
                         //tbl += '<tr>';
                         //tbl += '<td  class="text-center">' + result[i].date + '</td>';
@@ -407,12 +408,24 @@
             options: {
                 //responsive: true,
                 //maintainAspectRatio: false,
-                //scales: {
-                //    xAxes: [{
-                //        position: 'bottom',
-                //        // Customize other x-axis properties as needed
-                //    }]
-                //},
+                legend: {
+                    position: 'bottom',
+                    display: true,
+                },
+                scales: {
+                    //y: {
+                    //    suggestedMin: 0
+                    //}
+                    y: {
+                        //ticks: {
+                        //    beginAtZero: true
+                        //}
+                        ticks: {
+                            suggestedMin: 0,
+                            min: 0
+                        }
+                    }
+                }
             }
         });
     }
