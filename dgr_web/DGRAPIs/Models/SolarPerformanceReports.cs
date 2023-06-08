@@ -63,7 +63,9 @@ namespace DGRAPIs.Models
         public double act_iga { get; set; }
         public double tar_ega { get; set; }
         public double act_ega { get; set; }
-       
+        public double temp_corrected_pr { get; set; }
+
+
 
     }
     public class SolarPerformanceReports2
