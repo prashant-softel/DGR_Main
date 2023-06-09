@@ -43,15 +43,15 @@ namespace DGRA_V1.Areas.admin.Controllers
             m_ErrorLog = new ErrorLog(iwebhostobj);
             env = iwebhostobj;
         }
-        static int batchIdDGRAutomation = 0;
+        int batchIdDGRAutomation = 0;
         string siteUserRole;
         int previousSite = 0;
-        static string[] importData = new string[2];
+        string[] importData = new string[2];
         string generationDate = "";
-        static bool isGenValidationSuccess = false;
-        static bool isBreakdownValidationSuccess = false;
-        static bool isPyro1ValidationSuccess = false;
-        static bool isPyro15ValidationSuccess = false;
+        bool isGenValidationSuccess = false;
+        bool isBreakdownValidationSuccess = false;
+        bool isPyro1ValidationSuccess = false;
+        bool isPyro15ValidationSuccess = false;
         string genJson = string.Empty;
         string breakJson = string.Empty;
         string pyro1Json = string.Empty;
