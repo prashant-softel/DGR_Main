@@ -206,9 +206,9 @@
                 tbl += '<th>Nos. of Module &#64; Tracker (Nos) </th>';
                 tbl += '<th>Module (Wp)</th>';
                 tbl += '<th>BD. Tracker Capacity (kW)</th>';
-                tbl += '<th>Actual POA (kWh/m^2)</th>';
-                tbl += '<th>Actual GHI (kWh/m^2)</th>';
-                tbl += '<th>Tracker AOP PR (%)</th>';
+                tbl += '<th>Actual POA (kWh/m<sup class="superscript">2</sup>)</th>';
+                tbl += '<th>Actual GHI (kWh/m<sup class="superscript">2</sup>)</th>';
+                tbl += '<th>AOP PR (%)</th>';
                 tbl += '<th>Gen Losses (kWh)</th>';
                 tbl += '<th>Remarks </th>';
                 tbl += '</tr></thead>';
@@ -222,7 +222,7 @@
                         tbl += '<tr>';
                        
                        tbl += '<td  class="text-right">' + formattedDate + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].site + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].site + '</td>';
                        tbl += '<td class="text-right">' + start_time+'</td>';
                        tbl += '<td class="text-right">' + stop_time+'</td>';
                         tbl += '<td  class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';

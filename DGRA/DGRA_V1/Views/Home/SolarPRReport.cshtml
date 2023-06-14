@@ -1125,7 +1125,7 @@
                         }
                         
                         pr_var = (act_prval - result[i].tar_pr);
-                        TCPr_var = (result[i].temp_corrected_pr - result[i].temp_corrected_pr)
+                        TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
                         plf_var = (result[i].act_plf - result[i].tar_plf);
                         ma_var = (result[i].act_ma - result[i].tar_ma);
                         iga_var = (result[i].act_iga - result[i].tar_iga);
@@ -1221,7 +1221,7 @@
                         tbl += '<td class="text-right">' + act_prval.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
 
-                        tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
 

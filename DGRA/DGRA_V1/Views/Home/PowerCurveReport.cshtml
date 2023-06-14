@@ -54,7 +54,7 @@
             <div class="card-body">
                 <div class="row">
 
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="input-group row">
                             <label class="col-sm-3 col-form-label">Date Range : </label>
                             <div class="input-group-prepend">
@@ -68,21 +68,20 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
                                 <select class="form-control  col-sm-8" id="site" name="site[]" value="" onchange="GetWTG(true)" multiple></select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
 
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-sm-2 col-form-label text-right">WTG : </label>
-                                <select class="form-control  col-sm-8" id="wtg" name="wtg" multiple></select>
+                                <select class="form-control  col-sm-8" id="wtg" name="wtg[]" multiple></select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-1"></div>
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
                             <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
@@ -461,7 +460,7 @@
                 $("#wtg").html("").html(options);
                 $('select#wtg').multipleSelect({
                     "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
+                    "placeholder": "Select WTG(s)",
                     filter:true
                 });
 
