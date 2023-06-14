@@ -960,9 +960,9 @@
                 tbl += '<th style="width: 5%;">MA ACT (%)</th>';
                 tbl += '<th style="width: 5%;">MA CON (%)</th>';
                 tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -971,12 +971,16 @@
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>Load Shedding</th>';
+                tbl += '<th>Total BD</th>';
+
+
                 tbl += '<th>USMH Loss</th>';
                 tbl += '<th>SMH Loss</th>';
                 tbl += '<th>Others Loss</th>';
                 tbl += '<th>IGBDH Loss</th>';
                 tbl += '<th>EGBDH Loss</th>';
                 tbl += '<th>Load Shedding Loss</th>';
+                tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -1000,18 +1004,22 @@
                         tbl += '<td class="text-right">' + result[i].ega_c + '</td>';
                         tbl += '<td class="text-right">' + result[i].production_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+
                         tbl += '<td  class="text-right">' + result[i].unschedule_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].schedule_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].others_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].igbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
+
                         tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
                             
                         tbl += '</tr>';
                     }
@@ -1152,9 +1160,9 @@
                 tbl += '<th style="width: 5%;">MA ACT (%)</th>';
                 tbl += '<th style="width: 5%;">MA CON (%)</th>';
                 tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1163,12 +1171,15 @@
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>Load Shedding</th>';
+                tbl += '<th>Total BD</th>';
+
                 tbl += '<th>USMH Loss</th>';
                 tbl += '<th>SMH Loss</th>';
                 tbl += '<th>Others Loss</th>';
                 tbl += '<th>IGBDH Loss</th>';
                 tbl += '<th>EGBDH Loss</th>';
                 tbl += '<th>Load Shedding Loss</th>';
+                tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -1198,12 +1209,15 @@
                         tbl += '<td  class="text-right">' + result[i].igbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+
                         tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }
@@ -1372,9 +1386,9 @@
                 tbl += '<th style="width: 5%;">MA ACT (%)</th>';
                 tbl += '<th style="width: 5%;">MA CON (%)</th>';
                 tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1383,12 +1397,15 @@
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>Load Shedding</th>';
+                tbl += '<th>Total BD</th>';
+
                 tbl += '<th>USMH Loss</th>';
                 tbl += '<th>SMH Loss</th>';
                 tbl += '<th>Others Loss</th>';
                 tbl += '<th>IGBDH Loss</th>';
                 tbl += '<th>EGBDH Loss</th>';
                 tbl += '<th>Load Shedding Loss</th>';
+                tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -1419,12 +1436,15 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+
                         tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1562,7 +1582,7 @@
                 //var tbl = '<div class="text-center"><h5></h5></div>';
                 var tbl = '<table id="example2"  class="table table-bordered table-striped" style="width: 150%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th>FY</th>';
+                tbl += '<th style="width: 3%">FY</th>';
                 tbl += '<th>Month</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
@@ -1575,9 +1595,9 @@
                 tbl += '<th style="width: 5%;">MA ACT (%)</th>';
                 tbl += '<th style="width: 5%;">MA CON (%)</th>';
                 tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th style="width: 7%;">EGA (A) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 7%;">EGA (B) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 7%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1586,12 +1606,14 @@
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>Load Shedding</th>';
+                tbl += '<th>Total BD</th>';
                 tbl += '<th>USMH Loss</th>';
                 tbl += '<th>SMH Loss</th>';
                 tbl += '<th>Others Loss</th>';
                 tbl += '<th>IGBDH Loss</th>';
                 tbl += '<th>EGBDH Loss</th>';
                 tbl += '<th>Load Shedding Loss</th>';
+                tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                    for (var i = 0; i < result.length; i++) {
@@ -1621,12 +1643,15 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                       tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+
                         tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                       tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                       tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1790,9 +1815,9 @@
                 tbl += '<th style="width: 5%;">MA ACT (%)</th>';
                 tbl += '<th style="width: 5%;">MA CON (%)</th>';
                 tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1801,12 +1826,15 @@
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>Load Shedding</th>';
+                tbl += '<th>Total BD</th>';
+
                 tbl += '<th>USMH Loss</th>';
                 tbl += '<th>SMH Loss</th>';
                 tbl += '<th>Others Loss</th>';
                 tbl += '<th>IGBDH Loss</th>';
                 tbl += '<th>EGBDH Loss</th>';
                 tbl += '<th>Load Shedding Loss</th>';
+                tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -1837,12 +1865,15 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+
                         tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1992,9 +2023,9 @@
                 tbl += '<th style="width: 5%;">MA ACT (%)</th>';
                 tbl += '<th style="width: 5%;">MA CON (%)</th>';
                 tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (A) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -2003,12 +2034,15 @@
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>Load Shedding</th>';
+                tbl += '<th>Total BD</th>';
+
                 tbl += '<th>USMH Loss</th>';
                 tbl += '<th>SMH Loss</th>';
                 tbl += '<th>Others Loss</th>';
                 tbl += '<th>IGBDH Loss</th>';
                 tbl += '<th>EGBDH Loss</th>';
                 tbl += '<th>Load Shedding Loss</th>';
+                tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -2039,12 +2073,15 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+
                         tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }

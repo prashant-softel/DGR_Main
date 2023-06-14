@@ -157,8 +157,8 @@
             <!-- <canvas id="Waterfall" width="600" height="350"></canvas>-->
 
         </div>
-        <div id="water" style="overflow-x: auto; width: 100%; height: 400px;"></div>
-        <div id='myDiv'></div>
+        @*<div id="water" style="overflow-x: auto; width: 100%; height: 1000px;"></div>*@
+        @*<div id='myDiv'></div>*@
     </section>
 
 </div>
@@ -372,9 +372,9 @@
                 tbl += '<th>Curtaiment</th>';
                 tbl += '<th>PR</th>';
                 tbl += '<th>Actual</th>';
-                tbl += '<th>MA (%)<span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th>IGA (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
-                tbl += '<th>EGA (%) <span style="display: inline-block; width: 20px; height: 20px; background-color: blue; border-radius: 50%;">i<span></th>';
+                tbl += '<th>MA (%)<span class="information">i<span></th>';
+                tbl += '<th>IGA (%) <span class="information">i<span></th>';
+                tbl += '<th>EGA (%) <span class="information">i<span></th>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                     let total_target = 0;
@@ -461,7 +461,7 @@
 
 
                 //Call function draw the chart
-                    monthlychart(total_target.toFixed(1), total_expected.toFixed(1), total_usmh.toFixed(1), total_smh.toFixed(1), total_oh.toFixed(1), total_igbd.toFixed(1), total_egbd.toFixed(1), total_curtaiment.toFixed(1), total_pr.toFixed(1), total_actual.toFixed(1));
+                    monthlychart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
 
             }
             else {
@@ -516,7 +516,19 @@
         }
     });
     }
-    function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+
+        let t_target = Number(total_target).toFixed(2);
+        let t_expected = Number(total_expected).toFixed(2);
+        let t_usmh = Number(total_usmh).toFixed(2);
+        let t_smh = Number(total_smh).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
+        let t_igbd = Number(total_igbd).toFixed(2);
+        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_curtaiment = Number(total_curtaiment).toFixed(2);
+        let t_pr = Number(total_pr).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
+
         var data = [
             {
                 //name: "2018",
@@ -549,16 +561,16 @@
                 textposition: "outside",
                 //textposition: "inside",
                 text: [
-                    total_target,
-                    total_expected,
-                    total_usmh,
-                    total_smh,
-                    total_oh,
-                    total_igbd,
-                    total_egbd,
-                    total_curtaiment,
-                    total_pr,
-                    total_actual
+                    t_target,
+                    t_expected,
+                    t_usmh,
+                    t_smh,
+                    t_oh,
+                    t_igbd,
+                    t_egbd,
+                    t_curtaiment,
+                    t_pr,
+                    t_actual
                 ],
                 y: [
                     Number(total_target),
@@ -572,6 +584,9 @@
                     Number(total_pr),
                     Number(total_actual)
                 ],
+                hovertemplate: '<b>%{x}</b><br>' +
+                    /*'Column: %{x}<br>' +*/
+                    'Value: %{text:.4f}',
                 //absolute: { marker: { color: "#77CAE7" } },
                //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
@@ -594,7 +609,8 @@
             },
             yaxis: {
                 type: "linear",
-                fixedrange: true
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
             },
             autosize: true,
             showlegend: true
@@ -696,7 +712,7 @@ function getYearlyReport()
 
                
                 // Call function draw the yearly chart
-                yearlyChart(total_target.toFixed(1), total_expected.toFixed(1), total_usmh.toFixed(1), total_smh.toFixed(1), total_oh.toFixed(1), total_igbd.toFixed(1), total_igbd.toFixed(1), total_egbd.toFixed(1), total_pr.toFixed(1), total_actual.toFixed(1));
+                yearlyChart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
 
             }
             else {
@@ -706,9 +722,17 @@ function getYearlyReport()
     });
     }
 
-
-
     function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_igbd, total_egbd, total_pr, total_actual) {
+        let t_target = Number(total_target).toFixed(2);
+        let t_expected = Number(total_expected).toFixed(2);
+        let t_usmh = Number(total_usmh).toFixed(2);
+        let t_smh = Number(total_smh).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
+        let t_igbd = Number(total_igbd).toFixed(2);
+        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_curtaiment = Number(total_curtaiment).toFixed(2);
+        let t_pr = Number(total_pr).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
 
         var data = [
             {
@@ -725,7 +749,7 @@ function getYearlyReport()
                     "relative",
                     "relative",
                     "absolute",
-                    "total"
+                    "absolute"
                 ],
                 x: [
                     "Target",
@@ -742,16 +766,16 @@ function getYearlyReport()
                 textposition: "outside",
                 //textposition: "inside",
                 text: [
-                    total_target,
-                    total_expected,
-                    total_usmh,
-                    total_smh,
-                    total_oh,
-                    total_igbd,
-                    total_egbd,
-                    total_curtaiment,
-                    total_pr,
-                    total_actual
+                    t_target,
+                    t_expected,
+                    t_usmh,
+                    t_smh,
+                    t_oh,
+                    t_igbd,
+                    t_egbd,
+                    t_curtaiment,
+                    t_pr,
+                    t_actual
                 ],
                 y: [
                     Number(total_target),
@@ -765,6 +789,9 @@ function getYearlyReport()
                     Number(total_pr),
                     Number(total_actual)
                 ],
+                hovertemplate: '<b>%{x}</b><br>' +
+                    /*'Column: %{x}<br>' +*/
+                    'Value: %{text:.4f}',
                 totals: { marker: { color: "#86C466" } },
                 increasing: { marker: { color: "#77CAE7" } },
                 decreasing: { marker: { color: "#EE403D" } },
@@ -785,104 +812,13 @@ function getYearlyReport()
             },
             yaxis: {
                 type: "linear",
-                fixedrange: true
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
             },
             autosize: true,
             showlegend: true
         };
         Plotly.newPlot('Waterfallyearly', data, layout);
-       /* let chartStatus = Chart.getChart("Waterfallyearly"); // <canvas> id
-        if (chartStatus != undefined) {
-            chartStatus.destroy();
-        }
-    anychart.onDocumentReady(function () {
-        //create a waterfall chart with the data
-        var chart = anychart.waterfall();
-        //set the chart title
-        chart.title('Yearly');
-        //legend disabled
-        chart.legend(false);
-        //tooltips disabled
-        chart.tooltip(false);
-        // create a series and set the data
-        var series = chart.waterfall(ydata);
-        // set color
-        series.normal().fill('#77CAE7');
-        series.normal().hatchFill('forward-diagonal', '#77CAE7');
-        // second, falling columns
-        series.normal().fallingFill('#EE403D');
-        series.normal().fallingStroke('#EE403D');
-        // third, rising columns
-        series.normal().risingFill('#77CAE7');
-        series.normal().risingStroke('#77CAE7');
-
-        chart.container('Waterfallyearly');
-        //draw the resulting chart
-        chart.draw();
-    });*/
 }
-
-</script>
-
-<script>
-    /* var data = [
-            {
-                //name: "2018",
-                type: "waterfall",
-                orientation: "v",
-                measure: [
-                    "absolute",
-                    "absolute",
-                    "total",
-                    "relative",
-                    "relative",
-                    "total"
-                ],
-                x: [
-                    "Sales",
-                    "Consulting",
-                    "Net revenue",
-                    "Purchases",
-                    "Other expenses",
-                    "Profit before tax"
-                ],
-                textposition: "outside",
-                text: [
-                    "+60",
-                    "+80",
-                    "",
-                    "",
-                    "",
-                    "Total"
-                ],
-                y: [
-                    60,
-                    80,
-                    0,
-                    -40,
-                    -20,
-                    0
-                ],
-                connector: {
-                    line: {
-                        color: "white"
-                    }
-                },
-            }
-        ];
-        layout = {
-            title: {
-                text: "Profit and loss statement 2018"
-            },
-            xaxis: {
-                type: "category"
-            },
-            yaxis: {
-                type: "linear"
-            },
-            autosize: true,
-            showlegend: true
-        };
-        Plotly.newPlot('myDiv', data, layout);*/
 
 </script>
