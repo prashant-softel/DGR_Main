@@ -5140,6 +5140,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
 
             return await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);*/
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
+            string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
             string filter = "";
@@ -5192,7 +5193,9 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             data = await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);
             
 
-                string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh, SUM(t1.temp_corrected_pr)/4 as temp_corrected_pr from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+                string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+            
+            string getTempCorrPr = "SELECT t2.site, t1.site_id, (SUM(t1.jmrTempPR) * 100) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t1.site_id;";
                 List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
                 try
                 {
@@ -5203,8 +5206,18 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                 catch (Exception e)
                 {
                     string msg = "Exception while getting expected power from uploading_pyranometer_15_min_solar table." + e.ToString();
-                API_ErrorLog(msg);
+                    API_ErrorLog(msg);
                 }
+            List<SolarPerformanceReports1> dataTempCorrPr = new List<SolarPerformanceReports1>();
+            try
+            {
+                dataTempCorrPr = await Context.GetData<SolarPerformanceReports1>(getTempCorrPr).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching data from temperatur_corrected_pr table, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
             
 
             foreach (SolarPerformanceReports1 _dataelement in data)
@@ -5242,6 +5255,13 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                         _dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
                     }
                 }
+                foreach (SolarPerformanceReports1 _tempdataelement in dataTempCorrPr)
+                {
+                    if (_dataelement.site == _tempdataelement.site)
+                    {
+                        _dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
+                    }
+                }
 
 
             }
@@ -5263,6 +5283,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
 
              return await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);*/
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
+            string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
             string filter = "";
@@ -5350,6 +5371,19 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
                 API_ErrorLog(msg);
             }
 
+            string getTempCorrPr = "SELECT t2.site, t2.spv, t1.site_id, (SUM(t1.jmrTempPR) * 100) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t2.spv;";
+
+            List<SolarPerformanceReports1> dataTempCorrPr = new List<SolarPerformanceReports1>();
+            try
+            {
+                dataTempCorrPr = await Context.GetData<SolarPerformanceReports1>(getTempCorrPr).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from temperatur_corrected_pr table, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
             foreach (SolarPerformanceReports1 _dataelement in data)
             {
                 foreach (SolarPerformanceReports1 _tempdataelement in tempdata)
@@ -5387,6 +5421,14 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
                     if (_dataelement.spv == _tempdataelement.spv)
                     {
                         _dataelement.expected_kwh = _tempdataelement.expected_kwh;
+                    }
+                }
+
+                foreach (SolarPerformanceReports1 _tempdataelement in dataTempCorrPr)
+                {
+                    if (_dataelement.spv == _tempdataelement.spv)
+                    {
+                        _dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
                     }
                 }
             }
@@ -7702,7 +7744,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
 
              await TemperatureCorrectedPRCalc(site, fromDate, toDate);
-             //await getTemperatureCorrectedPR(site, fromDate, toDate);
+
+             await getTemperatureCorrectedPR(site, fromDate, toDate);
             DateTime thisTime = new DateTime();
             thisTime = DateTime.Now;
             //API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called.. Code Line No. 7573");
@@ -12859,6 +12902,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 double temp = (lineloss_percentage * actual_active_power) / 6;
                 lineloss_final = temp / 1000000;
+                //string linelossTemp = lineloss_final.ToString("0.##############");
+                //linelossTemp = linelossTemp.TrimEnd('0').TrimEnd('.');
+                //lineloss_final = Convert.ToDouble(linelossTemp);
             }
             _tmlDataList.Clear();
 
@@ -13195,6 +13241,32 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 returnData[0].jmrTempPR = siteData[0].act_kwh_afterloss / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
                 start = start.AddDays(1);
             }
+
+            //Insert the calculated data into database temperature corrected PR table.
+            string deleteQry = "DELETE FROM temperature_corrected_pr WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "';";
+            string insertQry = "INSERT INTO temperature_corrected_pr(site_id, date, actModWtTemp, act_avg_mod_temp, estModTemp, est_avg_mod_temp, jmrTempPR, plantTempPR) VALUES (" + site + ", '" + fromDate + "', " + returnData[0].actModWtTemp + ", " + returnData[0].act_avg_mod_temp + ", " + returnData[0].estModTemp + ", " + returnData[0].est_avg_mod_temp + ", " + returnData[0].jmrTempPR + ", " + returnData[0].plantTempPR + ");";
+            int deleteRes = 0;
+            int insertRes = 0;
+            try
+            {
+                deleteRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while deleting records from temperature _corrected_pr table from database, Due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
+            try
+            {
+                insertRes = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while inserting data into temprtature_corrected_pr table, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
             return returnData;
         }
         internal async Task<bool> TemperatureCorrectedPRCalc(string site, string fromDate, string toDate)

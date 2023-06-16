@@ -128,7 +128,8 @@
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+@*<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>*@
+<script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
 
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
@@ -364,6 +365,8 @@
                         lossPCD_final = result[i].lossPCD_final;
                         actual_final = result[i].actual_final;
 
+                        CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4));
+
                         console.log("-------------------------------------------");
                         console.log("Expected : ", expected_final);
                         console.log("LineLoss : ", lineloss_final);
@@ -376,19 +379,19 @@
                         console.log("LULL : ", lossLULL_final);
                         console.log("PCD : ", lossPCD_final);
                         console.log("Actual : ", actual_final);
-                        data = [
-                            { x: 'Target', value: target_final.toFixed(1) },
-                            { x: 'Expected', value: expected_final.toFixed(1) },
-                            { x: 'USMH', value: lossUSMH_final.toFixed(1) },
-                            { x: 'SMH', value: lossSMH_final.toFixed(1) },
-                            { x: 'Other', value: lossNC_final.toFixed(1) },
-                            { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
-                            { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
-                            { x: 'LULL', value: lossLULL_final.toFixed(1) },
-                            { x: 'PCD', value: lossPCD_final.toFixed(1) },
-                            { x: 'LineLoss', value: lineloss_final.toFixed(1) },
-                            { x: 'Actual', value: actual_final.toFixed(1) },
-                        ];
+                        //data = [
+                        //    { x: 'Target', value: target_final.toFixed(1) },
+                        //    { x: 'Expected', value: expected_final.toFixed(1) },
+                        //    { x: 'USMH', value: lossUSMH_final.toFixed(1) },
+                        //    { x: 'SMH', value: lossSMH_final.toFixed(1) },
+                        //    { x: 'Other', value: lossNC_final.toFixed(1) },
+                        //    { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
+                        //    { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
+                        //    { x: 'LULL', value: lossLULL_final.toFixed(1) },
+                        //    { x: 'PCD', value: lossPCD_final.toFixed(1) },
+                        //    { x: 'LineLoss', value: lineloss_final.toFixed(1) },
+                        //    { x: 'Actual', value: actual_final.toFixed(1) },
+                        //];
                     }
                 }
                 else {
@@ -400,9 +403,120 @@
 
 
         console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final);
-        monthlychart(data);
+        //monthlychart(data);
+        
     }
 
+    function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual) {
+        console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual);
+        let t_target = Number(total_target).toFixed(2);
+        let t_expected = Number(total_expected).toFixed(2);
+        let t_usmh = Number(total_usmh).toFixed(2);
+        let t_smh = Number(total_smh).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
+        let t_igbd = Number(total_igbd).toFixed(2);
+        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_lull = Number(total_lull).toFixed(2);
+        let t_pcd = Number(total_pcd).toFixed(2);
+        let t_lineloss = Number(total_lineloss).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
+
+        var data = [
+            {
+                //name: "2018",
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "USMH",
+                    "SMH",
+                    "Other",
+                    "IGBD",
+                    "EGBD",
+                    "LULL",
+                    "PCD",
+                    "Lineloss",
+                    "Actual"
+                ],
+                textposition: "outside",
+                //textposition: "inside",
+                text: [
+                    t_target,
+                    t_expected,
+                    t_usmh,
+                    t_smh,
+                    t_oh,
+                    t_igbd,
+                    t_egbd,
+                    t_lull,
+                    t_pcd ,
+                    t_lineloss,
+                    t_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_expected),
+                    Number(total_usmh),
+                    Number(total_smh),
+                    Number(total_oh),
+                    Number(total_igbd),
+                    Number(total_egbd),
+                    Number(total_lull),
+                    Number(total_pcd),
+                    Number(total_lineloss),
+                    Number(total_actual)
+                ],
+                hovertemplate: '<b>%{x}</b><br>' +
+                    /*'Column: %{x}<br>' +*/
+                    'Value: %{text:.4f}',
+                //absolute: { marker: { color: "#77CAE7" } },
+                //relative: { marker: { color: "#77CAE7" } },
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
+            }
+        ];
+        layout = {
+            title: {
+                text: "Monthly"
+            },
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            autosize: true,
+            showlegend: true
+        };
+        Plotly.newPlot('Waterfall', data, layout);
+        //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
+
+    }
+
+    /*
     function monthlychart(data) {
         console.log("Inside Monthly chart function and data received is : " + data + " hello : " + data[0]);
         let chartStatus = Chart.getChart("Waterfall"); // <canvas> id
@@ -454,7 +568,7 @@
             chart.draw();
         });
     }
-
+    */
     /*
     function monthlychart(data) {
         console.log("Inside Monthly chart function and data received is : ", data);
