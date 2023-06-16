@@ -231,7 +231,9 @@
                 tbl += '<th colspan="3" class="text-center">GHI Vs POA Gain (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PR (%)</th>';
+
                 tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
+
                 tbl += '<th colspan="3" class="text-center">MA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr > ';
@@ -314,6 +316,11 @@
                     let total_capActIga = 0;
                     let total_capActEga = 0;
 
+                    let total_capTarTCPr = 0;
+                    let total_capActTCPr = 0;
+                    let total_tar_TCpr = 0;
+                    let total_act_TCpr = 0;
+
 
                     for (var i = 0; i < result.length; i++) {
                         let t_var = 0;
@@ -330,6 +337,9 @@
                         let iga_var = 0;
                         let ega_var = 0;
                         let act_prval = 0;
+
+                        let TCPr_var = 0;
+
                         minr = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) * result[i].total_tarrif.toFixed(2));
                         if (result[i].tar_kwh != 0) {
                             t_var = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) / result[i].tar_kwh.toFixed(2)) * 100;
@@ -362,6 +372,8 @@
                         if (result[i].tar_poa != 0) {
                             poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
                         }
+
+                        TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
                        
                         pr_var = (act_prval.toFixed(2) - result[i].tar_pr.toFixed(2)) ;
                         plf_var = (result[i].act_plf.toFixed(2) - result[i].tar_plf.toFixed(2));
@@ -427,6 +439,10 @@
                         total_capActIga += result[i].act_iga * result[i].capacity;
                         total_capActEga += result[i].act_ega * result[i].capacity;
 
+                        total_tar_TCpr += result[i].tar_pr;
+                        total_act_TCpr += result[i].temp_corrected_pr;
+                        total_capTarTCPr += result[i].tar_pr * result[i].capacity;
+                        total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
 
                         console.log(act_prval);
                         tbl += '<tr>';
@@ -459,8 +475,8 @@
                         tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + act_prval.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].tar_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_ma.toFixed(2) + '</td>';
@@ -502,6 +518,8 @@
                     let avg_act_iga = 0;
                     let avg_act_ega = 0;
 
+                    let avg_tar_TCpr = 0;
+                    let avg_TCpr_var = 0;
 
                     if (total_capacity != 0) {
                         avg_tar_ghi = total_capTarGhi / total_capacity;
@@ -520,6 +538,9 @@
                         avg_act_ma = total_capActMa / total_capacity;
                         avg_act_iga = total_capActIga / total_capacity;
                         avg_act_ega = total_capActEga / total_capacity;
+
+                        avg_tar_TCpr = total_capTarTCPr / total_capacity;
+                        avg_act_TCpr = total_capActTCPr / total_capacity;
                     }
 
                     if (total_tar_kwh != 0) {
@@ -534,7 +555,9 @@
                     if (avg_tar_poa != 0) {
                         avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
                     }
-                   
+
+                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
+
                     avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
                     avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
                     avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
@@ -572,8 +595,8 @@
                     tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
 
                     tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
-                    tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
-                    tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_act_TCpr.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_TCpr_var.toFixed(2) + '</b></td>';
 
                     tbl += '<td class="text-right"><b>' + avg_tar_ma.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ma.toFixed(2) + '</b></td>';
@@ -689,30 +712,39 @@
                                             return 'PR (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 23) {
-                                            return 'MA (%)  Tar';
+                                            return 'Temp Corr. PR (%)  Tar';
                                         }
                                         else if (columnIdx == 24) {
-                                            return 'MA (%)  Act ';
+                                            return 'Temp Corr. PR (%)  Act ';
                                         }
                                         else if (columnIdx == 25) {
-                                            return 'MA (%)  Var (%) ';
+                                            return 'Temp Corr. PR (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 26) {
-                                            return 'IGA (%)  Tar';
+                                            return 'MA (%)  Tar';
                                         }
                                         else if (columnIdx == 27) {
-                                            return 'IGA (%)  Act ';
+                                            return 'MA (%)  Act ';
                                         }
                                         else if (columnIdx == 28) {
-                                            return 'IGA (%)  Var (%) ';
+                                            return 'MA (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 29) {
-                                            return 'EGA (%)  Tar';
+                                            return 'IGA (%)  Tar';
                                         }
                                         else if (columnIdx == 30) {
-                                            return 'EGA (%)  Act ';
+                                            return 'IGA (%)  Act ';
                                         }
                                         else if (columnIdx == 31) {
+                                            return 'IGA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 32) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 33) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 34) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -803,30 +835,39 @@
                                             return 'PR (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 23) {
-                                            return 'MA (%)  Tar';
+                                            return 'Temp Corr. PR (%)  Tar';
                                         }
                                         else if (columnIdx == 24) {
-                                            return 'MA (%)  Act ';
+                                            return 'Temp Corr. PR (%)  Act ';
                                         }
                                         else if (columnIdx == 25) {
-                                            return 'MA (%)  Var (%) ';
+                                            return 'Temp Corr. PR (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 26) {
-                                            return 'IGA (%)  Tar';
+                                            return 'MA (%)  Tar';
                                         }
                                         else if (columnIdx == 27) {
-                                            return 'IGA (%)  Act';
+                                            return 'MA (%)  Act ';
                                         }
                                         else if (columnIdx == 28) {
-                                            return 'IGA (%)  Var (%) ';
+                                            return 'MA (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 29) {
-                                            return 'EGA (%)  Tar';
+                                            return 'IGA (%)  Tar';
                                         }
                                         else if (columnIdx == 30) {
-                                            return 'EGA (%)  Act ';
+                                            return 'IGA (%)  Act ';
                                         }
                                         else if (columnIdx == 31) {
+                                            return 'IGA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 32) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 33) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 34) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -907,30 +948,39 @@
                                     return 'PR (%)  Var (%) ';
                                 }
                                 else if (idx == 23) {
-                                    return 'MA (%)  Tar';
+                                    return 'Temp Corr. PR (%)  Tar';
                                 }
                                 else if (idx == 24) {
-                                    return 'MA (%)  Act ';
+                                    return 'Temp Corr. PR (%)  Act ';
                                 }
                                 else if (idx == 25) {
-                                    return 'MA (%)  Var (%) ';
+                                    return 'Temp Corr. PR (%)  Var (%) ';
                                 }
                                 else if (idx == 26) {
-                                    return 'IGA (%)  Tar';
+                                    return 'MA (%)  Tar';
                                 }
                                 else if (idx == 27) {
-                                    return 'IGA (%)  Act';
+                                    return 'MA (%)  Act ';
                                 }
                                 else if (idx == 28) {
-                                    return 'IGA (%)  Var (%) ';
+                                    return 'MA (%)  Var (%) ';
                                 }
                                 else if (idx == 29) {
-                                    return 'EGA (%)  Tar';
+                                    return 'IGA (%)  Tar';
                                 }
                                 else if (idx == 30) {
-                                    return 'EGA (%)  Act ';
+                                    return 'IGA (%)  Act ';
                                 }
                                 else if (idx == 31) {
+                                    return 'IGA (%)  Var (%) ';
+                                }
+                                else if (idx == 32) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 33) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 34) {
                                     return 'EGA (%)  Var (%) ';
                                 }
                                 else {
@@ -992,7 +1042,9 @@
                 tbl += '<th colspan="3" class="text-center">GHI Vs POA Gain (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PR (%)</th>';
+
                 tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
+
                 tbl += '<th colspan="3" class="text-center">MA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr > ';
@@ -1061,9 +1113,6 @@
                     let total_capTarPr = 0;
                     let total_tar_pr = 0;
                     let total_act_pr = 0;
-                    let total_capTarTCPr = 0;
-                    let total_tar_TCpr = 0;
-                    let total_act_TCpr = 0;
                     let total_capTarMa = 0;
                     let total_tar_ma = 0;
                     let total_act_ma = 0;
@@ -1078,10 +1127,14 @@
                     let total_capActGain = 0;
                     let total_capActPoa = 0;
                     let total_capActPr = 0;
-                    let total_capActTCPr = 0;
                     let total_capActMa = 0;
                     let total_capActIga = 0;
                     let total_capActEga = 0;
+
+                    let total_capTarTCPr = 0;
+                    let total_capActTCPr = 0;
+                    let total_tar_TCpr = 0;
+                    let total_act_TCpr = 0;
 
                     for (var i = 0; i < result.length; i++) {
 
@@ -1095,11 +1148,13 @@
                         let gain_var = 0;
                         let plf_var  = 0;
                         let pr_var = 0;
-                        let TCPr_var = 0;
                         let ma_var = 0;
                         let iga_var = 0;
                         let ega_var = 0;
                         let act_prval = 0
+
+                        let TCPr_var = 0;
+
                         minr = ((result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif);
                         if (result[i].tar_kwh != 0) {
                             t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
@@ -1125,12 +1180,12 @@
                         }
                         
                         pr_var = (act_prval - result[i].tar_pr);
-                        TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
                         plf_var = (result[i].act_plf - result[i].tar_plf);
                         ma_var = (result[i].act_ma - result[i].tar_ma);
                         iga_var = (result[i].act_iga - result[i].tar_iga);
                         ega_var = (result[i].act_ega - result[i].tar_ega);
 
+                        TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
                        
                         if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
                             gain_tar = 0;
@@ -1165,8 +1220,6 @@
                         total_act_plf += result[i].act_plf;
                         total_tar_pr += result[i].tar_pr;
                         total_act_pr += act_prval;
-                        total_tar_TCpr += result[i].temp_corrected_pr;
-                        total_act_TCpr += result[i].temp_corrected_pr;
                         total_tar_ma += result[i].tar_ma;
                         total_act_ma += result[i].act_ma;
                         total_tar_iga += result[i].tar_iga;
@@ -1177,7 +1230,6 @@
                         total_capTarPoa += result[i].tar_poa * result[i].capacity;
                         total_capTarPlf += result[i].tar_plf * result[i].capacity;
                         total_capTarPr += result[i].tar_pr * result[i].capacity;
-                        total_capTarTCPr += result[i].temp_corrected_pr * result[i].capacity;
                         total_capTarGain += gain_tar * result[i].capacity;
                         total_capTarMa += result[i].tar_ma * result[i].capacity
                         total_capTarIga += result[i].tar_iga * result[i].capacity;
@@ -1186,12 +1238,15 @@
                         total_capActPoa += result[i].act_poa * result[i].capacity;
                         total_capActPlf += result[i].act_plf * result[i].capacity;
                         total_capActPr += act_prval * result[i].capacity;
-                        total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
                         total_capActGain += gain_act * result[i].capacity;
                         total_capActMa += result[i].act_ma * result[i].capacity;
                         total_capActIga += result[i].act_iga * result[i].capacity;
                         total_capActEga += result[i].act_ega * result[i].capacity;
 
+                        total_tar_TCpr += result[i].tar_pr;
+                        total_act_TCpr += result[i].temp_corrected_pr;
+                        total_capTarTCPr += result[i].tar_pr * result[i].capacity;
+                        total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
 
                         tbl += '<tr>';
                         tbl += '<td>' + result[i].site + '</td>';
@@ -1250,9 +1305,7 @@
                     let avg_tar_gain = 0;
                     let avg_gain_var = 0;
                     let avg_tar_pr = 0;
-                    let avg_tar_TCpr = 0;
                     let avg_pr_var = 0;
-                    let avg_TCpr_var = 0;
                     let avg_tar_ma = 0;
                     let avg_ma_var = 0;
                     let avg_tar_iga = 0;
@@ -1269,13 +1322,15 @@
                     let avg_act_iga = 0;
                     let avg_act_ega = 0;
 
+                    let avg_tar_TCpr = 0;
+                    let avg_TCpr_var = 0;
+
                     if (total_capacity != 0) {
                         avg_tar_ghi = total_capTarGhi / total_capacity;
                         avg_tar_plf = total_capTarPlf / total_capacity;
                         avg_tar_poa = total_capTarPoa / total_capacity;
                         avg_tar_gain = total_capTarGain / total_capacity;
                         avg_tar_pr = total_capTarPr / total_capacity;
-                        avg_tar_TCpr = total_capTarTCPr / total_capacity;
                         avg_tar_ma = total_capTarMa / total_capacity;
                         avg_tar_iga = total_capTarIga / total_capacity;
                         avg_tar_ega = total_capTarEga / total_capacity;
@@ -1284,10 +1339,12 @@
                         avg_act_poa = total_capActPoa / total_capacity;
                         avg_act_gain = total_capActGain / total_capacity;
                         avg_act_pr = total_capActPr / total_capacity;
-                        avg_act_TCpr = total_capActTCPr / total_capacity;
                         avg_act_ma = total_capActMa / total_capacity;
                         avg_act_iga = total_capActIga / total_capacity;
                         avg_act_ega = total_capActEga / total_capacity;
+
+                        avg_tar_TCpr = total_capTarTCPr / total_capacity;
+                        avg_act_TCpr = total_capActTCPr / total_capacity;
                     }
 
                     if (total_tar_kwh != 0) {
@@ -1307,12 +1364,13 @@
                     }
                    
                     avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
-                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
                     avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
                     avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
                     avg_ma_var = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
                     avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
                     avg_ega_var = (avg_act_ega.toFixed(2) - avg_tar_ega.toFixed(2));
+
+                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
 
 
                     tbl += '<tfoot><tr>';
@@ -1343,7 +1401,7 @@
                     tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
 
-                    tbl += '<td class="text-right"><b>' + avg_tar_TCpr.toFixed(2) + '</b></td>';
+                    tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_TCpr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_TCpr_var.toFixed(2) + '</b></td>';
 
@@ -1460,40 +1518,40 @@
                                         else if (columnIdx == 22) {
                                             return 'PR (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 20) {
+                                        else if (columnIdx == 23) {
                                             return 'Temp Corr. PR (%)  Tar';
                                         }
-                                        else if (columnIdx == 21) {
+                                        else if (columnIdx == 24) {
                                             return 'Temp Corr. PR (%)  Act ';
                                         }
-                                        else if (columnIdx == 22) {
+                                        else if (columnIdx == 25) {
                                             return 'Temp Corr. PR (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 23) {
+                                        else if (columnIdx == 26) {
                                             return 'MA (%)  Tar';
                                         }
-                                        else if (columnIdx == 24) {
+                                        else if (columnIdx == 27) {
                                             return 'MA (%)  Act ';
                                         }
-                                        else if (columnIdx == 25) {
+                                        else if (columnIdx == 28) {
                                             return 'MA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 26) {
+                                        else if (columnIdx == 29) {
                                             return 'IGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 27) {
+                                        else if (columnIdx == 30) {
                                             return 'IGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 28) {
+                                        else if (columnIdx == 31) {
                                             return 'IGA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 29) {
+                                        else if (columnIdx == 32) {
                                             return 'EGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 30) {
+                                        else if (columnIdx == 33) {
                                             return 'EGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 31) {
+                                        else if (columnIdx == 34) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -1584,30 +1642,39 @@
                                             return 'PR (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 23) {
-                                            return 'MA (%)  Tar';
+                                            return 'Temp Corr. PR (%)  Tar';
                                         }
                                         else if (columnIdx == 24) {
-                                            return 'MA (%)  Act ';
+                                            return 'Temp Corr. PR (%)  Act ';
                                         }
                                         else if (columnIdx == 25) {
-                                            return 'MA (%)  Var (%) ';
+                                            return 'Temp Corr. PR (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 26) {
-                                            return 'IGA (%)  Tar';
+                                            return 'MA (%)  Tar';
                                         }
                                         else if (columnIdx == 27) {
-                                            return 'IGA (%)  Act ';
+                                            return 'MA (%)  Act ';
                                         }
                                         else if (columnIdx == 28) {
-                                            return 'IGA (%)  Var (%) ';
+                                            return 'MA (%)  Var (%) ';
                                         }
                                         else if (columnIdx == 29) {
-                                            return 'EGA (%)  Tar';
+                                            return 'IGA (%)  Tar';
                                         }
                                         else if (columnIdx == 30) {
-                                            return 'EGA (%)  Act ';
+                                            return 'IGA (%)  Act ';
                                         }
                                         else if (columnIdx == 31) {
+                                            return 'IGA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 32) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 33) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 34) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -1688,30 +1755,39 @@
                                     return 'PR (%)  Var (%) ';
                                 }
                                 else if (idx == 23) {
-                                    return 'MA (%)  Tar';
+                                    return 'Temp Corr. PR (%)  Tar';
                                 }
                                 else if (idx == 24) {
-                                    return 'MA (%)  Act ';
+                                    return 'Temp Corr. PR (%)  Act ';
                                 }
                                 else if (idx == 25) {
-                                    return 'MA (%)  Var (%) ';
+                                    return 'Temp Corr. PR (%)  Var (%) ';
                                 }
                                 else if (idx == 26) {
-                                    return 'IGA (%)  Tar';
+                                    return 'MA (%)  Tar';
                                 }
                                 else if (idx == 27) {
-                                    return 'IGA (%)  Act ';
+                                    return 'MA (%)  Act ';
                                 }
                                 else if (idx == 28) {
-                                    return 'IGA (%)  Var (%) ';
+                                    return 'MA (%)  Var (%) ';
                                 }
                                 else if (idx == 29) {
-                                    return 'EGA (%)  Tar';
+                                    return 'IGA (%)  Tar';
                                 }
                                 else if (idx == 30) {
-                                    return 'EGA (%)  Act ';
+                                    return 'IGA (%)  Act ';
                                 }
                                 else if (idx == 31) {
+                                    return 'IGA (%)  Var (%) ';
+                                }
+                                else if (idx == 32) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 33) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 34) {
                                     return 'EGA (%)  Var (%) ';
                                 }
                                 else {
