@@ -516,7 +516,8 @@
         }
     });
     }
-function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+    function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+        console.log("Inside monthly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
 
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
@@ -529,22 +530,43 @@ function monthlychart(total_target, total_expected, total_usmh, total_smh, total
         let t_pr = Number(total_pr).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
+        let data_target = Number(total_target);
+        let data_expected = Number(total_expected);
+        let data_usmh = Number(total_usmh) * -1;
+        let data_smh = Number(total_smh) * -1;
+        let data_oh = Number(total_oh) * -1;
+        let data_igbd = Number(total_igbd) * -1;
+        let data_egbd = Number(total_egbd) * -1;
+        let data_curtaiment = Number(total_curtaiment) * -1;
+        let data_pr = Number(total_pr);
+        let data_actual = Number(total_actual);
+
+        console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
+        let prMeasure = "";
+        if (Number(total_pr) >= 0) {
+            prMeasure = "absolute";
+        } else {
+            prMeasure = "relative";
+        }
+        let rMeasure = "relative";
+        let aMeasure = "absolute";
+        console.log(prMeasure);
         var data = [
             {
                 //name: "2018",
                 type: "waterfall",
                 orientation: "v",
                 measure: [
-                    "relative",
-                    "absolute",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "absolute",
-                    "absolute"
+                    rMeasure,
+                    aMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    prMeasure,
+                    aMeasure
                 ],
                 x: [
                     "Target",
@@ -573,20 +595,20 @@ function monthlychart(total_target, total_expected, total_usmh, total_smh, total
                     t_actual
                 ],
                 y: [
-                    Number(total_target),
-                    Number(total_expected),
-                    Number(total_usmh),
-                    Number(total_smh),
-                    Number(total_oh),
-                    Number(total_igbd),
-                    Number(total_egbd),
-                    Number(total_curtaiment),
-                    Number(total_pr),
-                    Number(total_actual)
+                    data_target,
+                    data_expected,
+                    data_usmh,
+                    data_smh,
+                    data_oh,
+                    data_igbd,
+                    data_egbd,
+                    data_curtaiment,
+                    data_pr,
+                    data_actual
                 ],
                 hovertemplate: '<b>%{x}</b><br>' +
                     /*'Column: %{x}<br>' +*/
-                    'Value: %{text:.4f}',
+                    'Value: %{y}',
                 //absolute: { marker: { color: "#77CAE7" } },
                //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
