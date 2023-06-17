@@ -5021,7 +5021,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             bool noData = false;
             List<InsertSolarTrackerLoss> addSet = new List<InsertSolarTrackerLoss>();
 
-            if (ds.Tables.Count > 1)
+            if (ds.Tables.Count >= 1)
             {
                 if (ds.Tables[0].Rows[0]["Site"] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[0]["Site"]) || ds.Tables[0].Rows[0]["Date"] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[0]["Date"]))
                 {
