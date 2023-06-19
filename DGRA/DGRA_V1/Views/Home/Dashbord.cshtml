@@ -710,7 +710,7 @@
                         wcnt++;
                     }
 
-                    console.log(wcnt + "" + total_capacity);
+                    console.log(wcnt + "wl" + total_capacity);
                     if (total_capacity != 0) {
                         wind_lastday_wspeed = total_capActWind / total_capacity;
                         wind_lastday_wspeed_target = total_capTarWind / total_capacity;
@@ -798,7 +798,7 @@
                     }
 
 
-                    console.log(wcnt);
+                    console.log("wm"+wcnt);
                     if (total_capacity != 0) {
                         wind_monthly_wspeed = total_capActWind / total_capacity;
                         wind_monthly_wspeed_target = total_capTarWind / total_capacity;
@@ -818,7 +818,7 @@
                     document.getElementById("monthly_wspeed").innerHTML = "<b>" + wind_monthly_wspeed.toFixed(1) + "</b>";
 
                     document.getElementById("manthly_enrgy_var").innerHTML = "(" + monthly_var_energy.toFixed(1) + " %)";
-                    document.getElementById("monthly_wspeed_var").innerHTML = "(" + wind_monthly_wspeed_target.toFixed(1) + " %)";
+                    document.getElementById("monthly_wspeed_var").innerHTML = "(" + monthly_var_wspeed.toFixed(1) + " %)";
                     document.getElementById("w_m_tar_enrgy").innerHTML = "<b>" + (wind_monthly_energy_target / 1000000).toFixed(1) + "</b> GWh";
                     document.getElementById("w_ws_tar_m").innerHTML = "<b>" + (wind_monthly_wspeed_target).toFixed(1) + "</b> m/s";
                 }
@@ -883,7 +883,7 @@
                         wcnt++;
                     }
 
-                    console.log(wcnt);
+                    console.log("wy"+wcnt);
                     if (total_capacity != 0) {
                         wind_yearly_wspeed = total_capActWind / total_capacity;
                         wind_yearly_wspeed_target = total_capTarWind / total_capacity;
@@ -978,6 +978,7 @@
                     if (lastday_ir_tar != 0) {
                         lastday_var_ir = ((lastday_ir.toFixed(2) - lastday_ir_tar.toFixed(2)) / lastday_ir_tar.toFixed(2)) * 100;
                     }
+                    console.log("il" + cnt);
 
                     console.log("Actuel IR" + lastday_ir);
                     console.log("Tar IR" + lastday_ir_tar);
@@ -1064,6 +1065,7 @@
                     if (monthly_ir_tar != 0) {
                         monthly_var_ir = ((monthly_ir.toFixed(2) - monthly_ir_tar.toFixed(2)) / monthly_ir_tar.toFixed(2)) * 100;
                     }
+                    console.log("im" + cnt);
 
                     document.getElementById("monthly_solar_enrgy").innerHTML = "<b>" + (monthly_energy/ 1000000).toFixed(1) + "</b>";
                     document.getElementById("monthly_ir").innerHTML = "<b>" + monthly_ir.toFixed(1)  + "</b>";
@@ -1140,6 +1142,8 @@
                     if (yeary_ir_tar != 0) {
                         yearly_var_ir = ((yeary_ir.toFixed(2) - yeary_ir_tar.toFixed(2)) / yeary_ir_tar.toFixed(2)) * 100;
                     }
+                    console.log("iy" + cnt);
+
                     document.getElementById("yearly_solar_enrgy").innerHTML = "<b>" + ((yearly_energy) / 1000000).toFixed(1) + "</b>";
                     document.getElementById("yearly_ir").innerHTML = "<b>" + (yeary_ir).toFixed(1) + "</b>";
                     document.getElementById("yearly_solar_enrgy_var").innerHTML = "(" + yearly_var_energy.toFixed(1) + " %)";
