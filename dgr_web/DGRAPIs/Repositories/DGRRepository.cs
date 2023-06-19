@@ -427,7 +427,7 @@ namespace DGRAPIs.Repositories
 
 
 
-            string qry5 = "SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,(sum(t1.wind_speed)/count(t1.wind_speed)) as Wind,(t3.kwh*1000000)as tarkwh, avg(t3.wind_speed) as tarwind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join daily_target_kpi t3 on t3.site_id=t1.site_id and t3.date=t1.date where " + filter + " group by t1.Site order by t1.date desc";
+            string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh, avg(t1.Wind) as Wind FROM(SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,(sum(t1.wind_speed)/count(t1.wind_speed)) as Wind,(t3.kwh*1000000)as tarkwh, avg(t3.wind_speed) as tarwind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join daily_target_kpi t3 on t3.site_id=t1.site_id and t3.date=t1.date where " + filter + " group by t1.Site order by t1.date desc) as t1 group by t1.date, t1.site";
 
 
             List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
@@ -601,13 +601,13 @@ namespace DGRAPIs.Repositories
             }
             catch (Exception)
             {
-                //
+                //,SUM(t1.kwh)-SUM(t1.kwh)*(t2.line_loss/100) as kwh_afterloss, sum(kwh_afterloss)/1000000 as act_jmr_kwh_mu
             }
-            string qry2 = " select month(date) as month, Site, sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view_year group by site, month(date), year(date); ";
+            string qry2 = " select year(date) as year, Site, sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view_year group by site, year(date); ";
             List<WindDashboardData> _WindDashboardData2 = new List<WindDashboardData>();
             _WindDashboardData2 = await Context.GetData<WindDashboardData>(qry2).ConfigureAwait(false);
 
-            string qry5 = "SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh,(sum(t1.wind_speed)/count(t1.wind_speed)) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "  group by MONTH(t1.date) ,t1.site";
+            string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh, avg(t1.Wind) as Wind FROM(SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100)as jmrkwh,(sum(t1.wind_speed)/count(t1.wind_speed)) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + " group by t1.site, t1.date  order by t1.date asc ) as t1 group by YEAR(t1.date) ,t1.site";
             
                 List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
@@ -630,7 +630,7 @@ namespace DGRAPIs.Repositories
             {
                 foreach (WindDashboardData _windData2 in _WindDashboardData2)
                 {
-                    if (_windData.Site == _windData2.Site && _windData.month == _windData2.month)
+                    if (_windData.Site == _windData2.Site && _windData.year == _windData2.year)
                     {
                         _windData.tarkwh = _windData2.tarkwh;
                         _windData.tarwind = _windData2.tarwind;
@@ -1219,16 +1219,16 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
              {
                  string ex = e.Message;
              }
-             string qry2 = " select month(date) as month, sites as Site, sum(gen_nos) as tarkwh, sum(poa)/count(poa) as tarIR from temp_view_year_solar group by month(date), year(date),site_id; ";
+             string qry2 = " select month(date) as month, sites as Site, sum(gen_nos) as tarkwh, sum(poa)/count(poa) as tarIR from temp_view_year_solar group by year(date),site_id; ";
              List<SolarDashboardData> _SolarDashboardData2 = new List<SolarDashboardData>();
              _SolarDashboardData2 = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
-             string qry = @"  select t1.date,month(t1.date)as month,t1.site,sum(inv_kwh) as inv_kwh,sum(t1.poa)/count(t1.poa) as IR,
+             string qry = @" select t1.date,month(t1.date)as month,t1.site,sum(inv_kwh) as inv_kwh,sum(t1.poa)/count(t1.poa) as IR,
  replace(t2.LineLoss,'%','') as linLoss,sum(inv_kwh)-(sum(inv_kwh) * replace(t2.LineLoss,'%','') /100) as jmrkwh,
  (t3.gen_nos*1000000) as tarkwh, sum(t3.poa)/count(t3.poa) as tarIR from daily_gen_summary_solar t1 
  left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month_no=month(t1.date) and t2.fy='" + FY + "' " +
              " left join daily_target_kpi_solar t3 on t3.sites=t1.site and t3.date=t1.date  where  " + filter +
-             " group by month(t1.date),year(t1.date) , t1.Site order by t1.date desc ";
+             " group by year(t1.date) , t1.Site order by t1.date desc ";
 
              //t3 on t3.sites=t1.site and t3.date=t1.date  where t1.approve_status=" + approve_status + " and " + filter + "  group by t1.Site,month(t1.date),year(t1.date)  order by t1.date desc ";
 
@@ -1243,7 +1243,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
              {
                  foreach (SolarDashboardData _solarData2 in _SolarDashboardData2)
                  {
-                     if (_solarData.Site == _solarData2.Site && _solarData.month == _solarData2.month)
+                     if (_solarData.Site == _solarData2.Site && _solarData.year == _solarData2.year)
                      {
                          _solarData.tarkwh = _solarData2.tarkwh * 1000000;
                          _solarData.tarIR = _solarData2.tarIR;
