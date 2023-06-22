@@ -667,9 +667,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
-                                else if (excelSheet == FileSheetType.BD_Code_Gamesa)
+                                else if (excelSheet == FileSheetType.Breakdown_Code_Gamesa)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.imporFileType_BD_Code_Gamesa;
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Breakdown_Code_Gamesa;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
@@ -759,9 +759,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
-                                else if (excelSheet == FileSheetType.BD_Code_INOX)
+                                else if (excelSheet == FileSheetType.Breakdown_Code_INOX)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.imporFileType_BD_Code_INOX;
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Breakdown_Code_INOX;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if(ds.Tables.Count > 0)
                                     {
@@ -777,9 +777,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                     }
                                 }
-                                else if (excelSheet == FileSheetType.BD_Code_REGEN)
+                                else if (excelSheet == FileSheetType.Breakdown_Code_REGEN)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.imporFileType_BD_Code_REGEN;
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Breakdown_Code_REGEN;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
@@ -5019,9 +5019,10 @@ namespace DGRA_V1.Areas.admin.Controllers
             DateTime nextDate = DateTime.MinValue;
             string site = "";
             bool noData = false;
+            int tableRowCount = ds.Tables[0].Rows.Count;
             List<InsertSolarTrackerLoss> addSet = new List<InsertSolarTrackerLoss>();
 
-            if (ds.Tables.Count >= 1)
+            if (ds.Tables[0].Rows.Count >= 1)
             {
                 if (ds.Tables[0].Rows[0]["Site"] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[0]["Site"]) || ds.Tables[0].Rows[0]["Date"] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[0]["Date"]))
                 {
