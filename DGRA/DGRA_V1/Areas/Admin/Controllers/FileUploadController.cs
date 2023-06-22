@@ -6915,8 +6915,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 string fromTime = "";
                                 if (substr.Length > 0)
                                 {
-                                    fromTime = substr[0];
-                                    toTime = substr[1];
+                                    string[] fromArr = substr[0].Split(':');
+                                    string[] toArr = substr[1].Split(':');
+                                    fromTime = fromArr[0] + ":" + fromArr[1] + ":" + "00";
+                                    toTime = toArr[0] + ":" + toArr[1] + ":" + "00";
                                 }
                                 else
                                 {
@@ -7003,7 +7005,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                     minute = minute + (10 - remainder);
                                                     if (remainder < 9)
                                                     {
-                                                        finalToTime = output[0] + ":" + minute.ToString() + ":" + output[2];
+                                                        finalToTime = output[0] + ":" + minute.ToString() + ":" + "00";
                                                     }
                                                     else
                                                     {
@@ -7013,10 +7015,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                             {
                                                                 if (hour == 23 && Convert.ToInt32(output[1]) > 55)
                                                                 {
-                                                                    finalToTime = hour.ToString() + ":" + output[1] + ":" + output[2];
+                                                                    finalToTime = hour.ToString() + ":" + output[1] + ":" + "00";
                                                                 }
                                                                 hour++;
-                                                                finalToTime = hour + ":" + "00" + ":" + output[2];
+                                                                finalToTime = hour + ":" + "00" + ":" + "00";
                                                             }
                                                             else
                                                             {
@@ -7211,8 +7213,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     string nextVariable = ds.Tables[0].Columns[columnCount + 1].ColumnName.ToString();
                                     string[] nextTime = nextVariable.Split(sep);
-                                    string nextFrom = nextTime[0];
-                                    string nextTo = nextTime[1];
+
+                                    string[] nextFromArr = nextTime[0].Split(':');
+                                    string[] nextToArr = nextTime[1].Split(':');
+
+                                    string nextFrom = nextFromArr[0] + ":" + nextFromArr[1] + ":00";
+                                    string nextTo = nextToArr[0] + ":" + nextToArr[1] + ":00" ;
 
                                     string inputFrom = nextFrom;
                                     char sepr = ':';
@@ -7616,7 +7622,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindBDCodeGamesa,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeGamesa: " + e.Message + ",");
+                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeInox: " + e.Message + ",");
                         errorCount++;
                     }
                 }
