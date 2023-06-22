@@ -31,17 +31,17 @@ namespace DGRA_V1.Common
         public const string TML_Data = "TML_Data";
         public const string Power_Curve = "Power_Curve";
         public const string WindSpeed_TMD = "WindSpeed_TMD";
-        public const string BD_Code_Gamesa = "BD_Code_Gamesa";
+        public const string Breakdown_Code_Gamesa = "Breakdown_Code_Gamesa";
         public const string Reference_WTGs = "Reference_WTGs";
         public const string Suzlon_TMD = "Suzlon_TMD";
         public const string Inox_TMD = "Inox_TMD";
-        public const string BD_Code_INOX = "BD_Code_INOX";
+        public const string Breakdown_Code_INOX = "Breakdown_Code_INOX";
         public const string Estimated_Hourly_Data = "Estimated_Hourly_Data";
-        public const string BD_Code_REGEN = "BD_Code_REGEN";
+        public const string Breakdown_Code_REGEN = "Breakdown_Code_REGEN";
 
         public static List<string> sheetList = new List<string>()
         {
-            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity", "Solar_tracker_loss","Solar_tracker_loss_monthly", "Solar_soiling_loss", "Solar_PVSyst_loss", "GKK", "TML_Data","Power_Curve","WindSpeed_TMD","BD_Code_Gamesa","Reference_WTGs","Suzlon_TMD","Inox_TMD","BD_Code_INOX","Estimated_Hourly_Data","BD_Code_REGEN",
+            "Uploading_File_Generation", "Uploading_File_Breakdown", "Uploading_PyranoMeter1Min", "Uploading_PyranoMeter15Min", "Monthly_JMR_Input_and_Output", "Monthly_LineLoss", "Monthly_Target_KPI", "Load_Shedding_Uploading_Format", "Daily_JMR_Input_and_Output", "Daily_Target_KPI", "Site_Master", "Location_Master", "Solar_AC_DC_Capacity", "Solar_tracker_loss","Solar_tracker_loss_monthly", "Solar_soiling_loss", "Solar_PVSyst_loss", "GKK", "TML_Data","Power_Curve","WindSpeed_TMD","Breakdown_Code_Gamesa","Reference_WTGs","Suzlon_TMD","Inox_TMD","Breakdown_Code_INOX","Estimated_Hourly_Data","Breakdown_Code_REGEN",
         };
 
         public enum FileImportType
@@ -65,13 +65,13 @@ namespace DGRA_V1.Common
             imporFileType_Power_Curve,
             imporFileType_Solar_tracker_loss_monthly,
             imporFileType_WindSpeed_TMD,
-            imporFileType_BD_Code_Gamesa,
+            imporFileType_Breakdown_Code_Gamesa,
             imporFileType_Reference_WTGs,
             imporFileType_Suzlon_TMD,
             imporFileType_Inox_TMD,
-            imporFileType_BD_Code_INOX,
+            imporFileType_Breakdown_Code_INOX,
             imporFileType_Estimated_Hourly_Data,
-            imporFileType_BD_Code_REGEN,
+            imporFileType_Breakdown_Code_REGEN,
 
         }
 

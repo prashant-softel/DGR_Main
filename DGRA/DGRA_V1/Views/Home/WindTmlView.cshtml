@@ -89,6 +89,10 @@
                     <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
+                <div class="col-sm-12">
+                    <div id="WaterfallYearly" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
+                </div>
                 <hr>
                 <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>
                 <div id="loader" class="loader  center" style="display:none"></div>
@@ -212,12 +216,12 @@
                 document.getElementById("loader").style.display = 'none';
                 //calling function of getting data for chart.
                 getChartData(site_id, fromDate, toDate);
+                getChartDataYearly(site_id);
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th  style="width: 10%;">Site</th>';
                 tbl += '<th style="width: 5%;">Date</th>';
-                tbl += '<th>File Name</th>';
                 tbl += '<th>WTG</th>';
                 tbl += '<th>From Time</th>';
                 tbl += '<th>To Time</th>';
@@ -248,7 +252,6 @@
                         tbl += '<tr>';
                        tbl += '<td  class="text-center">' + result[i].site + '</td>';
                         tbl += '<td  class="text-center">' + result[i].date + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].file_name + '</td>';
                         tbl += '<td  class="text-center">' + result[i].wtGs + '</td>';
                         tbl += '<td  class="text-center">' + toHoursAndMinutes(result[i].from_time.totalSeconds) + '</td>';
                         tbl += '<td class="text-center">' + toHoursAndMinutes(result[i].to_time.totalSeconds) + '</td>';
@@ -404,7 +407,110 @@
 
         console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final);
         //monthlychart(data);
-        
+
+    }
+
+    function getChartDataYearly(site_id) {
+        var expected_final = 0.0;
+        var lineloss_final = 0.0;
+        var target_final = 0.0;
+        var lossUSMH_final = 0.0;
+        var lossSMH_final = 0.0;
+        var lossNC_final = 0.0;
+        var lossIGBD_final = 0.0;
+        var lossEGBD_final = 0.0;
+        var lossLULL_final = 0.0;
+        var lossPCD_final = 0.0;
+        var actual_final = 0.0;
+        console.log("Inside getChartDataYearly function.");
+        var data_Array1 = [];
+        document.getElementById("loader").style.display = 'flex';
+        var daterange = $('#daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var today = new Date(arr1[0]);
+
+        fyear = getFinancialYear(today);
+        fdate = getFinancialYearDateStartDate(fyear);
+        var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        console.log("Yearly Report From date : " + fromDate + " To date : " + toDate);
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+
+            success: function (result, status, xhr) {
+                console.log(result);
+                document.getElementById("loader").style.display = 'none';
+
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        console.log("Expected : ", result[i].expected_final);
+                        console.log("LineLoss : ", result[i].lineloss_final);
+                        console.log("Target : ",result[i].target_final);
+                        console.log("USHM : ",result[i].lossUSMH_final);
+                        console.log("SMH : ",result[i].lossSMH_final);
+                        console.log("NC : ",result[i].lossNC_final);
+                        console.log("IGBD : ",result[i].lossIGBD_final);
+                        console.log("EGBD : ",result[i].lossLULL_final);
+                        console.log("LULL : ",result[i].lossPCD_final);
+                        console.log("Actual : ",result[i].actual_final);
+
+                        expected_final = result[i].expected_final;
+                        lineloss_final = result[i].lineloss_final;
+                        target_final = result[i].target_final /1000000;
+                        lossUSMH_final = result[i].lossUSMH_final;
+                        lossSMH_final = result[i].lossSMH_final;
+                        lossNC_final = result[i].lossNC_final;
+                        lossIGBD_final = result[i].lossIGBD_final;
+                        lossEGBD_final = result[i].lossEGBD_final;
+                        lossLULL_final = result[i].lossLULL_final;
+                        lossPCD_final = result[i].lossPCD_final;
+                        actual_final = result[i].actual_final;
+
+                        CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4));
+
+                        console.log("-------------------------------------------");
+                        console.log("Expected : ", expected_final);
+                        console.log("LineLoss : ", lineloss_final);
+                        console.log("Target : ", target_final);
+                        console.log("USHM : ", lossUSMH_final);
+                        console.log("SMH : ", lossSMH_final);
+                        console.log("NC : ", lossNC_final);
+                        console.log("IGBD : ", lossIGBD_final);
+                        console.log("EGBD : ", lossEGBD_final);
+                        console.log("LULL : ", lossLULL_final);
+                        console.log("PCD : ", lossPCD_final);
+                        console.log("Actual : ", actual_final);
+                        //data = [
+                        //    { x: 'Target', value: target_final.toFixed(1) },
+                        //    { x: 'Expected', value: expected_final.toFixed(1) },
+                        //    { x: 'USMH', value: lossUSMH_final.toFixed(1) },
+                        //    { x: 'SMH', value: lossSMH_final.toFixed(1) },
+                        //    { x: 'Other', value: lossNC_final.toFixed(1) },
+                        //    { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
+                        //    { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
+                        //    { x: 'LULL', value: lossLULL_final.toFixed(1) },
+                        //    { x: 'PCD', value: lossPCD_final.toFixed(1) },
+                        //    { x: 'LineLoss', value: lineloss_final.toFixed(1) },
+                        //    { x: 'Actual', value: actual_final.toFixed(1) },
+                        //];
+                    }
+                }
+                else {
+
+                    // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+                }
+            }
+        });
+
+
+        console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final);
+        //monthlychart(data);
+
     }
 
     function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual) {
@@ -436,7 +542,6 @@
                     "relative",
                     "relative",
                     "relative",
-                    "relative",
                     "absolute"
                 ],
                 x: [
@@ -447,7 +552,6 @@
                     "Other",
                     "IGBD",
                     "EGBD",
-                    "LULL",
                     "PCD",
                     "Lineloss",
                     "Actual"
@@ -462,7 +566,6 @@
                     t_oh,
                     t_igbd,
                     t_egbd,
-                    t_lull,
                     t_pcd ,
                     t_lineloss,
                     t_actual
@@ -475,14 +578,38 @@
                     Number(total_oh),
                     Number(total_igbd),
                     Number(total_egbd),
-                    Number(total_lull),
                     Number(total_pcd),
                     Number(total_lineloss),
                     Number(total_actual)
                 ],
-                hovertemplate: '<b>%{x}</b><br>' +
-                    /*'Column: %{x}<br>' +*/
-                    'Value: %{y}',
+                hoverData: [
+                    Number(total_target),
+                    Number(total_expected),
+                    Number(total_usmh),
+                    Number(total_smh),
+                    Number(total_oh),
+                    Number(total_igbd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_lineloss),
+                    Number(total_actual)
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + total_target,
+                    '<b>Expected</b><br>Value: ' + total_expected,
+                    '<b>USMH</b><br>Value: ' + total_usmh,
+                    '<b>SMH</b><br>Value: ' + total_smh,
+                    '<b>Other</b><br>Value: ' + total_oh,
+                    '<b>IGBD</b><br>Value: ' + total_igbd,
+                    '<b>EGBD</b><br>Value: ' + total_egbd,
+                    '<b>PCD</b><br>Value: ' + total_pcd,
+                    '<b>Lineloss</b><br>Value: ' + total_lineloss,
+                    '<b>Actual</b><br>Value: ' + total_actual
+                ],
+
+                    //'<b>%{x}</b><br>' +
+                    ///*'Column: %{x}<br>' +*/
+                    //'Value: %{y}',
                 //absolute: { marker: { color: "#77CAE7" } },
                 //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
@@ -512,6 +639,123 @@
             showlegend: true
         };
         Plotly.newPlot('Waterfall', data, layout);
+        //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
+
+    }
+
+    function CreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual) {
+        console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual);
+        let t_target = Number(total_target).toFixed(2);
+        let t_expected = Number(total_expected).toFixed(2);
+        let t_usmh = Number(total_usmh).toFixed(2);
+        let t_smh = Number(total_smh).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
+        let t_igbd = Number(total_igbd).toFixed(2);
+        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_lull = Number(total_lull).toFixed(2);
+        let t_pcd = Number(total_pcd).toFixed(2);
+        let t_lineloss = Number(total_lineloss).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
+
+        var data = [
+            {
+                //name: "2018",
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "USMH",
+                    "SMH",
+                    "Other",
+                    "IGBD",
+                    "EGBD",
+                    "PCD",
+                    "Lineloss",
+                    "Actual"
+                ],
+                textposition: "outside",
+                //textposition: "inside",
+                text: [
+                    t_target,
+                    t_expected,
+                    t_usmh,
+                    t_smh,
+                    t_oh,
+                    t_igbd,
+                    t_egbd,
+                    t_pcd,
+                    t_lineloss,
+                    t_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_expected),
+                    Number(total_usmh),
+                    Number(total_smh),
+                    Number(total_oh),
+                    Number(total_igbd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_lineloss),
+                    Number(total_actual)
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + total_target,
+                    '<b>Expected</b><br>Value: ' + total_expected,
+                    '<b>USMH</b><br>Value: ' + total_usmh,
+                    '<b>SMH</b><br>Value: ' + total_smh,
+                    '<b>Other</b><br>Value: ' + total_oh,
+                    '<b>IGBD</b><br>Value: ' + total_igbd,
+                    '<b>EGBD</b><br>Value: ' + total_egbd,
+                    '<b>PCD</b><br>Value: ' + total_pcd,
+                    '<b>Lineloss</b><br>Value: ' + total_lineloss,
+                    '<b>Actual</b><br>Value: ' + total_actual
+                ],
+                //hovertemplate: '<b>%{x}</b><br>' +
+                //    /*'Column: %{x}<br>' +*/
+                //    'Value: %{y}',
+                //absolute: { marker: { color: "#77CAE7" } },
+                //relative: { marker: { color: "#77CAE7" } },
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
+            }
+        ];
+        layout = {
+            title: {
+                text: "Yearly"
+            },
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            autosize: true,
+            showlegend: true
+        };
+        Plotly.newPlot('WaterfallYearly', data, layout);
         //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
 
     }

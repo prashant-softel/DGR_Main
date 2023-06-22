@@ -12288,11 +12288,26 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             string deleteQry = "DELETE FROM wind_bd_codes_regen WHERE site_id IN(" + siteIdList + ");";
             qry += insertValues;
-
-            await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            try
+            {
+                await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while deleting records from wind_bd_codes_regen table due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
             if (!(string.IsNullOrEmpty(insertValues)))
             {
-                val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                try
+                {
+                    val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while inserting records into wind_bd_codes_regen table due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
             }
             return val;
         }
@@ -12661,7 +12676,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return finalResult;
         }
 
-        // Actual vs Expected Function 
 
         internal async Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate)
         {
@@ -13188,6 +13202,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return temp_data;
         }
+
+        // Actual vs Expected Function 
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
         {
 

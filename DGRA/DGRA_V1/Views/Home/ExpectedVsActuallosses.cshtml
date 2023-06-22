@@ -402,9 +402,9 @@
                     let cal_data = [];
                     var cnt = 0;
                     for (var i = 0; i < result.length; i++) {
-                        let ma = 1 - ((result[i].usmh + result[i].smh) / result[i].pexpected);
-                        let iga = 1 - ((result[i].igbdh) / result[i].pexpected);
-                        let ega = 1 - ((result[i].egbdh + result[i].load_shedding) / result[i].pexpected);
+                        let ma = (1 - ((result[i].usmh + result[i].smh) / result[i].pexpected)) * 100;
+                        let iga = (1 - ((result[i].igbdh) / result[i].pexpected)) * 100;
+                        let ega = (1 - ((result[i].egbdh + result[i].load_shedding) / result[i].pexpected)) * 100;
                         //let usmh = (1 - (result[i].usmh / result[i].pexpected));
 
 
@@ -427,9 +427,9 @@
                         tbl += '<td class="text-right">' + (result[i].load_shedding/1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (pr_value/1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].inv_kwh / 1000000).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (ma*100).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (iga*100).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (ega*100).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ega.toFixed(2) + '</td>';
                         tbl += '</tr>';
 
                         cnt++;
@@ -606,9 +606,21 @@
                     data_pr,
                     data_actual
                 ],
-                hovertemplate: '<b>%{x}</b><br>' +
-                    /*'Column: %{x}<br>' +*/
-                    'Value: %{y}',
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + data_target,
+                    '<b>Expected</b><br>Value: ' + data_expected,
+                    '<b>USMH</b><br>Value: ' + data_usmh,
+                    '<b>SMH</b><br>Value: ' + data_smh,
+                    '<b>Other</b><br>Value: ' + data_oh,
+                    '<b>IGBD</b><br>Value: ' + data_igbd,
+                    '<b>EGBD</b><br>Value: ' + data_egbd,
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment,
+                    '<b>PR</b><br>Value: ' + data_pr,
+                    '<b>Actual</b><br>Value: ' + data_actual
+                ],
+                //hovertemplate: '<b>%{x}</b><br>' +
+                //    /*'Column: %{x}<br>' +*/
+                //    'Value: %{y}',
                 //absolute: { marker: { color: "#77CAE7" } },
                //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
@@ -744,7 +756,105 @@ function getYearlyReport()
     });
     }
 
-    function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_igbd, total_egbd, total_pr, total_actual) {
+    function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+        //let t_target = Number(total_target).toFixed(2);
+        //let t_expected = Number(total_expected).toFixed(2);
+        //let t_usmh = Number(total_usmh).toFixed(2);
+        //let t_smh = Number(total_smh).toFixed(2);
+        //let t_oh = Number(total_oh).toFixed(2);
+        //let t_igbd = Number(total_igbd).toFixed(2);
+        //let t_egbd = Number(total_egbd).toFixed(2);
+        //let t_curtaiment = Number(total_curtaiment).toFixed(2);
+        //let t_pr = Number(total_pr).toFixed(2);
+        //let t_actual = Number(total_actual).toFixed(2);
+
+        //var data = [
+        //    {
+        //        //name: "2018",
+        //        type: "waterfall",
+        //        orientation: "v",
+        //        measure: [
+        //            "relative",
+        //            "absolute",
+        //            "relative",
+        //            "relative",
+        //            "relative",
+        //            "relative",
+        //            "relative",
+        //            "relative",
+        //            "absolute",
+        //            "absolute"
+        //        ],
+        //        x: [
+        //            "Target",
+        //            "Expected",
+        //            "USMH",
+        //            "SMH",
+        //            "Other",
+        //            "IGBD",
+        //            "EGBD",
+        //            "Curtailment",
+        //            "PR",
+        //            "Actual"
+        //        ],
+        //        textposition: "outside",
+        //        //textposition: "inside",
+        //        text: [
+        //            t_target,
+        //            t_expected,
+        //            t_usmh,
+        //            t_smh,
+        //            t_oh,
+        //            t_igbd,
+        //            t_egbd,
+        //            t_curtaiment,
+        //            t_pr,
+        //            t_actual
+        //        ],
+        //        y: [
+        //            Number(total_target),
+        //            Number(total_expected),
+        //            Number(total_usmh),
+        //            Number(total_smh),
+        //            Number(total_oh),
+        //            Number(total_igbd),
+        //            Number(total_egbd),
+        //            Number(total_curtaiment),
+        //            Number(total_pr),
+        //            Number(total_actual)
+        //        ],
+        //        hovertemplate: '<b>%{x}</b><br>' +
+        //            /*'Column: %{x}<br>' +*/
+        //            'Value: %{text:.4f}',
+        //        totals: { marker: { color: "#86C466" } },
+        //        increasing: { marker: { color: "#77CAE7" } },
+        //        decreasing: { marker: { color: "#EE403D" } },
+        //        connector: {
+        //            line: {
+        //                color: "white"
+        //            }
+        //        },
+        //    }
+        //];
+        //layout = {
+        //    title: {
+        //        text: "Monthly"
+        //    },
+        //    xaxis: {
+        //        type: "category",
+        //        fixedrange: true
+        //    },
+        //    yaxis: {
+        //        type: "linear",
+        //        fixedrange: true,
+        //        range: [0, Math.max(...data[0].y) * 1.1]
+        //    },
+        //    autosize: true,
+        //    showlegend: true
+        //};
+
+        console.log("Inside yearly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
+
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
         let t_usmh = Number(total_usmh).toFixed(2);
@@ -756,22 +866,43 @@ function getYearlyReport()
         let t_pr = Number(total_pr).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
+        let data_target = Number(total_target);
+        let data_expected = Number(total_expected);
+        let data_usmh = Number(total_usmh) * -1;
+        let data_smh = Number(total_smh) * -1;
+        let data_oh = Number(total_oh) * -1;
+        let data_igbd = Number(total_igbd) * -1;
+        let data_egbd = Number(total_egbd) * -1;
+        let data_curtaiment = Number(total_curtaiment) * -1;
+        let data_pr = Number(total_pr);
+        let data_actual = Number(total_actual);
+
+        console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
+        let prMeasure = "";
+        if (Number(total_pr) >= 0) {
+            prMeasure = "absolute";
+        } else {
+            prMeasure = "relative";
+        }
+        let rMeasure = "relative";
+        let aMeasure = "absolute";
+        console.log(prMeasure);
         var data = [
             {
                 //name: "2018",
                 type: "waterfall",
                 orientation: "v",
                 measure: [
-                    "relative",
-                    "absolute",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "absolute",
-                    "absolute"
+                    rMeasure,
+                    aMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    prMeasure,
+                    aMeasure
                 ],
                 x: [
                     "Target",
@@ -800,20 +931,34 @@ function getYearlyReport()
                     t_actual
                 ],
                 y: [
-                    Number(total_target),
-                    Number(total_expected),
-                    Number(total_usmh),
-                    Number(total_smh),
-                    Number(total_oh),
-                    Number(total_igbd),
-                    Number(total_egbd),
-                    Number(total_curtaiment),
-                    Number(total_pr),
-                    Number(total_actual)
+                    data_target,
+                    data_expected,
+                    data_usmh,
+                    data_smh,
+                    data_oh,
+                    data_igbd,
+                    data_egbd,
+                    data_curtaiment,
+                    data_pr,
+                    data_actual
                 ],
-                hovertemplate: '<b>%{x}</b><br>' +
-                    /*'Column: %{x}<br>' +*/
-                    'Value: %{text:.4f}',
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + data_target,
+                    '<b>Expected</b><br>Value: ' + data_expected,
+                    '<b>USMH</b><br>Value: ' + data_usmh,
+                    '<b>SMH</b><br>Value: ' + data_smh,
+                    '<b>Other</b><br>Value: ' + data_oh,
+                    '<b>IGBD</b><br>Value: ' + data_igbd,
+                    '<b>EGBD</b><br>Value: ' + data_egbd,
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment,
+                    '<b>PR</b><br>Value: ' + data_pr,
+                    '<b>Actual</b><br>Value: ' + data_actual
+                ],
+                //hovertemplate: '<b>%{x}</b><br>' +
+                //    /*'Column: %{x}<br>' +*/
+                //    'Value: %{y}',
+                //absolute: { marker: { color: "#77CAE7" } },
+                //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
                 increasing: { marker: { color: "#77CAE7" } },
                 decreasing: { marker: { color: "#EE403D" } },
@@ -826,7 +971,7 @@ function getYearlyReport()
         ];
         layout = {
             title: {
-                text: "Monthly"
+                text: "Yearly"
             },
             xaxis: {
                 type: "category",
