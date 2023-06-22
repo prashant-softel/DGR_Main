@@ -1228,8 +1228,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
              List<SolarDashboardData> _SolarDashboardData2 = new List<SolarDashboardData>();
              _SolarDashboardData2 = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
-             string qry = @" select t1.date,month(t1.date)as month,t1.site,sum(inv_kwh) as inv_kwh,sum(t1.poa)/count(t1.poa) as IR,
- replace(t2.LineLoss,'%','') as linLoss,sum(inv_kwh)-(sum(inv_kwh) * replace(t2.LineLoss,'%','') /100) as jmrkwh,
+             string qry = @" select t1.date,month(t1.date)as month,t1.site,sum(t1.inv_kwh) as inv_kwh,sum(t1.poa)/count(t1.poa) as IR,
+ replace(t2.LineLoss,'%','') as linLoss,sum(t1.inv_kwh)-(sum(t1.inv_kwh) * replace(t2.LineLoss,'%','') /100) as jmrkwh,
  (t3.gen_nos*1000000) as tarkwh, sum(t3.poa)/count(t3.poa) as tarIR from daily_gen_summary_solar t1 
  left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month_no=month(t1.date) and t2.fy='" + FY + "' " +
              " left join daily_target_kpi_solar t3 on t3.sites=t1.site and t3.date=t1.date  where  " + filter +
