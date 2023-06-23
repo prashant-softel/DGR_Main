@@ -1103,7 +1103,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (fileUploadType == "Wind")
                             {
                                 m_ErrorLog.SetInformation(",Reviewing Wind file for TML data import: " + file.FileName);
-                                statusCode = await InsertWindRejen(status, dataSetMain, file.FileName);
+                                statusCode = await InsertWindRegen(status, dataSetMain, file.FileName);
                             }
                         }
                         catch (Exception ex)
@@ -5864,10 +5864,10 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         if (dr.Table.Columns.Contains("Average Active Power 10M (kW)"))
                         {
-                            isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Average Active Power 10M (kW)"]) || dr["Average Active Power 10M (kW)"] is DBNull;
+                            isActivePowerEmpty = dr["Average Active Power 10M (kW)"] is DBNull;
                         }else if(dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
                         {
-                            isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Average Active Power 10M \n(kW)"]) || dr["Average Active Power 10M \n(kW)"] is DBNull;
+                            isActivePowerEmpty = dr["Average Active Power 10M \n(kW)"] is DBNull;
                         }
 
                         if (!isActivePowerEmpty)
@@ -5980,7 +5980,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 else
                 {
-                    m_ErrorLog.SetError(",Solar PVSyst Loss Validation Failed,");
+                    m_ErrorLog.SetError(",Wind TML Data Validation Failed,");
                 }
             }
             return responseCode;
@@ -6310,6 +6310,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 string[] substrings = inputString.Split(separator);
                 string fileNameNew = substrings[0];
                 fileNameNew = fileNameNew.ToUpper();
+                int loopCount =  0;
 
                 string wtgName = onm2equipmentName.ContainsKey(fileNameNew) ? onm2equipmentName[fileNameNew].ToString() : "";
                 if (wtgName == "")
@@ -6324,129 +6325,131 @@ namespace DGRA_V1.Areas.admin.Controllers
                     InsertWindTMLData addUnit = new InsertWindTMLData();
                     try
                     {
-                        bool skipRow = false;
-                        rowNumber++;
-                        addUnit.file_name = fileName;
-                        addUnit.onm_wtg = fileNameNew;
-                        addUnit.WTGs = wtgName;
-                        addUnit.site_id = siteId;
-                        addUnit.wtg_id = wtgId;
-                        addUnit.site = siteName;
-
-                        bool isdateEmpty = dr["Timestamp"] is DBNull || string.IsNullOrEmpty((string)dr["Timestamp"]);
-                        if (isdateEmpty)
+                        if (loopCount < rowCount-3)
                         {
-                            m_ErrorLog.SetInformation(", Timestamp value is empty. The row would be skiped.");
-                            continue;
-                        }
-                        addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("yyyy-MM-dd HH:mm:ss");
-                        errorFlag.Add(dateNullValidation(addUnit.timestamp, "Timestamp", rowNumber));
+                            bool skipRow = false;
+                            rowNumber++;
+                            addUnit.file_name = fileName;
+                            addUnit.onm_wtg = fileNameNew;
+                            addUnit.WTGs = wtgName;
+                            addUnit.site_id = siteId;
+                            addUnit.wtg_id = wtgId;
+                            addUnit.site = siteName;
 
-                        LogTime = Convert.ToDateTime(addUnit.timestamp).ToString("yyyy-MM-dd");
-
-                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("dd-MMM-yy");
-                        //if (rowNumber == 2)
-                        //{
-                        //    previousTime = Convert.ToDateTime(dr["Timestamp"]).ToString("HH:mm:ss");
-                        //    dataDate = addUnit.date;
-                        //}
-                        //if (dataDate != addUnit.date)
-                        //{
-                        //    previousTime = "00:00:00";
-                        //}
-
-                        addUnit.from_time = Convert.ToDateTime(dr["Timestamp"]).ToString("HH:mm:ss");
-                        if (addUnit.from_time != "23:50:00")
-                        {
-                            TimeSpan fromTime = TimeSpan.Parse(addUnit.from_time);
-                            addUnit.to_time = fromTime.Add(TimeSpan.FromMinutes(10)).ToString();
-                            //nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
-                        }
-                        else
-                        {
-                            addUnit.to_time = "23:59:59";
-                        }
-
-                        bool isActivePowerEmpty = string.IsNullOrEmpty((string)dr["AI_intern_ActivPower"]) || dr["AI_intern_ActivPower"] is DBNull;
-
-                        if (!isActivePowerEmpty)
-                        {
-                            addUnit.avg_active_power = Convert.ToDouble(dr["AI_intern_ActivPower"]);
-                            addUnit.status_code = 0;
-
-                        }
-
-                        if (isActivePowerEmpty)
-                        {
-                            addUnit.status_code = 1;
-                        }
-
-                        addUnit.avg_wind_speed = dr["AI_intern_WindSpeed"] is DBNull ? 0 : Convert.ToDouble(dr["AI_intern_WindSpeed"]);
-
-                        //addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
-
-                        errorFlag.Clear();
-                        if (!(skipRow))
-                        {
-                            addSet.Add(addUnit);
-                        }
-
-                        //Code to get the missing samples.
-                        if (rowcount < rowCount - 1)
-                        {
-                            string nextVariable = ds.Tables[0].Rows[rowcount + 1]["Timestamp"].ToString();
-                            string nextFrom = Convert.ToDateTime(nextVariable).ToString("HH:mm:ss");
-                            if (addUnit.to_time != nextFrom)
+                            bool isdateEmpty = dr["Timestamp"] is DBNull || string.IsNullOrEmpty((string)dr["Timestamp"]);
+                            if (isdateEmpty)
                             {
-                                int insideCount = 0;
-                                string missingTo = "";
-                                string missingFrom = "";
-                                do
+                                m_ErrorLog.SetInformation(", Timestamp value is empty. The row would be skiped.");
+                                continue;
+                            }
+                            addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("yyyy-MM-dd HH:mm:ss");
+                            errorFlag.Add(dateNullValidation(addUnit.timestamp, "Timestamp", rowNumber));
+
+                            LogTime = Convert.ToDateTime(addUnit.timestamp).ToString("yyyy-MM-dd");
+
+                            addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("dd-MMM-yy");
+                            //if (rowNumber == 2)
+                            //{
+                            //    previousTime = Convert.ToDateTime(dr["Timestamp"]).ToString("HH:mm:ss");
+                            //    dataDate = addUnit.date;
+                            //}
+                            //if (dataDate != addUnit.date)
+                            //{
+                            //    previousTime = "00:00:00";
+                            //}
+
+                            addUnit.from_time = Convert.ToDateTime(dr["Timestamp"]).ToString("HH:mm:ss");
+                            if (addUnit.from_time != "23:50:00")
+                            {
+                                TimeSpan fromTime = TimeSpan.Parse(addUnit.from_time);
+                                addUnit.to_time = fromTime.Add(TimeSpan.FromMinutes(10)).ToString();
+                                //nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+                            }
+                            else
+                            {
+                                addUnit.to_time = "23:59:59";
+                            }
+
+                            bool isActivePowerEmpty = string.IsNullOrEmpty((string)dr["AI_intern_ActivPower"]) || dr["AI_intern_ActivPower"] is DBNull;
+
+                            if (!isActivePowerEmpty)
+                            {
+                                addUnit.avg_active_power = Convert.ToDouble(dr["AI_intern_ActivPower"]);
+                                addUnit.status_code = 0;
+
+                            }
+
+                            if (isActivePowerEmpty)
+                            {
+                                addUnit.status_code = 1;
+                            }
+
+                            addUnit.avg_wind_speed = dr["AI_intern_WindSpeed"] is DBNull ? 0 : Convert.ToDouble(dr["AI_intern_WindSpeed"]);
+
+                            //addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
+
+                            errorFlag.Clear();
+                            if (!(skipRow))
+                            {
+                                addSet.Add(addUnit);
+                            }
+
+                            //Code to get the missing samples.
+                            if (rowcount < rowCount - 4)
+                            {
+                                string nextVariable = ds.Tables[0].Rows[rowcount + 1]["Timestamp"].ToString();
+                                string nextFrom = Convert.ToDateTime(nextVariable).ToString("HH:mm:ss");
+                                if (addUnit.to_time != nextFrom)
                                 {
-                                    TimeSpan fromTimeSpan = new TimeSpan();
-                                    TimeSpan nextFromFinal = new TimeSpan();
-                                    TimeSpan nextToFinal = new TimeSpan();
-
-                                    if (insideCount == 0)
+                                    int insideCount = 0;
+                                    string missingTo = "";
+                                    string missingFrom = "";
+                                    do
                                     {
-                                        fromTimeSpan = TimeSpan.Parse(addUnit.from_time);
+                                        TimeSpan fromTimeSpan = new TimeSpan();
+                                        TimeSpan nextFromFinal = new TimeSpan();
+                                        TimeSpan nextToFinal = new TimeSpan();
+
+                                        if (insideCount == 0)
+                                        {
+                                            fromTimeSpan = TimeSpan.Parse(addUnit.from_time);
+                                        }
+                                        if (insideCount > 0)
+                                        {
+                                            fromTimeSpan = TimeSpan.Parse(missingFrom);
+                                        }
+
+                                        nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
+                                        nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+
+                                        InsertWindTMLData addMissingUnit = new InsertWindTMLData();
+
+                                        addMissingUnit.file_name = fileName;
+                                        addMissingUnit.onm_wtg = fileNameNew;
+                                        addMissingUnit.WTGs = wtgName;
+                                        addMissingUnit.site_id = siteId;
+                                        addMissingUnit.wtg_id = wtgId;
+                                        addMissingUnit.site = siteName;
+                                        addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
+                                        addMissingUnit.timestamp = LogTime + " " + nextToFinal.ToString();
+                                        bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
+                                        addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
+                                        addMissingUnit.from_time = nextFromFinal.ToString();
+                                        addMissingUnit.to_time = nextToFinal.ToString();
+                                        addMissingUnit.status_code = 1;
+                                        addMissingUnit.avg_wind_speed = 0;
+                                        missingTo = addMissingUnit.to_time;
+                                        missingFrom = addMissingUnit.from_time;
+                                        previoustoTime = addMissingUnit.to_time;
+
+                                        addSet.Add(addMissingUnit);
+
+                                        insideCount++;
                                     }
-                                    if (insideCount > 0)
-                                    {
-                                        fromTimeSpan = TimeSpan.Parse(missingFrom);
-                                    }
-
-                                    nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
-                                    nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
-
-                                    InsertWindTMLData addMissingUnit = new InsertWindTMLData();
-
-                                    addMissingUnit.file_name = fileName;
-                                    addMissingUnit.onm_wtg = fileNameNew;
-                                    addMissingUnit.WTGs = wtgName;
-                                    addMissingUnit.site_id = siteId;
-                                    addMissingUnit.wtg_id = wtgId;
-                                    addMissingUnit.site = siteName;
-                                    addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
-                                    addMissingUnit.timestamp = LogTime + " " + nextToFinal.ToString();
-                                    bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
-                                    addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
-                                    addMissingUnit.from_time = nextFromFinal.ToString();
-                                    addMissingUnit.to_time = nextToFinal.ToString();
-                                    addMissingUnit.status_code = 1;
-                                    addMissingUnit.avg_wind_speed = 0;
-                                    missingTo = addMissingUnit.to_time;
-                                    missingFrom = addMissingUnit.from_time;
-                                    previoustoTime = addMissingUnit.to_time;
-
-                                    addSet.Add(addMissingUnit);
-
-                                    insideCount++;
+                                    while (missingTo != nextFrom);
                                 }
-                                while (missingTo != nextFrom);
                             }
                         }
-
                     }
                     catch (Exception e)
                     {
@@ -6456,6 +6459,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
 
                     rowcount++;
+                    loopCount++;
                 }
                 if (!(errorCount > 0))
                 {
@@ -6513,7 +6517,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //InsertWindRejen
-        private async Task<int> InsertWindRejen(string status, DataSet ds, string fileName)
+        private async Task<int> InsertWindRegen(string status, DataSet ds, string fileName)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -6523,12 +6527,14 @@ namespace DGRA_V1.Areas.admin.Controllers
             if (ds.Tables.Count > 0)
             {
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
-                string previousTime = "00:00:00";
+                string previousFromTime = "00:00:00";
+                string previousToTime = "00:00:00";
                 string dataDate = "";
                 int rowCount = ds.Tables[0].Rows.Count;
                 int ColumnCount = ds.Tables[0].Columns.Count;
                 int rowcount = 0;
                 string LogTime = "";
+                int loopCount = 0;
 
                 string inputString = fileName;
                 char separator = '_';
@@ -6581,6 +6587,24 @@ namespace DGRA_V1.Areas.admin.Controllers
                         string fromtime = file_time.Substring(7, 2) + ":" + file_time.Substring(9, 2) + ":00";
                         string fullDate = year + "-" + month + "-" + date + " " + fromtime;
 
+                        if(loopCount > 59)
+                        {
+                            string hello = "Hello this needs to be removed.";
+                        }
+                        //Check if minute is 10, 20, 30, 40, 50, 00.
+                        //ds.Tables[0].Rows[0]["Site"]
+                        string[] fromArr = fromtime.Split(':');
+                        int fromHrs = Convert.ToInt32(fromArr[0]);
+                        int fromMinutes = Convert.ToInt32(fromArr[1]);
+                        int reminder = fromMinutes % 10;
+                        string finalFrom = "";
+                        if(reminder > 0)
+                        {
+                            finalFrom = Convert.ToString(TimeSpan.Parse(previousFromTime).Add(TimeSpan.FromMinutes(10)));
+                            fromtime = finalFrom;
+                        }
+
+
                         //DateTime result = DateTime.ParseExact(file_time, "yyyyMMdd_HHmm", CultureInfo.InvariantCulture);
                         DateTime result = Convert.ToDateTime(fullDate);
                         string timeStamp = result.ToString("yyyy-MM-dd HH:mm:ss");
@@ -6595,12 +6619,12 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         if (rowNumber == 2)
                         {
-                            previousTime = fromtime;
+                            previousFromTime = fromtime;
                             dataDate = addUnit.date;
                         }
                         if (dataDate != addUnit.date)
                         {
-                            previousTime = "00:00:00";
+                            previousFromTime = "00:00:00";
                             //m_ErrorLog.SetError(", Row <" + rowNumber + "> column <Time Stamp> : <" + dataDate + "> and Date <" + addUnit.date + "> missmatched");
                             //errorCount++;
                         }
@@ -6614,7 +6638,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                             addUnit.to_time = "23:59:59";
                         }
 
-                        previousTime = addUnit.to_time;
+                        previousFromTime = addUnit.from_time;
+                        previousToTime = addUnit.to_time;
 
                         bool isActivePowerEmpty = dr["active_power_avg"] is DBNull || string.IsNullOrEmpty((string)dr["active_power_avg"]);
 
@@ -6659,7 +6684,18 @@ namespace DGRA_V1.Areas.admin.Controllers
                             string nextVariable = nextTime.Substring(7, 2) + ":" + nextTime.Substring(9, 2) + ":00";
 
                             string nextFrom = Convert.ToDateTime(nextVariable).ToString("HH:mm:ss");
-                            if (addUnit.to_time != nextFrom)
+                            string[] nextfromArr = nextFrom.Split(':');
+                            int nextFromHrs = Convert.ToInt32(nextfromArr[0]);
+                            int nextFromMinutes = Convert.ToInt32(nextfromArr[1]);
+                            int nextReminder = nextFromMinutes % 10;
+                            string nextFinalFrom = "";
+                            if (nextReminder > 0)
+                            {
+                                nextFinalFrom = Convert.ToString(TimeSpan.Parse(previousFromTime).Add(TimeSpan.FromMinutes(10)));
+                                nextFrom = nextFinalFrom;
+                            }
+
+                                if (addUnit.to_time != nextFrom)
                             {
                                 InformationLog("previous to time <" + addUnit.to_time + "> next from time <" + nextFrom + ">.");
                                 int insideCount = 0;
@@ -6708,7 +6744,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     addMissingUnit.power_production = 10000;
                                     missingTo = addMissingUnit.to_time;
                                     missingFrom = addMissingUnit.from_time;
-                                    previousTime = addMissingUnit.to_time;
+                                    previousToTime = addMissingUnit.to_time;
+                                    previousFromTime = addMissingUnit.from_time;
 
                                     addSet.Add(addMissingUnit);
 
@@ -6727,6 +6764,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
 
                     rowcount++;
+                    loopCount++;
                 }
                 if (errorCount == 0)
                 {
@@ -7040,7 +7078,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         if (!isToHigher)
                                         {
-                                            //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into greater closest.
+                                            //check if to time is 10, 20, 30, 40, 50, 00 if not then convert it into smallest closest.
                                             //00:10:00
                                             string inputStrings = toTime;
                                             char sepre = ':';
