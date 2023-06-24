@@ -436,7 +436,7 @@
                         total_target += result[i].target;
                         total_expected += (result[i].pexpected / 1000000);
                         total_usmh += (result[i].usmh / 1000000);
-                        total_smh += (result[i].usmh / 1000000);
+                        total_smh += (result[i].smh / 1000000);
                         total_oh += (result[i].oh / 1000000);
                         total_actual += (result[i].inv_kwh/1000000);
                         total_pr += pr_value / 1000000;
@@ -521,11 +521,11 @@
 
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
-        let t_usmh = Number(total_usmh).toFixed(2);
-        let t_smh = Number(total_smh).toFixed(2);
-        let t_oh = Number(total_oh).toFixed(2);
-        let t_igbd = Number(total_igbd).toFixed(2);
-        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_usmh = Number(total_usmh * -1).toFixed(2);
+        let t_smh = Number(total_smh * -1).toFixed(2);
+        let t_oh = Number(total_oh * -1).toFixed(2);
+        let t_igbd = Number(total_igbd * -1).toFixed(2);
+        let t_egbd = Number(total_egbd * -1).toFixed(2);
         let t_curtaiment = Number(total_curtaiment).toFixed(2);
         let t_pr = Number(total_pr).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
@@ -541,6 +541,7 @@
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
+        //data_pr = 0.4;
         console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
         let prMeasure = "";
         if (Number(total_pr) >= 0) {
@@ -633,6 +634,23 @@
                 },
             }
         ];
+        //#86C466 : green. #77CAE7 : blue. #EE403D : red. #14a105 : dark-green.
+        //
+        var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
+        if (data_curtaiment > 0) {
+            columnColors[7] = "#14a105";
+            data[0].measure[7].marker = { color: '#14a105' };
+        }
+        if (data_pr > 0) {
+            columnColors[8] = "#14a105";
+            data[0].measure[8].marker = { color: '#14a105' };
+        }
+
+        // Set the marker color for each data point using the columnColors array
+        //for (var i = 0; i < data[0].y.length; i++) {
+        //    data[0].measure[i].marker = { color: columnColors[i] };
+        //}
+
         layout = {
             title: {
                 text: "Monthly"
@@ -725,7 +743,7 @@ function getYearlyReport()
                     total_target += result[i].target;
                     total_expected += (result[i].pexpected/1000000);
                     total_usmh += (result[i].usmh/1000000);
-                    total_smh += (result[i].usmh/1000000);
+                    total_smh += (result[i].smh/1000000);
                     total_oh += (result[i].oh/1000000);
                     total_actual += (result[i].inv_kwh / 1000000);
                     total_pr += (result[i].pr_value/1000000);
