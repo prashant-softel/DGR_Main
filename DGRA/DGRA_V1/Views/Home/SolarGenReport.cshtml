@@ -1253,7 +1253,7 @@
                 tbl += '<th>EGBD Loss</th>';
                 tbl += '<th>Load_She Loss</th>';
                 tbl += '<th>LULL Loss</th>';
-                tbl += '<th>Tracker Loss (kw)</th>';
+                tbl += '<th>Tracker Loss</th>';
                 tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
@@ -1791,7 +1791,7 @@
                 tbl += '<th>EGBD Loss</th>';
                 tbl += '<th>Load_She Loss</th>';
                 tbl += '<th>LULL Loss</th>';
-                tbl += '<th>Tracker Loss (kw)</th>';
+                tbl += '<th>Tracker Loss</th>';
                 tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
                 console.log(result.length);
@@ -1852,7 +1852,7 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2)+ '</td>';
-                        tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }
@@ -2307,7 +2307,7 @@
                 tbl += '<th>EGBD Loss</th>';
                 tbl += '<th>Load_She Loss</th>';
                 tbl += '<th>LULL Loss</th>';
-                tbl += '<th>Tracker Loss (kw)</th>';
+                tbl += '<th>Tracker Loss</th>';
                 tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
 
@@ -2360,7 +2360,7 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + TotalFinal.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].unschedule_hrs['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].schedule_hrs['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
                         //tbl += '<td class="text-right">' + moment.utc(result[i].others['totalSeconds'] * 1000).format('HH:mm:ss') + '</td>';
