@@ -41,7 +41,7 @@ namespace DGRAPIs.BS
                     email.To.Add(MailboxAddress.Parse(mail));
                 }
                 foreach (var mail in mailRequest.CcEmail){
-                    email.To.Add(MailboxAddress.Parse(mail));
+                    email.Cc.Add(MailboxAddress.Parse(mail));
                 }
                // email.Cc.Add(MailboxAddress.Parse(mailRequest.CcEmail));
                 email.Subject = mailRequest.Subject;
