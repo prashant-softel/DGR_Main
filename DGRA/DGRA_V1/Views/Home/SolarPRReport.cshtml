@@ -360,11 +360,11 @@
                             //}
                             //e_var = temp_e_var;
                         }
-                        if (result[i].expected_kwh == 0 || result[i].act_kwh == 0) {
-                            act_prval = 0;
+                        if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
+                            act_prval = 0
                         }
                         else {
-                            act_prval = (result[i].act_kwh.toFixed(2) / result[i].expected_kwh.toFixed(2)) * 100;
+                            act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
                             ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
@@ -382,7 +382,7 @@
                         ega_var = (result[i].act_ega.toFixed(2) - result[i].tar_ega.toFixed(2));
 
                        
-                        console.log(result[i].expected_kwh, result[i].act_kwh, act_prval);
+                        console.log(result[i].pr_expected_kwh, result[i].act_kwh, act_prval);
                         if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
                             gain_tar = 0;
                         } else {
@@ -1166,11 +1166,11 @@
                             //    console.log(temp_e_var);
                             }
                         }
-                        if (result[i].expected_kwh == 0 || result[i].act_kwh == 0) {
+                        if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
                             act_prval = 0
                         }
                         else {
-                            act_prval = (result[i].act_kwh / result[i].expected_kwh) * 100;
+                            act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
                             ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
@@ -1203,7 +1203,7 @@
                             gain_var = ((gain_act - gain_tar) / gain_tar)*100;
                         }
 
-                        console.log(result[i].expected_kwh, result[i].act_kwh, act_prval);
+                        console.log(result[i].pr_expected_kwh, result[i].act_kwh, act_prval);
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
