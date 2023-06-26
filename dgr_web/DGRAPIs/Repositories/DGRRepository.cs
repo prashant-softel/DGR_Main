@@ -13181,8 +13181,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             if (lineloss_percentage > 0)
             {
-                double temp = (lineloss_percentage * actual_active_power) / 6;
-                lineloss_final = temp / 1000000;
+                double temp = (lineloss_percentage * actual_active_power) / 100; //6;
+                lineloss_final = temp; // / 1000000;
                 //string linelossTemp = lineloss_final.ToString("0.##############");
                 //linelossTemp = linelossTemp.TrimEnd('0').TrimEnd('.');
                 //lineloss_final = Convert.ToDouble(linelossTemp);
