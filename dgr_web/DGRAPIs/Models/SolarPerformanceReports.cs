@@ -43,6 +43,7 @@ namespace DGRAPIs.Models
         public double total_tarrif { get; set; }
         public double tar_kwh { get; set; }
         public double expected_kwh { get; set; }
+        public double pr_expected_kwh { get; set; }
         public double plant_kwh { get; set; }
         public double act_kwh { get; set; }
         public double act_kwh_afterloss { get; set; }
