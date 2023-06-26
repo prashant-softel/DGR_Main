@@ -5516,7 +5516,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
 (SELECT dc_capacity FROM site_master_solar where site=t1.site and state=t1.state)as dc_capacity,
 (SELECT total_tarrif FROM site_master_solar where site=t1.site and state=t1.state)as total_tarrif,
 (SELECT  sum(gen_nos) FROM daily_target_kpi_solar where sites=t1.site
-and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1000000)as act_kwh,(sum(expected_kwh)/1000000)as expected_kwh, " +
+and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1000000)as act_kwh,(sum(expected_kwh)/1000000)as pr_expected_kwh, " +
 "(SELECT lineloss FROM monthly_line_loss_solar where site=t1.site and fy='" + fy + "' " +
 "and month_no=month(t1.date) order by monthly_line_loss_solar_id desc limit 1)as lineloss," +
 "(SELECT  sum(ghi)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ghi," +
