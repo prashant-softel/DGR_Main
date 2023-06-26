@@ -13500,7 +13500,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         string msg = e.Message;
                     }
-                    est1HourData[0].estModTemp = est1HourData[0].mod_tXavg_poa / est1HourData[0].glob_inc;
+                    if (est1HourData[0].mod_tXavg_poa == 0 && est1HourData[0].glob_inc == 0)
+                    {
+                        est1HourData[0].estModTemp = 0;
+                    }
+                    else
+                    {
+                        est1HourData[0].estModTemp = est1HourData[0].mod_tXavg_poa / est1HourData[0].glob_inc;
+                    }
                     returnData[0].estModTemp = est1HourData[0].estModTemp;
 
 
