@@ -1,4 +1,4 @@
-﻿using DGRAPIs.Models;
+using DGRAPIs.Models;
 using DGRAPIs.Repositories;
 using MailKit;
 using MailKit.Net.Smtp;
@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using System.Collections;
 
 namespace DGRAPIs.BS
 {
@@ -32,49 +34,76 @@ namespace DGRAPIs.BS
         {
             try
             {
-                List<MailResponse> _MailResponse = new List<MailResponse>();
+                var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
-                var email = new MimeMessage();
-                //email.Sender = MailboxAddress.Parse(MailSettings.Mail);
-                email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
-                foreach (var mail in mailRequest.ToEmail){ 
-                    email.To.Add(MailboxAddress.Parse(mail));
-                }
-                foreach (var mail in mailRequest.CcEmail){
-                    email.Cc.Add(MailboxAddress.Parse(mail));
-                }
-               // email.Cc.Add(MailboxAddress.Parse(mailRequest.CcEmail));
-                email.Subject = mailRequest.Subject;
-                var builder = new BodyBuilder();
-                if (mailRequest.Attachments != null)
-                {
-                    byte[] fileBytes;
-                    foreach (var file in mailRequest.Attachments)
+                List<TimeSpan> time = new List<TimeSpan> ();
+
+                time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:DailyReportTime")));
+                time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:WeeklyReportTime")));
+                time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar")));
+
+                var timeNow = DateTime.Now.TimeOfDay;
+                //daily mail
+               
+                    List<MailResponse> _MailResponse = new List<MailResponse>();
+
+                    var email = new MimeMessage();
+                    //email.Sender = MailboxAddress.Parse(MailSettings.Mail);
+                    email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+                    foreach (var mail in mailRequest.ToEmail)
                     {
-                    //var file = mailRequest.Attachments; 
-                        if (file.Length > 0)
+                        email.To.Add(MailboxAddress.Parse(mail));
+                    }
+                    foreach (var mail in mailRequest.CcEmail)
+                    {
+                        email.Cc.Add(MailboxAddress.Parse(mail));
+                    }
+                    // email.Cc.Add(MailboxAddress.Parse(mailRequest.CcEmail));
+                    email.Subject = mailRequest.Subject;
+                    var builder = new BodyBuilder();
+                    if (mailRequest.Attachments != null)
+                    {
+                        byte[] fileBytes;
+                        foreach (var file in mailRequest.Attachments)
                         {
-                            using (var ms = new MemoryStream())
+                            //var file = mailRequest.Attachments; 
+                            if (file.Length > 0)
                             {
-                                file.CopyTo(ms);
-                                fileBytes = ms.ToArray();
+                                using (var ms = new MemoryStream())
+                                {
+                                    file.CopyTo(ms);
+                                    fileBytes = ms.ToArray();
+                                }
+                                //builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
+                                builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse("application/octet-stream"));
                             }
-                            //builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
-                            builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse("application/octet-stream"));
                         }
                     }
+                    builder.HtmlBody = mailRequest.Body;
+                    email.Body = builder.ToMessageBody();
+
+                foreach(TimeSpan schduledTime in time)
+                {
+                    TimeSpan approxTime = timeNow.Subtract(TimeSpan.FromMinutes(5)) ;
+                    if ((schduledTime >= approxTime) && (schduledTime <= timeNow))
+                    {
+                        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                        smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+                        // smtp.Connect(MailSettings.Host, MailSettings.Port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+                        //smtp.Authenticate(MailSettings.Mail, MailSettings.Password);
+                        await smtp.SendAsync(email);
+                        smtp.Disconnect(true);
+
+                        _MailResponse.Add(new MailResponse { mail_sent = true, message = "Mail sent successfully" });
+                    }
+                    else
+                    {
+                        _MailResponse.Add(new MailResponse { mail_sent = false, message = "Mail not sent." });
+                    }
                 }
-                builder.HtmlBody = mailRequest.Body;
-                email.Body = builder.ToMessageBody();
-                using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-                // smtp.Connect(MailSettings.Host, MailSettings.Port, SecureSocketOptions.StartTls);
-                smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-                //smtp.Authenticate(MailSettings.Mail, MailSettings.Password);
-                await smtp.SendAsync(email);
-                smtp.Disconnect(true);
-                _MailResponse.Add(new MailResponse { mail_sent = true, message = "Mail sent successfully" });
-                return _MailResponse;
+                    return _MailResponse;
+                
             }
             catch (Exception ex)
             {
