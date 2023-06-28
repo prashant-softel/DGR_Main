@@ -188,9 +188,9 @@
                 tbl += '<th>MA ACT (%)</th>';
                 tbl += '<th>MA CON (%)</th>';
                 tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (A) (%)</th>';
-                tbl += '<th>EGA (B) (%)</th>';
-                tbl += '<th>EGA (C) (%)</th>';
+                tbl += '<th style="width: 6%;">EGA (A) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
+                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>PLF (%)</th>';
                 tbl += '<th>Grid_hrs</th>';
                 tbl += '<th>Lull_hrs</th>';
@@ -273,7 +273,21 @@
                             }
                         },
                         'colvis'
-                    ]
+                    ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA (A) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA (B) (%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA (C) (%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
