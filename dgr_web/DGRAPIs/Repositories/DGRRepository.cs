@@ -864,7 +864,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
 
                     if (current != last  && _SolarDashboardData8.IndexOf(_solarData) == _SolarDashboardData8.Count - 1)
                     {
-                        lastD = currentD;
+                        last = current;
                         foreach (SolarDashboardData _solarData4 in data)
                         {
                             if (last == _solarData4.month)
