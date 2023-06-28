@@ -210,14 +210,14 @@
 
         $.ajax({
             type: "GET",
-            url: '@Url.Action("SolarGhi_Poa_15Min", "SolarView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            url: '@Url.Action("SolarGhi_Poa_15Min", "SolarView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
-            
+
             success: function (result, status, xhr) {
                 console.log(document.getElementById("loader"));
                 document.getElementById("loader").style.display = 'none';
-              
+
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th style="width: 12%;">Date Time</th>';
@@ -274,7 +274,7 @@
                         var formattedDate = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm:ss');
                         var formattedDate1 = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm');
                         var formattedtime = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('HH:mm');
-                       // console.log(formattedtime);
+                        // console.log(formattedtime);
                         if (formattedtime >= "04:59" && formattedtime <= "19:00") {
                             tbl += '<tr>';
                             tbl += '<td  class="text-left">' + formattedDate + '</td>';
@@ -294,7 +294,7 @@
                             tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
                             tbl += '<td class="text-left" >' + weather + '</td>';
                             tbl += '</tr>';
-                           
+
                             date_arr_arr.push(formattedDate1);
                             time_arr_arr.push(formattedDate1);
                             ghi_arr1.push(Number(result[i].ghi_1.toFixed(1)));
@@ -310,8 +310,8 @@
                             amp_temp_arr.push(Number(result[i].amb_temp.toFixed(1)));
 
                             mod_arr_arr.push(Number(result[i].mod_temp.toFixed(1)));
-                            
-                           
+
+
                         }
                     }
                 }
@@ -379,7 +379,7 @@
 
                 FifteenMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr)
                 tbl += '</table>';
-               // $("#DailyGenView").html(tbl);
+                // $("#DailyGenView").html(tbl);
                 $("#DailyGenView").html("").html(tbl);
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
@@ -422,21 +422,23 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
+            }
+        });
     }
-  
+
     function FifteenMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
         let dataset_arr = [];
 
         if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
 
-            dataset_arr.push({ yAxisID: 'A', label: "GHI 1", data: ghi_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1});
+            dataset_arr.push({ yAxisID: 'A', label: "GHI 1", data: ghi_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1 });
         }
         if (ghi_arr2.length > 0 && ghi_arr2.length != ghiZeroArr2.length) {
 
-            dataset_arr.push({ yAxisID: 'A', label: "GHI 2", data: ghi_arr2, pointRadius: 0.8, borderColor: "#86C466", fill: false, borderWidth: 1});
+            dataset_arr.push({ yAxisID: 'A', label: "GHI 2", data: ghi_arr2, pointRadius: 0.8, borderColor: "#86C466", fill: false, borderWidth: 1 });
         }
         if (poa_arr1.length > 0 && poa_arr1.length != poaZeroArr1.length) {
-            dataset_arr.push({ yAxisID: 'A', label: "POA 1", data: poa_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1});
+            dataset_arr.push({ yAxisID: 'A', label: "POA 1", data: poa_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1 });
         }
         if (poa_arr2.length > 0 && poa_arr2.length != poaZeroArr2.length) {
             dataset_arr.push({ yAxisID: 'A', label: "POA 2", data: poa_arr2, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1 });
@@ -445,21 +447,21 @@
             dataset_arr.push({ yAxisID: 'A', label: "POA 3", data: poa_arr3, pointRadius: 0.8, borderColor: "#76D7C4", fill: false, borderWidth: 1 });
         }
         if (poa_arr4.length > 0 && poa_arr4.length != poaZeroArr4.length) {
-            dataset_arr.push({ yAxisID: 'A', label: "POA 4", data: poa_arr4, pointRadius: 0.8, borderColor: "#58D68D", fill: false, borderWidth: 1});
+            dataset_arr.push({ yAxisID: 'A', label: "POA 4", data: poa_arr4, pointRadius: 0.8, borderColor: "#58D68D", fill: false, borderWidth: 1 });
         }
         if (poa_arr5.length > 0 && poa_arr5.length != poaZeroArr5.length) {
-            dataset_arr.push({ yAxisID: 'A', label: "POA 5", data: poa_arr5, pointRadius: 0.8, borderColor: "#F39C12", fill: false, borderWidth: 1});
+            dataset_arr.push({ yAxisID: 'A', label: "POA 5", data: poa_arr5, pointRadius: 0.8, borderColor: "#F39C12", fill: false, borderWidth: 1 });
         }
         if (poa_arr6.length > 0 && poa_arr6.length != poaZeroArr6.length) {
-            dataset_arr.push({ yAxisID: 'A', label: "POA 6", data: poa_arr6, pointRadius: 0.8, borderColor: "#27F9F3", fill: false, borderWidth: 1});
+            dataset_arr.push({ yAxisID: 'A', label: "POA 6", data: poa_arr6, pointRadius: 0.8, borderColor: "#27F9F3", fill: false, borderWidth: 1 });
         }
         if (poa_arr7.length > 0 && poa_arr7.length != poaZeroArr7.length) {
             dataset_arr.push({ yAxisID: 'A', label: "POA 7", data: poa_arr7, pointRadius: 0.8, borderColor: "#F98027", fill: false, borderWidth: 1 });
         }
-       
-        dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.8, borderColor: "#FFCA5A", fill: false, borderWidth: 1});
-        dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1});
-      
+
+        dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.8, borderColor: "#FFCA5A", fill: false, borderWidth: 1 });
+        dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1 });
+
         console.log(dataset_arr);
         new Chart(document.getElementById("line-chart"), {
             type: 'line',
@@ -489,7 +491,7 @@
                         id: 'B',
                         type: 'linear',
                         position: 'right',
-                        
+
                     }]
                 }
 

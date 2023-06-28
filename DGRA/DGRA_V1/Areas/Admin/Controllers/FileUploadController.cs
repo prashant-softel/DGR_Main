@@ -305,14 +305,35 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         m_ErrorLog.SetImportInformation(" DGR Automation");
                                         if (fileUploadType == "Solar")
                                         {
-                                            m_ErrorLog.SetInformation(",Importing Solar_Uploading_File_Generation WorkSheet:");
-                                            if(isBdSheet && isPyrano1Min && isPyrano15Min && isTracker)
+                                            if (isBdSheet)
                                             {
-                                                statusCode = await InsertSolarFileGeneration(status, ds);
+                                                if(isPyrano1Min)
+                                                {
+                                                    if (isPyrano15Min)
+                                                    {
+                                                        if (isTracker)
+                                                        {
+                                                            m_ErrorLog.SetInformation(",Importing Solar_Uploading_File_Generation WorkSheet:");
+                                                            statusCode = await InsertSolarFileGeneration(status, ds);
+                                                        }
+                                                        else
+                                                        {
+                                                            m_ErrorLog.SetError(",Tracker Loss sheet is missing");
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        m_ErrorLog.SetError(",Pyranometer 1 Minute sheet is missing");
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    m_ErrorLog.SetError(",Pyranometer 15 Minutes sheet is missing");
+                                                }
                                             }
                                             else
                                             {
-                                                m_ErrorLog.SetError(",Required sheet for automation is missing");
+                                                m_ErrorLog.SetError(",Breakdown sheet is missing");
                                             }
 
                                         }
@@ -543,7 +564,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
                                 else if (excelSheet == FileSheetType.Solar_tracker_loss)
                                 {
-                                    fileImportType = FileSheetType.FileImportType.imporFileType_Solar_tracker_loss;
+                                    fileImportType = FileSheetType.FileImportType.imporFileType_Automation;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
@@ -5044,100 +5065,115 @@ namespace DGRA_V1.Areas.admin.Controllers
                         fromDate = DateTime.MaxValue;
                         toDate = DateTime.MinValue;
                     }
-                }
-                else
-                {
-                    m_ErrorLog.SetInformation("No Data in Tracker Loss Sheet");
-                }
-                foreach (DataRow dr in ds.Tables[0].Rows)
-                {
-                    InsertSolarTrackerLoss addUnit = new InsertSolarTrackerLoss();
-                    try
+
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
-                        bool skipRow = false;
-                        rowNumber++;
-                        if (addUnit.date == "" && addUnit.from_time == "" && addUnit.to_time == "")
+                        InsertSolarTrackerLoss addUnit = new InsertSolarTrackerLoss();
+                        try
                         {
-                            errorCount++;
-                            skipRow = true;
-                            continue;
-                        }
-                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
-                        addUnit.site_id = Convert.ToInt32(siteNameId[addUnit.site]);
-                        errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
-                        objImportBatch.importSiteId = addUnit.site_id;
-
-                        addUnit.ac_capacity = Convert.ToDouble(dr["Plant AC Capacity (MW)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.ac_capacity, "Plant AC Capacity (MW)", rowNumber));
-
-                        bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
-                        if (isdateEmpty)
-                        {
-                            m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
-                            continue;
-                        }
-                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToString((string)dr["Date"]);
-                        errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
-                        addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
-
-                        if (rowNumber == 2)
-                        {
-                            generationDate = addUnit.date;
-                        }
-                        if (rowNumber > 2)
-                        {
-                            if (generationDate != addUnit.date)
+                            bool skipRow = false;
+                            rowNumber++;
+                            if (addUnit.date == "" && addUnit.from_time == "" && addUnit.to_time == "")
                             {
-                                m_ErrorLog.SetError(",Row <" + rowNumber + "> <Date> : <" + addUnit.date + "> mismatched with  <" + generationDate + "> ");
                                 errorCount++;
                                 skipRow = true;
                                 continue;
                             }
+                            addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
+                            if (addUnit.site != "Nil")
+                            {
+                                addUnit.site_id = Convert.ToInt32(siteNameId[addUnit.site]);
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetInformation(",Site value is Nill at row <" + rowNumber + "> row will be skipped.");
+                                continue;
+                            }
+                            //errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
+                            objImportBatch.importSiteId = addUnit.site_id;
+
+                            addUnit.ac_capacity = Convert.ToDouble(dr["Plant AC Capacity (MW)"]);
+                            errorFlag.Add(numericNullValidation(addUnit.ac_capacity, "Plant AC Capacity (MW)", rowNumber));
+
+                            bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
+                            if (isdateEmpty)
+                            {
+                                m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
+                                continue;
+                            }
+                            addUnit.date = isdateEmpty ? "Nil" : Convert.ToString((string)dr["Date"]);
+                            errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
+                            addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+
+                            if (rowNumber == 2)
+                            {
+                                generationDate = addUnit.date;
+                            }
+                            if (rowNumber > 2)
+                            {
+                                if (generationDate != addUnit.date)
+                                {
+                                    m_ErrorLog.SetError(",Row <" + rowNumber + "> <Date> : <" + addUnit.date + "> mismatched with  <" + generationDate + "> ");
+                                    errorCount++;
+                                    skipRow = true;
+                                    continue;
+                                }
+                            }
+
+                            // addUnit.stop_from = Convert.ToDateTime(dr["Stop From"]).ToString("HH:mm:ss");
+                            addUnit.from_time = Convert.ToDateTime(dr["From Time"]).ToString("HH:mm:ss");
+
+                            addUnit.to_time = Convert.ToDateTime(dr["To Time"]).ToString("HH:mm:ss");
+
+                            addUnit.trackers_in_BD = Convert.ToInt32(dr["No. of Trackers in Breakdown (Nos)"]);
+                            errorFlag.Add(numericNullValidation(addUnit.trackers_in_BD, "No. of Trackers in Breakdown (Nos)", rowNumber));
+
+                            addUnit.module_tracker = Convert.ToInt32(dr["No. of Module Tracker (Nos)"]);
+                            errorFlag.Add(numericNullValidation(addUnit.trackers_in_BD, "No. of Module Tracker (Nos)", rowNumber));
+
+                            addUnit.module_WP = Convert.ToInt32(dr["Module WP (Watt)"]);
+                            errorFlag.Add(numericNullValidation(addUnit.module_WP, "Module WP (Watt)", rowNumber));
+
+                            addUnit.reason = Convert.ToString(dr["Remark"]);
+                            errorFlag.Clear();
+                            if (!(skipRow))
+                            {
+                                addSet.Add(addUnit);
+                            }
                         }
-
-                        // addUnit.stop_from = Convert.ToDateTime(dr["Stop From"]).ToString("HH:mm:ss");
-                        addUnit.from_time = Convert.ToDateTime(dr["From Time"]).ToString("HH:mm:ss");
-
-                        addUnit.to_time = Convert.ToDateTime(dr["To Time"]).ToString("HH:mm:ss");
-
-                        addUnit.trackers_in_BD = Convert.ToInt32(dr["No. of Trackers in Breakdown (Nos)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.trackers_in_BD, "No. of Trackers in Breakdown (Nos)", rowNumber));
-
-                        addUnit.module_tracker = Convert.ToInt32(dr["No. of Module Tracker (Nos)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.trackers_in_BD, "No. of Module Tracker (Nos)", rowNumber));
-
-                        addUnit.module_WP = Convert.ToInt32(dr["Module WP (Watt)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.module_WP, "Module WP (Watt)", rowNumber));
-
-                        addUnit.reason = Convert.ToString(dr["Remark"]);
-                        errorFlag.Clear();
-                        if (!(skipRow))
+                        catch (Exception e)
                         {
-                            addSet.Add(addUnit);
+                            //developer errorlog
+                            m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarTrackerLoss,");
+                            ErrorLog(",Exception Occurred In Function: InsertSolarTrackerLoss: " + e.Message + ",");
+                            errorCount++;
                         }
                     }
-                    catch (Exception e)
+                    if (!(errorCount > 0))
                     {
-                        //developer errorlog
-                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarTrackerLoss,");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarTrackerLoss: " + e.Message + ",");
-                        errorCount++;
+                        m_ErrorLog.SetInformation(",Solar Tracker Loss Validation SuccessFul,");
+                        isTrackerLossvalidationSuccess = true;
+                        responseCode = 200;
+                        trackerJson = JsonConvert.SerializeObject(addSet);
+
+                        //var json = JsonConvert.SerializeObject(addSet);
+                        //var data = new StringContent(json, Encoding.UTF8, "application/json");
+
                     }
-                }
-                if (!(errorCount > 0))
-                {
-                    m_ErrorLog.SetInformation(",Solar Tracker Loss Validation SuccessFul,");
-                    isTrackerLossvalidationSuccess = true;
-                    responseCode = 200;
-                    trackerJson = JsonConvert.SerializeObject(addSet);
-
-                    //var json = JsonConvert.SerializeObject(addSet);
-                    //var data = new StringContent(json, Encoding.UTF8, "application/json");
-
+                    else
+                    {
+                        m_ErrorLog.SetError(",Solar Tracker Loss Validation Failed,");
+                    }
                 }
                 else
                 {
-                    m_ErrorLog.SetError(",Solar Tracker Loss Validation Failed,");
+                    m_ErrorLog.SetInformation("No Data in Tracker Loss Sheet");
+                    if (!(errorCount > 0))
+                    {
+                        isTrackerLossvalidationSuccess = true;
+                        responseCode = 200;
+                        trackerJson = JsonConvert.SerializeObject(addSet);
+                    }
                 }
             }
             else
@@ -5148,10 +5184,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                     isTrackerLossvalidationSuccess = true;
                     responseCode = 200;
                     trackerJson = JsonConvert.SerializeObject(addSet);
-
-                    //var json = JsonConvert.SerializeObject(addSet);
-                    //var data = new StringContent(json, Encoding.UTF8, "application/json");
-
                 }
             }
             return responseCode;
