@@ -684,6 +684,11 @@ function getYearlyReport()
     fdate = getFinancialYearDateStartDate(fyear);
     var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
     var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+    console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
+    var fromToDates = getFinancialYearDates(toDate);
+    console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
+
+
     let site_id = "";
     let spv_list = "";
     let prType = "";
@@ -705,7 +710,7 @@ function getYearlyReport()
 
     $.ajax({
         type: "POST",
-        url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
+        url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromToDates.fromDate + '&toDate=' + fromToDates.toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
         contentType: "application/json; charset=utf-8",
         datatype: "html",
         success: function (result, status, xhr) {

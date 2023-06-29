@@ -111,3 +111,26 @@ function toHoursAndMinutes(totalSeconds) {
    // return { h: hours, m: minutes, s: seconds };
 }
 
+function getFinancialYearDates(date) {
+    const parts = date.split("-");
+
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+
+    let financialYearStart, financialYearEnd;
+
+    if (month >= 4) {
+        financialYearStart = year + "-04-01";
+        financialYearEnd = (year + 1) + "-03-31";
+    } else {
+        financialYearStart = (year - 1) + "-04-01";
+        financialYearEnd = year + "-03-31";
+    }
+
+    return {
+        fromDate: financialYearStart,
+        toDate: date
+    };
+}
+

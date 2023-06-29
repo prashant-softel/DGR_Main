@@ -12992,6 +12992,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double expected_power_sum = 0;
             double actual_active_power = 0;
             double target_sum = 0;
+            double gen_actual_active_power = 0;
             double lineloss_percentage = 0;
             double lineloss_final = 0;
             try
@@ -13154,6 +13155,34 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             _tmlDataList.Clear();
 
+            //Actual from Generation table :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
+            string fetchGenActualQry = "SELECT SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            try
+            {
+                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while Fetching Generation active power sum form daily_gen_summary, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+            if (_tmlDataList.Count > 0)
+            {
+                try
+                {
+                    foreach (var unit in _tmlDataList)
+                    {
+                        gen_actual_active_power = unit.gen_actual_active_power;
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while Extracting Generation active power sum from _tmlDataList, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                }
+            }
+            _tmlDataList.Clear();
+
             //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
             //              line_loss_per * actual / 1000000.
             string toMonth = Convert.ToDateTime(toDate).ToString("MM");
@@ -13189,8 +13218,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             if (lineloss_percentage > 0)
             {
-                double temp = (lineloss_percentage * actual_active_power) / 100; //6;
-                lineloss_final = temp; // / 1000000;
+                double lineloss = lineloss_percentage / 100;
+                double temp = (lineloss * gen_actual_active_power); //6;
+                lineloss_final = temp / 1000000;
                 //string linelossTemp = lineloss_final.ToString("0.##############");
                 //linelossTemp = linelossTemp.TrimEnd('0').TrimEnd('.');
                 //lineloss_final = Convert.ToDouble(linelossTemp);

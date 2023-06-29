@@ -63,6 +63,7 @@ namespace DGRAPIs.Models
         public double active_power_sum { get; set; }
         public double target_sum { get; set; }
         public double line_loss_per { get; set; }
+        public double gen_actual_active_power { get; set; }
 
         public double lineloss_final { get; set; }
         public double expected_final { get; set; }
