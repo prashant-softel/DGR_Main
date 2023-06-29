@@ -441,9 +441,13 @@
         var newFromDate = newDate.toISOString().slice(0, 10);
         console.log("Yearly Report From date : " + newFromDate + " To date : " + toDate);
 
+        console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
+        var fromToDates = getFinancialYearDates(toDate);
+        console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
+
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + newFromDate + '&toDate=' + toDate,
+            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromToDates.fromDate + '&toDate=' + fromToDates.toDate,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
 
