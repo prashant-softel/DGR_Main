@@ -12442,6 +12442,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> InsertWindBDCodeREGEN(List<InsertWindBDCodeREGEN> set)
         {
             int val = 0;
+            int returnRes = 0;
             string qry = " INSERT INTO wind_bd_codes_regen ( site, site_id, code, operation_mode, conditions) VALUES";
             string insertValues = "";
             int counter = 0;
@@ -12472,25 +12473,33 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                returnRes = 1;
             }
             catch(Exception e)
             {
                 string msg = "Exception while deleting records from wind_bd_codes_regen table due to : " + e.ToString();
                 API_ErrorLog(msg);
+                return returnRes;
             }
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 try
                 {
                     val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                    returnRes = 2;
                 }
                 catch(Exception e)
                 {
                     string msg = "Exception while inserting records into wind_bd_codes_regen table due to : " + e.ToString();
                     API_ErrorLog(msg);
+                    return returnRes;
                 }
             }
-            return val;
+
+            //returnRes : 0 - deletion failed.
+            //retrunRes : 1 - Deletion successful, insertion failed.
+            //returnRes : 2 - Insertion successful.
+            return returnRes;
         }
         //Get BD code INOX data for hashtable
         internal async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX()
