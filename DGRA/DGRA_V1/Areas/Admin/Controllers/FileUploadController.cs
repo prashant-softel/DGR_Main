@@ -3766,6 +3766,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.wtg = string.IsNullOrEmpty((string)dr["WTG"]) ? "Nil" : (string)dr["WTG"];
                         errorFlag.Add(stringNullValidation(addUnit.wtg, "WTG", rowNumber));
 
+                        addUnit.wtg = string.IsNullOrEmpty((string)dr["ONM_WTG"]) ? "Nil" : (string)dr["ONM_WTG"];
+                        errorFlag.Add(stringNullValidation(addUnit.wtg, "ONM_WTG", rowNumber));
+
                         addUnit.feeder = string.IsNullOrEmpty((string)dr["Feeder"]) ? 0 : Convert.ToDouble(dr["Feeder"]);
                         errorFlag.Add(numericNullValidation(addUnit.feeder, "Feeder", rowNumber));
 
@@ -5737,6 +5740,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                         int year = isFy ? int.Parse(Convert.ToDateTime(addUnit.fy_date).ToString("yyyy")) : 0;
 
                         addUnit.year = (addUnit.month_no > 3) ? year : year += 1;
+                        if(!(dr["Time"] is DBNull || string.IsNullOrEmpty((string)dr["Time"])))
+                        {
+                            addUnit.time =  Convert.ToDateTime(dr["Time"]).ToString("HH:mm:ss");
+                        }
 
                         addUnit.glob_hor = dr["GlobHor"] is DBNull || string.IsNullOrEmpty((string)dr["GlobHor"]) ? 0 : Convert.ToDouble(dr["GlobHor"]);
 
@@ -6619,10 +6626,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                         string fromtime = file_time.Substring(7, 2) + ":" + file_time.Substring(9, 2) + ":00";
                         string fullDate = year + "-" + month + "-" + date + " " + fromtime;
 
-                        if(loopCount > 59)
-                        {
-                            string hello = "Hello this needs to be removed.";
-                        }
                         //Check if minute is 10, 20, 30, 40, 50, 00.
                         //ds.Tables[0].Rows[0]["Site"]
                         string[] fromArr = fromtime.Split(':');
@@ -7807,9 +7810,27 @@ namespace DGRA_V1.Areas.admin.Controllers
                     using (var client = new HttpClient())
                     {
                         var response = await client.PostAsync(url, data);
+                        string returnResponse = response.Content.ReadAsStringAsync().Result;
                         if (response.IsSuccessStatusCode)
                         {
-                            m_ErrorLog.SetInformation(",BD code REGEN API SuccessFul,");
+                            
+                            
+                            if (returnResponse == "0")
+                            {
+                                //m_ErrorLog.SetInformation(",BD code REGEN API SuccessFul,");
+                                m_ErrorLog.SetError("Error in deleting old data.");
+                                m_ErrorLog.SetError("Error in Inserting new Data.");
+                            }
+                            if (returnResponse == "1")
+                            {
+                                //m_ErrorLog.SetInformation(",BD code REGEN API SuccessFul,");
+                                m_ErrorLog.SetInformation("Deleting old data successful");
+                                m_ErrorLog.SetError("Error in Inserting new Data.");
+                            }
+                            if (returnResponse == "2")
+                            {
+                                m_ErrorLog.SetInformation("Data inserted Successfully");
+                            }
                             return responseCode = (int)response.StatusCode;
                         }
                         else
