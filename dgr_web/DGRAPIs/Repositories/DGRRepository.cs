@@ -1951,7 +1951,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             if (!string.IsNullOrEmpty(site) && site != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
+                if (chkfilter == 1) 
+                { 
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
                 // filter += "t1.site in (" + site + ")";
                 string[] spsite = site.Split(",");
                 filter += " t1.site_id in (";
@@ -1969,6 +1973,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             if (!string.IsNullOrEmpty(month) && !string.IsNullOrEmpty(fy))
             {
+                if (chkfilter == 1) 
+                { 
+                    filter += " AND ";
+                    tmrFilter += " AND ";
+                }
                 filter += " (";
 
                 string[] spmonth = month.Split(",");
@@ -1981,44 +1990,28 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     string year = (Int32.Parse(fy) + 1).ToString();
                     string Qyear = (monthno > 3) ? fy : year;
                     filter += "( month(date) = " + spmonth[i] + " and year(date) = '" + Qyear + "' )";
-                    tmrFilter = " AND MONTH(t4.Time_stamp) = " + spmonth[i] + " AND YEAR(t4.Time_stamp) = " + Qyear + " ";
+                    tmrFilter += " MONTH(t4.Time_stamp) = " + spmonth[i] + " AND YEAR(t4.Time_stamp) = " + Qyear + " ";
                 }
                 filter += ") ";
                 chkfilter = 1;
             }
             else if (!string.IsNullOrEmpty(month))
             {
-                filter += " where month(date) in ( " + month + " )";
-                tmrFilter += " AND MONTH(t4.Time_stamp) IN(" + month + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " AND ";
+                    tmrFilter += " AND ";
+                }
+                filter += " month(date) in ( " + month + " )";
+                tmrFilter += " MONTH(t4.Time_stamp) IN(" + month + ")";
                 chkfilter = 1;
             }
-            //if (!string.IsNullOrEmpty(month) && month != "All")
-            //{
-            //    //filter += "(t1.date >= '" + fromDate + "'  and t1.date<= '" + toDate + "')";
-            //    filter += " MONTH(t1.date) in (" + month + ")";
-            //    // MONTH(`date`) = MONTH('2022-04-01')
-            //    chkfilter = 1;
-            //}
-            //if (!string.IsNullOrEmpty(country) && country != "All~")
-            //{
-            //    if (chkfilter == 1) { filter += " and "; }
-            //    //string[] spcountry = country.Split("~");
-            //    //filter += "t2.country in (";
-            //    //string countrys = "";
-            //    //for (int i = 0; i < spcountry.Length; i++)
-            //    //{
-            //    //    if (!string.IsNullOrEmpty(spcountry[i].ToString()))
-            //    //    {
-            //    //        countrys += "'" + spcountry[i].ToString() + "',";
-            //    //    }
-            //    //}
-            //    //filter += countrys.TrimEnd(',') + ")";
-            //    filter += "t2.country in ('"+country+"') ";
-            //    chkfilter = 1;
-            //}
             if (!string.IsNullOrEmpty(state) && state != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
+                if (chkfilter == 1) 
+                { 
+                    filter += " and ";
+                }
                 // filter += "t1.state in (" + state + ")";
                 string[] spstate = state.Split(",");
                 filter += " t1.state in (";
@@ -2039,10 +2032,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if (chkfilter == 1) 
                 {
                     filter += " and ";
-                }
-                else
-                {
-                    filter += " where ";
+                    tmrFilter += " AND ";
                 }
                 // filter += "t2.spv in (" + spv + ")";
                 string[] spspv = spv.Split(",");
@@ -2056,12 +2046,16 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += spvs.TrimEnd(',') + ")";
-                tmrFilter += " AND t5.spv IN(" + spvs.TrimEnd(',') + ")";
+                tmrFilter += " t5.spv IN(" + spvs.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(wtg) && wtg != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
+                if (chkfilter == 1) 
+                { 
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
                 // filter += "t1.wtg in (" + wtg + ")";
                 string[] spwtg = wtg.Split(",");
                 filter += "t1.wtg in (";
@@ -2074,7 +2068,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += " AND t1.WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += " t1.WTGs IN(" + wtgs.TrimEnd(',') + ")";
             }
             tmrFilter += " GROUP BY t4.WTGs, t4.all_bd, MONTH(t4.Time_stamp)";
 
@@ -2616,7 +2610,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
 
 
-            string fetchQry2 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on 4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
+            string fetchQry2 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
 
                 try
                 {
