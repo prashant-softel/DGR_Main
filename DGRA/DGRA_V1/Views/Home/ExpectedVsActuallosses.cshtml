@@ -542,8 +542,19 @@
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
+        // Percentage Value 
+        let exp_percentage = ((t_expected - t_target) / t_target)*100;
+        let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
+        let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
+        let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
+        let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
+        let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
+        let cur_percentage = ((t_curtaiment - t_expected) / t_expected) * 100;
+        let pr_percentage = ((t_pr - t_expected) / t_expected) * 100;;
+        let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
+
         //data_pr = 0.4;
-        console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
+        // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
         let prMeasure = "";
         if (Number(total_pr) >= 0) {
             prMeasure = "absolute";
@@ -552,7 +563,7 @@
         }
         let rMeasure = "relative";
         let aMeasure = "absolute";
-        console.log(prMeasure);
+        // console.log(prMeasure);
         var data = [
             {
                 //name: "2018",
@@ -610,15 +621,15 @@
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target,
-                    '<b>Expected</b><br>Value: ' + data_expected,
-                    '<b>USMH</b><br>Value: ' + data_usmh,
-                    '<b>SMH</b><br>Value: ' + data_smh,
-                    '<b>Other</b><br>Value: ' + data_oh,
-                    '<b>IGBD</b><br>Value: ' + data_igbd,
-                    '<b>EGBD</b><br>Value: ' + data_egbd,
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment,
-                    '<b>PR</b><br>Value: ' + data_pr,
-                    '<b>Actual</b><br>Value: ' + data_actual
+                    '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2)+ '% )',
+                    '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + data_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
                 //    /*'Column: %{x}<br>' +*/
@@ -901,7 +912,19 @@ function getYearlyReport()
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
-        console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
+        // Percentage Value 
+        let exp_percentage = ((t_expected - t_target) / t_target) * 100;
+        let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
+        let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
+        let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
+        let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
+        let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
+        let cur_percentage = ((t_curtaiment - t_expected) / t_expected) * 100;
+        let pr_percentage = ((t_pr - t_expected) / t_expected) * 100;;
+        let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
+
+
+       // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
         let prMeasure = "";
         if (Number(total_pr) >= 0) {
             prMeasure = "absolute";
@@ -968,15 +991,15 @@ function getYearlyReport()
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target,
-                    '<b>Expected</b><br>Value: ' + data_expected,
-                    '<b>USMH</b><br>Value: ' + data_usmh,
-                    '<b>SMH</b><br>Value: ' + data_smh,
-                    '<b>Other</b><br>Value: ' + data_oh,
-                    '<b>IGBD</b><br>Value: ' + data_igbd,
-                    '<b>EGBD</b><br>Value: ' + data_egbd,
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment,
-                    '<b>PR</b><br>Value: ' + data_pr,
-                    '<b>Actual</b><br>Value: ' + data_actual
+                    '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + data_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
                 //    /*'Column: %{x}<br>' +*/
