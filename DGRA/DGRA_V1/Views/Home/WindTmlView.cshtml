@@ -536,6 +536,20 @@
         let t_lineloss = Number(total_lineloss).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
+
+
+        // Percentage Value 
+        let exp_percentage = ((t_expected - t_target) / t_target) * 100;
+        let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
+        let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
+        let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
+        let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
+        let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
+        let lull_percentage = ((t_lull - t_expected) / t_expected) * 100;
+        let pcd_percentage = ((t_pcd - t_expected) / t_expected) * 100;
+        let line_percentage = ((t_lineloss - t_expected) / t_expected) * 100;;
+        let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
+
         var data = [
             {
                 //name: "2018",
@@ -605,15 +619,15 @@
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + total_target,
-                    '<b>Expected</b><br>Value: ' + total_expected,
-                    '<b>USMH</b><br>Value: ' + total_usmh,
-                    '<b>SMH</b><br>Value: ' + total_smh,
-                    '<b>Other</b><br>Value: ' + total_oh,
-                    '<b>IGBD</b><br>Value: ' + total_igbd,
-                    '<b>EGBD</b><br>Value: ' + total_egbd,
-                    '<b>PCD</b><br>Value: ' + total_pcd,
-                    '<b>Lineloss</b><br>Value: ' + total_lineloss,
-                    '<b>Actual</b><br>Value: ' + total_actual
+                    '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>USMH</b><br>Value: ' + total_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + total_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + total_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                    '<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
 
                     //'<b>%{x}</b><br>' +
@@ -665,6 +679,19 @@
         let t_pcd = Number(total_pcd).toFixed(2);
         let t_lineloss = Number(total_lineloss).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
+
+
+        // Percentage Value 
+        let exp_percentage = ((t_expected - t_target) / t_target) * 100;
+        let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
+        let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
+        let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
+        let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
+        let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
+        let lull_percentage = ((t_lull - t_expected) / t_expected) * 100;
+        let pcd_percentage = ((t_pcd - t_expected) / t_expected) * 100;
+        let line_percentage = ((t_lineloss - t_expected) / t_expected) * 100;;
+        let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
 
         var data = [
             {
@@ -723,15 +750,15 @@
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + total_target,
-                    '<b>Expected</b><br>Value: ' + total_expected,
-                    '<b>USMH</b><br>Value: ' + total_usmh,
-                    '<b>SMH</b><br>Value: ' + total_smh,
-                    '<b>Other</b><br>Value: ' + total_oh,
-                    '<b>IGBD</b><br>Value: ' + total_igbd,
-                    '<b>EGBD</b><br>Value: ' + total_egbd,
-                    '<b>PCD</b><br>Value: ' + total_pcd,
-                    '<b>Lineloss</b><br>Value: ' + total_lineloss,
-                    '<b>Actual</b><br>Value: ' + total_actual
+                    '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>USMH</b><br>Value: ' + total_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + total_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + total_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                    '<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
                 //    /*'Column: %{x}<br>' +*/
