@@ -409,7 +409,8 @@
 
 
                         let pr_value = 0;
-                        let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                        let total_breakdown = 0;
+                        total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
                         pr_value = result[i].inv_kwh - total_breakdown;
 
                         var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
@@ -426,7 +427,7 @@
                         tbl += '<td class="text-right">' + (result[i].egbdh/1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].load_shedding/1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (pr_value/1000000).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].inv_kwh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].inv_kwh    / 1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ega.toFixed(2) + '</td>';
@@ -751,7 +752,7 @@ function getYearlyReport()
                     total_smh += (result[i].smh/1000000);
                     total_oh += (result[i].oh/1000000);
                     total_actual += (result[i].inv_kwh / 1000000);
-                    total_pr += (result[i].pr_value/1000000);
+                    total_pr += (pr_value/1000000);
                     total_igbd += (result[i].igbdh/1000000);
                     total_egbd += (result[i].egbdh/1000000);
                     total_curtaiment += (result[i].load_shedding/1000000);

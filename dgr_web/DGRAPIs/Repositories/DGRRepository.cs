@@ -1437,13 +1437,13 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             if (reportType == "WTG")
             {
-                filter += " group by t1.wtg ";
-                tmrFilter += " GROUP BY t4.WTGs, t4.all_bd ";
+                filter += " group by t1.date, t1.wtg ";
+                tmrFilter += " GROUP BY t4.Time_stamp, t4.WTGs, t4.all_bd ";
             }
             if (reportType == "Site")
             {
-                filter += " group by t1.site ";
-                tmrFilter += " GROUP BY t4.site, t4.all_bd ";
+                filter += " group by t1.date, t1.site ";
+                tmrFilter += " GROUP BY t4.Time_stamp, t4.site, t4.all_bd ";
             }
             string qry = "";
             //qry = @"SELECT (date),t2.country,t1.state,t2.spv,t1.site,t2.capacity_mw ,t1.wtg,wind_speed,kwh,plf,ma_actual,ma_contractual,iga,ega,ega_b,ega_c,grid_hrs,lull_hrs,production_hrs ,unschedule_hrs,unschedule_num, schedule_hrs,schedule_num,others,others_num,igbdh,igbdh_num,egbdh,egbdh_num ,load_shedding,load_shedding_num FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where   " + filter;
@@ -13451,9 +13451,42 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
+
             try
             {
                 data = await Context.GetData<SolarExpectedvsActual>(qry1).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
+            string viewQry = "create or replace view expected_temp_view as SELECT t1.date,t3.site,t3.spv,(t3.ac_capacity*1000) as capacity,SUM(t1.inv_kwh) as kwh,t2.LineLoss,SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100) as kwh_afterloss,((SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))/((t3.ac_capacity*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year = year(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id group by t1.date ,t1.site";
+            try
+            {
+                await Context.ExecuteNonQry<int>(viewQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while creating temp view, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
+            string viweFetchQry = "SELECT site, kwh_afterloss as inv_kwh, plf_afterloss as plant_kwh FROM `expected_temp_view` where date between '" + fromDate + "' and '" + toDate + "' ";
+            List<SolarExpectedvsActual> newdata = new List<SolarExpectedvsActual>();
+            try
+            {
+                newdata = await Context.GetData<SolarExpectedvsActual>(viweFetchQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching records from expected_temp_view, due to : " + e.ToString();
+                API_ErrorLog(msg);
+            }
+
+            try
+            {
                 foreach (SolarExpectedvsActual _dataElement in data)
                 {
                     string site_id = _dataElement.site_id.ToString();
@@ -13472,12 +13505,28 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         string msg = e.Message;
                     }
-                }
 
+                    try
+                    {
+                        foreach(var _actualData in newdata)
+                        {
+                            if (_dataElement.site == _actualData.site)
+                            {
+                                _dataElement.inv_kwh = _actualData.inv_kwh;
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while adding actual value to the main list, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                    }
+                }
             }
             catch (Exception e)
             {
-                string msg = e.Message;
+                string msg = "Exception while inserting data into main list, due to : " + e.ToString();
+                API_ErrorLog(msg);
             }
             return data;
         }
