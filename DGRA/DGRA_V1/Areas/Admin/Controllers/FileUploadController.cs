@@ -6110,7 +6110,14 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
 
-                        bool isActivePowerEmpty = string.IsNullOrEmpty((string)dr["Actual_Avg_Active_Power_10M"]) || dr["Actual_Avg_Active_Power_10M"] is DBNull;
+                        bool isActivePowerEmpty = dr["Actual_Avg_Active_Power_10M"] is DBNull;
+                        if (!isActivePowerEmpty)
+                        {
+                            if (string.IsNullOrEmpty((string)dr["Actual_Avg_Active_Power_10M"]))
+                            {
+                                isActivePowerEmpty = false;
+                            }
+                        }
 
                         if (!isActivePowerEmpty)
                         {
@@ -6131,7 +6138,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.avg_wind_speed = dr["Actual_Avg_Wind_Speed_10M"] is DBNull || string.IsNullOrEmpty((string)dr["Actual_Avg_Wind_Speed_10M"]) ? 0 : Convert.ToDouble(dr["Actual_Avg_Wind_Speed_10M"]);
 
                         addUnit.restructive_WTG = Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
-                        errorFlag.Add(numericNullValidation(addUnit.restructive_WTG, "Most restrictive WTG Status 10M", rowNumber));
+                        //errorFlag.Add(numericNullValidation(addUnit.restructive_WTG, "Most restrictive WTG Status 10M", rowNumber));
 
                         previousWTG = addUnit.WTGs;
                         errorFlag.Clear();
@@ -6143,8 +6150,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMLData,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.Message + ",");
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.Message + ": Function: InsertWindTMLData,");
+                        ErrorLog(",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.ToString() + ",");
                         errorCount++;
                     }
                 }
@@ -6862,7 +6869,6 @@ namespace DGRA_V1.Areas.admin.Controllers
         Hashtable bdCodeHash = new Hashtable();
         private async Task<int> ImportWindInoxTMD(string status, DataSet ds, string fileName)
         {
-            bdCodeINOX();
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
@@ -6912,6 +6918,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 string siteName = SiteByWtg.ContainsKey(wtgName) ? SiteByWtg[wtgName].ToString() : "";
                 int siteId = siteNameId.ContainsKey(siteName) ? Convert.ToInt32(siteNameId[siteName]) : 0;
+
+                bdCodeINOX(siteId);
 
                 foreach (DataColumn dc in ds.Tables[0].Columns)
                 {
@@ -7431,10 +7439,10 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //get bd_code_INOX into hashtable.
-        public void bdCodeINOX()
+        public void bdCodeINOX(int site_id)
         {
             DataTable dTable = new DataTable();
-            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindBdCodeINOX";
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindBdCodeINOX?site_id=" + site_id;
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
             request.Method = "POST";

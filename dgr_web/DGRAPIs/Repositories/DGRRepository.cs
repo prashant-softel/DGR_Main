@@ -10702,6 +10702,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                     }
                     count++;
+                    qryCounter++;
                 }
                 if (qryCounter < 10000)
                 {
@@ -12496,9 +12497,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return returnRes;
         }
         //Get BD code INOX data for hashtable
-        internal async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX()
+        internal async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX(int site_id)
         {
-            string qry = "Select * from wind_bd_codes_inox ;";
+            string qry = "Select * from wind_bd_codes_inox WHERE site_id = " + site_id + " ;";
             return await Context.GetData<ImportWindBDCodeINOX>(qry).ConfigureAwait(false);
 
         }

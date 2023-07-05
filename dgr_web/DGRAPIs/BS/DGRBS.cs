@@ -84,7 +84,7 @@ namespace DGRAPIs.BS
         Task<int> ImportWindBDCodeINOX(List<ImportWindBDCodeINOX> set);
         Task<int> InsertWindBDCodeREGEN(List<InsertWindBDCodeREGEN> set);
         //GetWindBdCodeINOX
-        Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX();
+        Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX(int site_id);
         //InsertWindSpeedTMD
         Task<int> InsertWindSpeedTMD(List<InsertWindSpeedTMD> set);
         //ImportWindReferenceWtgs
@@ -1315,13 +1315,13 @@ namespace DGRAPIs.BS
         }
 
         //GetWindBdCodeINOX //GetWindBdCodeINOX
-        public async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX()
+        public async Task<List<ImportWindBDCodeINOX>> GetWindBdCodeINOX(int site_id)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.GetWindBdCodeINOX();
+                    return await repos.GetWindBdCodeINOX(site_id);
 
                 }
             }
