@@ -5731,9 +5731,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                             m_ErrorLog.SetError(", FY Date column of <" + rowNumber + "> row is empty.");
                             errorCount++;
                         }
-                        addUnit.fy_date = isFy ? (string)(dr["FY Date"]) : "Nil";
+                        addUnit.fy_date = isFy ? (string)(dr["FY Date"]) : "";
+                        if(addUnit.fy_date != "")
+                        {
+                            string finalDate = Convert.ToDateTime(addUnit.fy_date).ToString("yyyy-MM-dd");
+                            addUnit.fy_date = finalDate;
+                        }
 
-                        addUnit.month = isFy ? Convert.ToDateTime(addUnit.fy_date).ToString("MMM") : "Nil";
+                        addUnit.month = isFy ? Convert.ToDateTime(addUnit.fy_date).ToString("MMM") : "0";
 
                         addUnit.month_no = isFy ? int.Parse(Convert.ToDateTime(addUnit.fy_date).ToString("MM")) : 0;
 
@@ -5877,7 +5882,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                             m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
                             continue;
                         }
-                        addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd HH:mm:ss");
+                        string tempDate = Convert.ToString(dr["Date"]);
+                        addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
                         //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
                         errorFlag.Add(dateNullValidation(addUnit.timestamp, "Date", rowNumber));
 
