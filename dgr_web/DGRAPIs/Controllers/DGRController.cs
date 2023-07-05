@@ -1119,11 +1119,11 @@ namespace DGRAPIs.Controllers
         //GetWindBdCodeINOX
         [Route("GetWindBdCodeINOX")]
         [HttpPost]
-        public async Task<IActionResult> GetWindBdCodeINOX()
+        public async Task<IActionResult> GetWindBdCodeINOX(int site_id)
         {
             try
             {
-                var data = await _dgrBs.GetWindBdCodeINOX();
+                var data = await _dgrBs.GetWindBdCodeINOX(site_id);
                 return Ok(data);
 
             }
