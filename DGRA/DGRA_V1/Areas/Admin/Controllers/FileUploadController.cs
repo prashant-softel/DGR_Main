@@ -5883,6 +5883,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             continue;
                         }
                         string tempDate = Convert.ToString(dr["Date"]);
+                        string convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
                         addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
                         //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
                         errorFlag.Add(dateNullValidation(addUnit.timestamp, "Date", rowNumber));
