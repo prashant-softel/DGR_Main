@@ -540,14 +540,14 @@
 
         // Percentage Value 
         let exp_percentage = ((t_expected - t_target) / t_target) * 100;
-        let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
-        let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
-        let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
-        let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
-        let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
-        let lull_percentage = ((t_lull - t_expected) / t_expected) * 100;
-        let pcd_percentage = ((t_pcd - t_expected) / t_expected) * 100;
-        let line_percentage = ((t_lineloss - t_expected) / t_expected) * 100;;
+        let usmh_percentage = (t_usmh / t_expected) * 100;
+        let smh_percentage = (t_smh / t_expected) * 100;
+        let oh_percentage = (t_oh / t_expected) * 100;
+        let igbd_percentage = (t_igbd / t_expected) * 100;
+        let egbd_percentage = (t_egbd / t_expected) * 100;
+        let lull_percentage = (t_lull / t_expected) * 100;
+        let pcd_percentage = (t_pcd / t_expected) * 100;
+        let line_percentage = (t_lineloss / t_expected) * 100;
         let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
 
         var data = [
