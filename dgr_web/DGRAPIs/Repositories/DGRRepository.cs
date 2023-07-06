@@ -13742,10 +13742,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Get Loss Factor Constants
             try
             {
+                GetFinancialAndCurrentYear(fromDate, out int financialYear, out int currentYear);
+                int fyn = financialYear;
+                int cy = currentYear;
                 string qry1 = "";
                 if (type == "Daily")
                 {
-                    qry1 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no >= MONTH('" + fromDate + "') and month_no<= MONTH('" + toDate + "')";
+                    qry1 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no >= MONTH('" + fromDate + "') and month_no<= MONTH('" + toDate + "') and year = '" + fyn + "';";
                 }
                 else if (type == "Monthly")
                 {
@@ -14015,5 +14018,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             
         }
 
+        public void GetFinancialAndCurrentYear(string fromDate, out int financialYear, out int currentYear)
+        {
+            DateTime date = DateTime.Parse(fromDate);
+            financialYear = date.Month >= 4 ? date.Year + 1 : date.Year;
+            currentYear = date.Year;
+        }
     }
 }
