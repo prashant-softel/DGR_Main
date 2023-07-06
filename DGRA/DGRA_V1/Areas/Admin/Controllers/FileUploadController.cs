@@ -5877,22 +5877,37 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                         }
                         bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
+                        string convertedDate = "";
                         if (isdateEmpty)
                         {
                             m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
                             continue;
                         }
-                        string tempDate = Convert.ToString(dr["Date"]);
-                        string convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
-                        addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
-                        //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
-                        errorFlag.Add(dateNullValidation(addUnit.timestamp, "Date", rowNumber));
+                        else
+                        {
+                            string tempDate = Convert.ToString(dr["Date"]);
+                            string[] sepDate = tempDate.Split(' ');
+                            if(sepDate.Length > 0)
+                            {
+                                string[] fDate = sepDate[0].Split('/');
+                                string d = fDate[0];
+                                string m = fDate[1];
+                                string y = fDate[2];
 
-                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("dd-MMM-yy");
+                                string ymd = y + "-" + m + "-" + d;
+                                convertedDate = ymd + " " + sepDate[1];
+                            }
+                        }
+                        //string convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                        addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(convertedDate).ToString("yyyy-MM-dd HH:mm:ss");
+                        //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
+                        //errorFlag.Add(dateNullValidation(addUnit.timestamp, "Date", rowNumber));
+
+                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(convertedDate).ToString("dd-MMM-yy");
                         //string temp_date = temp.Substring(0, 10);
                         if (rowNumber == 2)
                         {
-                            previousTime = Convert.ToDateTime(dr["Date"]).ToString("HH:mm:ss");
+                            previousTime = Convert.ToDateTime(convertedDate).ToString("HH:mm:ss");
                             dataDate = addUnit.date;
                         }
                         if (dataDate != addUnit.date)
@@ -5902,9 +5917,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                             //errorCount++;
                         }
                         addUnit.from_time = previousTime;
-                        addUnit.to_time = Convert.ToDateTime(dr["Date"]).ToString("HH:mm:ss");
+                        addUnit.to_time = Convert.ToDateTime(convertedDate).ToString("HH:mm:ss");
 
-                        previousTime = Convert.ToDateTime(dr["Date"]).ToString("HH:mm:ss");
+                        previousTime = Convert.ToDateTime(convertedDate).ToString("HH:mm:ss");
 
                         bool isActivePowerEmpty = false;
 
