@@ -550,6 +550,35 @@
         let line_percentage = (t_lineloss / t_expected) * 100;
         let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
 
+        //#86C466 : green. #77CAE7 : blue. #EE403D : red. #14a105 : dark-green.
+        //#7dddff
+        var columnColors = [
+            "#86C466", // Target
+            "#7dddff", // Expected
+            "#EE403D", // USMH
+            "#EE403D", // SMH
+            "#EE403D", // Other
+            "#EE403D", // IGBD
+            "#EE403D", // EGBD
+            "#86C466", // PCD
+            "#7dddff", // Lineloss
+            "#7dddff"  // Actual
+        ];
+
+        let rMeasure = "relative";
+        let aMeasure = "absolute";
+        let pcdMeasure = "relative";
+        let lineLossMeasure = "relative";
+
+        if (Number(total_pcd) > 0) {
+            //columnColors[7] = "#EE403D";
+            pcdMeasure = "absolute";
+        }
+        if (Number(total_lineloss) > 0) {
+            //columnColors[8] = "#EE403D";
+            lineLossMeasure = "absolute";
+        }
+
         var data = [
             {
                 //name: "2018",
@@ -638,6 +667,10 @@
                 totals: { marker: { color: "#86C466" } },
                 increasing: { marker: { color: "#77CAE7" } },
                 decreasing: { marker: { color: "#EE403D" } },
+
+                //totals: { marker: { color: columnColors } },
+                //increasing: { marker: { color: columnColors } },
+                //decreasing: { marker: { color: columnColors } },
                 connector: {
                     line: {
                         color: "white"
