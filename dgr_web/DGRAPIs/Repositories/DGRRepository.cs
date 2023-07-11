@@ -1451,7 +1451,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             qry = "SELECT t1.date, t2.country, t1.state, t2.spv, t1.site, t2.capacity_mw, t1.wtg, t1.wind_speed, t1.kwh, t1.plf, t1.ma_actual, t1.ma_contractual, t1.iga, t1.ega, t1.ega_b, t1.ega_c, t1.grid_hrs, t1.lull_hrs, t1.production_hrs, t1.unschedule_hrs, t1.unschedule_num, t1.schedule_hrs, t1.schedule_num, t1.others, t1.others_num, t1.igbdh, t1.igbdh_num, t1.egbdh, t1.egbdh_num, t1.load_shedding, t1.load_shedding_num, (t1.unschedule_num + t1.schedule_num + t1.others_num + t1.igbdh_num + t1.egbdh_num + t1.load_shedding_num) AS total_hrs, COALESCE(usmh.loss, 0) AS usmh_loss, COALESCE(smh.loss, 0) AS smh_loss, COALESCE(others.loss, 0) AS others_loss, COALESCE(IGBDH.loss, 0) AS igbdh_loss, COALESCE(EGBDH.loss, 0) AS egbdh_loss, COALESCE(loadShedding.loss, 0) AS loadShedding_loss, (COALESCE(usmh.loss,0) + COALESCE(smh.loss,0) + COALESCE(others.loss, 0) + COALESCE(IGBDH.loss, 0) + COALESCE(EGBDH.loss, 0) + COALESCE(loadShedding.loss, 0)) AS total_loss FROM daily_gen_summary t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS usmh ON t1.site = usmh.site AND t1.wtg = usmh.WTGs AND usmh.all_bd = 'usmh' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS smh ON t1.site = smh.site AND t1.wtg = smh.WTGs AND smh.all_bd = 'smh' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS others ON t1.site = others.site AND t1.wtg = others.WTGs AND others.all_bd = 'Others' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS IGBDH ON t1.site = IGBDH.site AND t1.wtg = IGBDH.WTGs AND IGBDH.all_bd = 'IGBDH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS EGBDH ON t1.site = EGBDH.site AND t1.wtg = IGBDH.WTGs AND EGBDH.all_bd = 'EGBDH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS loadShedding ON t1.site = loadShedding.site AND t1.wtg = loadShedding.WTGs AND loadShedding.all_bd = 'Load Shedding' WHERE " + filter;
 
             List<WindDailyGenReports> _windDailyGenReports = new List<WindDailyGenReports>();
-            _windDailyGenReports = await Context.GetData<WindDailyGenReports>(qry).ConfigureAwait(false);
+             _windDailyGenReports = await Context.GetData<WindDailyGenReports>(qry).ConfigureAwait(false);
             return _windDailyGenReports;
         }
 
@@ -6629,7 +6629,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> SetApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
             int finalResult = 0;
-
+            approval_InformationLog("Inside SetApprovalFlagForImportBatches wind function : ");
             string qry = "select t1.*,t2.site,t2.country,t2.state,t3.feeder from uploading_file_generation as t1 left join site_master as t2 on t2.site_master_id=t1.site_id left join location_master as t3 on t3.site_master_id=t1.site_id where import_batch_id IN(" + dataId + ")";
 
             List<WindUploadingFilegeneration2> _importedData = new List<WindUploadingFilegeneration2>();
@@ -6637,11 +6637,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 _importedData = await Context.GetData<WindUploadingFilegeneration2>(qry).ConfigureAwait(false);
                 finalResult = 1;
+                string msg = "Select query successfully executed : " +qry + " response : "  + _importedData.Count();
+                approval_InformationLog(msg);
             }
             catch (Exception e)
             {
                 string msg = "Exception while fetching data from uploading_file_generation and location_master, due to : " + e.ToString();
-                API_ErrorLog(msg);
+                approval_ErrorLog(msg);
                 return 0;
             }            
 
@@ -6651,19 +6653,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             foreach (var unit in _importedData)
             {
                 values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "'," + unit.ega_b + ", " + unit.ega_c + ",'" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','"+ unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','"+ unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id+"'),";
+
+                string msg = "Insert into query " + qry1 + " " + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "'," + unit.ega_b + ", " + unit.ega_c + ",'" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','" + unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','" + unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id ;
+                approval_InformationLog(msg);
             }
 
             qry1 += values;
             string qry3 = "delete from daily_gen_summary  where date='"+_importedData[0].date.ToString("yyyy-MM-dd")+ "' and site_id=" + _importedData[0].site_id + " ;";
             try
             {
+                approval_InformationLog("Delete query : " + qry3);
                 await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
                 finalResult = 2;
             }
             catch (Exception ex)
             {
                 string msg = "Exception while deleting records from daily_gen_summary " + ex.ToString();
-                API_ErrorLog(msg);
+                approval_ErrorLog(msg);
                 return 0;
             }
             string temp = qry1.Substring(0, (qry1.Length - 1)) + ";";
@@ -6672,11 +6678,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 res = await Context.ExecuteNonQry<int>(temp).ConfigureAwait(false);
                 finalResult = 3;
+                approval_InformationLog("Executed insert query. final result : " + finalResult);
             }
             catch(Exception e)
             {
                 string msg = "Exception while inserting values into daily_gen_summary table, due to : " + e.ToString();
-                API_ErrorLog(msg);
+                approval_ErrorLog(msg);
                 return 0;
             }
             if (res > 0)
@@ -6687,11 +6694,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     Updateres = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
                     finalResult = 4;
+                    approval_InformationLog("Update query : " + query);
                 }
                 catch(Exception e)
                 {
                     string msg = "Exception while updating data in import_batches table, due to : " + e.ToString();
-                    API_ErrorLog(msg);
+                    approval_ErrorLog(msg);
                     return 0;
                 }
             }
@@ -6707,15 +6715,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int updateRes = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
                     finalResult = 5;
+                    approval_InformationLog("Update query : " + updateQry);
                 }
                 catch(Exception e)
                 {
                     string msg = "Exception while updating uploading_file_breakdown " + e.ToString();
-                    API_ErrorLog(msg);
+                    approval_ErrorLog(msg);
                     return 0;
                 }
 
             }
+            approval_InformationLog("At the end of function finalResult : " + finalResult);
             return finalResult;
         }
         internal async Task<int> SetRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
@@ -6755,6 +6765,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> SetSolarApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
             int finalResult = 0;
+            approval_InformationLog("Inside SetSolarApprovalFlagForImportBatches function.");
+
             string qry = "select t1.*,t2.site,t2.country,t2.state from uploading_file_generation_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id=t1.site_id left join location_master_solar as t3 on t3.site_id=t1.site_id where import_batch_id IN(" + dataId + ")";
 
             List<SolarUploadingFileGeneration2> _importedData = new List<SolarUploadingFileGeneration2>();
@@ -6762,11 +6774,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 _importedData = await Context.GetData<SolarUploadingFileGeneration2>(qry).ConfigureAwait(false);
                 finalResult = 1;
+                approval_InformationLog("Select Query : " + qry);
             }
             catch(Exception e)
             {
                 string msg = "Exception while fetching data from uploading_file_generation_solar and location_master_solar, due to : " + e.ToString();
-                API_ErrorLog(msg);
+                approval_ErrorLog(msg);
                 return 0;
             }
 
@@ -6786,11 +6799,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
                 finalResult = 2;
+                approval_InformationLog("Delete query : " + qry3);
             }
             catch (Exception ex)
             {
                 string msg = "Exception while deleting records from daily_gem_summary_solar table, due to : " + ex.ToString();
-                API_ErrorLog(msg);
+                approval_ErrorLog(msg);
                 return 0;
             }
 
@@ -6799,11 +6813,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 res = await Context.ExecuteNonQry<int>(qry1.Substring(0, (qry1.Length - 1)) + ";").ConfigureAwait(false);
                 finalResult = 3;
+                approval_InformationLog("Insert query : " + qry1.Substring(0, (qry1.Length - 1)) + ";" );
             }
             catch(Exception e)
             {
                 string msg = "Exception while inserting values into table daily_gen_summary_solar, due to : " + e.ToString();
-                API_ErrorLog(msg);
+                approval_ErrorLog(msg);
                 return 0;
             }
             if (res > 0)
@@ -6814,11 +6829,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     updateBatchRes = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
                     finalResult = 4;
+                    approval_InformationLog("Update query : " + query);
                 }
                 catch(Exception e)
                 {
                     string msg = "Exception while updating values in import_batches table, due to : " + e.ToString();
-                    API_ErrorLog(msg);
+                    approval_ErrorLog(msg);
                     return 0;
                 }
             }
@@ -6833,15 +6849,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int updateBDRes = await Context.ExecuteNonQry<int>(updateBDQry).ConfigureAwait(false);
                     finalResult = 5;
+                    approval_InformationLog("Update Query : " + updateBDQry);
                 }
                 catch(Exception e)
                 {
                     string msg = "Exception while updating uploading_file_breakdown_solar approved status, due to : " + e.ToString();
-                    API_ErrorLog(msg);
+                    approval_ErrorLog(msg);
                     return 0;
                 }
             }
 
+            approval_InformationLog("At the end of function finaResult : " + finalResult);
             return finalResult;
         }
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
@@ -12999,6 +13017,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double gen_actual_active_power = 0;
             double lineloss_percentage = 0;
             double lineloss_final = 0;
+            double allSum = 0;
+            double finalExpectedPower = 0;
             try
             {
                 if (!string.IsNullOrEmpty(site))
@@ -13231,11 +13251,36 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             _tmlDataList.Clear();
 
+            //Calculating Difference in expected power.
+            allSum = expected_power_sum + lossUSMH + lossSMH + lossIGBD + lossEGBD + lossNC + lossPCD + lineloss_final;
+            double difference = 0;
+            difference = actual_active_power - allSum;
+            if (difference != 0 )
+            {
+                finalExpectedPower = expected_power_sum + difference;
+            }
+            else
+            {
+                finalExpectedPower = expected_power_sum;
+            }
+
+            try
+            {
+                string insertQry = "INSERT INTO exp_act_difference_wind(site_id, from_date, to_date, expected, actual, difference, final_expected, target, USMH, SMH, Other, IGBD, EGBD, LULL, PCD, Lineloss) VALUES ('" + site + "', '" + fromDate + "', '" + toDate + "', " + expected_power_sum + ", " + actual_active_power + ", " + difference + ", " + finalExpectedPower + ", " + target_sum + ", " + lossUSMH + ", " + lossSMH + ", " + lossNC + ", " + lossIGBD + ", " + lossEGBD + ", " + lossLULL + ", " + lossPCD + ", " + lineloss_final + ");";
+                int insertRes = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
+
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while inserting difference data into exp_act_difference_wind table." + e.ToString();
+                API_ErrorLog(msg);
+            }
+
             try
             {
                 GetWindTMLGraphData finalData = new GetWindTMLGraphData()
                 {
-                    expected_final = expected_power_sum,
+                    expected_final = finalExpectedPower,
                     lineloss_final = lineloss_final,
                     target_final = target_sum,
                     lossUSMH_final = lossUSMH,
@@ -14023,6 +14068,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             DateTime date = DateTime.Parse(fromDate);
             financialYear = date.Month >= 4 ? date.Year + 1 : date.Year;
             currentYear = date.Year;
+        }
+
+        private void approval_InformationLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\approval_Log.txt", "*Info*:" + Message + "\r\n");
+        }
+        
+        private void approval_ErrorLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\approval_Log.txt", "**Error**:" + Message + "\r\n");
         }
     }
 }
