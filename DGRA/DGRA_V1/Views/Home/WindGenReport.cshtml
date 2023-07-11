@@ -986,6 +986,9 @@
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        console.log("Date : " + formattedDate + ", Site : " + result[i].site + ", WTG : " + result[i].wtg);
+                        console.log("USMH : " + result[i].unschedule_num + " SMH : " + result[i].schedule_num);
+                        console.log(" Others : " + result[i].others_num + " IGBDH : " + result[i].igbdh_num + " : " + result[i].egbdh_num + " load Shedding : " + result[i].load_shedding_num);
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
