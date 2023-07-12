@@ -85,6 +85,9 @@
         width: 50%;
         height: 36px;
     }
+    .modal{
+        position : fixed !important;
+    }
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -683,7 +686,7 @@
                         tbl += '<td>' + verified_name + '</td>';
                        // tbl += '<td>' + formattedDate2 + '</td>';
                         //tbl += '<td>' + rejected_name + '</td>';
-                        tbl += '<td style="width:250px"><div style="width: 25%;float: left;"><a href="#" title=" View Generation Data" class="btn btn-info" onclick="ViewSolarGenData(' + result[i].import_batch_id + ')"  data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem">G</a></div>';
+                        tbl += '<td style="width:250px"><div id="G' + result[i].import_batch_id + '" style="width: 25%;float: left;"><a href="#" title=" View Generation Data" class="btn btn-info" onclick="ViewSolarGenData(' + result[i].import_batch_id + ')"  data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem">G</a></div>';
                         tbl += '<div style="width: 25%;float: left;"><a href="#" title=" View Breakdown Data" class="btn  btn-info" onclick="ViewSolarBreakdownData(' + result[i].import_batch_id + ')" data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem" >B</a></div>';
                         tbl += '<div style="width: 25%;float: left;"><a href="#" title=" View Pyranometer 1Min Data" class="btn  btn-info" onclick="ViewPY1Data(' + result[i].import_batch_id + ')" data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem" >P1</a></div>';
                         tbl += '<div style="width: 25%;float: left;"><a href="#" title=" View Pyranometer 15Min Data" class="btn  btn-info" onclick="ViewPY15Data(' + result[i].import_batch_id + ')" data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem" >P15</a></div>';
@@ -1006,6 +1009,8 @@
     }
 
     function ViewSolarGenData(importlogId) {
+        var buttonId = "G" + importlogId;
+        console.log(buttonId);
     $.ajax({
             type: "POST",
             url: '@Url.Action("GetSolarGenerationImportData", "SolarView")' + '?importId=' + importlogId,
@@ -1110,6 +1115,72 @@
                 $("#importedData").html();
                 document.getElementById("title").innerHTML = "Solar Generation View";
                 $("#importedData").html(tbl1);
+
+                //var buttonPosition = $(this).offset();
+                //var scrollTop = $(window).scrollTop();
+                //var modalDialog = $('#modal-xl .modal-dialog');
+                //var modalWidth = modalDialog.outerWidth();
+                //var modalHeight = modalDialog.outerHeight();
+
+                //var top = buttonPosition.top + scrollTop - (modalHeight / 2);
+
+                //modalDialog.css({
+                //    top: top + 'px',
+                //    left: buttonPosition.left + 'px',
+                //    transform: 'translate(-50%, -50%)',
+                //    marginTop: 0,
+                //    marginLeft: 0
+                //});
+
+                //// Show the modal
+                //$('#modal-xl').modal('show');
+
+                //var button = document.getElementById(buttonId);
+                //var buttonPosition = button.getBoundingClientRect();
+                //var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                //var modalDialog = document.querySelector('#modal-xl .modal-dialog');
+                //var modalWidth = modalDialog.offsetWidth;
+                //var modalHeight = modalDialog.offsetHeight;
+
+                //var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                //var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+
+                //var top = buttonPosition.top + scrollTop + (button.offsetHeight / 2) - (modalHeight / 2);
+                //var left = buttonPosition.left + (button.offsetWidth / 2) - (modalWidth / 2);
+
+                //// Adjust the position if it goes offscreen
+                //if (top + modalHeight > viewportHeight) {
+                //    top = viewportHeight - modalHeight;
+                //}
+                //if (top < 0) {
+                //    top = 0;
+                //}
+                //if (left + modalWidth > viewportWidth) {
+                //    left = viewportWidth - modalWidth;
+                //}
+                //if (left < 0) {
+                //    left = 0;
+                //}
+
+                //// Check if the modal width is greater than the viewport width
+                //if (modalWidth > viewportWidth) {
+                //    left = (viewportWidth - modalWidth) / 2;
+                //}
+
+                //// Check if the modal height is greater than the viewport height
+                //if (modalHeight > viewportHeight) {
+                //    top = (viewportHeight - modalHeight) / 2;
+                //}
+
+                //modalDialog.style.top = top + 'px';
+                //modalDialog.style.left = left + 'px';
+                ////modalDialog.style.transform = 'translate(-50%, -50%)';
+                //modalDialog.style.marginTop = 0;
+                //modalDialog.style.marginLeft = 0;
+
+
+                //// Show the modal
+                //$('#modal-xl').modal('show');
 
             }
         });

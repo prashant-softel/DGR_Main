@@ -4231,6 +4231,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             //InformationLog("Gen Url<br>\r\n" + urlGeneration);
             using (var client = new HttpClient())
             {
+                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                 var response = await client.PostAsync(urlGeneration, dataGeneration);
                 responseCodeGen = (int)response.StatusCode;
                 string returnResponse = response.Content.ReadAsStringAsync().Result;
@@ -4249,6 +4250,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             //InformationLog("BreakDown\r\n" + urlBreakdown);
             using (var client = new HttpClient())
             {
+                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                 var response = await client.PostAsync(urlBreakdown, dataBreakdown);
                 responseCodeBreak = (int)response.StatusCode;
                 string returnResponse = response.Content.ReadAsStringAsync().Result;
@@ -4267,6 +4269,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             //InformationLog("1Min\r\n" + urlPyro1Min);
             using (var client = new HttpClient())
             {
+                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                 var response = await client.PostAsync(urlPyro1Min, dataPyro1Min);
                 responseCodePyro1 = (int)response.StatusCode;
                 string returnResponse = response.Content.ReadAsStringAsync().Result;
@@ -4285,6 +4288,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             ErrorLog("15Min\r\n" + urlPyro15Min);
             using (var client = new HttpClient())
             {
+                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                 var response = await client.PostAsync(urlPyro15Min, dataPyro15Min);
                 responseCodePyro15 = (int)response.StatusCode;
                 string returnResponse = response.Content.ReadAsStringAsync().Result;
@@ -4302,6 +4306,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarTrackerLoss";
             using (var client = new HttpClient())
             {
+                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                 var response = await client.PostAsync(url, dataTrackerloss);
                 responseCodeTracker = (int)response.StatusCode;
                 if (response.IsSuccessStatusCode)
