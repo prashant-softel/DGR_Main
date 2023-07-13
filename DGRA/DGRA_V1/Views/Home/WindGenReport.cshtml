@@ -965,6 +965,7 @@
                 tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
+
                 tbl += '<th>USMH</th>';
                 tbl += '<th>SMH</th>';
                 tbl += '<th>Others</th>';
@@ -986,9 +987,9 @@
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
-                        console.log("Date : " + formattedDate + ", Site : " + result[i].site + ", WTG : " + result[i].wtg);
-                        console.log("USMH : " + result[i].unschedule_num + " SMH : " + result[i].schedule_num);
-                        console.log(" Others : " + result[i].others_num + " IGBDH : " + result[i].igbdh_num + " : " + result[i].egbdh_num + " load Shedding : " + result[i].load_shedding_num);
+                        //console.log("Date : " + formattedDate + ", Site : " + result[i].site + ", WTG : " + result[i].wtg);
+                        //console.log("USMH : " + result[i].unschedule_num + " SMH : " + result[i].schedule_num);
+                        //console.log(" Others : " + result[i].others_num + " IGBDH : " + result[i].igbdh_num + " EGBD : " + result[i].egbdh_num + " load Shedding : " + result[i].load_shedding_num);
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -1007,7 +1008,6 @@
                         tbl += '<td class="text-right">' + result[i].ega_c + '</td>';
                         tbl += '<td class="text-right">' + result[i].production_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
                         tbl += '<td  class="text-right">' + result[i].unschedule_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].schedule_num.toFixed(2) + '</td>';
@@ -1015,6 +1015,7 @@
                         tbl += '<td  class="text-right">' + result[i].igbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
                         tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
