@@ -11679,8 +11679,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if (qryCounter < 10000)
                 {
-                    updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
-                    finalResult = 8;
+                    try
+                    {
+                        updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
+                        finalResult = 8;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while updating records, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                    }
                 }
                 if (counter == UpdatedTMLDataList.Count)
                 {
@@ -12998,7 +13006,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //GetWindTMLGraphData
-        internal async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate)
+        internal async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin)
         {
             List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
             string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
@@ -13264,16 +13272,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 finalExpectedPower = expected_power_sum;
             }
 
-            try
+            if (isAdmin == 1)
             {
-                string insertQry = "INSERT INTO exp_act_difference_wind(site_id, from_date, to_date, expected, actual, difference, final_expected, target, USMH, SMH, Other, IGBD, EGBD, LULL, PCD, Lineloss) VALUES ('" + site + "', '" + fromDate + "', '" + toDate + "', " + expected_power_sum + ", " + actual_active_power + ", " + difference + ", " + finalExpectedPower + ", " + target_sum + ", " + lossUSMH + ", " + lossSMH + ", " + lossNC + ", " + lossIGBD + ", " + lossEGBD + ", " + lossLULL + ", " + lossPCD + ", " + lineloss_final + ");";
-                int insertRes = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
+                try
+                {
+                    string insertQry = "INSERT INTO exp_act_difference_wind(site_id, from_date, to_date, expected, actual, difference, final_expected, target, USMH, SMH, Other, IGBD, EGBD, LULL, PCD, Lineloss) VALUES ('" + site + "', '" + fromDate + "', '" + toDate + "', " + expected_power_sum + ", " + actual_active_power + ", " + difference + ", " + finalExpectedPower + ", " + target_sum + ", " + lossUSMH + ", " + lossSMH + ", " + lossNC + ", " + lossIGBD + ", " + lossEGBD + ", " + lossLULL + ", " + lossPCD + ", " + lineloss_final + ");";
+                    int insertRes = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
 
-            }
-            catch(Exception e)
-            {
-                string msg = "Exception while inserting difference data into exp_act_difference_wind table." + e.ToString();
-                API_ErrorLog(msg);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while inserting difference data into exp_act_difference_wind table." + e.ToString();
+                    API_ErrorLog(msg);
+                }
             }
 
             try
