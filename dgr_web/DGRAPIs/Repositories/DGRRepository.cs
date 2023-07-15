@@ -10521,7 +10521,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-           // AddTo.Add("tanvi@softeltech.in");          
+            // AddTo.Add("tanvi@softeltech.in");          
         
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
@@ -13613,7 +13613,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
                     catch (Exception e)
                     {
-                        string msg = e.Message;
+                        string msg = "Exception while fetching records from uploading_pyranometer_15_min table, due to : " + e.ToString();
+                        API_ErrorLog(msg);
                     }
                     data1min[0].actModWtTemp = data1min[0].mod_tXavg_poa / sum_POA;
                     returnData[0].actModWtTemp = data1min[0].actModWtTemp;
@@ -13634,7 +13635,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
                     catch (Exception e)
                     {
-                        string msg = e.Message;
+                        string msg = "Exception while fetching records from uploading_file_estimated_hourly_loss, due to : " + e.ToString();
+                        API_ErrorLog(msg);
                     }
                     if (est1HourData[0].mod_tXavg_poa == 0 && est1HourData[0].glob_inc == 0)
                     {
@@ -13655,11 +13657,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         siteData = await Context.GetData<SolarPerformanceReports1>(qry5).ConfigureAwait(false);
-
                     }
                     catch (Exception e)
                     {
-                        string msg = e.Message;
+                        string msg = "Exception while fetching records from daily_gen_summary_solar table, due to : " + e.ToString();
+                        API_ErrorLog(msg);
                     }
 
                     string qry6 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no >= MONTH('" + datestring + "') and month_no<= MONTH('" + datestring + "')";
@@ -13670,7 +13672,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
                     catch (Exception e)
                     {
-                        string msg = e.Message;
+                        string msg = e.ToString();
                         throw new Exception("Exception occured in power expected function. " + msg);
                     }
 
@@ -13812,7 +13814,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 catch (Exception e)
                 {
-                    string msg = e.Message;
+                    string msg = e.ToString();
                     throw new Exception("Exception occured in power expected function. " + msg);
                 }
                 //Get Site Data
@@ -13824,7 +13826,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 catch (Exception e)
                 {
-                    string msg = e.Message;
+                    string msg = "Exception while fetching records from site_master_solar, due to : " +  e.ToString();
+                    API_ErrorLog(msg);
                 }
 
                 foreach (SolarPowerCalc _dataElement in data)
@@ -13888,7 +13891,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                         catch (Exception e)
                         {
-                            string msg = e.Message;
+                            string msg = "Exception while fetching records from uploading_pyranometer_15_min_solar, due to : " +  e.ToString();
+                            API_ErrorLog(msg);
                         }
                         foreach (SolarUploadingPyranoMeter1Min _temp1mindata in data1min)
                         {
@@ -13917,7 +13921,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 }
                                 catch (Exception e)
                                 {
-                                    string errmsg = e.Message;
+                                    string msg = "Exception while updating calculated data in uploading_pyranometer_15_min_solar, due to :  " + e.ToString();
+                                    API_ErrorLog(msg);
                                 }
 
                             }
@@ -13961,7 +13966,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                         catch (Exception e)
                         {
-                            string msg = e.Message;
+                            string msg = "Exception while fetching records from uploading_pyranometer_15_min_solar, due to : " + e.ToString();
+                            API_ErrorLog(msg);
                         }
                         foreach (SolarUploadingPyranoMeter1Min _temp1mindata in data1min)
                         {
@@ -13987,7 +13993,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 }
                                 catch (Exception e)
                                 {
-                                    string errmsg = e.Message;
+                                    string msg = "Exception while updating calculated into uploading_pyranoter_15_min_solar table, due to : " + e.ToString();
+                                    API_ErrorLog(msg);
                                 }
                             }
                         }
@@ -14018,7 +14025,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                         catch (Exception e)
                         {
-                            string msg = e.Message;
+                            string msg = "Exception while fetching records from uploading_pyranometer_15_min_solar, due to : " + e.ToString();
+                            API_ErrorLog(msg);
                         }
                         foreach (SolarUploadingPyranoMeter1Min _temp1mindata in data1min)
                         {
@@ -14041,7 +14049,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 }
                                 catch (Exception e)
                                 {
-                                    string errmsg = e.Message;
+                                    string msg = "Exception while updating calculated data into uploading_pyranometer_15_min_solar table : " + e.ToString();
+                                    API_ErrorLog(msg);
                                 }
                             }
                         }
