@@ -82,9 +82,7 @@
                     </div>
                     <div class="col-md-1"></div>
                 </div>
-                <br>
                 <hr>
-                <br>
                 <div class="col-sm-12">
                     <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
@@ -94,6 +92,22 @@
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
                 <hr>
+                <div class="row" id="viewTableBtn" style="display: none">
+                    <div class="col-sm-2">
+                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                            <button type="button" class="btn btn-block btn-primary" onclick="getTableData()" style="margin-left:0rem; width: 10rem;">View Table</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="CloseViewTableBtn" style="display: none">
+                    <div class="col-sm-2">
+                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                            <button type="button" class="btn btn-block btn-danger" onclick="closeTableData()" style="margin-left:0rem; width: 10rem;">Close Table</button>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                @*<button id="viewTableBtn" type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">View Table</button>*@
                 <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
@@ -184,7 +198,6 @@
 
         });
     }
-
     function getReport() {
 
         let site_id = "";
@@ -204,6 +217,32 @@
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
 
+
+        getChartData(site_id, fromDate, toDate);
+        getChartDataYearly(site_id);
+    }
+
+    function getTableData() {
+
+        let site_id = "";
+        var site = $('select#site option:selected').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        if (site_id == "" || site_id == null) {
+            alert("Please select site ");
+            return false;
+        }
+        document.getElementById("loader").style.display = 'flex';
+        console.log(site_id);
+        var daterange = $('#daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+        
+
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetWindTMLData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
@@ -214,9 +253,9 @@
                 //console.log(result);
                 console.log("GetWindTmlData fetched successfully.");
                 document.getElementById("loader").style.display = 'none';
+                document.getElementById("CloseViewTableBtn").style.display = 'flex';
+                document.getElementById("viewTableBtn").style.display = 'none';
                 //calling function of getting data for chart.
-                getChartData(site_id, fromDate, toDate);
-                getChartDataYearly(site_id);
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
                 tbl += '<thead class="tbl-head"><tr>';
@@ -319,6 +358,12 @@
         });
     }
 
+    function closeTableData() {
+        document.getElementById("viewTableBtn").style.display = 'flex';
+        document.getElementById("DailyGenView").style.display = 'none';
+        document.getElementById("CloseViewTableBtn").style.display = 'none';
+    }
+
     var data = [];
     function getChartData(site_id, fromDate, toDate) {
         var expected_final = 0.0;
@@ -342,6 +387,7 @@
             success: function (result, status, xhr) {
                 console.log(result);
                 document.getElementById("loader").style.display = 'none';
+                document.getElementById("viewTableBtn").style.display = 'flex';
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
@@ -425,6 +471,7 @@
         console.log("Inside getChartDataYearly function.");
         var data_Array1 = [];
         document.getElementById("loader").style.display = 'flex';
+        document.getElementById("viewTableBtn").style.display = 'flex';
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");

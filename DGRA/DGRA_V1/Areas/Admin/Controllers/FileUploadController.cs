@@ -184,7 +184,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 isInox = 1;
                 //fileSheets.Add("Sheet1");
             }
-            if (file.FileName.ToString().ToLower().StartsWith("zhb"))
+            if (file.FileName.ToString().ToLower().StartsWith("zhb") || file.FileName.ToString().ToLower().StartsWith("kd") || file.FileName.ToString().ToLower().StartsWith("vl333") || file.FileName.ToString().ToLower().StartsWith("vl20") || file.FileName.ToString().ToLower().StartsWith("m24") || file.FileName.ToString().ToLower().StartsWith("m32"))
             {
                 isSuzlon = 1;
             }
