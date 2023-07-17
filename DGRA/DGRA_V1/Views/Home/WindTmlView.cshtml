@@ -53,16 +53,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-left">Site : </label>
-                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="input-group row">
                             <label class="col-sm-3 col-form-label">Date Range : </label>
                             <div class="input-group-prepend">
@@ -73,7 +64,42 @@
                             <input type="text" class="form-control float-right" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-md-1"></div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-23col-form-label text-right">SPV : </label>
+                                <select class="form-control  col-sm-10" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="col-md-3">
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-3 col-form-label text-left">SPV : </label>
+                    <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
+                    </select>
+                </div>
+            </div>
+        </div>*@
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-left">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
+                                </select>
+                            </div>
+                        </div>
+                    </div>*@
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
                             <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
@@ -176,7 +202,7 @@
         var state = "";
         var spv = "";
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        $.ajax({
+        @*$.ajax({
             type: "POST",
             //url: "/WindReport/GetSiteList",
             url: '@Url.Action("GetSiteList", "WindReport")' + '?sitelist=' + site_ids,
@@ -196,7 +222,9 @@
                 });
             }
 
-        });
+        });*@
+        GetSPV(false);
+        getSite(false);
     }
     function getReport() {
 
@@ -222,6 +250,90 @@
         getChartDataYearly(site_id);
     }
 
+    function GetSPV(fliterVal) {
+        let state_id = "";
+        let site_ids = "";
+
+        if (fliterVal == false) {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        if($('#state').val())
+        {
+            $('select#state option:selected').each(function () {
+                state_id += "'"+$(this).val() + "',";
+            });
+            state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
+        }
+        if (state_id != "") {
+             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        $.ajax({
+            type: "GET",
+            ///url: "/WindReport/GetSPVList?state=" + val,
+            url: '@Url.Action("GetSPVList", "WindReport")' + '?state=' + state_id + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+
+                var options = "";
+                for (var j = 0; j < result.length; j++) {
+                    options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
+                }
+                $("#spv").multipleSelect('destroy');
+                $("#spv").html(options);
+                $('select#spv').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select SPV(s)",
+                    filter:true
+                });
+
+            }
+        });
+        getSite(false);
+    }
+
+    function getSite(fliterVal) {
+        var site_ids = "";
+        if (fliterVal == false) {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        let state_id = "";
+        $('select#state option:selected').each(function () {
+            state_id += $(this).val() + ",";
+        });
+        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
+
+        let spv = "";
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (state_id != "" || spv != "") {
+             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state_id + '&spv=' + spv + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
+                }
+                $("#site").multipleSelect('destroy');
+                $("#site").html("").html(options);
+
+                $('select#site').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Site(s)",
+                    filter:true
+                });
+            }
+        });
+         /*GetWTG(false);*/
+    }
+
     function getTableData() {
 
         let site_id = "";
@@ -241,7 +353,7 @@
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
 
-        
+
 
         $.ajax({
             type: "GET",
@@ -585,7 +697,7 @@
 
 
 
-        // Percentage Value 
+        // Percentage Value
         let exp_percentage = ((t_expected - t_target) / t_target) * 100;
         let usmh_percentage = (t_usmh / t_expected) * 100;
         let smh_percentage = (t_smh / t_expected) * 100;
@@ -761,7 +873,7 @@
         let t_actual = Number(total_actual).toFixed(2);
 
 
-        // Percentage Value 
+        // Percentage Value
         let exp_percentage = ((t_expected - t_target) / t_target) * 100;
         let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
         let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;

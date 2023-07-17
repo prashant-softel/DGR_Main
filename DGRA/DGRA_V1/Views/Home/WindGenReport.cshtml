@@ -141,7 +141,6 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
-
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Site : </label>
@@ -985,13 +984,21 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    //result.sort(function (a, b) {
+                    //    var dateA = new Date(a.date);
+                    //    var dateB = new Date(b.date);
+                    //    return dateA - dateB;
+                    //});
                     for (var i = 0; i < result.length; i++) {
-                        var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        //var dateOnly = result[i].date.split("T")[0];
+                        //var splitDate = dateOnly.split("-");
+                        //var finalDate = splitDate[2] + "-" + splitDate[1] + "-" + splitDate[0];
                         //console.log("Date : " + formattedDate + ", Site : " + result[i].site + ", WTG : " + result[i].wtg);
                         //console.log("USMH : " + result[i].unschedule_num + " SMH : " + result[i].schedule_num);
                         //console.log(" Others : " + result[i].others_num + " IGBDH : " + result[i].igbdh_num + " EGBD : " + result[i].egbdh_num + " load Shedding : " + result[i].load_shedding_num);
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         tbl += '<td class="text-left">' + result[i].spv + '</td>';
@@ -1044,10 +1051,9 @@
                     paging: true,
                     searching: true,
                     ordering: true,
-                    info: true,
-                    autoWidth: true,
+                    info: true,                  
                     pageLength: 50,
-
+                    "order": [[0, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
@@ -1188,9 +1194,9 @@
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
-                        var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         tbl += '<td class="text-left">' + result[i].spv + '</td>';
@@ -1243,8 +1249,9 @@
                     searching: true,
                     ordering: true,
                     info: true,
-                   autoWidth: true,
-                   pageLength: 50,
+                    pageLength: 50,
+                   "order": [[0, "asc"]],
+
                     buttons: [
                         {
                             extend: 'excel',
