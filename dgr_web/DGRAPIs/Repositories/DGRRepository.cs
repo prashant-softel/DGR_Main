@@ -9985,13 +9985,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             for (int i = 0; i < yearlypr.Count; i++)
             {
                 tb += "<tr>";
-                if (yearlypr[i].expected_kwh == 0 || yearlypr[i].act_kwh == 0)
+                if (yearlypr[i].pr_expected_kwh == 0 || yearlypr[i].act_kwh == 0)
                 {
                     act_prval_yr = 0;
                 }
                 else
                 {
-                    act_prval_yr = (yearlypr[i].act_kwh / yearlypr[i].expected_kwh) * 100;
+                    act_prval_yr = (yearlypr[i].act_kwh / yearlypr[i].pr_expected_kwh) * 100;
                 }
                 tar_mu_yr = (yearlypr[i].tar_kwh / 1000000);
                 
@@ -10061,13 +10061,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     if (yearlypr[i].site == monthlypr[j].site)
                     {
-                        if (monthlypr[j].expected_kwh == 0 || monthlypr[j].act_kwh == 0)
+                        if (monthlypr[j].pr_expected_kwh == 0 || monthlypr[j].act_kwh == 0)
                         {
                             act_prval_mn = 0;
                         }
                         else
                         {
-                            act_prval_mn = (monthlypr[j].act_kwh / monthlypr[j].expected_kwh) * 100;
+                            act_prval_mn = (monthlypr[j].act_kwh / monthlypr[j].pr_expected_kwh) * 100;
                         }
                         tar_mu_mn = (monthlypr[i].tar_kwh / 1000000);
 
@@ -10141,13 +10141,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     if (yearlypr[i].site == lastdaypr[k].site)
                     {
                         dailyRecordFound = true;
-                        if (lastdaypr[k].expected_kwh == 0 || lastdaypr[k].act_kwh == 0)
+                        if (lastdaypr[k].pr_expected_kwh == 0 || lastdaypr[k].act_kwh == 0)
                         {
                             act_prval_ld = 0;
                         }
                         else
                         {
-                            act_prval_ld = (lastdaypr[k].act_kwh / lastdaypr[k].expected_kwh) * 100;
+                            act_prval_ld = (lastdaypr[k].act_kwh / lastdaypr[k].pr_expected_kwh) * 100;
                         }
                         tar_mu_ld = (lastdaypr[k].tar_kwh / 1000000);
 
@@ -10520,7 +10520,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            // AddTo.Add("tanvi@softeltech.in");          
+           // AddTo.Add("tanvi@softeltech.in");          
         
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
