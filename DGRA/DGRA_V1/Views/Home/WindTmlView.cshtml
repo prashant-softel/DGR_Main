@@ -593,12 +593,13 @@
         fdate = getFinancialYearDateStartDate(fyear);
         var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        var dateParts = fromDate.split('-');
-        var year = parseInt(dateParts[0]);
-        year -= 1;
-        var newDate = new Date(year, dateParts[1] - 1, dateParts[2]);
-        var newFromDate = newDate.toISOString().slice(0, 10);
-        console.log("Yearly Report From date : " + newFromDate + " To date : " + toDate);
+
+        //var dateParts = fromDate.split('-');
+        //var year = parseInt(dateParts[0]);
+        //year -= 1;
+        //var newDate = new Date(year, dateParts[1] - 1, dateParts[2]);
+        //var newFromDate = newDate.toISOString().slice(0, 10);
+        //console.log("Yearly Report From date : " + newFromDate + " To date : " + toDate);
 
         console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
         var fromToDates = getFinancialYearDates(toDate);
