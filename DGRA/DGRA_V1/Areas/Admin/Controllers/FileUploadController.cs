@@ -6006,6 +6006,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
                     using (var client = new HttpClient())
                     {
+                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                         var response = await client.PostAsync(url, data);
                         string returnResponse = response.Content.ReadAsStringAsync().Result;
                         if (response.IsSuccessStatusCode)
