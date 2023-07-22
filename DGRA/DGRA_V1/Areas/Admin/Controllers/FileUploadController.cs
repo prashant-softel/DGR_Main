@@ -5904,7 +5904,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //    }
                         //}
                         string tempDate = Convert.ToString(dr["Date"]);
-                        convertedDate = DateTime.ParseExact(tempDate, "yyyy/MM/dd HH:mm", null).ToString("yyyy-MM-dd HH:mm:ss");
+                        //convertedDate = DateTime.ParseExact(tempDate, "yyyy/MM/dd HH:mm", null).ToString("yyyy-MM-dd HH:mm:ss");
+                        convertedDate = Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
                         addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(convertedDate).ToString("yyyy-MM-dd HH:mm:ss");
                         //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
                         //errorFlag.Add(dateNullValidation(addUnit.timestamp, "Date", rowNumber));
@@ -5939,13 +5940,17 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         if (!isActivePowerEmpty)
                         {
+                            if(rowNumber > 39)
+                            {
+                                int te = 1;
+                            }
                             if (dr.Table.Columns.Contains("Average Active Power 10M (kW)"))
                             {
-                                addUnit.avg_active_power = Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
+                                addUnit.avg_active_power = string.IsNullOrEmpty((string)dr["Average Active Power 10M (kW)"]) ? 0 : Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
                                 addUnit.status_code = 0;
                             }else if(dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
                             {
-                                addUnit.avg_active_power = Convert.ToDouble(dr["Average Active Power 10M \n(kW)"]);
+                                addUnit.avg_active_power = string.IsNullOrEmpty((string)dr["Average Active Power 10M \n(kW)"]) ? 0 : Convert.ToDouble(dr["Average Active Power 10M \n(kW)"]);
                                 addUnit.status_code = 0;
                             }
                         }

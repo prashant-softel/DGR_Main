@@ -7949,10 +7949,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         internal async Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName)
         {
+             int finalRes = 0;
 
-             await TemperatureCorrectedPRCalc(site, fromDate, toDate);
+             int tempCorrectedPr = await TemperatureCorrectedPRCalc(site, fromDate, toDate);
 
-             await getTemperatureCorrectedPR(site, fromDate, toDate);
+             int tempCorrectedContinued = await getTemperatureCorrectedPR(site, fromDate, toDate);
+
             DateTime thisTime = new DateTime();
             thisTime = DateTime.Now;
             //API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called.. Code Line No. 7573");
@@ -13598,8 +13600,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return data;
         }
-        internal async Task<List<TemperatureCorrectedPR>> getTemperatureCorrectedPR(string site, string fromDate, string toDate)
+        internal async Task<int> getTemperatureCorrectedPR(string site, string fromDate, string toDate)
         {
+            int finalRes = 0;
+
             List<TemperatureCorrectedPR> returnData = new List<TemperatureCorrectedPR>();
             try
             {
@@ -13615,7 +13619,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string qry = "select sum(`temp_corrected_pr`) as mod_tXavg_poa from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + datestring + "' ";
 
                     string qryPOA = "Select sum(avg_poa) as avg_poa from uploading_pyranometer_15_min_solar where site_id = " + site + " and date(date_time) = '" + datestring + "'";
-                    List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryPOA).ConfigureAwait(false);
+                    List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min = new List<SolarUploadingPyranoMeter1Min>();
+                    try
+                    {
+                        _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryPOA).ConfigureAwait(false);
+                        finalRes = 1;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while fetching records from uploading_pyranometer_15_min_solar, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalRes;
+                    }
                     double sum_POA = 0;
                     foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min)
                     {
@@ -13632,11 +13647,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qry).ConfigureAwait(false);
                         mod_temp = await Context.GetData<SolarUploadingPyranoMeter1Min>(qry2).ConfigureAwait(false);
+                        finalRes = 2;
                     }
                     catch (Exception e)
                     {
                         string msg = "Exception while fetching records from uploading_pyranometer_15_min table, due to : " + e.ToString();
                         API_ErrorLog(msg);
+                        return finalRes;
                     }
                     data1min[0].actModWtTemp = data1min[0].mod_tXavg_poa / sum_POA;
                     returnData[0].actModWtTemp = data1min[0].actModWtTemp;
@@ -13654,11 +13671,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         est1HourData = await Context.GetData<estimated1Hour>(qry3).ConfigureAwait(false);
                         est1HourDataModTemp = await Context.GetData<estimated1Hour>(qry4).ConfigureAwait(false);
+                        finalRes = 3;
                     }
                     catch (Exception e)
                     {
                         string msg = "Exception while fetching records from uploading_file_estimated_hourly_loss, due to : " + e.ToString();
                         API_ErrorLog(msg);
+                        return finalRes;
                     }
                     if (est1HourData[0].mod_tXavg_poa == 0 && est1HourData[0].glob_inc == 0)
                     {
@@ -13679,11 +13698,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         siteData = await Context.GetData<SolarPerformanceReports1>(qry5).ConfigureAwait(false);
+                        finalRes = 4;
                     }
                     catch (Exception e)
                     {
                         string msg = "Exception while fetching records from daily_gen_summary_solar table, due to : " + e.ToString();
                         API_ErrorLog(msg);
+                        return finalRes;
                     }
 
                     string qry6 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no >= MONTH('" + datestring + "') and month_no<= MONTH('" + datestring + "')";
@@ -13691,11 +13712,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         pvsystdata = await Context.GetData<SolarPowerCalc>(qry6).ConfigureAwait(false);
+                        finalRes = 5;
                     }
                     catch (Exception e)
                     {
                         string msg = e.ToString();
-                        throw new Exception("Exception occured in power expected function. " + msg);
+                        API_ErrorLog("Exception occured while fetching records from uploading_file_pvsyst_loss table. " + msg);
+                        return finalRes;
                     }
 
                     returnData[0].plantTempPR = siteData[0].plant_kwh / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
@@ -13712,35 +13735,49 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     deleteRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                    finalRes = 6;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while deleting records from temperature _corrected_pr table from database, Due to : " + e.ToString();
                     API_ErrorLog(msg);
+                    return finalRes;
                 }
 
                 try
                 {
                     insertRes = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
+                    finalRes = 7;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while inserting data into temprtature_corrected_pr table, due to : " + e.ToString();
                     API_ErrorLog(msg);
+                    return finalRes;
                 }
 
-                return returnData;
             }
             catch(Exception e)
             {
                 string msg = "Exception inside getTemperatureCorrectedPR() function due to : " + e.ToString();
                 API_ErrorLog(msg);
-                return returnData;
+                return finalRes;
             }
             
+            return finalRes;
+            //finalRes = 0 : Complete failure.
+            //finalRes = 1 : Exception while fetching records from uploading_pyranometer_15_min table.
+            //finalRes = 2 : Exception while fetching records from uploading_file_estimated_hourly_loss.
+            //finalRes = 3 : Exception while fetching records from daily_gen_summary_solar table.
+            //finalRes = 4 : Exception occured while fetching records from uploading_file_pvsyst_loss table..
+            //finalRes = 5 : Exception while deleting records from temperature _corrected_pr table from database.
+            //finalRes = 6 : Exception while inserting data into temprtature_corrected_pr table.
+            //finalRes = 7 : Successful.
         }
-        internal async Task<bool> TemperatureCorrectedPRCalc(string site, string fromDate, string toDate)
+
+        internal async Task<int> TemperatureCorrectedPRCalc(string site, string fromDate, string toDate)
         {
+            int finalRes = 0;
             //string fromDay = "";
             //string fromMonth = "";
             //string fromYear = "";
@@ -13753,11 +13790,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 start = Convert.ToDateTime(fromDate);
                 end = Convert.ToDateTime(toDate);
+                finalRes = 1;
             }
             catch(Exception e)
             {
                 string msg = "Exception while converting dates, due to : " + e.ToString();
                 API_ErrorLog(msg);
+                return finalRes;
             }
 
             string[] fromDateSplt = fromDate.Split('-');
@@ -13779,22 +13818,24 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                    finalRes = 2;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while executing update query of uploading_pyranometer_15_min_solar , due to : " + e.ToString();
                     API_ErrorLog(msg);
-                    return false;
+                    return finalRes;
                 }
                 string updateQry1Hour = " update `uploading_file_estimated_hourly_loss` set `temp_corrected_pr` = t_array*glob_inc where site_id = " + site + " and fy_date= '" + datestring + "'";
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry1Hour).ConfigureAwait(false);
+                    finalRes = 3;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while executing update query of uploading_file_estimated_hourly_loss, due to : " + e.ToString();
-                    return false;
+                    return finalRes;
                 }
 
 
@@ -13802,7 +13843,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 start = start.AddDays(1);
             }
 
-            return true;
+            //finalRes = 0 : Date conversion error .
+            //finalRes = 1 : Exception while updating data into pyranometer 15 min.
+            //finalRes = 2 : Exception while updating data into estimated_hourly_loss table.
+            //finalRes = 3 : Function successfully ended.
+
+            return finalRes;
         }
         internal async Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string type, string months, string fy)
         {
