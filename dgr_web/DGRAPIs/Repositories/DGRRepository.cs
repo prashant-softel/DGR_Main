@@ -6837,22 +6837,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<int> SetSolarApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
+            API_InformationLog(" Inside SetSolarApprovalFlagForImportBatches function. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
             int finalResult = 0;
             approval_InformationLog("Inside SetSolarApprovalFlagForImportBatches function.");
 
             string qry = "select t1.*,t2.site,t2.country,t2.state from uploading_file_generation_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id=t1.site_id left join location_master_solar as t3 on t3.site_id=t1.site_id where import_batch_id IN(" + dataId + ")";
 
             List<SolarUploadingFileGeneration2> _importedData = new List<SolarUploadingFileGeneration2>();
+            API_InformationLog(" SetSolarApprovalFlagForImportBatches function : Select Query: " + qry + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
             try
             {
                 _importedData = await Context.GetData<SolarUploadingFileGeneration2>(qry).ConfigureAwait(false);
                 finalResult = 1;
                 approval_InformationLog("Select Query : " + qry);
+
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 string msg = "Exception while fetching data from uploading_file_generation_solar and location_master_solar, due to : " + e.ToString();
                 approval_ErrorLog(msg);
+                API_InformationLog(" SetSolarApprovalFlagForImportBatches function : " + msg + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 return 0;
             }
 
@@ -6870,28 +6875,37 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             try
             {
+                API_InformationLog(" SetSolarApprovalFlagForImportBatches function : Delete query: " + qry3 + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 await Context.ExecuteNonQry<int>(qry3).ConfigureAwait(false);
                 finalResult = 2;
                 approval_InformationLog("Delete query : " + qry3);
+                
+
             }
             catch (Exception ex)
             {
                 string msg = "Exception while deleting records from daily_gem_summary_solar table, due to : " + ex.ToString();
                 approval_ErrorLog(msg);
+                API_InformationLog(" SetSolarApprovalFlagForImportBatches function : " + msg + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
                 return 0;
             }
 
             int res = 0;
             try
             {
+                API_InformationLog(" SetSolarApprovalFlagForImportBatches function : Insert query: " + qry1 + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 res = await Context.ExecuteNonQry<int>(qry1.Substring(0, (qry1.Length - 1)) + ";").ConfigureAwait(false);
                 finalResult = 3;
                 approval_InformationLog("Insert query : " + qry1.Substring(0, (qry1.Length - 1)) + ";" );
+
             }
             catch(Exception e)
             {
                 string msg = "Exception while inserting values into table daily_gen_summary_solar, due to : " + e.ToString();
                 approval_ErrorLog(msg);
+                API_InformationLog(" SetSolarApprovalFlagForImportBatches function : " + msg + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
                 return 0;
             }
             if (res > 0)
@@ -6900,6 +6914,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 int updateBatchRes = 0;
                 try
                 {
+                    API_InformationLog(" SetSolarApprovalFlagForImportBatches function : Update query: " + query + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                     updateBatchRes = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
                     finalResult = 4;
                     approval_InformationLog("Update query : " + query);
@@ -6908,6 +6923,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     string msg = "Exception while updating values in import_batches table, due to : " + e.ToString();
                     approval_ErrorLog(msg);
+                    API_InformationLog(" SetSolarApprovalFlagForImportBatches function : " + msg + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
                     return 0;
                 }
             }
@@ -6920,6 +6937,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string updateBDQry = "UPDATE uploading_file_breakdown_solar SET approve_status = 1 WHERE import_batch_id IN (" + dataId + ")";
                 try
                 {
+                    API_InformationLog(" SetSolarApprovalFlagForImportBatches function : Update query: " + updateBDQry + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                     int updateBDRes = await Context.ExecuteNonQry<int>(updateBDQry).ConfigureAwait(false);
                     finalResult = 5;
                     approval_InformationLog("Update Query : " + updateBDQry);
@@ -6928,11 +6946,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     string msg = "Exception while updating uploading_file_breakdown_solar approved status, due to : " + e.ToString();
                     approval_ErrorLog(msg);
+                    API_InformationLog(" SetSolarApprovalFlagForImportBatches function : " + msg + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
                     return 0;
                 }
             }
 
             approval_InformationLog("At the end of function finaResult : " + finalResult);
+            API_InformationLog(" SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
             return finalResult;
         }
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
@@ -8024,7 +8046,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             DateTime thisTime = new DateTime();
             thisTime = DateTime.Now;
-            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called.. Code Line No. "+ currentLineNumber +" ");
+            API_InformationLog("-------------------------------------------------------------------------------------- ");
+
+            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called.. Code Line No. "+ new StackTrace(true).GetFrame(0).GetFileLineNumber() +" ");
+           
+            API_InformationLog("site Id :"+ site +" fromDate :"+ fromDate + " toDate :"+ toDate + " logFileName :"+ logFileName +" currentTime :"+ DateTime.Now +"" );
+
             string filter = "date >= '" + fromDate + "'  and date<= '" + toDate + "' and site_id=" + site;
 
             bool response = false;
@@ -8071,7 +8098,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             try
             {
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called, inside first try.. Code Line No. " + currentLineNumber + " ");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function called, inside first try.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " ");
 
                 if (string.IsNullOrEmpty(site) || site == "All")
                 {
@@ -8098,12 +8125,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg = "Exception while getting site formulas from wind_site_formulas table, due to : " + e.ToString();
                     API_ErrorLog(msg);
                 }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function, retrived site formulas in _SiteFormulas list.. Code Line No. " + currentLineNumber + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function, retrived site formulas in _SiteFormulas list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index = 0;
                 foreach (SiteFormulas SiteFormula in _SiteFormulas)
                 {
                     
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of siteformulas.. Code Line No. " + currentLineNumber + " Iteration/Count :" + index + " / " + _SiteFormulas.Count  );
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of siteformulas.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index + " / " + _SiteFormulas.Count  );
                     index++;
 
                     MA_Actual_Formula = SiteFormula.MA_Actual; //(string)reader["MA_Actual"];
@@ -8147,7 +8174,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg = "Exception while getting data from location_master_solar table, due to  : " + e.ToString();
                     API_ErrorLog(msg);
                 }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after getting data in solarLocationMaster_calc list.. Code Line No. " + currentLineNumber + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after getting data in solarLocationMaster_calc list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                 //pending : Get GHI and POA
                 double avg_POA = 0;
@@ -8166,11 +8193,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg = "Exception while fetching data from uploading_pyranometer_1_min_solar table, due to  : " + e.ToString();
                     API_ErrorLog(msg);
                 }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : After getting data  in solarUploadingPyranometer1Min list .. Code Line No. " + currentLineNumber + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : After getting data  in solarUploadingPyranometer1Min list .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index1 = 0;
                 foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min)
                 {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of solaruploadingpyranometer1min.. Code Line No. " + currentLineNumber + " Iteration/Count :" + index1 + " / " + _SiteFormulas.Count);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of solaruploadingpyranometer1min.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index1 + " / " + _SiteFormulas.Count);
                     index1++;
 
                     avg_GHI = SolarPyranoMeterData.avg_ghi / 60000;
@@ -8211,7 +8238,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg = "Exception while fetching records from uploading_file_generation_solar table, due to : " + e.ToString();
                     API_ErrorLog(msg);
                 }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after solardailyUploadgen.. Code Line No. " + currentLineNumber + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after solardailyUploadgen.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                 //foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                 sLastInv = "";
@@ -8221,7 +8248,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //for each solar generation device, get the breakdown data
                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                 {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop solarLocationMaster_calc list.. Code Line No. " + currentLineNumber + " Iteration/Count :" + index2 + " / " + _SiteFormulas.Count);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop solarLocationMaster_calc list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index2 + " / " + _SiteFormulas.Count);
                     index2++;
 
                     iBreakdownCount++;
@@ -8278,7 +8305,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     FinalCapcity += SolarDevice.capacity;
 
                 }//end of for each
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : End of for loop.. Code Line No. " + currentLineNumber + "");
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : End of for loop.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 try
                 {
                     int result = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
@@ -8288,7 +8315,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 catch (Exception ex)
                 {
                     string strEx = ex.ToString();
-                    API_ErrorLog("CalculateDailySolarKPI function : exception during updating data in table uploading_file_generation_solar... Code Line No. " + currentLineNumber + " exception :" + strEx);
+                    API_ErrorLog("CalculateDailySolarKPI function : exception during updating data in table uploading_file_generation_solar... Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + strEx);
 
                     throw;
 
@@ -8298,13 +8325,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     int result = await Context.ExecuteNonQry<int>(updateqryCheck).ConfigureAwait(false);
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated inv_pr and plant_pr to null in uploading_file_generation_solar table... Code Line No. " + currentLineNumber + "");
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated inv_pr and plant_pr to null in uploading_file_generation_solar table... Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                 }
                 catch (Exception ex)
                 {
                     string strEx = ex.ToString();
-                    API_ErrorLog("CalculateDailySolarKPI function : Exception while updating data in uploading_file_generation_solar table.. Code Line No. " + currentLineNumber + " exception :" + strEx);
+                    API_ErrorLog("CalculateDailySolarKPI function : Exception while updating data in uploading_file_generation_solar table.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + strEx);
 
                     throw;
 
@@ -8345,11 +8372,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg = "Exception while fetching records from uploading_file_breakdown_solar and location_master_solar tables, due to : " + e.ToString();
                     API_ErrorLog(msg);
                 }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarfilebreakdown data in list.. Code Line No. " + currentLineNumber + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarfilebreakdown data in list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index3 = 0;
                 foreach (SolarFileBreakdownCalcMatrix sBreakdown in _SolarFileBreakdown)
                 {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of SolarFileBreakdown .. Code Line No. " + currentLineNumber + " Iteration/Count :" + index3 + " / " + _SiteFormulas.Count);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of SolarFileBreakdown .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index3 + " / " + _SiteFormulas.Count);
                     index3++;
 
                     iBreakdownCount++;
@@ -8383,7 +8410,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         string msg = "Exception while fetching records from uploading_pyranometer_1_min_solar table, due to : " + e.ToString();
                         API_ErrorLog(msg);
                     }
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarUploadingPyranometer1Min2 list.. Code Line No. " + currentLineNumber + "");
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarUploadingPyranometer1Min2 list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                     float poa = 0;
                     /*foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min2)
@@ -8422,7 +8449,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     switch (bd_type_id)
                     {
                         case 1:                 //if (bd_type_name.Equals("USMH"))            //Pending : optimise it use bd_type id
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside Switch case 1.. Code Line No. " + currentLineNumber + "");
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside Switch case 1.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                             //Final_USMH_Time = result.TimeOfDay;
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
@@ -8501,7 +8528,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         case 2:                 //else if (bd_type_name.Equals("SMH"))              
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 2.. Code Line No. " + currentLineNumber + "");
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 2.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
@@ -8582,7 +8609,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             {
                                 throw new Exception("EX_BD " + ext_bd + " shoudl be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
                             }*/
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 3 .. Code Line No. " + currentLineNumber + "");
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 3 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
@@ -8688,7 +8715,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                         case 4:     //("EGBD"))                
                             //Final_EGBD_Time = result.TimeOfDay;
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 4 .. Code Line No. " + currentLineNumber + "");
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 4 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                             string ext_bd = sBreakdown.ext_bd;
                             if (ext_bd != "EGBD")
@@ -8732,7 +8759,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                         case 5:                 //("Load Shedding"))                
                             //Final_LoadShedding_Time = result.TimeOfDay;
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 5 .. Code Line No. " + currentLineNumber + " ");
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 5 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " ");
 
                             ext_bd = sBreakdown.ext_bd;
                             if (ext_bd != "EGBD")
@@ -8817,7 +8844,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         case 6:                 //("Others Hour"))                
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 6.. Code Line No. " + currentLineNumber + "");
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 6.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                             if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
                             {
@@ -8892,7 +8919,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         case 7:                 //if (bd_type_name.Equals("LULL"))                
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 7.. Code Line No. " + currentLineNumber + "");
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 7.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                             if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
                             {
@@ -8932,7 +8959,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             break;
 
                         default:
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch default case .. Code Line No. " + currentLineNumber + "");
+                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch default case .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
                             //Pending : error reporting
                             throw new Exception("Unsupported BD_TYPE " + bd_type_id + " For WTG " + sCurrentInv + " for date " + fromDate);
@@ -8976,12 +9003,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg = "Exception while fetching records from monthly_target_kpi_solar table, due to : " + e.ToString();
                     API_ErrorLog(msg);
                 }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : received data in solarPRTarget list .. Code Line No. " + currentLineNumber + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : received data in solarPRTarget list .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index4 = 0;
                 double prTarget = 0;
                 foreach (SolarMonthlyTargetKPI pr in _SolarPRTarget)
                 {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach  solarPRTarget.. Code Line No. " + currentLineNumber + " Iteration/Count :" + index4 + " / " + _SiteFormulas.Count);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach  solarPRTarget.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index4 + " / " + _SiteFormulas.Count);
                     index4++;
 
                     prTarget = pr.PR;
@@ -8995,7 +9022,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 int index5 = 0;
                 foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                 {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach solarLocationMaster_Calc .. Code Line No. " + currentLineNumber + " Iteration/Count :" + index5 + " / " + _SiteFormulas.Count);
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach solarLocationMaster_Calc .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index5 + " / " + _SiteFormulas.Count);
                     index5++;
 
                     iBreakdownCount++;
@@ -9180,19 +9207,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //                if(bProcessGen)
                 //                    CalculateAndUpdateSolarKPIs(site_id, fromDate, sLastInv, solarGeneration, Final_Production_Time, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, Final_LullHour_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
                 //Pending : validation of Total time to be 24
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Last statement of this function.. Code Line No. " + currentLineNumber + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Last statement of this function.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 response = true;
             }
             catch (Exception ex)
             {
-                API_ErrorLog("CalculateDailySolarKPI function : Exception caught.. Code Line No. " + currentLineNumber + ", exception :" + ex.ToString() );
+                API_ErrorLog("CalculateDailySolarKPI function : Exception caught.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + ", exception :" + ex.ToString() );
 
                 string strEx = ex.Message;
                 response = false;
                 //pending : log error
                 throw new Exception(strEx);
             }
-            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : returning response.. Code Line No. " + currentLineNumber + "" + response);
+            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : returning response.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "" + response);
 
             return response;
         }
