@@ -54,10 +54,14 @@ namespace DGRAPIs.BS
                     {
                         email.To.Add(MailboxAddress.Parse(mail));
                     }
+
+                if(mailRequest.CcEmail != null){
+
                     foreach (var mail in mailRequest.CcEmail)
                     {
                         email.Cc.Add(MailboxAddress.Parse(mail));
                     }
+                }
                     // email.Cc.Add(MailboxAddress.Parse(mailRequest.CcEmail));
                     email.Subject = mailRequest.Subject;
                     var builder = new BodyBuilder();
@@ -96,6 +100,7 @@ namespace DGRAPIs.BS
                         smtp.Disconnect(true);
 
                         _MailResponse.Add(new MailResponse { mail_sent = true, message = "Mail sent successfully" });
+                        break;
                     }
                     else
                     {

@@ -1384,8 +1384,9 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         statenames = statenames.TrimEnd(',');
                         //filter += " and site in(" + sitesnames + ")";
 
-                        filter += " and t1.state IN(" + statenames + ") "; 
-                        
+                        filter += " and t1.state IN(" + statenames + ") ";
+                        tmrFilter += " and t5.state IN(" + statenames + ") ";
+
                     }
 
                 }
@@ -1406,7 +1407,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         spvnames = spvnames.TrimEnd(',');
                         //filter += " and site in(" + sitesnames + ")";
 
-                        filter += " and spv IN(" + spvnames + ") ";
+                        filter += " and t2.spv IN(" + spvnames + ") ";
                         tmrFilter += " AND t5.spv IN(" + spvnames + ")";
                         //filter += " where state='" + state + "' and spv='" + spv + "'";
                     }
@@ -1731,6 +1732,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     //filter += " and site in(" + sitesnames + ")";
 
                     filter += " and t1.state IN(" + statenames + ") ";
+                    tmrFilter += " AND t5.state IN(" + statenames + ")";
+
                 }
 
             }
@@ -1749,7 +1752,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         }
                     }
                     spvnames = spvnames.TrimEnd(',');
-                    filter += "and spv IN(" + spvnames + ") ";
+                    filter += "and t2.spv IN(" + spvnames + ") ";
                     tmrFilter += " AND t5.spv IN(" + spvnames + ")";
                 }
 
@@ -1785,6 +1788,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
                 string[] spmonth = month.Split("~");
                 filter += " and month(date) in (";
+                tmrFilter += " and month(t4.date) in (";
                 string months = "";
                 for (int i = 0; i < spmonth.Length; i++)
                 {
@@ -1794,6 +1798,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += months.TrimEnd(',') + ")";
+                tmrFilter += months.TrimEnd(',') + ")";
             }
 
             tmrFilter += " AND (all_bd != '' OR all_bd IS NOT NULL) GROUP BY t4.site, t4.all_bd";
@@ -1973,6 +1978,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 tmrFilter += " t4.site_id IN(" + sites.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
+            
             if (!string.IsNullOrEmpty(month) && !string.IsNullOrEmpty(fy))
             {
                 if (chkfilter == 1) 
@@ -2019,10 +2025,13 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if (chkfilter == 1) 
                 { 
                     filter += " and ";
+                    tmrFilter += " and ";
+
                 }
                 // filter += "t1.state in (" + state + ")";
                 string[] spstate = state.Split(",");
                 filter += " t1.state in (";
+                tmrFilter += " t5.state in (";
                 string states = "";
                 for (int i = 0; i < spstate.Length; i++)
                 {
@@ -2032,6 +2041,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += states.TrimEnd(',') + ")";
+                tmrFilter += states.TrimEnd(',') + ")";
 
                 chkfilter = 1;
             }
@@ -2076,7 +2086,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += " t1.WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += " t4.WTGs IN(" + wtgs.TrimEnd(',') + ")";
             }
             tmrFilter += " GROUP BY t4.WTGs, t4.all_bd, MONTH(t4.Time_stamp)";
 
@@ -2128,7 +2138,12 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             if (!string.IsNullOrEmpty(site) && site != "All~")
             {
                 //if (chkfilter == 1) { filter += " and "; }
-                // filter += "t1.site in (" + site + ")";
+                // filter += "t1.site in (" + site + ")";'
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
                 string[] spsite = site.Split(",");
                 filter += " t1.site_id in (";
                 string sites = "";
@@ -2146,7 +2161,13 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             if (!string.IsNullOrEmpty(month) && !string.IsNullOrEmpty(fy))
             {
-                filter += " and (";
+
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
+                filter += "  (";
 
                 string[] spmonth = month.Split(",");
                 string months = "";
@@ -2158,15 +2179,21 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     string year = (Int32.Parse(fy) + 1).ToString();
                     string Qyear = (monthno > 3) ? fy : year;
                     filter += "( month(date) = " + spmonth[i] + " and year(date) = '" + Qyear + "' )";
-                    tmrFilter += " AND MONTH(Time_stamp) = " + spmonth[i] + " AND YEAR(Time_stamp) = " + Qyear + "";
+                    tmrFilter += "  MONTH(Time_stamp) = " + spmonth[i] + " AND YEAR(Time_stamp) = " + Qyear + "";
                 }
                 filter += ") ";
                 chkfilter = 1;
             }
             else if (!string.IsNullOrEmpty(month))
             {
-                filter += " and month(date) in ( " + month + " )";
-                tmrFilter += " AND MONTH(Time_stamp) IN(" + month + " )";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
+
+                filter += "  month(date) in ( " + month + " )";
+                tmrFilter += "  MONTH(Time_stamp) IN(" + month + " )";
                 chkfilter = 1;
             }
             //if (!string.IsNullOrEmpty(country) && country != "All~")
@@ -2189,8 +2216,14 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             {
                 //if (chkfilter == 1) { filter += " and "; }
                 // filter += "t1.state in (" + state + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
                 string[] spstate = state.Split(",");
-                filter += " and t1.state in (";
+                filter += "  t1.state in (";
+                tmrFilter += "  t5.state in (";
                 string states = "";
                 for (int i = 0; i < spstate.Length; i++)
                 {
@@ -2200,6 +2233,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += states.TrimEnd(',') + ")";
+                tmrFilter += states.TrimEnd(',') + ")";
 
                 chkfilter = 1;
             }
@@ -2207,8 +2241,13 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             {
                 //if (chkfilter == 1) { filter += " and "; }
                 // filter += "t2.spv in (" + spv + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
                 string[] spspv = spv.Split(",");
-                filter += " and t2.spv in (";
+                filter += "  t2.spv in (";
                // filter1 += " and t2.spv in (";
                 string spvs = "";
                 for (int i = 0; i < spspv.Length; i++)
@@ -2219,7 +2258,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += spvs.TrimEnd(',') + ")";
-                tmrFilter += " AND t5.spv IN(" + spvs.TrimEnd(',') + ")";
+                tmrFilter += "  t5.spv IN(" + spvs.TrimEnd(',') + ")";
                 // filter1 += spvs.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
@@ -2228,8 +2267,13 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             {
                 //if (chkfilter == 1) { filter += " and "; }
                 // filter += "t1.wtg in (" + wtg + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " AND ";
+                }
                 string[] spwtg = wtg.Split(",");
-                filter += " and t1.wtg in (";
+                filter += "  t1.wtg in (";
                 string wtgs = "";
                 for (int i = 0; i < spwtg.Length; i++)
                 {
@@ -2239,7 +2283,9 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += " AND t4.WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += "  t4.WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                chkfilter = 1;
+
             }
             tmrFilter += " GROUP BY t4.all_bd, MONTH(t4.Time_stamp)";
 
@@ -2278,6 +2324,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 // filter += "t1.state in (" + state + ")";
                 string[] spstate = state.Split(",");
                 filter += "t1.state in (";
+                tmrFilter += "t5.state in (";
                 string states = "";
                 for (int i = 0; i < spstate.Length; i++)
                 {
@@ -2287,6 +2334,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += states.TrimEnd(',') + ")";
+                tmrFilter += states.TrimEnd(',') + ")";
 
                 chkfilter = 1;
             }
@@ -2402,6 +2450,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 // filter += "t1.state in (" + state + ")";
                 string[] spstate = state.Split(",");
                 filter += "t1.state in (";
+                tmrFilter += "t5.state in (";
                 string states = "";
                 for (int i = 0; i < spstate.Length; i++)
                 {
@@ -2411,6 +2460,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += states.TrimEnd(',') + ")";
+                tmrFilter += states.TrimEnd(',') + ")";
 
                 chkfilter = 1;
             }
@@ -2991,7 +3041,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             {
                 await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 string st = "temp";
             }
@@ -3489,10 +3539,18 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 try
                 {
                     List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    foreach (var item in data3)
+                    if (data3 != null)
                     {
-                        AddCc.Add(item.useremail);
-                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail Added CC email id :" + item.useremail);
+                        foreach (var item in data3)
+                        {
+                            AddCc.Add(item.useremail);
+                            PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail Added CC email id :" + item.useremail);
+                        }
+                    }
+                    else
+                    {
+                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail CC email List is Empty");
+
                     }
                 }
                 catch (Exception e)
@@ -3523,10 +3581,17 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 try
                 {
                     List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    foreach (var item in data3)
+                    if (data3 != null)
                     {
-                        AddCc.Add(item.useremail);
-                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added CC email id :" + item.useremail);
+                        foreach (var item in data3)
+                        {
+                            AddCc.Add(item.useremail);
+                            PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added CC email id :" + item.useremail);
+                        }
+                    }
+                    else
+                    {
+                        PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail  CC email list is Empty ");
                     }
                 }
                 catch (Exception e)
@@ -10498,11 +10563,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 qry = "select useremail from login where Cc_Daily_Solar = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data3)
+                if (data3 != null)
                 {
-                    AddCc.Add(item.useremail);
-                    PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
+                    foreach (var item in data3)
+                    {
+                        AddCc.Add(item.useremail);
+                        PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
 
+                    }
+                }
+                else
+                {
+                    PPT_InformationLog("MailDailySend function : solar cc email list is Empty " );
                 }
             }
             else
@@ -10519,11 +10591,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 qry = "select useremail from login where Cc_Daily_Wind = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data3)
-                {
-                    AddCc.Add(item.useremail);
-                    PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
+                if (data3 != null) {
+                    foreach (var item in data3)
+                    {
+                        AddCc.Add(item.useremail);
+                        PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
 
+                    }
+                }
+                else {
+
+                    PPT_InformationLog("MailDailySend function :  wind cc email list is Empty");
                 }
             }
 
