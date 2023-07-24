@@ -1735,6 +1735,7 @@
         var fromDate = "";
         var reportType = "Site";
         var reporthead = "Site Wise Report";
+        var cnt = 0;
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetSolarMonthlyGenerationReportSiteWise", "SolarReport")' + '?fy=' + arr1[0] + '&month=' + month + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&inverter=' + inv + '&reportType=' + reportType,
@@ -1798,6 +1799,7 @@
                 if (result.length > 0) {
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
+                        cnt++;
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         let totalFinal = result[i].total_losses + result[i].tracker_losses;
                         tbl += '<tr>';
@@ -1861,6 +1863,7 @@
                     console.log("Data not available");
 
                 }
+                console.log("rows"+cnt+"");
                 tbl += '</table>';
                 $("#reportsMonthly").html(tbl);
                 $('#example2').DataTable({
@@ -1880,7 +1883,8 @@
                             extend: 'excel',
                             title: 'Solar Monthly Generation Reports Site Wise',
                             exportOptions: {
-                                columns: ':visible'
+                                columns: ':visible',
+                                rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: ''+cnt+''}
                             }
                         },
                         {
@@ -2211,7 +2215,6 @@
         site = site != "" ? site.slice(0, -1) : site;
 
         if (!site) {
-            let state = "";
             $('select#stateY option:selected').each(function () {
                 state += $(this).val() + ",";
                 //   console.log($(this).val());
