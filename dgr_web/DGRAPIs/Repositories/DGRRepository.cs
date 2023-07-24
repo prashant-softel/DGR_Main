@@ -13139,6 +13139,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double lossPCD = 0;
             double lossSMH = 0;
             double lossUSMH = 0;
+            double loadShedding = 0;
             double expected_power_sum = 0;
             double actual_active_power = 0;
             double target_sum = 0;
@@ -13211,6 +13212,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         if (unit.all_bd == "USMH")
                         {
                             lossUSMH = unit.loss_kw;
+                        }
+                        if (unit.all_bd == "Load Shedding")
+                        {
+                            loadShedding = unit.loadShedding;
                         }
                     }
                 }
