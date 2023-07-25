@@ -912,7 +912,6 @@
        
 
         if(!site){
-            let state = "";
             $('select#state option:selected').each(function () {
                 state +=  $(this).val() + ",";
             });
@@ -1124,6 +1123,7 @@
             state += $(this).val() + ",";
         });
         state = state != "" ? state.slice(0, -1) : state;
+        console.log("selected  states :" + state);
         let spv = "";
         $('select#spv option:selected').each(function () {
             spv += $(this).val() + ",";
@@ -1333,7 +1333,6 @@
         site = site != "" ? site.slice(0, -1) : site;
 
         if(!site){
-            let state = "";
             $('select#stateM option:selected').each(function () {
                 state +=  $(this).val() + ",";
             });
@@ -1544,7 +1543,6 @@
         site = site != "" ? site.slice(0, -1) : site;
 
         if(!site){
-            let state = "";
             $('select#stateM option:selected').each(function () {
                 state +=  $(this).val() + ",";
              });
@@ -1582,6 +1580,7 @@
         var fromDate = "";
         var reportType = "WTG";
         var reporthead = "WTG Wise Report";
+        var cnt = 0;
         document.getElementById("loaderM").style.display = 'flex';
         $.ajax({
             type: "GET",
@@ -1627,7 +1626,8 @@
                 tbl += '<th>Total Loss</th>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
-                   for (var i = 0; i < result.length; i++) {
+                    for (var i = 0; i < result.length; i++) {
+                        cnt++;
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + fyyear + '</td>';
@@ -1690,7 +1690,10 @@
                             extend: 'excel',
                             title: 'Site Wise Monthly Generation Report',
                             exportOptions: {
-                                columns: ':visible'
+                                columns: ':visible',
+                                exportOptions: {
+                                    rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: ''+ cnt +'' }
+                                }
                             }
                         },
                         {
@@ -1765,7 +1768,6 @@
         site = site != "" ? site.slice(0, -1) : site;
 
         if (!site) {
-            let state = "";
             $('select#stateY option:selected').each(function () {
                 state += $(this).val() + ",";
             });
@@ -1804,6 +1806,7 @@
         var reportType = "WTG";
         var reporthead = "WTG Wise Report";
         document.getElementById("loaderY").style.display = 'flex';
+
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetWindYearlyGenerationReportWTGWise", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&wtg=' + wtg + '&reportType=' + reportType,
@@ -1974,7 +1977,6 @@
         site = site != "" ? site.slice(0, -1) : site;
 
         if (!site) {
-            let state = "";
             $('select#stateY option:selected').each(function () {
                 state += $(this).val() + ",";
             });

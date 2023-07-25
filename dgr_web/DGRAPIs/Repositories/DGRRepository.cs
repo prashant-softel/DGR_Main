@@ -2117,8 +2117,9 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             qry = "SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs, COALESCE(usmh.loss, 0) AS usmh_loss, COALESCE(smh.loss, 0) AS smh_loss, COALESCE(others.loss, 0) AS others_loss, COALESCE(IGBDH.loss, 0) AS igbdh_loss, COALESCE(EGBDH.loss, 0) AS egbdh_loss, COALESCE(loadShedding.loss, 0) AS loadShedding_loss, (COALESCE(usmh.loss,0) + COALESCE(smh.loss,0) + COALESCE(others.loss, 0) + COALESCE(IGBDH.loss, 0) + COALESCE(EGBDH.loss, 0) + COALESCE(loadShedding.loss, 0)) AS total_loss FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS usmh ON t1.site = usmh.site AND usmh.all_bd = 'USMH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS smh ON t1.site = smh.site AND smh.all_bd = 'SMH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS others ON t1.site = others.site AND others.all_bd = 'Others' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS IGBDH ON t1.site = IGBDH.site AND IGBDH.all_bd = 'IGBDH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS EGBDH ON t1.site = EGBDH.site AND EGBDH.all_bd = 'EGBDH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS loadShedding ON t1.site = loadShedding.site AND loadShedding.all_bd = 'Load Shedding' " + filter + " group by t1.state, t2.spv, t1.wtg , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg; ";
 
             //where t1.approve_status="+approve_status+" and " + filter + " group by t1.state, t2.spv, t1.wtg , month(t1.date)";
+            List<WindDailyGenReports1> data = await Context.GetData<WindDailyGenReports1>(qry).ConfigureAwait(false);
 
-            return await Context.GetData<WindDailyGenReports1>(qry).ConfigureAwait(false);
+            return data;
 
         }
 
@@ -2320,7 +2321,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             if (!string.IsNullOrEmpty(state) && state != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
+                if (chkfilter == 1)
+                { 
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }
                 // filter += "t1.state in (" + state + ")";
                 string[] spstate = state.Split(",");
                 filter += "t1.state in (";
@@ -2340,8 +2345,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             if (!string.IsNullOrEmpty(spv) && spv != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
-                // filter += "t2.spv in (" + spv + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }                // filter += "t2.spv in (" + spv + ")";
                 string[] spspv = spv.Split(",");
                 filter += "t2.spv in (";
                 string spvs = "";
@@ -2353,13 +2361,16 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += spvs.TrimEnd(',') + ")";
-                tmrFilter += " AND t5.spv IN(" + spvs.TrimEnd(',') + ")";
+                tmrFilter += " t5.spv IN(" + spvs.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(site) && site != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
-                // filter += "t1.site in (" + site + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }                // filter += "t1.site in (" + site + ")";
                 string[] spsite = site.Split(",");
                 filter += "t1.site_id in (";
                 string sites = "";
@@ -2371,13 +2382,16 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += sites.TrimEnd(',') + ")";
-                tmrFilter += " AND t4.site_id IN(" + sites.TrimEnd(',') + ")";
+                tmrFilter += "  t4.site_id IN(" + sites.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(wtg) && wtg != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
-                // filter += "t1.wtg in (" + wtg + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }                // filter += "t1.wtg in (" + wtg + ")";
                 string[] spwtg = wtg.Split(",");
                 filter += "t1.wtg in (";
                 string wtgs = "";
@@ -2389,10 +2403,15 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += " AND t4.WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += "  t4.WTGs IN(" + wtgs.TrimEnd(',') + ")";
             }
             if (!string.IsNullOrEmpty(month) && month != "All~")
             {
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }
                 if (chkfilter == 1) { filter += " and "; }
 
                 string[] spmonth = month.Split("~");
@@ -2406,7 +2425,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += months.TrimEnd(',') + ")";
-                tmrFilter += " AND MONTH(Time_stamp) = IN(" + months.TrimEnd(',') + ")";
+                tmrFilter += "  MONTH(Time_stamp) = IN(" + months.TrimEnd(',') + ")";
             }
 
 
@@ -2446,7 +2465,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             if (!string.IsNullOrEmpty(state) && state != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
+                if (chkfilter == 1) 
+                { 
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }
                 // filter += "t1.state in (" + state + ")";
                 string[] spstate = state.Split(",");
                 filter += "t1.state in (";
@@ -2466,8 +2489,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             if (!string.IsNullOrEmpty(spv) && spv != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
-                // filter += "t2.spv in (" + spv + ")";
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }                // filter += "t2.spv in (" + spv + ")";
                 string[] spspv = spv.Split(",");
                 filter += "t2.spv in (";
                 string spvs = "";
@@ -2479,12 +2505,17 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += spvs.TrimEnd(',') + ")";
-                tmrFilter += " AND t5.spv IN(" + spvs.TrimEnd(',') + ")";
+                tmrFilter += " t5.spv IN(" + spvs.TrimEnd(',') + ")";
 
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(site) && site != "All~")
             {
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }
                 if (chkfilter == 1) { filter += " and "; }
                 // filter += "t1.site in (" + site + ")";
                 string[] spsite = site.Split("~");
@@ -2498,12 +2529,16 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += sites.TrimEnd(',') + ")";
-                tmrFilter += " AND t4.site_id IN(" + sites.TrimEnd(',') + ")";
+                tmrFilter += " t4.site_id IN(" + sites.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(wtg) && wtg != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }
                 // filter += "t1.wtg in (" + wtg + ")";
                 string[] spwtg = wtg.Split(",");
                 filter += "t1.wtg in (";
@@ -2516,11 +2551,17 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += " AND t4.WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += "  t4.WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                chkfilter = 1;
+
             }
             if (!string.IsNullOrEmpty(month) && month != "All~")
             {
-                if (chkfilter == 1) { filter += " and "; }
+                if (chkfilter == 1)
+                {
+                    filter += " and ";
+                    tmrFilter += " and ";
+                }
 
                 string[] spmonth = month.Split("~");
                 filter += "month(date) in (";
@@ -2533,7 +2574,9 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += months.TrimEnd(',') + ")";
-                tmrFilter += " AND MONTH(Time_stamp) IN(" + months.TrimEnd(',') + ")";
+                tmrFilter += "  MONTH(Time_stamp) IN(" + months.TrimEnd(',') + ")";
+                chkfilter = 1;
+
             }
             tmrFilter += " AND (all_bd != '' OR all_bd IS NOT NULL)  GROUP BY t4.site, t4.all_bd";
 
