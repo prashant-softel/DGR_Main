@@ -60,8 +60,8 @@ namespace DGRAPIs.BS
         Task<List<WindPerformanceReports>> GetWindPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site);
         Task<List<SolarDailyBreakdownReport>> GetSolarDailyBreakdownReport(string fromDate, string toDate, string country, string state, string spv, string site, string inv);
         Task<bool> CalculateDailyWindKPI(string fromDate, string toDate, string site);
-        Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName);
-        Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string logFileName);
+        Task<string> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName);
+        Task<int> PowerExpected(string site, string fromDate, string toDate, string logFileName);
         Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType);
         Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate);
         Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
@@ -797,7 +797,7 @@ namespace DGRAPIs.BS
             }
         }
 
-        public async Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName)
+        public async Task<string> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName)
         {
             try
             {
@@ -812,7 +812,7 @@ namespace DGRAPIs.BS
             }
         }
 
-        public async Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string logFileName)
+        public async Task<int> PowerExpected(string site, string fromDate, string toDate, string logFileName)
         {
             try
             {

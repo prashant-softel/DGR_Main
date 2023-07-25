@@ -8079,13 +8079,31 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return true;
         }
 
-        internal async Task<bool> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName)
+        internal async Task<string> CalculateDailySolarKPI(string site, string fromDate, string toDate, string logFileName)
         {
-             int finalRes = 0;
+            int finalRes = 1101;
+            string errorCodes = "";
 
-             int tempCorrectedPr = await TemperatureCorrectedPRCalc(site, fromDate, toDate);
+            int tempCorrectedPr = await TemperatureCorrectedPRCalc(site, fromDate, toDate);
+            if (tempCorrectedPr != 0)
+            {
+                errorCodes += tempCorrectedPr.ToString() + ",";
+            }
+            else
+            {
+                finalRes = 1105;
+            }
 
-             int tempCorrectedContinued = await getTemperatureCorrectedPR(site, fromDate, toDate);
+            int tempCorrectedContinued = await getTemperatureCorrectedPR(site, fromDate, toDate);
+            if(tempCorrectedContinued != 0)
+            {
+                errorCodes += tempCorrectedContinued.ToString() + ",";
+                finalRes = 11011;
+            }
+            else
+            {
+                finalRes = 11011;
+            }
 
             DateTime thisTime = new DateTime();
             thisTime = DateTime.Now;
@@ -8161,26 +8179,40 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 List<SiteFormulas> _SiteFormulas = new List<SiteFormulas>();
                 try
                 {
-                    _SiteFormulas= await Context.GetData<SiteFormulas>(qrySiteFormulas).ConfigureAwait(false);
+                    _SiteFormulas = await Context.GetData<SiteFormulas>(qrySiteFormulas).ConfigureAwait(false);
+                    finalRes++;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    string msg = "Exception while getting site formulas from wind_site_formulas table, due to : " + e.ToString();
+                    string msg = "Exception while getting site formulas from wind_site_formulas table in calculateDailySolar function , due to : " + e.ToString();
                     API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function, retrived site formulas in _SiteFormulas list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index = 0;
-                foreach (SiteFormulas SiteFormula in _SiteFormulas)
+                try
                 {
-                    
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of siteformulas.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index + " / " + _SiteFormulas.Count  );
-                    index++;
+                    foreach (SiteFormulas SiteFormula in _SiteFormulas)
+                    {
 
-                    MA_Actual_Formula = SiteFormula.MA_Actual; //(string)reader["MA_Actual"];
-                    MA_Contractual_Formula = SiteFormula.MA_Contractual; // (string)reader["MA_Contractual"];
-                    IGA_Formula = SiteFormula.IGA; // (string)reader["IGA"];
-                    EGA_Formula = SiteFormula.EGA; // (string)reader["EGA"];                                                   
-                    //break;
+                        API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of siteformulas.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index + " / " + _SiteFormulas.Count);
+                        index++;
+
+                        MA_Actual_Formula = SiteFormula.MA_Actual; //(string)reader["MA_Actual"];
+                        MA_Contractual_Formula = SiteFormula.MA_Contractual; // (string)reader["MA_Contractual"];
+                        IGA_Formula = SiteFormula.IGA; // (string)reader["IGA"];
+                        EGA_Formula = SiteFormula.EGA; // (string)reader["EGA"];                                                   
+                        //break;
+                    }
+                    finalRes++;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while executing for loop for getting formulas in CalculateDailySolarKPI function, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
 
                 Hashtable acCapacityMap = new Hashtable();
@@ -8190,19 +8222,33 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     invAC = await Context.GetData<SolarInvAcCapacity>(plantQryACDC).ConfigureAwait(false);
+                    finalRes++;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    string msg = "Exception while getting inverter and ac_dc capicity from solar_ac_dc_capicity table, due to  : " + e.ToString();
+                    string msg = "Exception while getting inverter and ac_dc capicity from solar_ac_dc_capicity table in CalculateDailySolarKPI function , due to  : " + e.ToString();
                     API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
-                    
-                foreach (SolarInvAcCapacity InvAcCap in invAC)
+                try
                 {
-                    string Inverter = (InvAcCap.inverter);
-                    int acCapacity = (int)Convert.ToInt64(InvAcCap.ac_capacity);
-                    acCapacityMap.Add(Inverter, acCapacity);
+                    foreach (SolarInvAcCapacity InvAcCap in invAC)
+                    {
+                        string Inverter = (InvAcCap.inverter);
+                        int acCapacity = (int)Convert.ToInt64(InvAcCap.ac_capacity);
+                        acCapacityMap.Add(Inverter, acCapacity);
+                    }
+                    finalRes++;
                 }
+                catch (Exception e)
+                {
+                    string msg = "Exception while adding inverter AC and Capacity hash table in CalculateDailySolarKPI function, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
+                }
+
 
                 string qryAllDevices = "Select location_master_solar_id,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity from location_master_solar where site_id='" + site_id + "' ORDER BY icr_inv ";
 
@@ -8211,11 +8257,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     _SolarLocationMaster_Calc = await Context.GetData<SolarLocationMaster_Calc>(qryAllDevices).ConfigureAwait(false);
+                    finalRes++;
                 }
                 catch (Exception e)
                 {
-                    string msg = "Exception while getting data from location_master_solar table, due to  : " + e.ToString();
+                    string msg = "Exception while getting data from location_master_solar table in CalculateDailySolarKPI function, due to  : " + e.ToString();
                     API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after getting data in solarLocationMaster_calc list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
@@ -8230,25 +8279,55 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryGHI_POA).ConfigureAwait(false);
+                    finalRes++;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    string msg = "Exception while fetching data from uploading_pyranometer_1_min_solar table, due to  : " + e.ToString();
+                    string msg = "Exception while fetching data from uploading_pyranometer_1_min_solar table in CalculateDailySolarKPI function, due to  : " + e.ToString();
                     API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : After getting data  in solarUploadingPyranometer1Min list .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index1 = 0;
-                foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min)
+                try
                 {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of solaruploadingpyranometer1min.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index1 + " / " + _SiteFormulas.Count);
-                    index1++;
+                    foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min)
+                    {
+                        API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of solaruploadingpyranometer1min.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index1 + " / " + _SiteFormulas.Count);
+                        index1++;
 
-                    avg_GHI = SolarPyranoMeterData.avg_ghi / 60000;
-                    avg_POA = SolarPyranoMeterData.avg_poa / 60000;
+                        avg_GHI = SolarPyranoMeterData.avg_ghi / 60000;
+                        avg_POA = SolarPyranoMeterData.avg_poa / 60000;
+                    }
+                    finalRes++;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while executing loop of calculating average GHI POA values in CalculateDailySolarKPI function, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
                 //Tracker loss to be uncommented for DGRA_2 ...
-                bool calculateTrackerLoss =  await CalculateTrackerLosses(site, fromDate, toDate, "log");
-                await PowerExpected(site, fromDate, fromDate, "Daily", "", "");
+                int calculateTrackerLoss = await CalculateTrackerLosses(site, fromDate, toDate, "log");
+                if (calculateTrackerLoss == 0)
+                {
+                    finalRes = 11020;
+                }
+                else
+                {
+                    errorCodes += calculateTrackerLoss.ToString() + ",";
+                }
+                int powerExpected = await PowerExpected(site, fromDate, fromDate, "Daily", "", "");
+                if (powerExpected == 0)
+                {
+                    finalRes = 11021;
+                }
+                else
+                {
+                    errorCodes += powerExpected.ToString() + ",";
+                }
                 //avg_GHI = 2;
                 //avg_POA = 3;
 
@@ -8275,11 +8354,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     _SolarDailyUploadGen = await Context.GetData<SolarDailyGenSummary>(qry).ConfigureAwait(false);
+                    finalRes++;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    string msg = "Exception while fetching records from uploading_file_generation_solar table, due to : " + e.ToString();
+                    string msg = "Exception while fetching records from uploading_file_generation_solar table in CalculateSolarKPI function, due to : " + e.ToString();
                     API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after solardailyUploadgen.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
@@ -8289,78 +8371,91 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 int index2 = 0;
                 string updateqry = "";
                 //for each solar generation device, get the breakdown data
-                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                try
                 {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop solarLocationMaster_calc list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index2 + " / " + _SiteFormulas.Count);
-                    index2++;
-
-                    iBreakdownCount++;
-                    bProcessGen = true;
-                    TimeSpan Get_Time;
-                    //sCurrentInv = SolarDevice.icr + "/" + SolarDevice.inv;
-                	sCurrentICR_INV = SolarDevice.icr_inv;
-
-                    //                    string sDeviceICR = SolarDevice.icr;
-                    //                    string sDeviceINV = SolarDevice.inv;
-
-                    if (iBreakdownCount == 1)
+                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
                     {
-                        sLastInv = sCurrentInv;
-                        sLastICR_INV = sCurrentICR_INV;
-                    }
-                    //if (sLastICR_INV != sCurrentICR_INV)
-                    // {
-                    if (sLastICR_INV != sCurrentICR_INV || iBreakdownCount == _SolarLocationMaster_Calc.Count)
-                    {
-                        if (iBreakdownCount == _SolarLocationMaster_Calc.Count)
+                        API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop solarLocationMaster_calc list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index2 + " / " + _SiteFormulas.Count);
+                        index2++;
+
+                        iBreakdownCount++;
+                        bProcessGen = true;
+                        TimeSpan Get_Time;
+                        //sCurrentInv = SolarDevice.icr + "/" + SolarDevice.inv;
+                        sCurrentICR_INV = SolarDevice.icr_inv;
+
+                        //                    string sDeviceICR = SolarDevice.icr;
+                        //                    string sDeviceINV = SolarDevice.inv;
+
+                        if (iBreakdownCount == 1)
                         {
+                            sLastInv = sCurrentInv;
                             sLastICR_INV = sCurrentICR_INV;
-                            FinalCapcity += SolarDevice.capacity;
                         }
-
-                        //string updateqry = "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) +
-                        //  ", ma=100, iga=100, ega=100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ",plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + FinalCapcity + ") , plant_plf_ac = plant_act/(24*" + FinalCapcity + ") " +
-                        //  " where site_id = " + site_id + " and inverter ='" + sLastInv + "' and date = '" + fromDate + "'";
-
-                        ///Sanket 
-                        // string plantQryACDC = "select ac_capacity from solar_ac_dc_capacity where site_id = " + site_id + " and inverter = '" + sLastInv + "' ";
-
-
-                        //Get invAC from hashtable
-
-                        /// change by sujit 
-                        //string plantQryACDC = "select ac_capacity from solar_ac_dc_capacity where site_id = " + site_id + " and inverter = '" + sLastICR_INV + "' ";
-                        //List<SolarInvAcDcCapacity> invAC = await Context.GetData<SolarInvAcDcCapacity>(plantQryACDC).ConfigureAwait(false);
-                        double inverterAc = 0;
-                        if (acCapacityMap.ContainsKey(sLastICR_INV))
+                        //if (sLastICR_INV != sCurrentICR_INV)
+                        // {
+                        if (sLastICR_INV != sCurrentICR_INV || iBreakdownCount == _SolarLocationMaster_Calc.Count)
                         {
-                            inverterAc = Convert.ToDouble(acCapacityMap[sLastICR_INV]);
+                            if (iBreakdownCount == _SolarLocationMaster_Calc.Count)
+                            {
+                                sLastICR_INV = sCurrentICR_INV;
+                                FinalCapcity += SolarDevice.capacity;
+                            }
+
+                            //string updateqry = "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) +
+                            //  ", ma=100, iga=100, ega=100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ",plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + FinalCapcity + ") , plant_plf_ac = plant_act/(24*" + FinalCapcity + ") " +
+                            //  " where site_id = " + site_id + " and inverter ='" + sLastInv + "' and date = '" + fromDate + "'";
+
+                            ///Sanket 
+                            // string plantQryACDC = "select ac_capacity from solar_ac_dc_capacity where site_id = " + site_id + " and inverter = '" + sLastInv + "' ";
+
+
+                            //Get invAC from hashtable
+
+                            /// change by sujit 
+                            //string plantQryACDC = "select ac_capacity from solar_ac_dc_capacity where site_id = " + site_id + " and inverter = '" + sLastICR_INV + "' ";
+                            //List<SolarInvAcDcCapacity> invAC = await Context.GetData<SolarInvAcDcCapacity>(plantQryACDC).ConfigureAwait(false);
+                            double inverterAc = 0;
+                            if (acCapacityMap.ContainsKey(sLastICR_INV))
+                            {
+                                inverterAc = Convert.ToDouble(acCapacityMap[sLastICR_INV]);
+                            }
+
+                            //optimise this query also
+                            //string updateqry = "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) + ", ma=100, iga=100, ega=100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ", plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + invAC[0].ac_capacity + ") * 100, plant_plf_ac = plant_act/(24*" + invAC[0].ac_capacity + ")*100 " + " where site_id = " + site_id + " and inverter ='" + sLastICR_INV + "' and date = '" + fromDate + "'";
+
+                            updateqry += "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) + ", ma=100, iga=100, ega=100, ega_b=100, ega_c =100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ", plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + inverterAc + ") * 100, plant_plf_ac = plant_act/(24*" + inverterAc + ")*100 " + " where site_id = " + site_id + " and inverter ='" + sLastICR_INV + "' and date = '" + fromDate + "' ;";
+
+                            FinalCapcity = 0;
+                            sLastICR_INV = sCurrentICR_INV;
                         }
+                        FinalCapcity += SolarDevice.capacity;
 
-                        //optimise this query also
-                        //string updateqry = "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) + ", ma=100, iga=100, ega=100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ", plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + invAC[0].ac_capacity + ") * 100, plant_plf_ac = plant_act/(24*" + invAC[0].ac_capacity + ")*100 " + " where site_id = " + site_id + " and inverter ='" + sLastICR_INV + "' and date = '" + fromDate + "'";
+                    }//end of for each
+                    finalRes++;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while calculation in loop of location master in calculateDailySolarKPI function, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
+                }
 
-                        updateqry += "update uploading_file_generation_solar set ghi = " + avg_GHI + ", poa= " + avg_POA + ", expected_kwh=" + (FinalCapcity * avg_POA) + ", ma=100, iga=100, ega=100, ega_b=100, ega_c =100, inv_pr=inv_act*100/" + (FinalCapcity * avg_POA) + ", plant_pr=plant_act*100/" + (FinalCapcity * avg_POA) + ", inv_plf_ac = inv_act/(24*" + inverterAc + ") * 100, plant_plf_ac = plant_act/(24*" + inverterAc + ")*100 " + " where site_id = " + site_id + " and inverter ='" + sLastICR_INV + "' and date = '" + fromDate + "' ;";
-
-                        FinalCapcity = 0;
-                        sLastICR_INV = sCurrentICR_INV;
-                    }
-                    FinalCapcity += SolarDevice.capacity;
-
-                }//end of for each
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : End of for loop.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : End of for loop.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 try
                 {
                     int result = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
                     API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated data (ghi, poa, expected_kwh, plant_pr, etc) after for loop ends in uploading_file_generation_solar table .. Code Line No. 7747");
-
+                    finalRes++;
                 }
                 catch (Exception ex)
                 {
-                    string strEx = ex.ToString();
-                    API_ErrorLog("CalculateDailySolarKPI function : exception during updating data in table uploading_file_generation_solar... Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + strEx);
+                    string msg = "CalculateDailySolarKPI function : Exception during updating data in table uploading_file_generation_solar... Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + ex.ToString();
+                    API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
 
-                    throw;
 
                 }
 
@@ -8369,15 +8464,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int result = await Context.ExecuteNonQry<int>(updateqryCheck).ConfigureAwait(false);
                     API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated inv_pr and plant_pr to null in uploading_file_generation_solar table... Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
+                    finalRes++;
                 }
                 catch (Exception ex)
                 {
-                    string strEx = ex.ToString();
-                    API_ErrorLog("CalculateDailySolarKPI function : Exception while updating data in uploading_file_generation_solar table.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + strEx);
-
-                    throw;
-
+                    string msg = "CalculateDailySolarKPI function : Exception while updating inv_pr and plant_pr to null in uploading_file_generation_solar table.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + ex.ToString();
+                    API_ErrorLog(msg);
+                    errorCodes += finalRes.ToString() + ",";
+                    return errorCodes;
                 }
                 //Get breakdown data
                 //qry = @"SELECT date,t1.site_id,t1.ext_int_bd, t1.icr,t1.inv,t1.smb,t1.strings,t1.bd_type_id,t1.bd_type, t1.from_bd as stop_from, t1.to_bd as stop_to, SEC_TO_TIME(SUM(TIME_TO_SEC(total_stop)))
@@ -8386,886 +8480,898 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 qry = @"SELECT date,t1.site_id, t1.igbd, t1.ext_int_bd as ext_bd, t1.icr,t1.inv,t1.smb,t1.strings,t1.bd_type_id,t1.bd_type, t1.from_bd as stop_from, t1.to_bd as stop_to,total_bd
                   AS total_stop FROM uploading_file_breakdown_solar t1 left join location_master_solar t2 on t2.location_master_solar_id=t1.site_id left join site_master_solar t3 on t3.site_master_solar_id=t2.location_master_solar_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type_id";
 
-
-
-                iBreakdownCount = 0;
-                filter = "";
-                chkfilter = 0;
-                filter = "" + site_id;
-                if (!string.IsNullOrEmpty(fromDate) && fromDate != "All")
-                {
-                    //filter += "(date >= '" + fromDate + "'  and date<= '" + toDate + "')";
-                    filter += " AND date = '" + fromDate + "'";
-                    chkfilter = 1;
-                }
-
-                if (!string.IsNullOrEmpty(filter))
-                {
-                    qry += " where  t1.site_id = " + filter;
-                }
-                //qry += "  AND t1.wtg = 'BD-25'";
-                //qry += "  group by t1.icr, t1.inv, t1.smb, t1.strings, t1.bd_type_id";
-                List<SolarFileBreakdownCalcMatrix> _SolarFileBreakdown = new List<SolarFileBreakdownCalcMatrix>();
                 try
                 {
-                    _SolarFileBreakdown = await Context.GetData<SolarFileBreakdownCalcMatrix>(qry).ConfigureAwait(false);
-                }
-                catch(Exception e)
-                {
-                    string msg = "Exception while fetching records from uploading_file_breakdown_solar and location_master_solar tables, due to : " + e.ToString();
-                    API_ErrorLog(msg);
-                }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarfilebreakdown data in list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-                int index3 = 0;
-                foreach (SolarFileBreakdownCalcMatrix sBreakdown in _SolarFileBreakdown)
-                {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of SolarFileBreakdown .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index3 + " / " + _SiteFormulas.Count);
-                    index3++;
 
-                    iBreakdownCount++;
-                    TimeSpan Get_Time;
-                    int site_id2 = sBreakdown.site_id;
-                    string breakdown_icr = sBreakdown.icr; // (string)reader["wtg"];
-                    string breakdown_inv = sBreakdown.inv; // (string)reader["wtg"];
-                    sCurrentInv = breakdown_icr + "/" + breakdown_inv;
-                    int bd_type_id = sBreakdown.bd_type_id;// reader["bd_type"];
-                    string bd_type_name = sBreakdown.bd_type; // reader["bd_type_name"];
-                    var totalTime = sBreakdown.total_stop;// reader["totalTime"];
-                    DateTime result = Convert.ToDateTime(totalTime.ToString());
-                    DateTime bdstartTime = Convert.ToDateTime(sBreakdown.stop_from.ToString());
-                    //DateTime bdstartTime = new DateTime();
-                    //bdstartTime.Date = fromDate;
-                    DateTime bdendTime = Convert.ToDateTime(sBreakdown.stop_to.ToString());
+                    iBreakdownCount = 0;
+                    filter = "";
+                    chkfilter = 0;
+                    filter = "" + site_id;
+                    if (!string.IsNullOrEmpty(fromDate) && fromDate != "All")
+                    {
+                        //filter += "(date >= '" + fromDate + "'  and date<= '" + toDate + "')";
+                        filter += " AND date = '" + fromDate + "'";
+                        chkfilter = 1;
+                    }
 
-
-                    //float poa = 0.7F;
-                    //calculate poa for duration - find poa for each minute of breakdown
-                    string poaqry = "select sum(avg_poa) as avg_poa from uploading_pyranometer_1_min_solar where date_time >= '" + fromDate + " " + bdstartTime.TimeOfDay.ToString() + "' and date_time<='" + fromDate + " " + bdendTime.TimeOfDay.ToString() + "' AND site_id = " + site_id;
-
-
-                    List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min2 = new List<SolarUploadingPyranoMeter1Min>();
+                    if (!string.IsNullOrEmpty(filter))
+                    {
+                        qry += " where  t1.site_id = " + filter;
+                    }
+                    //qry += "  AND t1.wtg = 'BD-25'";
+                    //qry += "  group by t1.icr, t1.inv, t1.smb, t1.strings, t1.bd_type_id";
+                    List<SolarFileBreakdownCalcMatrix> _SolarFileBreakdown = new List<SolarFileBreakdownCalcMatrix>();
                     try
                     {
-                        _SolarUploadingPyranoMeter1Min2 = await Context.GetData<SolarUploadingPyranoMeter1Min>(poaqry).ConfigureAwait(false);
+                        _SolarFileBreakdown = await Context.GetData<SolarFileBreakdownCalcMatrix>(qry).ConfigureAwait(false);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
-                        string msg = "Exception while fetching records from uploading_pyranometer_1_min_solar table, due to : " + e.ToString();
+                        string msg = "Exception while fetching records from uploading_file_breakdown_solar and location_master_solar tables, due to : " + e.ToString();
                         API_ErrorLog(msg);
                     }
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarUploadingPyranometer1Min2 list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
-                    float poa = 0;
-                    /*foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min2)
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarfilebreakdown data in list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+                    int index3 = 0;
+                    foreach (SolarFileBreakdownCalcMatrix sBreakdown in _SolarFileBreakdown)
                     {
-                        poa = SolarPyranoMeterData.avg_poa;
+                        API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach loop of SolarFileBreakdown .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index3 + " / " + _SiteFormulas.Count);
+                        index3++;
 
-                    }*/
-                    poa = (float)(_SolarUploadingPyranoMeter1Min2[0].avg_poa);
-                    poa = poa / 60000;
+                        iBreakdownCount++;
+                        TimeSpan Get_Time;
+                        int site_id2 = sBreakdown.site_id;
+                        string breakdown_icr = sBreakdown.icr; // (string)reader["wtg"];
+                        string breakdown_inv = sBreakdown.inv; // (string)reader["wtg"];
+                        sCurrentInv = breakdown_icr + "/" + breakdown_inv;
+                        int bd_type_id = sBreakdown.bd_type_id;// reader["bd_type"];
+                        string bd_type_name = sBreakdown.bd_type; // reader["bd_type_name"];
+                        var totalTime = sBreakdown.total_stop;// reader["totalTime"];
+                        DateTime result = Convert.ToDateTime(totalTime.ToString());
+                        DateTime bdstartTime = Convert.ToDateTime(sBreakdown.stop_from.ToString());
+                        //DateTime bdstartTime = new DateTime();
+                        //bdstartTime.Date = fromDate;
+                        DateTime bdendTime = Convert.ToDateTime(sBreakdown.stop_to.ToString());
 
-                    Final_Time = result.TimeOfDay;
+
+                        //float poa = 0.7F;
+                        //calculate poa for duration - find poa for each minute of breakdown
+                        string poaqry = "select sum(avg_poa) as avg_poa from uploading_pyranometer_1_min_solar where date_time >= '" + fromDate + " " + bdstartTime.TimeOfDay.ToString() + "' and date_time<='" + fromDate + " " + bdendTime.TimeOfDay.ToString() + "' AND site_id = " + site_id;
 
 
-                    /*if (iBreakdownCount == 1)
+                        List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min2 = new List<SolarUploadingPyranoMeter1Min>();
+                        try
+                        {
+                            _SolarUploadingPyranoMeter1Min2 = await Context.GetData<SolarUploadingPyranoMeter1Min>(poaqry).ConfigureAwait(false);
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while fetching records from uploading_pyranometer_1_min_solar table, due to : " + e.ToString();
+                            API_ErrorLog(msg);
+                        }
+                        API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Received data in solarUploadingPyranometer1Min2 list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
+                        float poa = 0;
+                        /*foreach (SolarUploadingPyranoMeter1Min SolarPyranoMeterData in _SolarUploadingPyranoMeter1Min2)
+                        {
+                            poa = SolarPyranoMeterData.avg_poa;
+
+                        }*/
+                        poa = (float)(_SolarUploadingPyranoMeter1Min2[0].avg_poa);
+                        poa = poa / 60000;
+
+                        Final_Time = result.TimeOfDay;
+
+
+                        /*if (iBreakdownCount == 1)
+                        {
+                            sLastInv = sCurrentInv;
+                        }*/
+                        /*if(sCurrentInv != sLastInv)
+                        {
+                            //Update WTG KPIs
+                            //CalculateAndUpdateKPIs(site_id, fromDate, sLastWTG, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
+                            //CalculateAndUpdatePLFandKWHAfterLineLoss(site_id, fromDate, sLastWTG);
+
+                            //Final_Production_Time = TimeSpan.Zero;
+                            //Final_USMH_Time = TimeSpan.Zero;
+                            //Final_SMH_Time = TimeSpan.Zero;
+                            //Final_IGBD_Time = TimeSpan.Zero;
+                            //Final_EGBD_Time = TimeSpan.Zero;
+                            //Final_LoadShedding_Time = TimeSpan.Zero;
+                            //Final_LULL_Time = TimeSpan.Zero;
+                            //Final_OthersHour_Time = TimeSpan.Zero;
+                            //Final_LullHour_Time = TimeSpan.Zero;
+
+                            sLastInv = sCurrentInv;
+                        }*/
+                        switch (bd_type_id)
+                        {
+                            case 1:                 //if (bd_type_name.Equals("USMH"))            //Pending : optimise it use bd_type id
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside Switch case 1.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+                                //Final_USMH_Time = result.TimeOfDay;
+                                if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            //when SMB is empty (for Gundlupet)
+                                            SolarDevice.USMH_5 += Final_Time;
+                                            SolarDevice.USMH += Final_Time;
+
+
+                                            SolarDevice.USMH_lostPOA += poa;
+
+                                        }
+                                        else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            SolarDevice.USMH_4 += Final_Time;
+                                            SolarDevice.USMH += Final_Time;
+
+                                            SolarDevice.USMH_lostPOA += poa;
+                                        }
+                                    }
+                                    //pending : SMB can be null
+
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
+                                        {
+                                            SolarDevice.USMH_3 += Final_Time;
+                                            SolarDevice.USMH += Final_Time;
+
+
+                                            SolarDevice.USMH_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
+                                        {
+                                            SolarDevice.USMH_2 += Final_Time;
+                                            SolarDevice.USMH += Final_Time;
+
+
+                                            SolarDevice.USMH_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr)
+                                        {
+                                            SolarDevice.USMH_1 += Final_Time;
+                                            SolarDevice.USMH += Final_Time;
+
+
+                                            SolarDevice.USMH_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //pending : error handling
+                                }
+
+                                //result = Convert.ToDateTime(totalTime.ToString());
+                                //Final_USMH_Time = result.TimeOfDay;
+                                break;
+
+                            case 2:                 //else if (bd_type_name.Equals("SMH"))              
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 2.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
+                                if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            //when SMB is empty (for Gundlupet)
+                                            SolarDevice.SMH_5 += Final_Time;
+                                            SolarDevice.SMH += Final_Time;
+
+                                            SolarDevice.SMH_lostPOA += poa;
+                                        }
+                                        else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            SolarDevice.SMH_4 += Final_Time;
+                                            SolarDevice.SMH += Final_Time;
+
+
+                                            SolarDevice.SMH_lostPOA += poa;
+                                        }
+                                    }
+                                    //pending : SMB can be null
+
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
+                                        {
+                                            SolarDevice.SMH_3 += Final_Time;
+                                            SolarDevice.SMH += Final_Time;
+
+
+                                            SolarDevice.SMH_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
+                                        {
+                                            SolarDevice.SMH_2 += Final_Time;
+                                            SolarDevice.SMH += Final_Time;
+
+
+                                            SolarDevice.SMH_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr)
+                                        {
+                                            SolarDevice.SMH_1 += Final_Time;
+                                            SolarDevice.SMH += Final_Time;
+
+
+
+                                            SolarDevice.SMH_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //pending : error handling
+                                }
+                                break;
+
+                            case 3:  //("IGBD"))                
+                                /*string ext_bd = sBreakdown.ext_bd;
+                                if (ext_db != "IGBD")
+                                {
+                                    throw new Exception("EX_BD " + ext_bd + " shoudl be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
+                                }*/
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 3 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
+                                if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            //when SMB is empty (for Gundlupet)
+                                            SolarDevice.IGBD_6 += Final_Time;
+                                            SolarDevice.IGBD += Final_Time;
+
+
+                                            SolarDevice.IGBD_lostPOA += poa;
+                                        }
+                                        else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            SolarDevice.IGBD_5 += Final_Time;
+                                            SolarDevice.IGBD += Final_Time;
+
+
+                                            SolarDevice.IGBD_lostPOA += poa;
+                                        }
+                                    }
+                                    //pending : SMB can be null
+
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
+                                        {
+                                            SolarDevice.IGBD_4 += Final_Time;
+                                            SolarDevice.IGBD += Final_Time;
+
+
+                                            SolarDevice.IGBD_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
+                                        {
+                                            SolarDevice.IGBD_3 += Final_Time;
+                                            SolarDevice.IGBD += Final_Time;
+
+
+
+                                            SolarDevice.IGBD_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr)
+                                        {
+                                            SolarDevice.IGBD_2 += Final_Time;
+                                            SolarDevice.IGBD += Final_Time;
+
+
+                                            SolarDevice.IGBD_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.igbd) && sBreakdown.igbd != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.ig == sBreakdown.igbd)
+                                        {
+                                            SolarDevice.IGBD_1 += Final_Time;
+                                            SolarDevice.IGBD += Final_Time;
+
+
+                                            SolarDevice.IGBD_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                //else if (!string.IsNullOrEmpty(sBreakdown.igbd) && sBreakdown.igbd != "Nil")
+                                //{
+                                //    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                //    {
+                                //        if (SolarDevice.ig == sBreakdown.igbd)
+                                //        {
+                                //            SolarDevice.IGBD_1 += Final_Time;
+                                //            SolarDevice.IGBD += Final_Time;
+
+
+                                //            SolarDevice.IGBD_lostPOA += poa;
+                                //        }
+                                //    }
+                                //}
+                                else
+                                {
+                                    //pending : error handling
+                                }
+                                break;
+
+                            case 4:     //("EGBD"))                
+                                        //Final_EGBD_Time = result.TimeOfDay;
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 4 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
+                                string ext_bd = sBreakdown.ext_bd;
+                                if (ext_bd != "EGBD")
+                                {
+                                    throw new Exception("EX_BD " + ext_bd + " should be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
+                                }
+                                if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        //SolarDevice.total_strings
+                                        if (SolarDevice.icr == sBreakdown.icr)
+                                        {
+                                            SolarDevice.EGBD_2 += Final_Time;
+                                            SolarDevice.EGBD += Final_Time;
+
+
+                                            SolarDevice.EGBD_lostPOA += poa;
+                                        }
+                                    }
+                                    //pending : SMB can be null
+
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.ext_bd) && sBreakdown.ext_bd != "Nil") //SITE SHUT
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        //if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
+                                        {
+                                            SolarDevice.EGBD_1 += Final_Time;
+                                            SolarDevice.EGBD += Final_Time;
+
+                                            //siteShutdownEGBDLoss += poa * SolarDevice.capacity;
+
+                                            SolarDevice.EGBD_lostPOA += poa;
+                                        }
+                                    }
+                                }
+
+                                break;
+
+                            case 5:                 //("Load Shedding"))                
+                                                    //Final_LoadShedding_Time = result.TimeOfDay;
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 5 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " ");
+
+                                ext_bd = sBreakdown.ext_bd;
+                                if (ext_bd != "EGBD")
+                                {
+                                    throw new Exception("EX_BD " + ext_bd + " shoudl be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
+                                }
+                                if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            //when SMB is empty (for Gundlupet)
+                                            SolarDevice.IGBD_6 += Final_Time;
+                                            SolarDevice.IGBD += Final_Time;
+
+
+                                            SolarDevice.IGBD_lostPOA += poa;
+                                        }
+                                        else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            SolarDevice.LS_4 += Final_Time;
+                                            SolarDevice.LS += Final_Time;
+
+
+                                            SolarDevice.LS_lostPOA += poa;
+                                        }
+                                    }
+                                    //pending : SMB can be null
+
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
+                                        {
+                                            SolarDevice.LS_3 += Final_Time;
+                                            SolarDevice.LS += Final_Time;
+
+
+                                            SolarDevice.LS_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
+                                        {
+                                            SolarDevice.LS_2 += Final_Time;
+                                            SolarDevice.LS += Final_Time;
+
+
+                                            SolarDevice.LS_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr)
+                                        {
+                                            SolarDevice.LS_1 += Final_Time;
+                                            SolarDevice.LS += Final_Time;
+
+
+
+                                            SolarDevice.LS_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //pending : error handling
+                                }
+
+                                //result = Convert.ToDateTime(totalTime.ToString());
+                                //Final_USMH_Time = result.TimeOfDay;
+                                break;
+
+                            case 6:                 //("Others Hour"))                
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 6.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
+                                if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            //when SMB is empty (for Gundlupet)
+                                            SolarDevice.OthersHour_5 += Final_Time;
+                                            SolarDevice.OthersHour += Final_Time;
+
+                                            SolarDevice.OthersHour_lostPOA += poa;
+
+                                        }
+                                        else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
+                                        {
+                                            SolarDevice.OthersHour_4 += Final_Time;
+                                            SolarDevice.OthersHour += Final_Time;
+
+                                            SolarDevice.OthersHour_lostPOA += poa;
+                                        }
+                                    }
+                                    //pending : SMB can be null
+
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
+                                        {
+                                            SolarDevice.OthersHour_3 += Final_Time;
+                                            SolarDevice.OthersHour += Final_Time;
+
+
+                                            SolarDevice.OthersHour_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
+                                        {
+                                            SolarDevice.OthersHour_2 += Final_Time;
+                                            SolarDevice.OthersHour += Final_Time;
+
+
+                                            SolarDevice.OthersHour_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        if (SolarDevice.icr == sBreakdown.icr)
+                                        {
+                                            SolarDevice.OthersHour_1 += Final_Time;
+                                            SolarDevice.OthersHour += Final_Time;
+
+
+                                            SolarDevice.OthersHour_lostPOA += poa;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //pending : error handling
+                                }
+                                break;
+
+                            case 7:                 //if (bd_type_name.Equals("LULL"))                
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 7.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
+                                if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        //SolarDevice.total_strings
+                                        if (SolarDevice.icr == sBreakdown.icr)
+                                        {
+                                            SolarDevice.LullHrs_2 += Final_Time;
+                                            SolarDevice.LullHrs += Final_Time;
+
+
+                                            SolarDevice.LullHrs_lostPOA += poa;
+                                        }
+                                    }
+                                    //pending : SMB can be null
+
+                                }
+                                else if (!string.IsNullOrEmpty(sBreakdown.ext_bd) && sBreakdown.ext_bd != "Nil") //SITE SHUT
+
+                                {
+                                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                                    {
+                                        //if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
+                                        {
+                                            SolarDevice.LullHrs_1 += Final_Time;
+                                            SolarDevice.LullHrs += Final_Time;
+
+                                            //  siteShutdownLullLoss += poa * SolarDevice.capacity;
+
+                                            SolarDevice.LullHrs_lostPOA += poa;
+
+                                        }
+                                    }
+                                }
+
+                                break;
+
+                            default:
+                                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch default case .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+
+                                //Pending : error reporting
+                                throw new Exception("Unsupported BD_TYPE " + bd_type_id + " For WTG " + sCurrentInv + " for date " + fromDate);
+                                break;
+
+                        }
+
+                    } // end of foreach
+                      //double siteShutdownEGBDLossPerString = siteShutdownEGBDLoss / _SolarLocationMaster_Calc.Count;
+                      //double siteShutdownLullLossPerString = siteShutdownLullLoss / _SolarLocationMaster_Calc.Count;
+                      //Process BREADOWN UPDATE data
+                    int stringCount = 0;
+                    iBreakdownCount = 0;
+                    qry = @"SELECT * FROM uploading_file_generation_solar as t1 ";
+                    iGenerationCount = 0;
+                    filter = "";
+                    chkfilter = 0;
+                    filter = "" + site_id;
+                    if (!string.IsNullOrEmpty(fromDate) && fromDate != "All")
                     {
-                        sLastInv = sCurrentInv;
-                    }*/
-                    /*if(sCurrentInv != sLastInv)
-                    {
-                        //Update WTG KPIs
-                        //CalculateAndUpdateKPIs(site_id, fromDate, sLastWTG, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
-                        //CalculateAndUpdatePLFandKWHAfterLineLoss(site_id, fromDate, sLastWTG);
-                        
-                        //Final_Production_Time = TimeSpan.Zero;
-                        //Final_USMH_Time = TimeSpan.Zero;
-                        //Final_SMH_Time = TimeSpan.Zero;
-                        //Final_IGBD_Time = TimeSpan.Zero;
-                        //Final_EGBD_Time = TimeSpan.Zero;
-                        //Final_LoadShedding_Time = TimeSpan.Zero;
-                        //Final_LULL_Time = TimeSpan.Zero;
-                        //Final_OthersHour_Time = TimeSpan.Zero;
-                        //Final_LullHour_Time = TimeSpan.Zero;
-
-                        sLastInv = sCurrentInv;
-                    }*/
-                    switch (bd_type_id)
-                    {
-                        case 1:                 //if (bd_type_name.Equals("USMH"))            //Pending : optimise it use bd_type id
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside Switch case 1.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-                            //Final_USMH_Time = result.TimeOfDay;
-                            if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        //when SMB is empty (for Gundlupet)
-                                        SolarDevice.USMH_5 += Final_Time;
-                                        SolarDevice.USMH += Final_Time;
-
-
-                                        SolarDevice.USMH_lostPOA += poa;
-
-                                    }
-                                    else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        SolarDevice.USMH_4 += Final_Time;
-                                        SolarDevice.USMH += Final_Time;
-
-                                        SolarDevice.USMH_lostPOA += poa;
-                                    }
-                                }
-                                //pending : SMB can be null
-
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
-                                    {
-                                        SolarDevice.USMH_3 += Final_Time;
-                                        SolarDevice.USMH += Final_Time;
-
-
-                                        SolarDevice.USMH_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
-                                    {
-                                        SolarDevice.USMH_2 += Final_Time;
-                                        SolarDevice.USMH += Final_Time;
-
-
-                                        SolarDevice.USMH_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr)
-                                    {
-                                        SolarDevice.USMH_1 += Final_Time;
-                                        SolarDevice.USMH += Final_Time;
-
-
-                                        SolarDevice.USMH_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                //pending : error handling
-                            }
-
-                            //result = Convert.ToDateTime(totalTime.ToString());
-                            //Final_USMH_Time = result.TimeOfDay;
-                            break;
-
-                        case 2:                 //else if (bd_type_name.Equals("SMH"))              
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 2.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
-                            if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        //when SMB is empty (for Gundlupet)
-                                        SolarDevice.SMH_5 += Final_Time;
-                                        SolarDevice.SMH += Final_Time;
-
-                                        SolarDevice.SMH_lostPOA += poa;
-                                    }
-                                    else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        SolarDevice.SMH_4 += Final_Time;
-                                        SolarDevice.SMH += Final_Time;
-
-
-                                        SolarDevice.SMH_lostPOA += poa;
-                                    }
-                                }
-                                //pending : SMB can be null
-
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
-                                    {
-                                        SolarDevice.SMH_3 += Final_Time;
-                                        SolarDevice.SMH += Final_Time;
-
-
-                                        SolarDevice.SMH_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
-                                    {
-                                        SolarDevice.SMH_2 += Final_Time;
-                                        SolarDevice.SMH += Final_Time;
-
-
-                                        SolarDevice.SMH_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr)
-                                    {
-                                        SolarDevice.SMH_1 += Final_Time;
-                                        SolarDevice.SMH += Final_Time;
-
-
-
-                                        SolarDevice.SMH_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                //pending : error handling
-                            }
-                            break;
-
-                        case 3:  //("IGBD"))                
-                            /*string ext_bd = sBreakdown.ext_bd;
-                            if (ext_db != "IGBD")
-                            {
-                                throw new Exception("EX_BD " + ext_bd + " shoudl be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
-                            }*/
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 3 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
-                            if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        //when SMB is empty (for Gundlupet)
-                                        SolarDevice.IGBD_6 += Final_Time;
-                                        SolarDevice.IGBD += Final_Time;
-
-
-                                        SolarDevice.IGBD_lostPOA += poa;
-                                    }
-                                    else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        SolarDevice.IGBD_5 += Final_Time;
-                                        SolarDevice.IGBD += Final_Time;
-
-
-                                        SolarDevice.IGBD_lostPOA += poa;
-                                    }
-                                }
-                                //pending : SMB can be null
-
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
-                                    {
-                                        SolarDevice.IGBD_4 += Final_Time;
-                                        SolarDevice.IGBD += Final_Time;
-
-
-                                        SolarDevice.IGBD_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
-                                    {
-                                        SolarDevice.IGBD_3 += Final_Time;
-                                        SolarDevice.IGBD += Final_Time;
-
-
-
-                                        SolarDevice.IGBD_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr)
-                                    {
-                                        SolarDevice.IGBD_2 += Final_Time;
-                                        SolarDevice.IGBD += Final_Time;
-
-
-                                        SolarDevice.IGBD_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.igbd) && sBreakdown.igbd != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.ig == sBreakdown.igbd)
-                                    {
-                                        SolarDevice.IGBD_1 += Final_Time;
-                                        SolarDevice.IGBD += Final_Time;
-
-
-                                        SolarDevice.IGBD_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            //else if (!string.IsNullOrEmpty(sBreakdown.igbd) && sBreakdown.igbd != "Nil")
-                            //{
-                            //    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                            //    {
-                            //        if (SolarDevice.ig == sBreakdown.igbd)
-                            //        {
-                            //            SolarDevice.IGBD_1 += Final_Time;
-                            //            SolarDevice.IGBD += Final_Time;
-
-
-                            //            SolarDevice.IGBD_lostPOA += poa;
-                            //        }
-                            //    }
-                            //}
-                            else
-                            {
-                                //pending : error handling
-                            }
-                            break;
-
-                        case 4:     //("EGBD"))                
-                            //Final_EGBD_Time = result.TimeOfDay;
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 4 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
-                            string ext_bd = sBreakdown.ext_bd;
-                            if (ext_bd != "EGBD")
-                            {
-                                throw new Exception("EX_BD " + ext_bd + " should be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
-                            }
-                            if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    //SolarDevice.total_strings
-                                    if (SolarDevice.icr == sBreakdown.icr)
-                                    {
-                                        SolarDevice.EGBD_2 += Final_Time;
-                                        SolarDevice.EGBD += Final_Time;
-
-
-                                        SolarDevice.EGBD_lostPOA += poa;
-                                    }
-                                }
-                                //pending : SMB can be null
-
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.ext_bd) && sBreakdown.ext_bd != "Nil") //SITE SHUT
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    //if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
-                                    {
-                                        SolarDevice.EGBD_1 += Final_Time;
-                                        SolarDevice.EGBD += Final_Time;
-
-                                        //siteShutdownEGBDLoss += poa * SolarDevice.capacity;
-
-                                        SolarDevice.EGBD_lostPOA += poa;
-                                    }
-                                }
-                            }
-
-                            break;
-
-                        case 5:                 //("Load Shedding"))                
-                            //Final_LoadShedding_Time = result.TimeOfDay;
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 5 .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " ");
-
-                            ext_bd = sBreakdown.ext_bd;
-                            if (ext_bd != "EGBD")
-                            {
-                                throw new Exception("EX_BD " + ext_bd + " shoudl be EGBD for BD_TYPE " + bd_type_name + " For ICR " + sBreakdown.icr + "/" + sBreakdown.inv + " for date " + fromDate);
-                            }
-                            if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        //when SMB is empty (for Gundlupet)
-                                        SolarDevice.IGBD_6 += Final_Time;
-                                        SolarDevice.IGBD += Final_Time;
-
-
-                                        SolarDevice.IGBD_lostPOA += poa;
-                                    }
-                                    else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        SolarDevice.LS_4 += Final_Time;
-                                        SolarDevice.LS += Final_Time;
-
-
-                                        SolarDevice.LS_lostPOA += poa;
-                                    }
-                                }
-                                //pending : SMB can be null
-
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
-                                    {
-                                        SolarDevice.LS_3 += Final_Time;
-                                        SolarDevice.LS += Final_Time;
-
-
-                                        SolarDevice.LS_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
-                                    {
-                                        SolarDevice.LS_2 += Final_Time;
-                                        SolarDevice.LS += Final_Time;
-
-
-                                        SolarDevice.LS_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr)
-                                    {
-                                        SolarDevice.LS_1 += Final_Time;
-                                        SolarDevice.LS += Final_Time;
-
-
-
-                                        SolarDevice.LS_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                //pending : error handling
-                            }
-
-                            //result = Convert.ToDateTime(totalTime.ToString());
-                            //Final_USMH_Time = result.TimeOfDay;
-                            break;
-
-                        case 6:                 //("Others Hour"))                
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 6.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
-                            if (!string.IsNullOrEmpty(sBreakdown.strings) && sBreakdown.strings != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && sBreakdown.smb == "Nil" && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        //when SMB is empty (for Gundlupet)
-                                        SolarDevice.OthersHour_5 += Final_Time;
-                                        SolarDevice.OthersHour += Final_Time;
-
-                                        SolarDevice.OthersHour_lostPOA += poa;
-
-                                    }
-                                    else if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb && SolarDevice.strings == sBreakdown.strings)
-                                    {
-                                        SolarDevice.OthersHour_4 += Final_Time;
-                                        SolarDevice.OthersHour += Final_Time;
-
-                                        SolarDevice.OthersHour_lostPOA += poa;
-                                    }
-                                }
-                                //pending : SMB can be null
-
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.smb) && sBreakdown.smb != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
-                                    {
-                                        SolarDevice.OthersHour_3 += Final_Time;
-                                        SolarDevice.OthersHour += Final_Time;
-
-
-                                        SolarDevice.OthersHour_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv)
-                                    {
-                                        SolarDevice.OthersHour_2 += Final_Time;
-                                        SolarDevice.OthersHour += Final_Time;
-
-
-                                        SolarDevice.OthersHour_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.icr) && sBreakdown.icr != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    if (SolarDevice.icr == sBreakdown.icr)
-                                    {
-                                        SolarDevice.OthersHour_1 += Final_Time;
-                                        SolarDevice.OthersHour += Final_Time;
-
-
-                                        SolarDevice.OthersHour_lostPOA += poa;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                //pending : error handling
-                            }
-                            break;
-
-                        case 7:                 //if (bd_type_name.Equals("LULL"))                
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch case 7.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
-                            if (!string.IsNullOrEmpty(sBreakdown.inv) && sBreakdown.inv != "Nil")
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    //SolarDevice.total_strings
-                                    if (SolarDevice.icr == sBreakdown.icr)
-                                    {
-                                        SolarDevice.LullHrs_2 += Final_Time;
-                                        SolarDevice.LullHrs += Final_Time;
-
-
-                                        SolarDevice.LullHrs_lostPOA += poa;
-                                    }
-                                }
-                                //pending : SMB can be null
-
-                            }
-                            else if (!string.IsNullOrEmpty(sBreakdown.ext_bd) && sBreakdown.ext_bd != "Nil") //SITE SHUT
-
-                            {
-                                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                                {
-                                    //if (SolarDevice.icr == sBreakdown.icr && SolarDevice.inv == sBreakdown.inv && SolarDevice.smb == sBreakdown.smb)
-                                    {
-                                        SolarDevice.LullHrs_1 += Final_Time;
-                                        SolarDevice.LullHrs += Final_Time;
-
-                                        //  siteShutdownLullLoss += poa * SolarDevice.capacity;
-
-                                        SolarDevice.LullHrs_lostPOA += poa;
-
-                                    }
-                                }
-                            }
-
-                            break;
-
-                        default:
-                            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside switch default case .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-
-                            //Pending : error reporting
-                            throw new Exception("Unsupported BD_TYPE " + bd_type_id + " For WTG " + sCurrentInv + " for date " + fromDate);
-                            break;
-
+                        //filter += "(date >= '" + fromDate + "'  and date<= '" + toDate + "')";
+                        filter += " AND date = '" + fromDate + "'";
+                        chkfilter = 1;
                     }
 
-                } // end of foreach
-                  //double siteShutdownEGBDLossPerString = siteShutdownEGBDLoss / _SolarLocationMaster_Calc.Count;
-                  //double siteShutdownLullLossPerString = siteShutdownLullLoss / _SolarLocationMaster_Calc.Count;
-                  //Process BREADOWN UPDATE data
-                int stringCount = 0;
-                iBreakdownCount = 0;
-                qry = @"SELECT * FROM uploading_file_generation_solar as t1 ";
-                iGenerationCount = 0;
-                filter = "";
-                chkfilter = 0;
-                filter = "" + site_id;
-                if (!string.IsNullOrEmpty(fromDate) && fromDate != "All")
-                {
-                    //filter += "(date >= '" + fromDate + "'  and date<= '" + toDate + "')";
-                    filter += " AND date = '" + fromDate + "'";
-                    chkfilter = 1;
-                }
-
-                if (!string.IsNullOrEmpty(filter))
-                {
-                    qry += " where  site_id = " + filter;
-                }
-                qry += "  group by inverter";
-                bProcessGen = false;
-                double FinalCapacity = 0;
-                string qryTarget = "select pr from monthly_target_kpi_solar where site_id = " + site_id + " and month_no = month('" + fromDate + "') and year = year('" + fromDate + "') ";
-                List<SolarMonthlyTargetKPI> _SolarPRTarget = new List<SolarMonthlyTargetKPI>();
-                try
-                {
-                    _SolarPRTarget = await Context.GetData<SolarMonthlyTargetKPI>(qryTarget).ConfigureAwait(false);
-                }
-                catch(Exception e)
-                {
-                    string msg = "Exception while fetching records from monthly_target_kpi_solar table, due to : " + e.ToString();
-                    API_ErrorLog(msg);
-                }
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : received data in solarPRTarget list .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-                int index4 = 0;
-                double prTarget = 0;
-                foreach (SolarMonthlyTargetKPI pr in _SolarPRTarget)
-                {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach  solarPRTarget.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index4 + " / " + _SiteFormulas.Count);
-                    index4++;
-
-                    prTarget = pr.PR;
-                    break;
-                }
-                //List<SolarDailyGenSummary> _SolarDailyUploadGen = await Context.GetData<SolarDailyGenSummary>(qry).ConfigureAwait(false);
-                //foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                //for each solar generation device, get the breakdown data
-                sLastInv = "";
-                sLastICR_INV = "";
-                int index5 = 0;
-                foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
-                {
-                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach solarLocationMaster_Calc .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index5 + " / " + _SiteFormulas.Count);
-                    index5++;
-
-                    iBreakdownCount++;
-                    bProcessGen = true;
-                    TimeSpan Get_Time;
-                    sCurrentInv = SolarDevice.icr + "/" + SolarDevice.inv;
-                    sCurrentICR_INV = SolarDevice.icr_inv;
-
-                    //                    string sDeviceICR = SolarDevice.icr;
-                    //                    string sDeviceINV = SolarDevice.inv;
-
-                    if (iBreakdownCount == 1)
+                    if (!string.IsNullOrEmpty(filter))
                     {
-                        sLastICR_INV = sCurrentICR_INV;
+                        qry += " where  site_id = " + filter;
                     }
-                    //if (sLastICR_INV != sCurrentICR_INV)
-                    //{
-                    if (sLastICR_INV != sCurrentICR_INV || iBreakdownCount == _SolarLocationMaster_Calc.Count)
+                    qry += "  group by inverter";
+                    bProcessGen = false;
+                    double FinalCapacity = 0;
+                    string qryTarget = "select pr from monthly_target_kpi_solar where site_id = " + site_id + " and month_no = month('" + fromDate + "') and year = year('" + fromDate + "') ";
+                    List<SolarMonthlyTargetKPI> _SolarPRTarget = new List<SolarMonthlyTargetKPI>();
+                    try
                     {
-                        //for last
-                        if (iBreakdownCount == _SolarLocationMaster_Calc.Count)
+                        _SolarPRTarget = await Context.GetData<SolarMonthlyTargetKPI>(qryTarget).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while fetching records from monthly_target_kpi_solar table, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                    }
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : received data in solarPRTarget list .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+                    int index4 = 0;
+                    double prTarget = 0;
+                    foreach (SolarMonthlyTargetKPI pr in _SolarPRTarget)
+                    {
+                        API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach  solarPRTarget.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index4 + " / " + _SiteFormulas.Count);
+                        index4++;
+
+                        prTarget = pr.PR;
+                        break;
+                    }
+                    //List<SolarDailyGenSummary> _SolarDailyUploadGen = await Context.GetData<SolarDailyGenSummary>(qry).ConfigureAwait(false);
+                    //foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                    //for each solar generation device, get the breakdown data
+                    sLastInv = "";
+                    sLastICR_INV = "";
+                    int index5 = 0;
+                    foreach (SolarLocationMaster_Calc SolarDevice in _SolarLocationMaster_Calc)
+                    {
+                        API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Inside foreach solarLocationMaster_Calc .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " Iteration/Count :" + index5 + " / " + _SiteFormulas.Count);
+                        index5++;
+
+                        iBreakdownCount++;
+                        bProcessGen = true;
+                        TimeSpan Get_Time;
+                        sCurrentInv = SolarDevice.icr + "/" + SolarDevice.inv;
+                        sCurrentICR_INV = SolarDevice.icr_inv;
+
+                        //                    string sDeviceICR = SolarDevice.icr;
+                        //                    string sDeviceINV = SolarDevice.inv;
+
+                        if (iBreakdownCount == 1)
                         {
                             sLastICR_INV = sCurrentICR_INV;
-                            stringCount++;
-                            Final_USMH_Time += SolarDevice.USMH;
-                            Final_USMH_Loss += SolarDevice.USMH_lostPOA * SolarDevice.capacity * prTarget / 100; ;
-
-                            Final_SMH_Time += SolarDevice.SMH;
-                            Final_SMH_Loss += SolarDevice.SMH_lostPOA * SolarDevice.capacity * prTarget / 100;
-
-
-                            Final_IGBD_Time += SolarDevice.IGBD;
-                            Final_IGBD_Loss += SolarDevice.IGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
-
-                            Final_EGBD_Time += SolarDevice.EGBD;
-                            Final_EGBD_Loss += SolarDevice.EGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
-
-                            Final_LoadShedding_Time += SolarDevice.LS;
-                            Final_LS_Loss += SolarDevice.LS_lostPOA * SolarDevice.capacity * prTarget / 100;
-
-                            Final_LULL_Time += SolarDevice.LullHrs;
-                            Final_LULL_Loss += SolarDevice.LullHrs_lostPOA * SolarDevice.capacity * prTarget / 100;
-
-                            Final_OthersHour_Time += SolarDevice.OthersHour;
-                            Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity * prTarget / 100;
-
-                            //double stringMA += (12 - SolarDevice.USMH.TotalSeconds/3600 - SolarDevice.SMH.TotalSeconds/3600) / 12;
-                            InvLevelMA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
-                            //InvLevelMACont += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Contractual_Formula), 6);
-                            InvLevelIGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, IGA_Formula), 6);
-                            InvLevelEGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
-                            InvLevelEGA_B += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0, EGA_Formula), 6);
-                            InvLevelEGA_C += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
-                            //PENDING:
-
-                            FinalCapacity += SolarDevice.capacity;
                         }
-                        TimeSpan totalDownTime = Final_USMH_Time + Final_SMH_Time + Final_IGBD_Time + Final_EGBD_Time + Final_LoadShedding_Time + Final_LULL_Time + Final_OthersHour_Time;
-                        totalLoss = Final_USMH_Loss + Final_SMH_Loss + Final_IGBD_Loss + Final_EGBD_Loss + Final_LS_Loss + Final_LULL_Loss + Final_OthersHour_Loss;
-                        double totalDownTimeDouble = totalDownTime.TotalSeconds / 3600;
-                        if (totalDownTimeDouble > 0)
+                        //if (sLastICR_INV != sCurrentICR_INV)
+                        //{
+                        if (sLastICR_INV != sCurrentICR_INV || iBreakdownCount == _SolarLocationMaster_Calc.Count)
                         {
-                            double FinalProductionHours = (12 * stringCount - totalDownTimeDouble) / stringCount;
-                            double USMH_Hr = (Final_USMH_Time.TotalSeconds / 3600) / stringCount;
-                            double SMH_Hr = (Final_SMH_Time.TotalSeconds / 3600) / stringCount;
-                            double IGBD_Hr = (Final_IGBD_Time.TotalSeconds / 3600) / stringCount;
-                            double EGBD_Hr = (Final_EGBD_Time.TotalSeconds / 3600) / stringCount;
-                            double LS_Hr = (Final_LoadShedding_Time.TotalSeconds / 3600) / stringCount;
-                            double Lull_hr = (Final_LULL_Time.TotalSeconds / 3600) / stringCount;
-                            double O_hr = (Final_OthersHour_Time.TotalSeconds / 3600) / stringCount;
+                            //for last
+                            if (iBreakdownCount == _SolarLocationMaster_Calc.Count)
+                            {
+                                sLastICR_INV = sCurrentICR_INV;
+                                stringCount++;
+                                Final_USMH_Time += SolarDevice.USMH;
+                                Final_USMH_Loss += SolarDevice.USMH_lostPOA * SolarDevice.capacity * prTarget / 100; ;
 
-                            double MA = InvLevelMA / stringCount;
-                            double IGA = InvLevelIGA / stringCount;
-                            double EGA = InvLevelEGA / stringCount;
-                            double EGAB = InvLevelEGA_B / stringCount;
-                            double EGAC = InvLevelEGA_C / stringCount;
+                                Final_SMH_Time += SolarDevice.SMH;
+                                Final_SMH_Loss += SolarDevice.SMH_lostPOA * SolarDevice.capacity * prTarget / 100;
 
 
-                            TimeSpan availableHours = new TimeSpan(12 * stringCount, 0, 0);
-                            double availableHoursDouble = availableHours.TotalSeconds / 3600;
-                            availableHoursDouble = availableHoursDouble - totalDownTimeDouble;
-                            await CalculateAndUpdatePLFandKWHAfterLineLossSolar(site_id, fromDate, fromDate, FinalCapacity);
+                                Final_IGBD_Time += SolarDevice.IGBD;
+                                Final_IGBD_Loss += SolarDevice.IGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
 
-                            await UpdateSolarKPIs(site_id, sLastICR_INV, totalDownTimeDouble, availableHoursDouble,
-                             Final_USMH_Loss, Final_SMH_Loss, Final_IGBD_Loss, Final_EGBD_Loss, Final_LS_Loss, Final_LULL_Loss,
-                             Final_OthersHour_Loss, totalLoss, fromDate, USMH_Hr, SMH_Hr, IGBD_Hr, EGBD_Hr, LS_Hr, Lull_hr, O_hr, MA, IGA, EGA, EGAB, EGAC, FinalProductionHours, prTarget);
+                                Final_EGBD_Time += SolarDevice.EGBD;
+                                Final_EGBD_Loss += SolarDevice.EGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
 
+                                Final_LoadShedding_Time += SolarDevice.LS;
+                                Final_LS_Loss += SolarDevice.LS_lostPOA * SolarDevice.capacity * prTarget / 100;
+
+                                Final_LULL_Time += SolarDevice.LullHrs;
+                                Final_LULL_Loss += SolarDevice.LullHrs_lostPOA * SolarDevice.capacity * prTarget / 100;
+
+                                Final_OthersHour_Time += SolarDevice.OthersHour;
+                                Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity * prTarget / 100;
+
+                                //double stringMA += (12 - SolarDevice.USMH.TotalSeconds/3600 - SolarDevice.SMH.TotalSeconds/3600) / 12;
+                                InvLevelMA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
+                                //InvLevelMACont += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Contractual_Formula), 6);
+                                InvLevelIGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, IGA_Formula), 6);
+                                InvLevelEGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+                                InvLevelEGA_B += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0, EGA_Formula), 6);
+                                InvLevelEGA_C += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+                                //PENDING:
+
+                                FinalCapacity += SolarDevice.capacity;
+                            }
+                            TimeSpan totalDownTime = Final_USMH_Time + Final_SMH_Time + Final_IGBD_Time + Final_EGBD_Time + Final_LoadShedding_Time + Final_LULL_Time + Final_OthersHour_Time;
+                            totalLoss = Final_USMH_Loss + Final_SMH_Loss + Final_IGBD_Loss + Final_EGBD_Loss + Final_LS_Loss + Final_LULL_Loss + Final_OthersHour_Loss;
+                            double totalDownTimeDouble = totalDownTime.TotalSeconds / 3600;
+                            if (totalDownTimeDouble > 0)
+                            {
+                                double FinalProductionHours = (12 * stringCount - totalDownTimeDouble) / stringCount;
+                                double USMH_Hr = (Final_USMH_Time.TotalSeconds / 3600) / stringCount;
+                                double SMH_Hr = (Final_SMH_Time.TotalSeconds / 3600) / stringCount;
+                                double IGBD_Hr = (Final_IGBD_Time.TotalSeconds / 3600) / stringCount;
+                                double EGBD_Hr = (Final_EGBD_Time.TotalSeconds / 3600) / stringCount;
+                                double LS_Hr = (Final_LoadShedding_Time.TotalSeconds / 3600) / stringCount;
+                                double Lull_hr = (Final_LULL_Time.TotalSeconds / 3600) / stringCount;
+                                double O_hr = (Final_OthersHour_Time.TotalSeconds / 3600) / stringCount;
+
+                                double MA = InvLevelMA / stringCount;
+                                double IGA = InvLevelIGA / stringCount;
+                                double EGA = InvLevelEGA / stringCount;
+                                double EGAB = InvLevelEGA_B / stringCount;
+                                double EGAC = InvLevelEGA_C / stringCount;
+
+
+                                TimeSpan availableHours = new TimeSpan(12 * stringCount, 0, 0);
+                                double availableHoursDouble = availableHours.TotalSeconds / 3600;
+                                availableHoursDouble = availableHoursDouble - totalDownTimeDouble;
+                                await CalculateAndUpdatePLFandKWHAfterLineLossSolar(site_id, fromDate, fromDate, FinalCapacity);
+
+                                await UpdateSolarKPIs(site_id, sLastICR_INV, totalDownTimeDouble, availableHoursDouble,
+                                 Final_USMH_Loss, Final_SMH_Loss, Final_IGBD_Loss, Final_EGBD_Loss, Final_LS_Loss, Final_LULL_Loss,
+                                 Final_OthersHour_Loss, totalLoss, fromDate, USMH_Hr, SMH_Hr, IGBD_Hr, EGBD_Hr, LS_Hr, Lull_hr, O_hr, MA, IGA, EGA, EGAB, EGAC, FinalProductionHours, prTarget);
+
+                            }
+                            FinalCapacity = 0;
+                            Final_USMH_Time = TimeSpan.Zero;
+                            Final_SMH_Time = TimeSpan.Zero;
+                            Final_IGBD_Time = TimeSpan.Zero;
+                            Final_EGBD_Time = TimeSpan.Zero;
+                            Final_LoadShedding_Time = TimeSpan.Zero;
+                            Final_LULL_Time = TimeSpan.Zero;
+                            Final_OthersHour_Time = TimeSpan.Zero;
+
+                            InvLevelMA = 0;
+                            InvLevelIGA = 0;
+                            InvLevelEGA = 0;
+                            InvLevelEGA_B = 0;
+                            InvLevelEGA_C = 0;
+
+                            Final_USMH_Loss = 0;
+                            Final_SMH_Loss = 0;
+                            Final_IGBD_Loss = 0;
+                            Final_EGBD_Loss = 0;
+                            Final_LS_Loss = 0;
+                            Final_LULL_Loss = 0;
+                            Final_OthersHour_Loss = 0;
+
+                            stringCount = 0;
+                            totalLoss = 0;
+                            sLastInv = sCurrentInv;
+                            sLastICR_INV = sCurrentICR_INV;
                         }
-                        FinalCapacity = 0;
-                        Final_USMH_Time = TimeSpan.Zero;
-                        Final_SMH_Time = TimeSpan.Zero;
-                        Final_IGBD_Time = TimeSpan.Zero;
-                        Final_EGBD_Time = TimeSpan.Zero;
-                        Final_LoadShedding_Time = TimeSpan.Zero;
-                        Final_LULL_Time = TimeSpan.Zero;
-                        Final_OthersHour_Time = TimeSpan.Zero;
+                        //consolidating all string breakdown time for this inverter
+                        //Final_Production_Time += SolarDevice.Production; //pending
+                        /*stringCount++;
+                        FinalCapacity += SolarDevice.capacity;
+                        Final_USMH_Time += SolarDevice.USMH;
+                        Final_USMH_Loss += SolarDevice.USMH_lostPOA * SolarDevice.capacity;
 
-                        InvLevelMA = 0;
-                        InvLevelIGA = 0;
-                        InvLevelEGA = 0;
-                        InvLevelEGA_B = 0;
-                        InvLevelEGA_C = 0;
-
-                        Final_USMH_Loss = 0;
-                        Final_SMH_Loss = 0;
-                        Final_IGBD_Loss = 0;
-                        Final_EGBD_Loss = 0;
-                        Final_LS_Loss = 0;
-                        Final_LULL_Loss = 0;
-                        Final_OthersHour_Loss = 0;
-
-                        stringCount = 0;
-                        totalLoss = 0;
-                        sLastInv = sCurrentInv;
-                        sLastICR_INV = sCurrentICR_INV;
-                    }
-                    //consolidating all string breakdown time for this inverter
-                    //Final_Production_Time += SolarDevice.Production; //pending
-                    /*stringCount++;
-                    FinalCapacity += SolarDevice.capacity;
-                    Final_USMH_Time += SolarDevice.USMH;
-                    Final_USMH_Loss += SolarDevice.USMH_lostPOA * SolarDevice.capacity;
-
-                    Final_SMH_Time += SolarDevice.SMH;
-                    Final_SMH_Loss += SolarDevice.SMH_lostPOA * SolarDevice.capacity;
+                        Final_SMH_Time += SolarDevice.SMH;
+                        Final_SMH_Loss += SolarDevice.SMH_lostPOA * SolarDevice.capacity;
 
 
-                    Final_IGBD_Time += SolarDevice.IGBD;
-                    Final_IGBD_Loss += SolarDevice.IGBD_lostPOA * SolarDevice.capacity;
+                        Final_IGBD_Time += SolarDevice.IGBD;
+                        Final_IGBD_Loss += SolarDevice.IGBD_lostPOA * SolarDevice.capacity;
 
-                    Final_EGBD_Time += SolarDevice.EGBD;
-                    Final_EGBD_Loss += SolarDevice.EGBD_lostPOA * SolarDevice.capacity;
+                        Final_EGBD_Time += SolarDevice.EGBD;
+                        Final_EGBD_Loss += SolarDevice.EGBD_lostPOA * SolarDevice.capacity;
 
-                    Final_LoadShedding_Time += SolarDevice.LS;
-                    Final_LS_Loss += SolarDevice.LS_lostPOA * SolarDevice.capacity;
+                        Final_LoadShedding_Time += SolarDevice.LS;
+                        Final_LS_Loss += SolarDevice.LS_lostPOA * SolarDevice.capacity;
 
-                    Final_LULL_Time += SolarDevice.LullHrs;
-                    Final_LULL_Loss += SolarDevice.LullHrs_lostPOA * SolarDevice.capacity;
+                        Final_LULL_Time += SolarDevice.LullHrs;
+                        Final_LULL_Loss += SolarDevice.LullHrs_lostPOA * SolarDevice.capacity;
 
-                    Final_OthersHour_Time += SolarDevice.OthersHour;
-                    Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity;*/
+                        Final_OthersHour_Time += SolarDevice.OthersHour;
+                        Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity;*/
 
-                    stringCount++;
-                    Final_USMH_Time += SolarDevice.USMH;
-                    Final_USMH_Loss += SolarDevice.USMH_lostPOA * SolarDevice.capacity * prTarget / 100; 
+                        stringCount++;
+                        Final_USMH_Time += SolarDevice.USMH;
+                        Final_USMH_Loss += SolarDevice.USMH_lostPOA * SolarDevice.capacity * prTarget / 100;
 
-                    Final_SMH_Time += SolarDevice.SMH;
-                    Final_SMH_Loss += SolarDevice.SMH_lostPOA * SolarDevice.capacity * prTarget / 100;
+                        Final_SMH_Time += SolarDevice.SMH;
+                        Final_SMH_Loss += SolarDevice.SMH_lostPOA * SolarDevice.capacity * prTarget / 100;
 
 
-                    Final_IGBD_Time += SolarDevice.IGBD;
-                    Final_IGBD_Loss += SolarDevice.IGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
+                        Final_IGBD_Time += SolarDevice.IGBD;
+                        Final_IGBD_Loss += SolarDevice.IGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
 
-                    Final_EGBD_Time += SolarDevice.EGBD;
-                    Final_EGBD_Loss += SolarDevice.EGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
+                        Final_EGBD_Time += SolarDevice.EGBD;
+                        Final_EGBD_Loss += SolarDevice.EGBD_lostPOA * SolarDevice.capacity * prTarget / 100;
 
-                    Final_LoadShedding_Time += SolarDevice.LS;
-                    Final_LS_Loss += SolarDevice.LS_lostPOA * SolarDevice.capacity * prTarget / 100;
+                        Final_LoadShedding_Time += SolarDevice.LS;
+                        Final_LS_Loss += SolarDevice.LS_lostPOA * SolarDevice.capacity * prTarget / 100;
 
-                    Final_LULL_Time += SolarDevice.LullHrs;
-                    Final_LULL_Loss += SolarDevice.LullHrs_lostPOA * SolarDevice.capacity * prTarget / 100;
+                        Final_LULL_Time += SolarDevice.LullHrs;
+                        Final_LULL_Loss += SolarDevice.LullHrs_lostPOA * SolarDevice.capacity * prTarget / 100;
 
-                    Final_OthersHour_Time += SolarDevice.OthersHour;
-                    Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity * prTarget / 100;
+                        Final_OthersHour_Time += SolarDevice.OthersHour;
+                        Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity * prTarget / 100;
 
-                    //double stringMA += (12 - SolarDevice.USMH.TotalSeconds/3600 - SolarDevice.SMH.TotalSeconds/3600) / 12;
-                    InvLevelMA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
-                    InvLevelIGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, IGA_Formula), 6);
-                    InvLevelEGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
-                    InvLevelEGA_B += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0 , EGA_Formula), 6);
-                    InvLevelEGA_C += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0 , SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
-                    //PENDING:
-                    double Final_POA = SolarDevice.lostPOA;
-                    // Consolidate lostPOA and consolidate Capacity
-                    //Expected kwh = capacity X POA(fullday)
-                    //Loss = capacity X loassPOA
-                    //totalLoss += SolarDevice.capacity * Final_POA;
-                    //Actual kwh = Expected_kwh - loss
+                        //double stringMA += (12 - SolarDevice.USMH.TotalSeconds/3600 - SolarDevice.SMH.TotalSeconds/3600) / 12;
+                        InvLevelMA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
+                        InvLevelIGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, IGA_Formula), 6);
+                        InvLevelEGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+                        InvLevelEGA_B += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0, EGA_Formula), 6);
+                        InvLevelEGA_C += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+                        //PENDING:
+                        double Final_POA = SolarDevice.lostPOA;
+                        // Consolidate lostPOA and consolidate Capacity
+                        //Expected kwh = capacity X POA(fullday)
+                        //Loss = capacity X loassPOA
+                        //totalLoss += SolarDevice.capacity * Final_POA;
+                        //Actual kwh = Expected_kwh - loss
 
-                }//end of for each
+                    }//end of for each
 
-                //                if(bProcessGen)
-                //                    CalculateAndUpdateSolarKPIs(site_id, fromDate, sLastInv, solarGeneration, Final_Production_Time, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, Final_LullHour_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
-                //Pending : validation of Total time to be 24
-                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Last statement of this function.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-                response = true;
+                    //                if(bProcessGen)
+                    //                    CalculateAndUpdateSolarKPIs(site_id, fromDate, sLastInv, solarGeneration, Final_Production_Time, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, Final_LullHour_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
+                    //Pending : validation of Total time to be 24
+                    API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Last statement of this function.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
+                    response = true;
+                }
+                catch (Exception ex)
+                {
+                    API_ErrorLog("CalculateDailySolarKPI function : Exception caught.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + ", exception :" + ex.ToString());
+
+                    string strEx = ex.Message;
+                    response = false;
+                    //pending : log error
+                    throw new Exception(strEx);
+                }
+                API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : returning response.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "" + response);
+                finalRes = 0;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                API_ErrorLog("CalculateDailySolarKPI function : Exception caught.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + ", exception :" + ex.ToString() );
-
-                string strEx = ex.Message;
-                response = false;
-                //pending : log error
-                throw new Exception(strEx);
+                string msg = "Exception in CalculateDailySolarKPI function, due to : " + e.ToString();
+                API_ErrorLog(msg);
+                errorCodes += finalRes.ToString() + ",";
+                return errorCodes;
             }
-            API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : returning response.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "" + response);
-
-            return response;
+            errorCodes += finalRes.ToString() + ",";
+            return errorCodes;
         }
+
+
         private async Task<bool> UpdateSolarKPIs(int site_id, string inverter, double downHours, double availableHours,
             double Final_USMH_Loss, double Final_SMH_Loss, double Final_IGBD_Loss, double Final_EGBD_Loss, double Final_LS_Loss, double Final_LULL_Loss,
             double Final_OthersHour_Loss, double totalLoss, string fromDate, double USMH_Hr, double SMH_Hr, double IGBD_Hr, double EGBD_Hr, double LS_Hr, double Lull_Hr, double O_Hr,
@@ -12912,7 +13018,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     string dateDoc = Convert.ToString(unit.date);
                     //string date = Convert.ToDateTime(siteData[0].commissioning_date).ToString("yyyy-MM-dd");
-                    bool calculateTrackerLoss = await CalculateTrackerLosses(Convert.ToString(unit.site_id), dateDoc, dateDoc, "log");
+                    int calculateTrackerLoss = await CalculateTrackerLosses(Convert.ToString(unit.site_id), dateDoc, dateDoc, "log");
                     calculateRes += Convert.ToString(calculateTrackerLoss) + ",";
                 }
                 //CalculateTrackerLosses(id, fromDate, toDate, logFileName)
@@ -13470,6 +13576,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     lossLULL_final = lossLULL,
                     lossPCD_final = lossPCD,
                     actual_final = actual_active_power,
+                    loadShedding = loadShedding,
                 };
                 _tmlDataList.Add(finalData);
             }
@@ -13480,13 +13587,24 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return _tmlDataList;
         }
 
-        internal async Task<bool> CalculateTrackerLosses(string site, string fromDate, string toDate, string logFileName)
+        internal async Task<int> CalculateTrackerLosses(string site, string fromDate, string toDate, string logFileName)
         {
+            int finalRes = 11018;
             try
             {
                 string qry1 = "select * from `uploading_file_tracker_loss` where site_id = " + site + " and date between '" + fromDate + "' and '" + toDate + "' ";
                 List<InsertSolarTrackerLoss> data = new List<InsertSolarTrackerLoss>();
-                data = await Context.GetData<InsertSolarTrackerLoss>(qry1).ConfigureAwait(false);
+                try
+                {
+                    data = await Context.GetData<InsertSolarTrackerLoss>(qry1).ConfigureAwait(false);
+                    finalRes++;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while fetching records from tracker loss table in CalculateTrackerLosses function, due to : " + e.ToString();
+                    API_ErrorLog(msg);
+                    return finalRes;
+                }
                 double totalGenLoss = 0;
                 double totalBreakdown_tracker_cap = 0;
                 double totalActualPOA = 0;
@@ -13577,46 +13695,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     totalprTarget += prTarget;
 
                 }
-                /*
-                string findQry = " select * from `uploading_file_tracker_loss` where site_id = " + site+" and date ='"+fromDate+"' ";
-                List<InsertSolarTrackerLoss> data2 = await Context.GetData<InsertSolarTrackerLoss>(findQry).ConfigureAwait(false);
-                if (data2.Count == 0)
-                {
-                    string insertQuery = " insert into `uploading_file_tracker_loss`(date,site_id,tracker_loss,breakdown_tra_capacity,actual_poa,actual_ghi,target_aop_pr) values('" + fromDate + "'," + site + "," + totalGenLoss + ","+ totalBreakdown_tracker_cap + ","+ totalActualPOA + ","+ totalActualGHI + ","+ totalprTarget + ") ";
-                    try
-                    {
-                        int result = await Context.ExecuteNonQry<int>(insertQuery).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        string strEx = ex.ToString();
-                        throw;
-
-                    }
-                }
-                else
-                {
-                    string updQuery = " update `uploading_file_tracker_loss` set tracker_loss = " + totalGenLoss + ", date_of_mod = NOW(), breakdown_tra_capacity = "+ totalBreakdown_tracker_cap  + ", actual_poa = " + totalActualPOA + ", actual_ghi = " + totalActualGHI + ", target_aop_pr = " + totalprTarget + "  where site_id = " + site+" and date = '"+fromDate+"' ";
-                    try
-                    {
-                        int result = await Context.ExecuteNonQry<int>(updQuery).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        string strEx = ex.Message;
-                        API_ErrorLog("Error while updating tracker_loss, breakdown_tar_capacity, actual_poa & actual_gho due to Exception : " + ex.ToString());
-                        throw new Exception("Failed to update tracker_loss, breakdown_tar_capacity, actual_poa & actual_ghi due to Exception : " + strEx);
-
-                    }
-                }
-                */
-                return true;
+                finalRes = 0;
+                return finalRes;
             }
             catch(Exception e)
             {
                 string msg = "Exception while executing CalculateTrackerLosses() function, due to : " + e.ToString();
                 API_ErrorLog(msg);
-                return false;
+                return finalRes;
             }
             
         }
@@ -13757,7 +13843,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<int> getTemperatureCorrectedPR(string site, string fromDate, string toDate)
         {
-            int finalRes = 0;
+            int finalRes = 1105;
 
             List<TemperatureCorrectedPR> returnData = new List<TemperatureCorrectedPR>();
             try
@@ -13778,7 +13864,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryPOA).ConfigureAwait(false);
-                        finalRes = 1;
+                        finalRes++;
                     }
                     catch(Exception e)
                     {
@@ -13802,7 +13888,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qry).ConfigureAwait(false);
                         mod_temp = await Context.GetData<SolarUploadingPyranoMeter1Min>(qry2).ConfigureAwait(false);
-                        finalRes = 2;
+                        finalRes++;
                     }
                     catch (Exception e)
                     {
@@ -13826,7 +13912,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         est1HourData = await Context.GetData<estimated1Hour>(qry3).ConfigureAwait(false);
                         est1HourDataModTemp = await Context.GetData<estimated1Hour>(qry4).ConfigureAwait(false);
-                        finalRes = 3;
+                        finalRes++;
                     }
                     catch (Exception e)
                     {
@@ -13853,7 +13939,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         siteData = await Context.GetData<SolarPerformanceReports1>(qry5).ConfigureAwait(false);
-                        finalRes = 4;
+                        finalRes++;
                     }
                     catch (Exception e)
                     {
@@ -13867,7 +13953,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     try
                     {
                         pvsystdata = await Context.GetData<SolarPowerCalc>(qry6).ConfigureAwait(false);
-                        finalRes = 5;
+                        finalRes = 11010;
                     }
                     catch (Exception e)
                     {
@@ -13890,7 +13976,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     deleteRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
-                    finalRes = 6;
+                    finalRes++;
                 }
                 catch (Exception e)
                 {
@@ -13902,7 +13988,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     insertRes = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
-                    finalRes = 7;
+                    finalRes = 0;
                 }
                 catch (Exception e)
                 {
@@ -13932,7 +14018,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         internal async Task<int> TemperatureCorrectedPRCalc(string site, string fromDate, string toDate)
         {
-            int finalRes = 0;
+            int finalRes = 1102;
             //string fromDay = "";
             //string fromMonth = "";
             //string fromYear = "";
@@ -13945,7 +14031,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 start = Convert.ToDateTime(fromDate);
                 end = Convert.ToDateTime(toDate);
-                finalRes = 1;
+                finalRes++;
             }
             catch(Exception e)
             {
@@ -13973,7 +14059,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
-                    finalRes = 2;
+                    finalRes++;
                 }
                 catch (Exception e)
                 {
@@ -13985,7 +14071,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry1Hour).ConfigureAwait(false);
-                    finalRes = 3;
+                    finalRes = 0;
                 }
                 catch (Exception e)
                 {
@@ -14005,8 +14091,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             return finalRes;
         }
-        internal async Task<List<SolarPowerCalcReturn>> PowerExpected(string site, string fromDate, string toDate, string type, string months, string fy)
+        internal async Task<int> PowerExpected(string site, string fromDate, string toDate, string type, string months, string fy)
         {
+            int finalRes = 11020;
             double Pexpected = 0;
             List<SolarPowerCalcReturn> result = new List<SolarPowerCalcReturn>();
             //Get Loss Factor Constants
@@ -14284,13 +14371,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     obj.Pexpected = YearlyPexp;
                     result.Add(obj);
                 }
-                return result;
+                finalRes = 0;
+                return finalRes;
             }
             catch(Exception e)
             {
                 string msg = "Exception while executing PowerExpected() function, due to : " + e.ToString();
                 API_ErrorLog(msg);
-                return result;
+                return finalRes;
             }
             
         }

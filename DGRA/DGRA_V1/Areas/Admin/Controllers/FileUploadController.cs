@@ -999,6 +999,27 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                     if (response.IsSuccessStatusCode)
                                                     {
                                                         dttt = DateTime.Now;
+                                                        string returnResponse = response.Content.ReadAsStringAsync().Result;
+                                                        returnResponse = returnResponse.TrimEnd(',');
+                                                        if (returnResponse != "0")
+                                                        {
+                                                            string[] errCodes = returnResponse.Split(",");
+                                                            for(int i=0; i < errCodes.Length; i++)
+                                                            {
+                                                                int code = Convert.ToInt32(errCodes[i]);
+                                                                ErrorCode ec = (ErrorCode)code;
+                                                                //retrieve error code from enum and common file.
+                                                                ErrorCodes.ErrorDescriptionMap.TryGetValue(ec, out string errorDescription);
+                                                                if(code != 0)
+                                                                {
+                                                                    m_ErrorLog.SetError("," + errorDescription);
+                                                                }
+                                                                else
+                                                                {
+                                                                    m_ErrorLog.SetInformation("," + errorDescription);
+                                                                }
+                                                            }
+                                                        }
                                                         //InformationLog("CalculateDailySolarKpI function returned successfully to frontend." + dttt);
                                                         m_ErrorLog.SetInformation(",SolarKPI Calculations Updated Successfully:");
                                                         statusCode = (int)response.StatusCode;
