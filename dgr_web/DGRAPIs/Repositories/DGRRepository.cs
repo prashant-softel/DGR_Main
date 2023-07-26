@@ -2191,20 +2191,27 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     tmrFilter += " AND ";
                 }
                 filter += "  (";
+                tmrFilter += "  (";
 
                 string[] spmonth = month.Split(",");
                 string months = "";
 
                 for (int i = 0; i < spmonth.Length; i++)
                 {
-                    if (i > 0) filter += " or ";
+                    if (i > 0)
+                    {
+                        filter += " or ";
+                        tmrFilter += " OR ";
+                    }
                     int monthno = Int32.Parse(spmonth[i]);
                     string year = (Int32.Parse(fy) + 1).ToString();
                     string Qyear = (monthno > 3) ? fy : year;
                     filter += "( month(date) = " + spmonth[i] + " and year(date) = '" + Qyear + "' )";
-                    tmrFilter += "  MONTH(Time_stamp) = " + spmonth[i] + " AND YEAR(Time_stamp) = " + Qyear + "";
+                    tmrFilter += "( MONTH(Time_stamp) = " + spmonth[i] + " AND YEAR(Time_stamp) = " + Qyear + " )";
                 }
                 filter += ") ";
+                tmrFilter += ") ";
+
                 chkfilter = 1;
             }
             else if (!string.IsNullOrEmpty(month))
@@ -2540,7 +2547,6 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     filter += " and ";
                     tmrFilter += " and ";
                 }
-                if (chkfilter == 1) { filter += " and "; }
                 // filter += "t1.site in (" + site + ")";
                 string[] spsite = site.Split("~");
                 filter += "t1.site_id in (";
