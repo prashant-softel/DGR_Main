@@ -5904,28 +5904,28 @@ namespace DGRA_V1.Areas.admin.Controllers
                         }
                         bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
                         string convertedDate = "";
-                        if (isdateEmpty)
-                        {
-                            m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
-                            continue;
-                        }
-                        else
-                        {
-                            string tempDate = Convert.ToString(dr["Date"]);
-                            string[] sepDate = tempDate.Split(' ');
-                            if (sepDate.Length > 0)
-                            {
-                                string[] fDate = sepDate[0].Split('/');
-                                string d = fDate[0];
-                                string m = fDate[1];
-                                string y = fDate[2];
+                        //if (isdateEmpty)
+                        //{
+                        //    m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
+                        //    continue;
+                        //}
+                        //else
+                        //{
+                        //    string tempDate = Convert.ToString(dr["Date"]);
+                        //    string[] sepDate = tempDate.Split(' ');
+                        //    if (sepDate.Length > 0)
+                        //    {
+                        //        string[] fDate = sepDate[0].Split('/');
+                        //        string d = fDate[0];
+                        //        string m = fDate[1];
+                        //        string y = fDate[2];
 
-                                string ymd = y + "-" + m + "-" + d;
-                                convertedDate = ymd + " " + sepDate[1];
-                            }
-                        }
-                        //string tempDate = Convert.ToString(dr["Date"]);
-                        //convertedDate = DateTime.ParseExact(tempDate, "yyyy/MM/dd HH:mm", null).ToString("yyyy-MM-dd HH:mm:ss");
+                        //        string ymd = y + "-" + m + "-" + d;
+                        //        convertedDate = ymd + " " + sepDate[1];
+                        //    }
+                        //}
+                        string tempDate = Convert.ToString(dr["Date"]);
+                        convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
                         //convertedDate = Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
                         addUnit.timestamp = isdateEmpty ? "Nil" : convertedDate;
                         //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
