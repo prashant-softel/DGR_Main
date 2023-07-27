@@ -8116,27 +8116,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int finalRes = 1101;
             string errorCodes = "";
 
-            int tempCorrectedPr = await TemperatureCorrectedPRCalc(site, fromDate, toDate);
-            if (tempCorrectedPr != 0)
-            {
-                errorCodes += tempCorrectedPr.ToString() + ",";
-            }
-            else
-            {
-                finalRes = 1105;
-            }
-
-            int tempCorrectedContinued = await getTemperatureCorrectedPR(site, fromDate, toDate);
-            if(tempCorrectedContinued != 0)
-            {
-                errorCodes += tempCorrectedContinued.ToString() + ",";
-                finalRes = 11011;
-            }
-            else
-            {
-                finalRes = 11011;
-            }
-
             DateTime thisTime = new DateTime();
             thisTime = DateTime.Now;
             API_InformationLog("-------------------------------------------------------------------------------------- ");
@@ -8160,8 +8139,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             TimeSpan Final_LullHour_Time = new TimeSpan();
             TimeSpan Final_Time = new TimeSpan();
 
-
-
             double InvLevelMA = 0;
             double InvLevelIGA = 0;
             double InvLevelEGA = 0;
@@ -8178,7 +8155,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             double totalLoss = 0;
             double FinalCapcity = 0;
-
 
             string MA_Actual_Formula = "";
             string MA_Contractual_Formula = "";
@@ -8212,14 +8188,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     _SiteFormulas = await Context.GetData<SiteFormulas>(qrySiteFormulas).ConfigureAwait(false);
-                    finalRes++;
+                    finalRes++; //1102
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while getting site formulas from wind_site_formulas table in calculateDailySolar function , due to : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1101
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function, retrived site formulas in _SiteFormulas list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index = 0;
@@ -8237,14 +8213,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         EGA_Formula = SiteFormula.EGA; // (string)reader["EGA"];                                                   
                         //break;
                     }
-                    finalRes++;
+                    finalRes++; //1103
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while executing for loop for getting formulas in CalculateDailySolarKPI function, due to : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1102
                 }
 
                 Hashtable acCapacityMap = new Hashtable();
@@ -8254,14 +8230,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     invAC = await Context.GetData<SolarInvAcCapacity>(plantQryACDC).ConfigureAwait(false);
-                    finalRes++;
+                    finalRes++; //1104
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while getting inverter and ac_dc capicity from solar_ac_dc_capicity table in CalculateDailySolarKPI function , due to  : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1103
                 }
                 try
                 {
@@ -8271,14 +8247,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         int acCapacity = (int)Convert.ToInt64(InvAcCap.ac_capacity);
                         acCapacityMap.Add(Inverter, acCapacity);
                     }
-                    finalRes++;
+                    finalRes++; //1105
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while adding inverter AC and Capacity hash table in CalculateDailySolarKPI function, due to : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1104
                 }
 
 
@@ -8289,14 +8265,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     _SolarLocationMaster_Calc = await Context.GetData<SolarLocationMaster_Calc>(qryAllDevices).ConfigureAwait(false);
-                    finalRes++;
+                    finalRes++; //1106
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while getting data from location_master_solar table in CalculateDailySolarKPI function, due to  : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1105
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after getting data in solarLocationMaster_calc list.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
@@ -8311,14 +8287,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     _SolarUploadingPyranoMeter1Min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryGHI_POA).ConfigureAwait(false);
-                    finalRes++;
+                    finalRes++; //1107
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while fetching data from uploading_pyranometer_1_min_solar table in CalculateDailySolarKPI function, due to  : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1106
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : After getting data  in solarUploadingPyranometer1Min list .. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
                 int index1 = 0;
@@ -8332,20 +8308,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         avg_GHI = SolarPyranoMeterData.avg_ghi / 60000;
                         avg_POA = SolarPyranoMeterData.avg_poa / 60000;
                     }
-                    finalRes++;
+                    finalRes++; //1108
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while executing loop of calculating average GHI POA values in CalculateDailySolarKPI function, due to : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1107
                 }
                 //Tracker loss to be uncommented for DGRA_2 ...
                 int calculateTrackerLoss = await CalculateTrackerLosses(site, fromDate, toDate, "log");
                 if (calculateTrackerLoss == 0)
                 {
-                    finalRes = 11020;
+                    //finalRes = 11021;
                 }
                 else
                 {
@@ -8354,7 +8330,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 int powerExpected = await PowerExpected(site, fromDate, fromDate, "Daily", "", "");
                 if (powerExpected == 0)
                 {
-                    finalRes = 11021;
+                    //finalRes = 11022;
                 }
                 else
                 {
@@ -8386,14 +8362,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     _SolarDailyUploadGen = await Context.GetData<SolarDailyGenSummary>(qry).ConfigureAwait(false);
-                    finalRes++;
+                    finalRes++; //1109
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while fetching records from uploading_file_generation_solar table in CalculateSolarKPI function, due to : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1108
                 }
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : after solardailyUploadgen.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
 
@@ -8464,14 +8440,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         FinalCapcity += SolarDevice.capacity;
 
                     }//end of for each
-                    finalRes++;
+                    finalRes = 11010; //11010
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while calculation in loop of location master in calculateDailySolarKPI function, due to : " + e.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //1109
                 }
 
                 API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : End of for loop.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
@@ -8479,14 +8455,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int result = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
                     API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated data (ghi, poa, expected_kwh, plant_pr, etc) after for loop ends in uploading_file_generation_solar table .. Code Line No. 7747");
-                    finalRes++;
+                    finalRes++; //11011
                 }
                 catch (Exception ex)
                 {
                     string msg = "CalculateDailySolarKPI function : Exception during updating data in table uploading_file_generation_solar... Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + ex.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //11010
 
 
                 }
@@ -8496,14 +8472,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int result = await Context.ExecuteNonQry<int>(updateqryCheck).ConfigureAwait(false);
                     API_InformationLog(DateTime.Now + "CalculateDailySolarKPI function : Updated inv_pr and plant_pr to null in uploading_file_generation_solar table... Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
-                    finalRes++;
+                    finalRes++; //11012
                 }
                 catch (Exception ex)
                 {
                     string msg = "CalculateDailySolarKPI function : Exception while updating inv_pr and plant_pr to null in uploading_file_generation_solar table.. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + " exception :" + ex.ToString();
                     API_ErrorLog(msg);
                     errorCodes += finalRes.ToString() + ",";
-                    return errorCodes;
+                    return errorCodes; //11011
                 }
                 //Get breakdown data
                 //qry = @"SELECT date,t1.site_id,t1.ext_int_bd, t1.icr,t1.inv,t1.smb,t1.strings,t1.bd_type_id,t1.bd_type, t1.from_bd as stop_from, t1.to_bd as stop_to, SEC_TO_TIME(SUM(TIME_TO_SEC(total_stop)))
@@ -9399,6 +9375,28 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 errorCodes += finalRes.ToString() + ",";
                 return errorCodes;
             }
+
+            int tempCorrectedPr = await TemperatureCorrectedPRCalc(site, fromDate, toDate);
+            if (tempCorrectedPr != 0)
+            {
+                errorCodes += tempCorrectedPr.ToString() + ",";
+            }
+            else
+            {
+                //finalRes = 1105;
+            }
+
+            int tempCorrectedContinued = await getTemperatureCorrectedPR(site, fromDate, toDate);
+            if (tempCorrectedContinued != 0)
+            {
+                errorCodes += tempCorrectedContinued.ToString() + ",";
+                //finalRes = 11012;
+            }
+            else
+            {
+                //finalRes = 11012;
+            }
+
             errorCodes += finalRes.ToString() + ",";
             return errorCodes;
         }
@@ -13621,7 +13619,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         internal async Task<int> CalculateTrackerLosses(string site, string fromDate, string toDate, string logFileName)
         {
-            int finalRes = 11018;
+            int finalRes = 1401;
             try
             {
                 string qry1 = "select * from `uploading_file_tracker_loss` where site_id = " + site + " and date between '" + fromDate + "' and '" + toDate + "' ";
@@ -13875,7 +13873,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<int> getTemperatureCorrectedPR(string site, string fromDate, string toDate)
         {
-            int finalRes = 1105;
+            int finalRes = 1301;
 
             List<TemperatureCorrectedPR> returnData = new List<TemperatureCorrectedPR>();
             try
@@ -13966,7 +13964,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     est1HourData[0].t_array = est1HourDataModTemp[0].t_array;
                     returnData[0].est_avg_mod_temp = est1HourData[0].t_array;
 
-                    string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_kwh)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_kwh) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site + " and t1.date = '" + datestring + "' group by t1.date ,t1.site";
+                    string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site + " and t1.date = '" + datestring + "' group by t1.date ,t1.site";
                     List<SolarPerformanceReports1> siteData = new List<SolarPerformanceReports1>();
                     try
                     {
@@ -13993,11 +13991,21 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         API_ErrorLog("Exception occured while fetching records from uploading_file_pvsyst_loss table. " + msg);
                         return finalRes;
                     }
+                    try
+                    {
+                        returnData[0].plantTempPR = siteData[0].plant_kwh / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
 
-                    returnData[0].plantTempPR = siteData[0].plant_kwh / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
+                        returnData[0].jmrTempPR = siteData[0].act_kwh_afterloss / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
+                        start = start.AddDays(1);
+                        finalRes++;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while calculating plant temperature corrected pr in getTemperatureCorrectedPR function, due to : " + e.ToString();
+                        API_ErrorLog(msg);
+                        return finalRes;
+                    }
 
-                    returnData[0].jmrTempPR = siteData[0].act_kwh_afterloss / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
-                    start = start.AddDays(1);
                 }
 
                 //Insert the calculated data into database temperature corrected PR table.
@@ -14050,7 +14058,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         internal async Task<int> TemperatureCorrectedPRCalc(string site, string fromDate, string toDate)
         {
-            int finalRes = 1102;
+            int finalRes = 1201;
             //string fromDay = "";
             //string fromMonth = "";
             //string fromYear = "";
@@ -14125,7 +14133,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<int> PowerExpected(string site, string fromDate, string toDate, string type, string months, string fy)
         {
-            int finalRes = 11020;
+            int finalRes = 1501;
             double Pexpected = 0;
             List<SolarPowerCalcReturn> result = new List<SolarPowerCalcReturn>();
             //Get Loss Factor Constants
