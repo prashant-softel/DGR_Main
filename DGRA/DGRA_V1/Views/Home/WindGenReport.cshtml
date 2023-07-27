@@ -1052,7 +1052,7 @@
                     ordering: true,
                     info: true,                  
                     pageLength: 50,
-                    "order": [[0, "asc"]],
+                    "order": [[4, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
@@ -1239,7 +1239,7 @@
                 tbl += '</table>';
                 $("#reportsDaily").html(tbl);
                 $.fn.DataTable.ext.pager.numbers_length = 6;
-               $('#example1').DataTable({
+                $('#example1').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
                     responsive: false,
@@ -1250,8 +1250,7 @@
                     ordering: true,
                     info: true,
                     pageLength: 50,
-                   "order": [[0, "asc"]],
-
+                    "order": [[4, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
@@ -1477,6 +1476,7 @@
                     info: true,
                     autoWidth: true,
                     pageLength: 50,
+                    "order": [[5, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
@@ -1685,6 +1685,7 @@
                     info: true,
                     autoWidth: true,
                     pageLength: 50,
+                    "order": [[5, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
@@ -1751,7 +1752,6 @@
         else {
             GetYearlyGenReportSiteWise();
         }
-        document.getElementById("loaderY").style.display = 'none';
     }
 
     // Yearly WTG Wise
@@ -1910,6 +1910,7 @@
                     info: true,
                     autoWidth: true,
                     pageLength: 50,
+                    "order": [[4, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
@@ -2118,6 +2119,7 @@
                     info: true,
                     autoWidth: true,
                     pageLength: 50,
+                    "order": [[4, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
