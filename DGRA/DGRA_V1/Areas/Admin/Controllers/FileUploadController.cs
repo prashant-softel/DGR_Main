@@ -5886,9 +5886,13 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.onm_wtg = tabName;
                         addUnit.WTGs = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
+                        if(addUnit.WTGs == "")
+                        {
+                            addUnit.WTGs = equipmentId.ContainsKey(tabName) ? tabName : "";
+                        }
                         //error handling
                         //addUnit.wtg_id = equipmentId.ContainsKey(addUnit.wtg) ? Convert.ToInt32(equipmentId[addUnit.wtg]) : 0;
-                        if (addUnit.WTGs != " ")
+                        if (addUnit.WTGs != "")
                         {
                             addUnit.wtg_id = equipmentId.ContainsKey(addUnit.WTGs) ? Convert.ToInt32(equipmentId[addUnit.WTGs]) : 0;
                             //addUnit.wtg = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
@@ -5901,6 +5905,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                             {
                                 addUnit.site_id = 0;
                             }
+                        }
+                        else
+                        {
+                            m_ErrorLog.SetError(", ONM WTG not found & Site id is not found.");
                         }
                         bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
                         string convertedDate = "";
@@ -5925,7 +5933,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //    }
                         //}
                         string tempDate = Convert.ToString(dr["Date"]);
-                        convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                        try
+                        {
+                            convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = e.ToString();
+                            m_ErrorLog.SetError(", File row<" + rowNumber + "> '" + tempDate + "' is not recognised as valid date time, it should be 'dd/MM/yyyy HH:mm:ss'");
+                            errorCount++;
+                            continue;
+                        }
                         //convertedDate = Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
                         addUnit.timestamp = isdateEmpty ? "Nil" : convertedDate;
                         //errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
@@ -6134,10 +6152,22 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (isdateEmpty)
                         {
                             m_ErrorLog.SetInformation(", Time Stamp value at row " + rowNumber + " is empty. The row would be skiped.");
+                            errorCount++;
                             continue;
                         }
-                        addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("yyyy-MM-dd HH:mm:ss");
-                        errorFlag.Add(stringNullValidation(addUnit.timestamp, "Time Stamp", rowNumber));
+                        string timeStampTemp = dr["Time Stamp"].ToString();
+                        try
+                        {
+                            addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("yyyy-MM-dd HH:mm:ss");
+                            errorFlag.Add(stringNullValidation(addUnit.timestamp, "Time Stamp", rowNumber));
+                        }
+                        catch(Exception e)
+                        {
+                            string msg = e.ToString();
+                            m_ErrorLog.SetError(", File row<" + rowNumber + "> '" + timeStampTemp + "' is not recognised as valid date time, it should be 'yyyy-MM-dd HH:mm:ss'");
+                            errorCount++;
+                            continue;
+                        }
 
                         addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("dd-MMM-yy");
                         //string temp_date = temp.Substring(0, 10);
@@ -6441,10 +6471,22 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (isdateEmpty)
                             {
                                 m_ErrorLog.SetInformation(", Timestamp value is empty. The row would be skiped.");
+                                errorCount++;
                                 continue;
                             }
-                            addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("yyyy-MM-dd HH:mm:ss");
-                            errorFlag.Add(dateNullValidation(addUnit.timestamp, "Timestamp", rowNumber));
+                            string timeStampTemp = dr["Timestamp"].ToString();
+                            try
+                            {
+                                addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("yyyy-MM-dd HH:mm:ss");
+                                errorFlag.Add(dateNullValidation(addUnit.timestamp, "Timestamp", rowNumber));
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.ToString();
+                                m_ErrorLog.SetError(", File row<" + rowNumber + "> '" + timeStampTemp + "' is not recognised as valid date time, it should be 'yyyy-MM-dd HH:mm:ss'");
+                                errorCount++;
+                                continue;
+                            }
 
                             LogTime = Convert.ToDateTime(addUnit.timestamp).ToString("yyyy-MM-dd");
 
