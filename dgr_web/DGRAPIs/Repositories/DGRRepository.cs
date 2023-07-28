@@ -11511,14 +11511,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
 
                     }
-                    //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00";
+                    //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00"; AND date = 14-May-23
                     if (type == 1 || type == 4)
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = '" + date + "' ;";
                     }
                     else if (type == 2 || type == 3)
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = ' " + date + "' ;";
                     }
                 }
                 try
