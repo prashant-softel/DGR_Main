@@ -13761,7 +13761,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         // Actual vs Expected Function 
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
         {
-
+            DateTime startTime = DateTime.Now;
+            DateTime timeStamp = DateTime.Now;
+            API_InformationLog("\n---------------------------------------------Performance Check for Solar Expected vs Actual---------------------------------------------------------");
+            API_InformationLog("GetSolarExpectedReport function called at " + timeStamp + " for date range from " + fromDate + " to " + toDate);
+            
             string filter = "";
             int chkfilter = 0;
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
@@ -13792,7 +13796,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
-
+            DateTime endfunction = DateTime.Now;
+            TimeSpan difference = endfunction - timeStamp;
+            API_InformationLog("First Query built on " + endfunction + ". Time Spent : " + difference);
             try
             {
                 data = await Context.GetData<SolarExpectedvsActual>(qry1).ConfigureAwait(false);
@@ -13802,11 +13808,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table, due to : " + e.ToString();
                 API_ErrorLog(msg);
             }
+            timeStamp = DateTime.Now;
+            difference = timeStamp - endfunction;
+            API_InformationLog("First Query executed on : " + timeStamp + ". Time Spent : " + difference);
 
             string viewQry = "create or replace view expected_temp_view as SELECT t1.date,t3.site,t3.spv,(t3.ac_capacity*1000) as capacity,SUM(t1.inv_kwh) as kwh,t2.LineLoss,SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100) as kwh_afterloss,((SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))/((t3.ac_capacity*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year = year(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id group by t1.date ,t1.site";
             try
             {
                 await Context.ExecuteNonQry<int>(viewQry).ConfigureAwait(false);
+                endfunction = DateTime.Now;
+                difference = endfunction - timeStamp;
+                API_InformationLog("Second Query view create or replace executed on : " + endfunction + ". Time Spent : " + difference);
             }
             catch (Exception e)
             {
@@ -13819,6 +13831,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 newdata = await Context.GetData<SolarExpectedvsActual>(viweFetchQry).ConfigureAwait(false);
+                timeStamp = DateTime.Now;
+                difference = timeStamp - endfunction;
+                API_InformationLog("Third Query Select from view executed on : " + timeStamp + ". Time Spent : " + difference);
             }
             catch(Exception e)
             {
@@ -13828,6 +13843,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             try
             {
+                //Add time stamp to get time for each query.
                 foreach (SolarExpectedvsActual _dataElement in data)
                 {
                     string site_id = _dataElement.site_id.ToString();
@@ -13863,12 +13879,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         API_ErrorLog(msg);
                     }
                 }
+                endfunction = DateTime.Now;
+                difference = endfunction - timeStamp;
+                API_InformationLog("Foreach loop executed on : " + endfunction + ". Time Spent : " + difference );
             }
             catch (Exception e)
             {
                 string msg = "Exception while inserting data into main list, due to : " + e.ToString();
                 API_ErrorLog(msg);
             }
+            timeStamp = DateTime.Now;
+            difference = timeStamp - startTime;
+            API_InformationLog("Function Executed completely on : " + timeStamp + ". Time Spent on complete function : " + difference );
+            API_InformationLog("\n---------------------------------------------Performance Check End---------------------------------------------------------");
             return data;
         }
         internal async Task<int> getTemperatureCorrectedPR(string site, string fromDate, string toDate)
