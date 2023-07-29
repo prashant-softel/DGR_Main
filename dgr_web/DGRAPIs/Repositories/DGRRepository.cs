@@ -13761,7 +13761,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         // Actual vs Expected Function 
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
         {
-
+            DateTime startTime = DateTime.Now;
+            DateTime timeStamp = DateTime.Now;
+            API_InformationLog("\n---------------------------------------------Performance Check for Solar Expected vs Actual---------------------------------------------------------");
+            API_InformationLog("GetSolarExpectedReport function called at " + timeStamp + " for date range from " + fromDate + " to " + toDate);
+            
             string filter = "";
             int chkfilter = 0;
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
@@ -13782,17 +13786,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (prType == "AOP")
             {
                 //qry1 = "select site, t1.site_id, t1. date, pr, toplining_pr, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma) as ma, avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter +                    " group by t1.site, t1.date ";
-                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
             }
             else if (prType == "toplining")
             {
-                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
 
                 //qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses, t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
 
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
-
+            DateTime endfunction = DateTime.Now;
+            TimeSpan difference = endfunction - timeStamp;
+            API_InformationLog("First Query built on " + endfunction + ". Time Spent : " + difference);
             try
             {
                 data = await Context.GetData<SolarExpectedvsActual>(qry1).ConfigureAwait(false);
@@ -13802,11 +13808,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table, due to : " + e.ToString();
                 API_ErrorLog(msg);
             }
+            timeStamp = DateTime.Now;
+            difference = timeStamp - endfunction;
+            API_InformationLog("First Query executed on : " + timeStamp + ". Time Spent : " + difference);
 
             string viewQry = "create or replace view expected_temp_view as SELECT t1.date,t3.site,t3.spv,(t3.ac_capacity*1000) as capacity,SUM(t1.inv_kwh) as kwh,t2.LineLoss,SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100) as kwh_afterloss,((SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))/((t3.ac_capacity*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year = year(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id group by t1.date ,t1.site";
             try
             {
                 await Context.ExecuteNonQry<int>(viewQry).ConfigureAwait(false);
+                endfunction = DateTime.Now;
+                difference = endfunction - timeStamp;
+                API_InformationLog("Second Query view create or replace executed on : " + endfunction + ". Time Spent : " + difference);
             }
             catch (Exception e)
             {
@@ -13819,6 +13831,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 newdata = await Context.GetData<SolarExpectedvsActual>(viweFetchQry).ConfigureAwait(false);
+                timeStamp = DateTime.Now;
+                difference = timeStamp - endfunction;
+                API_InformationLog("Third Query Select from view executed on : " + timeStamp + ". Time Spent : " + difference);
             }
             catch(Exception e)
             {
@@ -13828,24 +13843,25 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             try
             {
+                //Add time stamp to get time for each query.
                 foreach (SolarExpectedvsActual _dataElement in data)
                 {
-                    string site_id = _dataElement.site_id.ToString();
-                    string date = Convert.ToDateTime(_dataElement.date).ToString("yyyy-MM-dd");
-                    // Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd")
+                    //string site_id = _dataElement.site_id.ToString();
+                    //string date = Convert.ToDateTime(_dataElement.date).ToString("yyyy-MM-dd");
+                    //// Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd")
 
-                    string getPower = "  select sum(P_exp_degraded) as P_exp from `uploading_pyranometer_15_min_solar` where site_id = " + site_id + " and date(date_time) = date('" + date + "') ";
-                    List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
-                    try
-                    {
-                        data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(getPower).ConfigureAwait(false);
-                        _dataElement.Pexpected = (data1min[0].P_exp / 4);
+                    //string getPower = "  select sum(P_exp_degraded) as P_exp from `uploading_pyranometer_15_min_solar` where site_id = " + site_id + " and date(date_time) = date('" + date + "') ";
+                    //List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
+                    //try
+                    //{
+                    //    data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(getPower).ConfigureAwait(false);
+                    //    _dataElement.Pexpected = (data1min[0].P_exp / 4);
 
-                    }
-                    catch (Exception e)
-                    {
-                        string msg = e.Message;
-                    }
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    string msg = e.Message;
+                    //}
 
                     try
                     {
@@ -13863,12 +13879,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         API_ErrorLog(msg);
                     }
                 }
+                endfunction = DateTime.Now;
+                difference = endfunction - timeStamp;
+                API_InformationLog("Foreach loop executed on : " + endfunction + ". Time Spent : " + difference );
             }
             catch (Exception e)
             {
                 string msg = "Exception while inserting data into main list, due to : " + e.ToString();
                 API_ErrorLog(msg);
             }
+            timeStamp = DateTime.Now;
+            difference = timeStamp - startTime;
+            API_InformationLog("Function Executed completely on : " + timeStamp + ". Time Spent on complete function : " + difference );
+            API_InformationLog("\n---------------------------------------------Performance Check End---------------------------------------------------------");
             return data;
         }
         internal async Task<int> getTemperatureCorrectedPR(string site, string fromDate, string toDate)
