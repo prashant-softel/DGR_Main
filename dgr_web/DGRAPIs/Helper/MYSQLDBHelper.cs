@@ -290,5 +290,38 @@ namespace DGRAPIs.Helper
         {
             throw new NotImplementedException();
         }
+             internal async Task<int> ErrorLog(string qry)
+        {
+            // MySqlParameter retpara = null;
+
+            try
+            {
+                using (MySqlConnection conn = TheConnection)
+                {
+                    using (MySqlCommand cmd = getQryCommand(qry, conn))
+                    {
+                        cmd.CommandTimeout = 99999;
+                        cmd.CommandType = CommandType.Text;
+                        await conn.OpenAsync();
+
+
+                        int i = await cmd.ExecuteNonQueryAsync();
+
+                        return i;
+
+                    }
+                }
+            }
+            catch (MySqlException sqlex)
+            {
+                throw new Exception("ExecuteNonQuery SPname=" + qry + Environment.NewLine + sqlex.Message, sqlex);
+            }
+            finally
+            {
+
+                // retpara = null;
+
+            }
+        }
     }
 }
