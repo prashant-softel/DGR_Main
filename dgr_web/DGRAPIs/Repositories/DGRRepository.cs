@@ -10839,25 +10839,31 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return 1;
         }
-        private void API_ErrorLog(string Message)
+               private async void API_ErrorLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Error**:" + Message + "\r\n");
+            string qry = $"INSERT INTO log4netlog (Date,  Message, Level) VALUES('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "','" + Message.Replace("'","") + "', 1);";
+            var logged = await Context.ErrorLog(qry).ConfigureAwait(false);
+
+
         }
-        private void API_InformationLog(string Message)
+        private async void API_InformationLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
+            string logStmt = "INSERT INTO log4netlog (Date,  Message, Level) VALUES('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "','" + Message.Replace("'", "") + "', 2);";
+            var logged = await Context.ErrorLog(logStmt).ConfigureAwait(false);
         }
-        private void PPT_ErrorLog(string Message)
+        private async void PPT_ErrorLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\PPT_Log.txt", "**Error**:" + Message + "\r\n");
+            string qry = "INSERT INTO log4netlog (Date,  Message, Level) VALUES('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "','" + Message.Replace("'", "") + "', 1);";
+            var logged = await Context.ErrorLog(qry).ConfigureAwait(false);
         }
-        private void PPT_InformationLog(string Message)
+        private async void PPT_InformationLog(string Message)
         {
             //Read variable from appsetting to enable disable log
-            System.IO.File.AppendAllText(@"C:\LogFile\PPT_Log.txt", "**Info**:" + Message + "\r\n");
+            string qry = "INSERT INTO log4netlog (Date,  Message, Level) VALUES('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "','" + Message.Replace("'", "") + "', 1);";
+            var logged = await Context.ErrorLog(qry).ConfigureAwait(false);
         }
         internal class ViewerStatsFormat
         {
