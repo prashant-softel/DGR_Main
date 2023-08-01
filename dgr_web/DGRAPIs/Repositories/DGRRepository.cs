@@ -10839,7 +10839,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return 1;
         }
-               private async void API_ErrorLog(string Message)
+        private async void API_ErrorLog(string Message)
         {
             //Read variable from appsetting to enable disable log
             string qry = $"INSERT INTO log4netlog (Date,  Message, Level) VALUES('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "','" + Message.Replace("'","") + "', 1);";
@@ -13348,7 +13348,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
                 //              line_loss_per * actual / 1000000.
 
-                string fetchLossQry = "SELECT all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
+                //SELECT CASE WHEN all_bd = 'Load Shedding' THEN 'LoadShedding' ELSE all_bd END as all_bd, SUM(loss_kw) / 1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE date >= '01-Apr-23' and date <= '12-Jul-23' and site_id IN(221) GROUP BY all_bd;
+
+                string fetchLossQry = "SELECT CASE WHEN all_bd = 'Load Shedding' THEN 'loadShedding' ELSE all_bd END as all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
+
                 try
                 {
                     _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLossQry).ConfigureAwait(false);
@@ -13398,9 +13401,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             lossUSMH = unit.loss_kw;
                         }
-                        if (unit.all_bd == "Load Shedding")
+                        if (unit.all_bd == "loadShedding")
                         {
-                            loadShedding = unit.loadShedding;
+                            loadShedding = unit.loss_kw;
                         }
                     }
                 }
