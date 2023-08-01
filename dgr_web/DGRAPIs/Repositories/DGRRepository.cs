@@ -1320,9 +1320,9 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             string filter = "";
             if (!string.IsNullOrEmpty(site))
             {
-                filter += " where site_master_id IN(" + site + ") ";
+                filter += " and site_master_id IN(" + site + ") ";
             }
-            string qry = "Select * from location_master" + filter;
+            string qry = "Select * from location_master where status = 1 " + filter;
 
             return await Context.GetData<WindLocationMaster>(qry).ConfigureAwait(false);
 
@@ -1340,7 +1340,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
         }
         internal async Task<List<SolarLocationMaster>> GetSolarLocationMasterBySite(string site)
         {
-            string qry = "Select location_master_solar_id,country,site,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity,module_make,module_model_no,    module_type,string_inv_central_inv from location_master_solar where site_id IN (" + site + ")";
+            string qry = "Select location_master_solar_id,country,site,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity,module_make,module_model_no,    module_type,string_inv_central_inv from location_master_solar where site_id IN (" + site + ") and status = 1 order by site,eg,CAST(SUBSTRING(ig, 6) AS SIGNED),CAST(SUBSTRING(icr, 5) AS SIGNED),CAST(SUBSTRING(inv, 5) AS SIGNED),CAST(SUBSTRING(smb, 5) AS SIGNED),CAST(SUBSTRING(string, 3) AS SIGNED);";
 
 
             List<SolarLocationMaster> _SolarLocationMaster = new List<SolarLocationMaster>();
@@ -1352,7 +1352,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
         internal async Task<List<SolarLocationMaster>> GetSolarLocationMaster()
         {
 
-            return await Context.GetData<SolarLocationMaster>("Select  location_master_solar_id,country,site,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity,module_make,module_model_no,    module_type  from location_master_solar").ConfigureAwait(false);
+            return await Context.GetData<SolarLocationMaster>("Select  location_master_solar_id,country,site,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity,module_make,module_model_no,    module_type  from location_master_solar where status = 1 ").ConfigureAwait(false);
 
         }
         internal async Task<List<WindDailyGenReports>> GetWindDailyGenerationReport(string fromDate, string toDate, string country, string state, string spv, string site, string wtg, string reportType)
@@ -2730,7 +2730,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             List<WindDailyBreakdownReport> _windBDList2 = new List<WindDailyBreakdownReport>();
 
 
-            string fetchQry1 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type WHERE " + filter + " AND t1.approve_status = 1 and t1.import_batch_id = 0 ORDER BY t1.date ASC";
+            string fetchQry1 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status =1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type WHERE " + filter + " AND t1.approve_status = 1 and t1.import_batch_id = 0 ORDER BY t1.date ASC";
 
             try
             {
@@ -2743,7 +2743,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
 
 
-            string fetchQry2 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
+            string fetchQry2 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status =1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
 
                 try
                 {
@@ -5998,16 +5998,18 @@ FROM daily_bd_loss_solar where   " + datefilter;
             //pending : add activity log
             //added logic where if site and wtg exists then update existing records
             //grabs db location_master table data into local object list
-            string fetchQry = "select wtg, location_master_id from location_master";
+            string fetchQry = $"select wtg, location_master_id from location_master where site_master_id = {set[0].site_master_id}";
             List<WindLocationMaster> tableData = await Context.GetData<WindLocationMaster>(fetchQry).ConfigureAwait(false);
             int val = 0;
 
             //stores an existing record from the database which matches with a record in the client dataset
             WindLocationMaster existingRecord = new WindLocationMaster();
-            string updateQry = "INSERT INTO location_master(location_master_id, feeder, max_kwh_day) VALUES";
+            WindLocationMaster existingRecordButNotInSet = new WindLocationMaster();
+
+            string updateQry = "INSERT INTO location_master(location_master_id, feeder, max_kwh_day , status) VALUES";
             string updateValues = "";
             // string qry = "insert into location_master(location_master_id, site_master_id, site, wtg, feeder, max_kwh_day) values";
-            string qry = "insert into location_master(site_master_id, site, wtg, feeder, max_kwh_day) values";
+            string qry = "insert into location_master(site_master_id, site, wtg, feeder, max_kwh_day , status) values";
             string insertValues = "";
             foreach (var unit in set)
             {
@@ -6015,23 +6017,37 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 existingRecord = tableData.Find(tableRecord => tableRecord.wtg.Equals(unit.wtg));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.site_master_id + "','" + unit.site + "','" + unit.wtg + "','" + unit.feeder + "','" + unit.max_kwh_day + "'),";
+                    insertValues += "('" + unit.site_master_id + "','" + unit.site + "','" + unit.wtg + "','" + unit.feeder + "','" + unit.max_kwh_day + "', 1),";
                 }
                 else
                 {
                     //if match is found
-                    updateValues = "(" + existingRecord.location_master_id + ",'" + unit.feeder + "','" + unit.max_kwh_day + "'),";
+                    updateValues += "(" + existingRecord.location_master_id + ",'" + unit.feeder + "','" + unit.max_kwh_day + "', 1),";
                     //backup updater:
                     //updateQry += "update location_master set feeder = " + unit.feeder + " , max_kwh_day =  " + unit.max_kwh_day + "  where location_master_id = " + existingRecord.location_master_id + ";";
 
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE location_master_id = VALUES(location_master_id), feeder = VALUES(feeder), max_kwh_day = VALUES(max_kwh_day);";
+            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE location_master_id = VALUES(location_master_id), feeder = VALUES(feeder), max_kwh_day = VALUES(max_kwh_day), status = VALUES(status);";
             //if (!(string.IsNullOrEmpty(insertValues)))
             //{
             //    val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
             //}
+
+            string deleteQry = " UPDATE location_master SET status = 0 WHERE wtg IN ( ";
+            string deleteValues = "";
+
+            foreach (var unit in tableData)
+            {
+                existingRecordButNotInSet = set.Find(tableRecord => tableRecord.wtg.Equals(unit.wtg));
+
+                if (existingRecordButNotInSet == null)
+                {
+                    deleteValues += $" '{unit.wtg}' ,";
+                }
+            }
+
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
@@ -6039,6 +6055,12 @@ FROM daily_bd_loss_solar where   " + datefilter;
             if (!(string.IsNullOrEmpty(updateValues)))
             {
                 val = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+            }
+            if (!(string.IsNullOrEmpty(deleteValues)))
+            {
+                deleteValues = deleteValues.Substring(0, (deleteValues.Length - 1)) ;
+                deleteQry += deleteValues;
+                val = await Context.ExecuteNonQry<int>(deleteQry + " );").ConfigureAwait(false);
             }
             return val;
         }
@@ -6340,37 +6362,89 @@ FROM daily_bd_loss_solar where   " + datefilter;
             //pending : add activity log
             //added logic where if site and wtg exists then update existing records
             //grabs db location_master table data into local object list
-            string fetchQry = "select location_master_solar_id, site_id, icr, inv, smb, string as strings from location_master_solar";
+            string fetchQry = $"select location_master_solar_id, site, site_id, icr, inv, smb, string as strings from location_master_solar where site_id = {set[0].site_id}";
             List<SolarLocationMaster> tableData = await Context.GetData<SolarLocationMaster>(fetchQry).ConfigureAwait(false);
 
             //stores an existing record from the database which matches with a record in the client dataset
             SolarLocationMaster existingRecord = new SolarLocationMaster();
+            SolarLocationMaster existingRecordButNotInSet = new SolarLocationMaster();
+
             int val = 0;
-            string updateQry = "INSERT INTO location_master_solar(location_master_solar_id, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv) VALUES";
+
+
+            //string updateQry = "INSERT INTO location_master_solar(location_master_solar_id, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv) VALUES";
+
+            //// string qry = "insert into location_master(location_master_id, site_master_id, site, wtg, feeder, max_kwh_day) values";
+            //string qry = "insert into location_master_solar(country, site, site_id, eg, ig, icr_inv, icr, inv, smb, string, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv) values";
+            //string insertValues = "";
+            //string updateValues = "";
+            //foreach (var unit in set)
+            //{
+            //    //checks if db table contains site record that matches a record in client dataset
+            //    existingRecord = tableData.Find(tableRecord => tableRecord.site_id.Equals(unit.site_id) && tableRecord.icr.Equals(unit.icr) && tableRecord.inv.Equals(unit.inv) && tableRecord.smb.Equals(unit.smb) && tableRecord.strings.Equals(unit.strings));
+            //    if (existingRecord == null)
+            //    {
+            //        insertValues += "('" + unit.country + "','" + unit.site + "','" + unit.site_id + "','" + unit.eg + "','" + unit.ig + "','" + unit.icr_inv + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.string_configuration + "','" + unit.total_string_current + "','" + unit.total_string_voltage + "','" + unit.modules_quantity + "','" + unit.wp + "','" + unit.capacity + "','" + unit.module_make + "','" + unit.module_model_no + "','" + unit.module_type + "','" + unit.string_inv_central_inv + "'),";
+            //    }
+            //    else
+            //    {
+            //        //updateValues += "update location_master_solar set string_configuration = '" + unit.string_configuration + "', total_string_current = '" + unit.total_string_current + "', total_string_voltage = '" + unit.total_string_voltage + "', modules_quantity = '" + unit.modules_quantity + "', wp = '" + unit.wp + "', capacity = '" + unit.capacity + "', module_make = '" + unit.module_make + "', module_model_no = '" + unit.module_model_no + "', module_type = '" + unit.module_type + "', string_inv_central_inv = '" + unit.string_inv_central_inv + "' where location_master_solar_id = '" + existingRecord.location_master_solar_id + "';";
+
+            //        updateValues += "(" + existingRecord.location_master_solar_id + ",'" + unit.string_configuration + "','" + unit.total_string_current + "','" + unit.total_string_voltage + "','" + unit.modules_quantity + "','" + unit.wp + "','" + unit.capacity + "','" + unit.module_make + "','" + unit.module_model_no + "','" + unit.module_type + "','" + unit.string_inv_central_inv + "'),";
+            //    }
+            //}
+            //qry += insertValues;
+            //updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE location_master_solar_id = VALUES(location_master_solar_id), string_configuration = VALUES(string_configuration), total_string_current = VALUES(total_string_current), total_string_voltage = VALUES(total_string_voltage), modules_quantity = VALUES(modules_quantity), wp = VALUES(wp), capacity = VALUES(capacity), module_make = VALUES(module_make), module_model_no = VALUES(module_model_no), module_type = VALUES(module_type), string_inv_central_inv = VALUES(string_inv_central_inv);";
+
+            ////string updateQry = "INSERT INTO location_master_solar(location_master_solar_id, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv) VALUES";
+
+            string updateQry = "INSERT INTO location_master_solar(location_master_solar_id, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv , status) VALUES";
 
             // string qry = "insert into location_master(location_master_id, site_master_id, site, wtg, feeder, max_kwh_day) values";
-            string qry = "insert into location_master_solar(country, site, site_id, eg, ig, icr_inv, icr, inv, smb, string, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv) values";
+            string qry = "insert into location_master_solar(country, site, site_id, eg, ig, icr_inv, icr, inv, smb, string, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv ,status) values";
             string insertValues = "";
             string updateValues = "";
+            string deleteValues = "";
+
             foreach (var unit in set)
             {
                 //checks if db table contains site record that matches a record in client dataset
                 existingRecord = tableData.Find(tableRecord => tableRecord.site_id.Equals(unit.site_id) && tableRecord.icr.Equals(unit.icr) && tableRecord.inv.Equals(unit.inv) && tableRecord.smb.Equals(unit.smb) && tableRecord.strings.Equals(unit.strings));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.country + "','" + unit.site + "','" + unit.site_id + "','" + unit.eg + "','" + unit.ig + "','" + unit.icr_inv + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.string_configuration + "','" + unit.total_string_current + "','" + unit.total_string_voltage + "','" + unit.modules_quantity + "','" + unit.wp + "','" + unit.capacity + "','" + unit.module_make + "','" + unit.module_model_no + "','" + unit.module_type + "','" + unit.string_inv_central_inv + "'),";
+                    insertValues += "('" + unit.country + "','" + unit.site + "','" + unit.site_id + "','" + unit.eg + "','" + unit.ig + "','" + unit.icr_inv + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "','" + unit.string_configuration + "','" + unit.total_string_current + "','" + unit.total_string_voltage + "','" + unit.modules_quantity + "','" + unit.wp + "','" + unit.capacity + "','" + unit.module_make + "','" + unit.module_model_no + "','" + unit.module_type + "','" + unit.string_inv_central_inv + "', 1),";
                 }
                 else
                 {
                     //updateValues += "update location_master_solar set string_configuration = '" + unit.string_configuration + "', total_string_current = '" + unit.total_string_current + "', total_string_voltage = '" + unit.total_string_voltage + "', modules_quantity = '" + unit.modules_quantity + "', wp = '" + unit.wp + "', capacity = '" + unit.capacity + "', module_make = '" + unit.module_make + "', module_model_no = '" + unit.module_model_no + "', module_type = '" + unit.module_type + "', string_inv_central_inv = '" + unit.string_inv_central_inv + "' where location_master_solar_id = '" + existingRecord.location_master_solar_id + "';";
 
-                    updateValues += "(" + existingRecord.location_master_solar_id + ",'" + unit.string_configuration + "','" + unit.total_string_current + "','" + unit.total_string_voltage + "','" + unit.modules_quantity + "','" + unit.wp + "','" + unit.capacity + "','" + unit.module_make + "','" + unit.module_model_no + "','" + unit.module_type + "','" + unit.string_inv_central_inv + "'),";
+                    updateValues += "(" + existingRecord.location_master_solar_id + ",'" + unit.string_configuration + "','" + unit.total_string_current + "','" + unit.total_string_voltage + "','" + unit.modules_quantity + "','" + unit.wp + "','" + unit.capacity + "','" + unit.module_make + "','" + unit.module_model_no + "','" + unit.module_type + "','" + unit.string_inv_central_inv + "', 1),";
+                }
+             
+            }
+
+
+            string deleteQry = " UPDATE location_master_solar SET status = 0 WHERE CONCAT(site, icr, inv, smb, string) IN (";
+
+            foreach (var unit in tableData)
+            {
+                existingRecordButNotInSet = set.Find(tableRecord => tableRecord.site_id.Equals(unit.site_id) && tableRecord.icr.Equals(unit.icr) && tableRecord.inv.Equals(unit.inv) && tableRecord.smb.Equals(unit.smb) && tableRecord.strings.Equals(unit.strings));
+ 
+                if (existingRecordButNotInSet == null)
+                {
+                    deleteValues += " SELECT CONCAT('" + unit.site + "','" + unit.icr + "','" + unit.inv + "','" + unit.smb + "','" + unit.strings + "') UNION ";
                 }
             }
+
+
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE location_master_solar_id = VALUES(location_master_solar_id), string_configuration = VALUES(string_configuration), total_string_current = VALUES(total_string_current), total_string_voltage = VALUES(total_string_voltage), modules_quantity = VALUES(modules_quantity), wp = VALUES(wp), capacity = VALUES(capacity), module_make = VALUES(module_make), module_model_no = VALUES(module_model_no), module_type = VALUES(module_type), string_inv_central_inv = VALUES(string_inv_central_inv);";
+            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE location_master_solar_id = VALUES(location_master_solar_id), string_configuration = VALUES(string_configuration), total_string_current = VALUES(total_string_current), total_string_voltage = VALUES(total_string_voltage), modules_quantity = VALUES(modules_quantity), wp = VALUES(wp), capacity = VALUES(capacity), module_make = VALUES(module_make), module_model_no = VALUES(module_model_no), module_type = VALUES(module_type), string_inv_central_inv = VALUES(string_inv_central_inv), status = VALUES(status);";
 
             //string updateQry = "INSERT INTO location_master_solar(location_master_solar_id, string_configuration, total_string_current, total_string_voltage, modules_quantity, wp, capacity, module_make, module_model_no, module_type, string_inv_central_inv) VALUES";
+
+
+
+
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
@@ -6378,6 +6452,14 @@ FROM daily_bd_loss_solar where   " + datefilter;
             if (!(string.IsNullOrEmpty(updateValues)))
             {
                 val = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+            }
+            if (!(string.IsNullOrEmpty(deleteValues)))
+            {
+                deleteQry += deleteValues;
+
+                deleteQry += deleteQry.Substring(0, (deleteQry.Length - 6)) + " );";
+
+                val = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
             }
             return val;
         }
@@ -6523,7 +6605,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 }
 
             }
-            string qry = @"SELECT t1.*,t2.site FROM uploading_file_breakdown t1 left join location_master t2 on t1.wtg=t2.wtg " + filter;
+            string qry = @"SELECT t1.*,t2.site FROM uploading_file_breakdown t1 left join location_master t2 on t1.wtg=t2.wtg and t2.status = 1 " + filter;
 
             return await Context.GetData<WindDailyBreakdownReport>(qry).ConfigureAwait(false);
 
@@ -6778,7 +6860,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             int finalResult = 0;
             approval_InformationLog("Inside SetApprovalFlagForImportBatches wind function : ");
-            string qry = "select t1.*,t2.site,t2.country,t2.state,t3.feeder from uploading_file_generation as t1 left join site_master as t2 on t2.site_master_id=t1.site_id left join location_master as t3 on t3.site_master_id=t1.site_id where import_batch_id IN(" + dataId + ")";
+            string qry = "select t1.*,t2.site,t2.country,t2.state,t3.feeder from uploading_file_generation as t1 left join site_master as t2 on t2.site_master_id=t1.site_id left join location_master as t3 on t3.site_master_id=t1.site_id and t3.status =1  where import_batch_id IN(" + dataId + ")";
 
             List<WindUploadingFilegeneration2> _importedData = new List<WindUploadingFilegeneration2>();
             try
@@ -6917,7 +6999,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int finalResult = 0;
             approval_InformationLog("Inside SetSolarApprovalFlagForImportBatches function.");
 
-            string qry = "select t1.*,t2.site,t2.country,t2.state from uploading_file_generation_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id=t1.site_id left join location_master_solar as t3 on t3.site_id=t1.site_id where import_batch_id IN(" + dataId + ")";
+            string qry = "select t1.*,t2.site,t2.country,t2.state from uploading_file_generation_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id=t1.site_id left join location_master_solar as t3 on t3.site_id=t1.site_id and t3.status = 1 where import_batch_id IN(" + dataId + ")";
 
             List<SolarUploadingFileGeneration2> _importedData = new List<SolarUploadingFileGeneration2>();
             API_InformationLog(" SetSolarApprovalFlagForImportBatches function : Select Query: " + qry + "  Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "");
@@ -7302,9 +7384,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string filter = "";
             if (!string.IsNullOrEmpty(siteid))
             {
-                filter += "where site_master_id in (" + siteid + ") ";
+                filter += " and site_master_id in (" + siteid + ") ";
             }
-            string query = "SELECT * FROM `location_master`" + filter;
+            string query = "SELECT * FROM `location_master` where status = 1 " + filter;
             List<WindLocationMaster> _locattionmasterDate = new List<WindLocationMaster>();
             _locattionmasterDate = await Context.GetData<WindLocationMaster>(query).ConfigureAwait(false);
             return _locattionmasterDate;
@@ -7313,19 +7395,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         public async Task<List<SolarLocationMaster>> GetInvData(string siteid, string state, string spv)
         {
             string filter = "";
-            int chkfilter = 0;
+            int chkfilter = 1;
             if (!string.IsNullOrEmpty(siteid))
             {
                 siteid = siteid.TrimEnd(',');
-                filter += " where site_id in(" + siteid + ")";
+                filter += " and site_id in(" + siteid + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(state))
             {
                 if (chkfilter == 1)
                     filter += " and ";
-                else
-                    filter += " where ";
+               
 
                 string[] stateSplit = state.Split(",");
                 string states = "";
@@ -7359,7 +7440,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 spvs = spvs.TrimEnd(',');
                 filter += " spv in(" + spvs + ")";
             }
-            string query = "SELECT icr_inv FROM site_master_solar t1 left join location_master_solar on site_id " + filter + " group by icr_inv";
+            string query = "SELECT icr_inv FROM site_master_solar t1 left join location_master_solar on site_id where status = 1 " + filter + "  group by icr_inv";
             List<SolarLocationMaster> _locattionmasterDate = new List<SolarLocationMaster>();
             _locattionmasterDate = await Context.GetData<SolarLocationMaster>(query).ConfigureAwait(false);
             return _locattionmasterDate;
@@ -7588,7 +7669,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
                 //string qryFileBreakdown = "SELECT fd.site_id,fd.bd_type,fd.wtg,bd.bd_type_name, SEC_TO_TIME(SUM(TIME_TO_SEC( fd.`total_stop` ) ) ) AS totalTime FROM `uploading_file_breakdown` as fd join bd_type as bd on bd.bd_type_id=fd.bd_type where site_id = " + site_id + " AND`date` = '" + fromDate + "' group by fd.wtg, fd.bd_type";
-                string qry = @"SELECT date,t1.site_id,t1.wtg,t1.bd_type_id,t1.bd_type,SEC_TO_TIME(SUM(TIME_TO_SEC(total_stop)))  AS total_stop FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type ";
+                string qry = @"SELECT date,t1.site_id,t1.wtg,t1.bd_type_id,t1.bd_type,SEC_TO_TIME(SUM(TIME_TO_SEC(total_stop)))  AS total_stop FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status = 1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type ";
                 //API_InformationLog("CalculateDailyWindKPI: GetBreakdown query<" + qry + ">");
                 int iBreakdownCount = 0;
                 filter = "";
@@ -8282,7 +8363,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
 
-                string qryAllDevices = "Select location_master_solar_id,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity from location_master_solar where site_id='" + site_id + "' ORDER BY icr_inv ";
+                string qryAllDevices = "Select location_master_solar_id,eg,ig,icr_inv,icr,inv,smb,string as strings,string_configuration,total_string_current,total_string_voltage,modules_quantity,wp,capacity from location_master_solar where status = 1 and  site_id='" + site_id + "' ORDER BY icr_inv ";
 
                 //get all power devices
                 List<SolarLocationMaster_Calc> _SolarLocationMaster_Calc = new List<SolarLocationMaster_Calc>();
@@ -8510,7 +8591,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //  AS total_stop FROM uploading_file_breakdown_solar t1 left join location_master_solar t2 on t2.location_master_solar_id=t1.site_id left join site_master_solar t3 on t3.site_master_solar_id=t2.location_master_solar_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type_id";
 
                 qry = @"SELECT date,t1.site_id, t1.igbd, t1.ext_int_bd as ext_bd, t1.icr,t1.inv,t1.smb,t1.strings,t1.bd_type_id,t1.bd_type, t1.from_bd as stop_from, t1.to_bd as stop_to,total_bd
-                  AS total_stop FROM uploading_file_breakdown_solar t1 left join location_master_solar t2 on t2.location_master_solar_id=t1.site_id left join site_master_solar t3 on t3.site_master_solar_id=t2.location_master_solar_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type_id";
+                  AS total_stop FROM uploading_file_breakdown_solar t1 left join location_master_solar t2 on t2.location_master_solar_id=t1.site_id and t2.status = 1 left join site_master_solar t3 on t3.site_master_solar_id=t2.location_master_solar_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type_id";
 
                 try
                 {
