@@ -1187,9 +1187,9 @@ namespace DGRA_V1.Areas.admin.Controllers
         {
             string status = "";
             bool isGKK = false;
+            DataSet dataSet = new DataSet();
             try
             {
-                DataSet dataSet = new DataSet();
                 DataTable dt = new DataTable();
                 FileInfo excelFile = new FileInfo(filePath);
                 var excel = new ExcelPackage(excelFile);
@@ -1269,7 +1269,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         }
                         catch (Exception ex)
                         {
-                            status = "Something went wrong : Exception Caught Debugging Required";
+                            status = "Exception Caught : " + ex.Message;
                             m_ErrorLog.SetError("," + status);
                         }
                         // add rows
@@ -1279,9 +1279,10 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             catch (Exception ex)
             {
-                status = "Something went wrong : Exception Caught Debugging Required";
-                m_ErrorLog.SetError("," + status + ",");
-                throw new Exception(ex.Message);
+                status = "Exception Caught : " + ex.Message;
+                m_ErrorLog.SetError("," + status);
+                //throw new Exception(ex.Message);
+                return dataSet;
             }
         }
 
