@@ -3787,7 +3787,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.wtg = string.IsNullOrEmpty((string)dr["WTG"]) ? "Nil" : (string)dr["WTG"];
                         errorFlag.Add(stringNullValidation(addUnit.wtg, "WTG", rowNumber));
 
-                        addUnit.wtg = string.IsNullOrEmpty((string)dr["ONM_WTG"]) ? "Nil" : (string)dr["ONM_WTG"];
+                        addUnit.wtg_onm = string.IsNullOrEmpty((string)dr["ONM_WTG"]) ? "Nil" : (string)dr["ONM_WTG"];
                         errorFlag.Add(stringNullValidation(addUnit.wtg, "ONM_WTG", rowNumber));
 
                         addUnit.feeder = string.IsNullOrEmpty((string)dr["Feeder"]) ? 0 : Convert.ToDouble(dr["Feeder"]);

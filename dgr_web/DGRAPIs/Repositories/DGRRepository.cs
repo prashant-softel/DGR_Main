@@ -6006,10 +6006,10 @@ FROM daily_bd_loss_solar where   " + datefilter;
             WindLocationMaster existingRecord = new WindLocationMaster();
             WindLocationMaster existingRecordButNotInSet = new WindLocationMaster();
 
-            string updateQry = "INSERT INTO location_master(location_master_id, feeder, max_kwh_day , status) VALUES";
+            string updateQry = "INSERT INTO location_master(location_master_id,wtg_onm, feeder, max_kwh_day , status) VALUES";
             string updateValues = "";
             // string qry = "insert into location_master(location_master_id, site_master_id, site, wtg, feeder, max_kwh_day) values";
-            string qry = "insert into location_master(site_master_id, site, wtg, feeder, max_kwh_day , status) values";
+            string qry = "insert into location_master(site_master_id, site, wtg, wtg_onm, feeder, max_kwh_day , status) values";
             string insertValues = "";
             foreach (var unit in set)
             {
@@ -6017,19 +6017,19 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 existingRecord = tableData.Find(tableRecord => tableRecord.wtg.Equals(unit.wtg));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.site_master_id + "','" + unit.site + "','" + unit.wtg + "','" + unit.feeder + "','" + unit.max_kwh_day + "', 1),";
+                    insertValues += "('" + unit.site_master_id + "','" + unit.site + "','" + unit.wtg + "','" + unit.wtg_onm + "','" + unit.feeder + "','" + unit.max_kwh_day + "', 1),";
                 }
                 else
                 {
                     //if match is found
-                    updateValues += "(" + existingRecord.location_master_id + ",'" + unit.feeder + "','" + unit.max_kwh_day + "', 1),";
+                    updateValues += "(" + existingRecord.location_master_id + ",'" + unit.wtg_onm + "','" + unit.feeder + "','" + unit.max_kwh_day + "', 1),";
                     //backup updater:
                     //updateQry += "update location_master set feeder = " + unit.feeder + " , max_kwh_day =  " + unit.max_kwh_day + "  where location_master_id = " + existingRecord.location_master_id + ";";
 
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE location_master_id = VALUES(location_master_id), feeder = VALUES(feeder), max_kwh_day = VALUES(max_kwh_day), status = VALUES(status);";
+            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE location_master_id = VALUES(location_master_id),wtg_onm = VALUES(wtg_onm), feeder = VALUES(feeder), max_kwh_day = VALUES(max_kwh_day), status = VALUES(status);";
             //if (!(string.IsNullOrEmpty(insertValues)))
             //{
             //    val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
