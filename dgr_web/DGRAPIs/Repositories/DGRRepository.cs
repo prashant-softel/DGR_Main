@@ -13902,7 +13902,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             difference = timeStamp - endfunction;
             API_InformationLog("First Query executed on : " + timeStamp + ". Time Spent : " + difference);
 
-            string viewQry = "create or replace view expected_temp_view as SELECT t1.date,t3.site,t3.spv,(t3.ac_capacity*1000) as capacity,SUM(t1.inv_kwh) as kwh,t2.LineLoss,SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100) as kwh_afterloss,((SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))/((t3.ac_capacity*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year = year(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id group by t1.date ,t1.site";
+            string viewQry = "create or replace view expected_temp_view as SELECT t1.date,t3.site_master_solar_id as site_id, t3.site,t3.spv,(t3.ac_capacity*1000) as capacity,SUM(t1.inv_kwh) as kwh,t2.LineLoss,SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100) as kwh_afterloss,((SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))/((t3.ac_capacity*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year = year(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id group by t1.date ,t1.site";
             try
             {
                 await Context.ExecuteNonQry<int>(viewQry).ConfigureAwait(false);
@@ -13916,7 +13916,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 API_ErrorLog(msg);
             }
 
-            string viweFetchQry = "SELECT site, kwh_afterloss as inv_kwh, plf_afterloss as plant_kwh FROM `expected_temp_view` where date between '" + fromDate + "' and '" + toDate + "' ";
+            string viweFetchQry = "SELECT date,site, kwh_afterloss as inv_kwh, plf_afterloss as plant_kwh FROM `expected_temp_view` where date between '" + fromDate + "' and '" + toDate + "' and site_id IN(" + site + ");";
             List<SolarExpectedvsActual> newdata = new List<SolarExpectedvsActual>();
             try
             {
@@ -13957,7 +13957,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         foreach(var _actualData in newdata)
                         {
-                            if (_dataElement.site == _actualData.site)
+                            if (_dataElement.date == _actualData.date && _dataElement.site == _actualData.site)
                             {
                                 _dataElement.inv_kwh = _actualData.inv_kwh;
                             }

@@ -432,7 +432,7 @@
                         tbl += '<td class="text-right">' + iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ega.toFixed(2) + '</td>';
                         tbl += '</tr>';
-
+                        //console.log("Actual : " + result[i].inv_kwh);
                         cnt++;
                         total_target += result[i].target;
                         total_expected += (result[i].pexpected / 1000000);
@@ -445,6 +445,7 @@
                         total_egbd += (result[i].egbdh / 1000000);
                         total_curtaiment += (result[i].load_shedding / 1000000);
                     }
+                    //console.log("Counter : " + cnt);
                     expected_cal = (total_expected / total_expected) * 100;
                     usmh_cal = (total_usmh / total_expected) * 100;
                     smh_cal = (total_smh / total_expected) * 100;
