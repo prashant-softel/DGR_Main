@@ -6021,11 +6021,11 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         if(dr.Table.Columns.Contains("Most restrictive WTG Status 10M ()"))
                         {
-                            addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
+                            addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M ()"] is DBNull || string.IsNullOrEmpty((string)dr["Most restrictive WTG Status 10M ()"]) ? 1000 : Convert.ToInt32(dr["Most restrictive WTG Status 10M ()"]);
                         }
                         else if(dr.Table.Columns.Contains("Most restrictive WTG Status 10M \n()"))
                         {
-                            addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M \n()"] is DBNull ? 0 : Convert.ToInt32(dr["Most restrictive WTG Status 10M \n()"]);
+                            addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M \n()"] is DBNull || string.IsNullOrEmpty((string)dr["Most restrictive WTG Status 10M \n()"]) ? 1000 : Convert.ToInt32(dr["Most restrictive WTG Status 10M \n()"]);
                         }
 
 
@@ -6223,7 +6223,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.avg_wind_speed = dr["Actual_Avg_Wind_Speed_10M"] is DBNull || string.IsNullOrEmpty((string)dr["Actual_Avg_Wind_Speed_10M"]) ? 0 : Convert.ToDouble(dr["Actual_Avg_Wind_Speed_10M"]);
 
-                        addUnit.restructive_WTG = Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
+                        addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull || string.IsNullOrEmpty((string)dr["Most restrictive WTG Status 10M"]) ? 1000 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
                         //errorFlag.Add(numericNullValidation(addUnit.restructive_WTG, "Most restrictive WTG Status 10M", rowNumber));
 
                         previousWTG = addUnit.WTGs;
