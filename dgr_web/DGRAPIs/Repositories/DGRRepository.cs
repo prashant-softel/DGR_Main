@@ -14554,5 +14554,28 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\approval_Log.txt", "**Error**:" + Message + "\r\n");
         }
+
+        internal async Task<int> LogError(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
+        {
+            int returnRes = 0;
+            //Read variable from appsetting to enable disable log
+            string logStmt = "INSERT INTO log4netlog (user_id, import_type, Level, module, is_frontend, api_name, Message, created_on) VALUES( " + userId + ", " + import_type + ", 1, " + module + ", " + is_frontend + ", '" + api_name + "', '" + Message.Replace("'", "") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "' );";
+
+            var logged = await Context.ErrorLog(logStmt).ConfigureAwait(false);
+            returnRes = logged;
+
+            return returnRes;
+        }
+        internal async Task<int> LogInfo(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
+        {
+            int returnRes = 0;
+            //Read variable from appsetting to enable disable log
+            string logStmt = "INSERT INTO log4netlog (user_id, import_type, Level, module, is_frontend, api_name, Message, created_on) VALUES( " + userId + ", " + import_type + ", 2, " + module + ", " + is_frontend + ", '" + api_name + "', '" + Message.Replace("'", "") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "' );";
+            
+            var logged = await Context.ErrorLog(logStmt).ConfigureAwait(false);
+            returnRes = logged;
+
+            return returnRes;
+        }
     }
 }

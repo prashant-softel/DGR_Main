@@ -35,7 +35,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         private IDapperRepository _idapperRepo;
         private IWebHostEnvironment env;
         private static IHttpContextAccessor HttpContextAccessor;
-//        CultureInfo timeCulture = CultureInfo.InvariantCulture;
+        //        CultureInfo timeCulture = CultureInfo.InvariantCulture;
         public FileUploadController(IDapperRepository idapperobj, IWebHostEnvironment iwebhostobj, IHttpContextAccessor httpObj)
         {
             HttpContextAccessor = httpObj;
@@ -115,9 +115,9 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 //  string response = await ExceldatareaderAndUpload(Request.Files["Path"]);
                 string finalResponse = "";
-                for(int i = 0; i < HttpContext.Request.Form.Files.Count; i++)
+                for (int i = 0; i < HttpContext.Request.Form.Files.Count; i++)
                 {
-					//Clearing hashtables and list before importing new file.
+                    //Clearing hashtables and list before importing new file.
                     equipmentId.Clear();
                     onm2equipmentName.Clear();
                     SiteByWtg.Clear();
@@ -140,10 +140,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                 m_ErrorLog.SetError(",Failed to upload {fileUploadType},");
                 ErrorLog("Failed to upload <" + FileUpload + ">  File <" + HttpContext.Request.Form.Files[0] + "> Reason : " + ex.ToString());
 
-        }
+            }
             return View();
         }
-       
+
         public async Task<string> ExcelDataReaderAndUpload(IFormFile file, string fileUploadType)
         {
             var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
@@ -178,7 +178,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 isGamesa = 1;
             }*/
-            
+
             if (file.FileName.ToString().StartsWith("TenMinLog"))
             {
                 isInox = 1;
@@ -288,7 +288,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     isTracker = fileSheets.Contains("Solar_tracker_loss");
                                 }
                             }
-                            
+
                             //Status Codes:
                             //200 = Success ; 400 = Failure(BadRequest)
                             FileSheetType.FileImportType fileImportType = FileSheetType.FileImportType.imporFileType_Invalid;
@@ -307,7 +307,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             if (isBdSheet)
                                             {
-                                                if(isPyrano1Min)
+                                                if (isPyrano1Min)
                                                 {
                                                     if (isPyrano15Min)
                                                     {
@@ -748,7 +748,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     fileImportType = FileSheetType.FileImportType.imporFileType_Suzlon_TMD;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
-                                    if(ds.Tables.Count > 0)
+                                    if (ds.Tables.Count > 0)
                                     {
                                         if (fileUploadType == "Soalr")
                                         {
@@ -784,7 +784,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     fileImportType = FileSheetType.FileImportType.imporFileType_Breakdown_Code_INOX;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
-                                    if(ds.Tables.Count > 0)
+                                    if (ds.Tables.Count > 0)
                                     {
                                         if (fileUploadType == "Soalr")
                                         {
@@ -834,7 +834,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     }
                                 }*/
                                 //GA, GS, GG, BD, NEW, NL, GK, GBR, G114
-                                else if (excelSheet.ToString().StartsWith("GKK") || excelSheet.ToString().StartsWith("GA") ||excelSheet.ToString().StartsWith("GS") ||excelSheet.ToString().StartsWith("GG") ||excelSheet.ToString().StartsWith("BD") ||excelSheet.ToString().StartsWith("NEW") ||excelSheet.ToString().StartsWith("NL") ||excelSheet.ToString().StartsWith("GK") || excelSheet.ToString().StartsWith("GBR") || excelSheet.ToString().StartsWith("G114"))
+                                else if (excelSheet.ToString().StartsWith("GKK") || excelSheet.ToString().StartsWith("GA") || excelSheet.ToString().StartsWith("GS") || excelSheet.ToString().StartsWith("GG") || excelSheet.ToString().StartsWith("BD") || excelSheet.ToString().StartsWith("NEW") || excelSheet.ToString().StartsWith("NL") || excelSheet.ToString().StartsWith("GK") || excelSheet.ToString().StartsWith("GBR") || excelSheet.ToString().StartsWith("G114"))
                                 {
                                     fileImportType = FileSheetType.FileImportType.imporFileType_GKK;
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
@@ -882,15 +882,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             await importMetaData(fileUploadType, file.FileName, fileImportType);
                                             statusCode = await dgrWindImport(batchIdDGRAutomation);
-                                            if(statusCode == 200)
+                                            if (statusCode == 200)
                                             {
                                                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailyWindKPI?fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
                                                 //remove after testing
                                                 // m_ErrorLog.SetInformation("Url" + url);
                                                 using (var client = new HttpClient())
                                                 {
-													InformationLog("added timeout to InfiniteTimeSpan");
-                                                	client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                                                    InformationLog("added timeout to InfiniteTimeSpan");
+                                                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                     var response = await client.GetAsync(url);
                                                     //status = "Respose" + response;
                                                     if (response.IsSuccessStatusCode)
@@ -905,7 +905,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                         siteUserRole = HttpContext.Session.GetString("role");
                                                         if (siteUserRole == "Admin")
                                                         {
-                                                        
+
                                                             var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
                                                             using (var client1 = new HttpClient())
                                                             {
@@ -924,7 +924,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                     }
                                                     else
                                                     {
-                                                    
+
                                                         statusCode = (int)response.StatusCode;
                                                         string errorMsg = response.Content.ReadAsStringAsync().Result;
                                                         status = "Wind KPI Calculation Import API Failed";
@@ -932,7 +932,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                                                         //for solar 0, wind 1;
                                                         int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 1);
-                                                        if(deleteStatus == 1)
+                                                        if (deleteStatus == 1)
                                                         {
                                                             m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
                                                         }
@@ -981,18 +981,24 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             DateTime dttt = DateTime.Now;
                                             //InformationLog("ImportMetaData function called from FUCtrl" + dttt);
-                                            await importMetaData(fileUploadType, file.FileName, fileImportType);
-                                            statusCode = await dgrSolarImport(batchIdDGRAutomation);
-                                            if(statusCode == 200)
+                                            // Added Task
+                                            await Task.WhenAll(
+                                                importMetaData(fileUploadType, file.FileName, fileImportType),
+                                                dgrSolarImport(batchIdDGRAutomation)
+                                            );
+                                            //await importMetaData(fileUploadType, file.FileName, fileImportType);
+                                            //statusCode = await dgrSolarImport(batchIdDGRAutomation);
+                                            if (statusCode == 200)
                                             {
                                                 //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?fromDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
                                                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
-                                                using (var client = new HttpClient())
+                                                var client = new HttpClient();
+                                                var task = Task.Run(async () =>
                                                 {
                                                     InformationLog("added timeout to InfiniteTimeSpan");
                                                     client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                     dttt = DateTime.Now;
-                                                    InformationLog("CalculateDailysolarKPI API Called." +dttt);
+                                                    InformationLog("CalculateDailysolarKPI API Called." + dttt);
                                                     InformationLog(url);
                                                     var response = await client.GetAsync(url);
                                                     //response.Timeout = TimeSpan.FromSeconds(300); // set the request timeout to 5 minutes
@@ -1004,13 +1010,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                         if (returnResponse != "0")
                                                         {
                                                             string[] errCodes = returnResponse.Split(",");
-                                                            for(int i=0; i < errCodes.Length; i++)
+                                                            for (int i = 0; i < errCodes.Length; i++)
                                                             {
                                                                 int code = Convert.ToInt32(errCodes[i]);
                                                                 ErrorCode ec = (ErrorCode)code;
                                                                 //retrieve error code from enum and common file.
                                                                 ErrorCodes.ErrorDescriptionMap.TryGetValue(ec, out string errorDescription);
-                                                                if(code != 0)
+                                                                if (code != 0)
                                                                 {
                                                                     m_ErrorLog.SetError("," + errorDescription);
                                                                 }
@@ -1023,7 +1029,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                         //InformationLog("CalculateDailySolarKpI function returned successfully to frontend." + dttt);
                                                         m_ErrorLog.SetInformation(",SolarKPI Calculations Updated Successfully:");
                                                         statusCode = (int)response.StatusCode;
-                                                        status = "Successfully Uploaded";                                                    
+                                                        status = "Successfully Uploaded";
                                                         // Added Code auto approved if uploaded by admin
                                                         string userName = HttpContext.Session.GetString("DisplayName");
                                                         int userId = Convert.ToInt32(HttpContext.Session.GetString("userid"));
@@ -1069,7 +1075,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                             m_ErrorLog.SetError(", Records deletion failed due to incomplete upload");
                                                         }
                                                     }
-                                                }
+                                                });
                                             }
                                             else
                                             {
@@ -1167,7 +1173,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             else
             {
                 //excel file format condition
-                status = "File extension not supported. Upload type <" + fileUploadType + ">  Filename < " + csvFileName + ">"  ;
+                status = "File extension not supported. Upload type <" + fileUploadType + ">  Filename < " + csvFileName + ">";
                 m_ErrorLog.SetError("," + status + ":");
                 ErrorLog(status);
             }
@@ -1188,6 +1194,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             string status = "";
             bool isGKK = false;
             DataSet dataSet = new DataSet();
+
             try
             {
                 DataTable dt = new DataTable();
@@ -1204,11 +1211,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         _worksheetList.Add(worksheet.Name);
                     }
-                    if(isInox == 1)
+                    if (isInox == 1)
                     {
                         _worksheetList.Add(worksheet.Name);
                     }
-                    if(isSuzlon == 1)
+                    if (isSuzlon == 1)
                     {
                         _worksheetList.Add(worksheet.Name);
                     }
@@ -1260,7 +1267,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         ex.GetType();
                                         //+ ex.ToString();
                                         //status = status.Substring(0, (status.IndexOf("Exception") + 8));
-                                       // m_ErrorLog.SetError("," + status);
+                                        // m_ErrorLog.SetError("," + status);
                                     }
                                 }
                                 dt.Rows.Add(newR);
@@ -1358,30 +1365,30 @@ namespace DGRA_V1.Areas.admin.Controllers
         private async Task<int> DeleteRecordsAfterFailure(string importData, int siteType)
         {
             //for solar 0, wind 1;
-                int batchId = await GetBatchId(importData);
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/DeleteRecordsAfterFailure?batchId=" + batchId + "&siteType=" + siteType + "";
-                var result = "";
+            int batchId = await GetBatchId(importData);
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/DeleteRecordsAfterFailure?batchId=" + batchId + "&siteType=" + siteType + "";
+            var result = "";
             DateTime dtt = DateTime.Now;
             //InformationLog("DeleterecordsAfterFailure API called : "+ dtt);
-                WebRequest request = WebRequest.Create(url);
-                using (var responses = (HttpWebResponse)request.GetResponse())
-                {
-                    Stream receiveStream = responses.GetResponseStream();
+            WebRequest request = WebRequest.Create(url);
+            using (var responses = (HttpWebResponse)request.GetResponse())
+            {
+                Stream receiveStream = responses.GetResponseStream();
                 dtt = DateTime.Now;
                 //InformationLog("DeleteRecordsAfterFailure returned to frontend. "+dtt);
-                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
-                    {
-                        result = readStream.ReadToEnd();
-                    }
-                    if (result == "1")
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        return 0;
-                    }
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    result = readStream.ReadToEnd();
                 }
+                if (result == "1")
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
 
         private async Task<int> InsertSolarFileGeneration(string status, DataSet ds)
@@ -1428,21 +1435,21 @@ namespace DGRA_V1.Areas.admin.Controllers
                         rowNumber++;
                         bool skipRow = false;
                         bool isdateEmpty = dr["Date"] is DBNull || string.IsNullOrEmpty((string)dr["Date"]);
-                        if(isdateEmpty)
+                        if (isdateEmpty)
                         {
                             m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
                             continue;
                         }
                         addUnit.date = isdateEmpty ? "Nil" : Convert.ToString((string)dr["Date"]);
-                        
+
                         errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
-                        
+
                         addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
                         if (rowNumber == 2)
                         {
                             generationDate = addUnit.date;
                         }
-                        if(rowNumber > 2)
+                        if (rowNumber > 2)
                         {
                             if (generationDate != addUnit.date)
                             {
@@ -1461,7 +1468,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             errorFlag.Add(uniformWindSiteValidation(rowNumber, addUnit.site_id, ""));
                         }
-                           
+
                         objImportBatch.importSiteId = addUnit.site_id;//C
                         kpiSite = Convert.ToString(addUnit.site_id);
                         if (rowNumber == 2)
@@ -1469,7 +1476,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             objImportBatch.automationDataDate = addUnit.date;
                             dateValidate = Convert.ToDateTime((string)dr["Date"]);
                             errorFlag.Add(importDateValidation(2, addUnit.site_id, dateValidate));
-                            
+
                         }
                         //nextDate = Convert.ToDateTime(dr["Date"], timeCulture);
                         nextDate = Convert.ToDateTime(dr["Date"]);
@@ -1484,7 +1491,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         double importValue = 0.00;
                         int logErrorFlag = 0; //log as information
-//                        addUnit.inv_act = string.IsNullOrEmpty((string)dr["Inv_Act(KWh)"]) ? 0 : Convert.ToDouble(dr["Inv_Act(KWh)"]);
+                                              //                        addUnit.inv_act = string.IsNullOrEmpty((string)dr["Inv_Act(KWh)"]) ? 0 : Convert.ToDouble(dr["Inv_Act(KWh)"]);
                         addUnit.inv_act = validateNumeric(((string)dr["Inv_Act(KWh)"]), "Inv_Act(KWh)", rowNumber, dr["Inv_Act(KWh)"] is DBNull, logErrorFlag, out importValue) ? 0 : importValue;
                         errorFlag.Add(negativeNullValidation(addUnit.inv_act, "Inv_Act(KWh)", rowNumber));
                         //addUnit.plant_act = string.IsNullOrEmpty((string)dr["Plant_Act(kWh)"]) ? 0 : Convert.ToDouble(dr["Plant_Act(kWh)"]);
@@ -1571,7 +1578,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             WindUploadingFileValidation validationObject = new WindUploadingFileValidation(m_ErrorLog, _idapperRepo);
             if (ds.Tables.Count > 0)
             {
-               var numberofrows = ds.Tables[0].Rows.Count;
+                var numberofrows = ds.Tables[0].Rows.Count;
 
                 for (int i = 0; i < numberofrows; i++)
                 {
@@ -1594,10 +1601,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //addUnit.date = string.IsNullOrEmpty((string)dr["Date"]) ? "Nil" : Convert.ToString((string)dr["Date"]);
                         // errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
                         //addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
-                        if(addUnit.wtg == "" && addUnit.wind_speed == "" && addUnit.kwh == "" && addUnit.grid_hrs == "" && addUnit.lull_hrs == "")
+                        if (addUnit.wtg == "" && addUnit.wind_speed == "" && addUnit.kwh == "" && addUnit.grid_hrs == "" && addUnit.lull_hrs == "")
                         {
-                            m_ErrorLog.SetError(",File row <" + rowNumber + ">" +"Is blank.");
-                            ErrorLog(",File row <" + rowNumber + ">" +"Is blank.");
+                            m_ErrorLog.SetError(",File row <" + rowNumber + ">" + "Is blank.");
+                            ErrorLog(",File row <" + rowNumber + ">" + "Is blank.");
                             skipRow = true;
                             continue;
                         }
@@ -1611,11 +1618,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.date = isdateEmpty ? "Nil" : Convert.ToString((string)dr["Date"]);
                         errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
                         addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
-                        if(rowNumber == 2)
+                        if (rowNumber == 2)
                         {
-                            generationDate = addUnit.date; 
+                            generationDate = addUnit.date;
                         }
-                        if(rowNumber > 2)
+                        if (rowNumber > 2)
                         {
                             if (generationDate != addUnit.date)
                             {
@@ -1649,7 +1656,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             errorFlag.Add(uniformWindSiteValidation(rowNumber, addUnit.site_id, addUnit.wtg));
                         }
-                            
+
                         objImportBatch.importSiteId = addUnit.site_id;
                         //dateValidate = Convert.ToDateTime((string)dr["Date"]).ToString("yyyy-MM-dd");
                         if (rowNumber == 2)
@@ -1665,7 +1672,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //addUnit.wind_speed = string.IsNullOrEmpty((string)dr["Wind_Speed"]) ? 0 : Convert.ToDouble(dr["Wind_Speed"]);
                         addUnit.wind_speed = validateNumeric(((string)dr["Wind_Speed"]), "Wind_Speed", rowNumber, dr["Wind_Speed"] is DBNull, logErrorFlag, out importValue) ? 0 : importValue;
                         errorFlag.Add(numericNullValidation(addUnit.wind_speed, "Wind_Speed", rowNumber));
-                       
+
                         //addUnit.operating_hrs = dr["Gen_Hrs"] is DBNull || string.IsNullOrEmpty((string)dr["Gen_Hrs"]) ? 0 : Convert.ToDouble(dr["Gen_Hrs"]);
                         addUnit.operating_hrs = validateNumeric(((string)dr["Gen_Hrs"]), "Gen_Hrs", rowNumber, dr["Gen_Hrs"] is DBNull, logErrorFlag, out importValue) ? 0 : importValue;
                         //errorFlag.Add(numericNullValidation(addUnit.operating_hrs, "Gen_Hrs", rowNumber));
@@ -1674,10 +1681,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.kwh = validateNumeric(((string)dr["kWh"]), "kWh", rowNumber, dr["kWh"] is DBNull, logErrorFlag, out importValue) ? 0 : importValue;
                         errorFlag.Add(kwhValidation(addUnit.kwh, addUnit.operating_hrs, "kWh", rowNumber, max_kWh));
 
-                       // addUnit.kwh = string.IsNullOrEmpty((string)dr["kWh"]) ? 0 : Convert.ToDouble(dr["kWh"]);
-                       // errorFlag.Add(numericNullValidation(addUnit.kwh, "kWh", rowNumber));
+                        // addUnit.kwh = string.IsNullOrEmpty((string)dr["kWh"]) ? 0 : Convert.ToDouble(dr["kWh"]);
+                        // errorFlag.Add(numericNullValidation(addUnit.kwh, "kWh", rowNumber));
 
-                       // addUnit.operating_hrs = dr["Gen_Hrs"] is DBNull || string.IsNullOrEmpty((string)dr["Gen_Hrs"]) ? 0 : ////Convert.ToDouble(dr["Gen_Hrs"]);
+                        // addUnit.operating_hrs = dr["Gen_Hrs"] is DBNull || string.IsNullOrEmpty((string)dr["Gen_Hrs"]) ? 0 : ////Convert.ToDouble(dr["Gen_Hrs"]);
 
                         //errorFlag.Add(numericNullValidation(addUnit.operating_hrs, "Gen_Hrs", rowNumber));
                         //last column is Blank
@@ -1778,7 +1785,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         }
 
                         //last row is Blank
-                        if(addUnit.date == "" && addUnit.bd_type == "" && addUnit.action_taken == "")
+                        if (addUnit.date == "" && addUnit.bd_type == "" && addUnit.action_taken == "")
                         {
                             m_ErrorLog.SetError(",File row <" + rowNumber + ">" + "Is blank.");
                             ErrorLog(",Exception Occurred In : SolarUploadingFileBreakdown: ");
@@ -1792,7 +1799,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         objImportBatch.importSiteId = addUnit.site_id;
                         //can be nil:
                         addUnit.ext_int_bd = string.IsNullOrEmpty((string)dr["Ext_BD"]) ? "Nil" : Convert.ToString(dr["Ext_BD"]);
-                        
+
                         //can be nil:
                         //addUnit.wtg_id = equipmentId.ContainsKey(addUnit.wtg) ? Convert.ToInt32(equipmentId[addUnit.wtg]) : 0;
                         addUnit.igbd = string.IsNullOrEmpty((string)dr["IGBD"]) ? "Nil" : Convert.ToString(dr["IGBD"]);
@@ -1923,7 +1930,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             m_ErrorLog.SetInformation(", Date value is empty. The row would be skiped.");
                             continue;
                         }
-                        addUnit.date =  isdateEmpty ? "Nil" : Convert.ToString(dr["Date"]);
+                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToString(dr["Date"]);
                         errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
                         addUnit.date = errorFlag[0] ? "Nil" : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
 
@@ -1952,7 +1959,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             continue;
                         }
 
-                        if(generationDate !=addUnit.date)
+                        if (generationDate != addUnit.date)
                         {
                             m_ErrorLog.SetError(",Row <" + rowNumber + "> column <Date> : File Generation <" + generationDate + "> and Breakdown Date <" + addUnit.date + "> missmatched");
                             errorCount++;
@@ -1967,11 +1974,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                         objImportBatch.importSiteId = addUnit.site_id;
                         addUnit.bd_type = Convert.ToString(dr["BD_Type"]);
                         addUnit.bd_type_id = Convert.ToInt32(breakdownType[addUnit.bd_type]);//B
-/*                        if (addUnit.bd_type_id == 0)
-                        {
-                            m_ErrorLog.SetError(",Row <" + rowNumber + "> column <BD_Type> : Invalid BD_Type <" + addUnit.bd_type + ">");
-                            errorFlag.Add(true);                                
-                        }*/
+                        /*                        if (addUnit.bd_type_id == 0)
+                                                {
+                                                    m_ErrorLog.SetError(",Row <" + rowNumber + "> column <BD_Type> : Invalid BD_Type <" + addUnit.bd_type + ">");
+                                                    errorFlag.Add(true);                                
+                                                }*/
                         errorFlag.Add(bdTypeValidation(addUnit.bd_type, rowNumber));
                         addUnit.stop_from = Convert.ToDateTime(dr["Stop From"]).ToString("HH:mm:ss");
                         addUnit.stop_to = Convert.ToDateTime(dr["Stop To"]).ToString("HH:mm:ss");
@@ -1981,7 +1988,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.error_description = errorDescription;
                         string sActionTaken = dr["Action Taken"] is DBNull || string.IsNullOrEmpty((string)dr["Action Taken"]) ? "Nil" : Convert.ToString(dr["Action Taken"]);
                         sActionTaken = validateAndCleanSpChar(rowNumber, "Action Taken", sActionTaken);
-                        if(sActionTaken.Length > 300)
+                        if (sActionTaken.Length > 300)
                         {
                             sActionTaken = sActionTaken.Substring(0, 300);
                             m_ErrorLog.SetError(",String at <" + rowNumber + "> has trimed to 300 character length.");
@@ -2003,7 +2010,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             addSet.Add(addUnit);
                         }
                         //last column is Blank
-                        if(addUnit.action_taken == "" || addUnit.action_taken == "nil")
+                        if (addUnit.action_taken == "" || addUnit.action_taken == "nil")
                         {
                             m_ErrorLog.SetError(",Row <" + rowNumber + "> column <Action Taken> :  Action Taken column is blank <" + addUnit.action_taken + ">");
                             errorCount++;
@@ -2204,15 +2211,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(validateNumeric(((string)dr["POA-1"]), "POA-1", rowNumber, dr["POA-1"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_1 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-3"]), "POA-2", rowNumber, dr["POA-2"] is DBNull, logErrorFlag, out importValue));
-                        addUnit.poa_2 = importValue; 
+                        addUnit.poa_2 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-3"]), "POA-3", rowNumber, dr["POA-3"] is DBNull, logErrorFlag, out importValue));
-                        addUnit.poa_3 = importValue; 
+                        addUnit.poa_3 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-4"]), "POA-4", rowNumber, dr["POA-4"] is DBNull, logErrorFlag, out importValue));
-                        addUnit.poa_4 = importValue; 
+                        addUnit.poa_4 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-5"]), "POA-5", rowNumber, dr["POA-5"] is DBNull, logErrorFlag, out importValue));
-                        addUnit.poa_5 = importValue; 
+                        addUnit.poa_5 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-6"]), "POA-6", rowNumber, dr["POA-6"] is DBNull, logErrorFlag, out importValue));
-                        addUnit.poa_6 = importValue; 
+                        addUnit.poa_6 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-7"]), "POA-7", rowNumber, dr["POA-7"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_7 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["Average GHI (w/m²)"]), "Average GHI (w/m²)", rowNumber, dr["Average GHI (w/m²)"] is DBNull, logErrorFlag, out importValue));
@@ -2310,7 +2317,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(negativeNullValidation(addUnit.Controller_KWH_INV, "Controller KWH/INV KWH", rowNumber));
 
                         addUnit.Scheduled_Units_kWh = Convert.ToDouble(dr["Scheduled Units (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Scheduled Units (kWh)"]) ? 0 : dr["Scheduled Units (kWh)"]);
-                       // errorFlag.Add(negativeNullValidation(addUnit.Scheduled_Units_kWh, "Scheduled Units (kWh)", rowNumber));
+                        // errorFlag.Add(negativeNullValidation(addUnit.Scheduled_Units_kWh, "Scheduled Units (kWh)", rowNumber));
 
                         addUnit.Export_kWh = Convert.ToDouble((dr["Export (kWh)"] is DBNull) ? 0 : dr["Export (kWh)"]);
                         errorFlag.Add(negativeNullValidation(addUnit.Export_kWh, "Export (kWh)", rowNumber));
@@ -2542,7 +2549,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
         private async Task<int> InsertSolarMonthlyLineLoss(string status, DataSet ds)
         {
-           // InformationLog("InsertSolarMonthlyLineLoss function Called : " + DateTime.Now);
+            // InformationLog("InsertSolarMonthlyLineLoss function Called : " + DateTime.Now);
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
             long rowNumber = 1;
@@ -2636,12 +2643,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 m_ErrorLog.SetError(",Solar Monthly Lineloss File Empty,");
             }
-           // InformationLog("InsertSolarMonthlyLineLoss function Completed : " + DateTime.Now);
+            // InformationLog("InsertSolarMonthlyLineLoss function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindMonthlyLineLoss(string status, DataSet ds)
         {
-           // InformationLog("InsertWindMonthlyLineLoss function Called : " + DateTime.Now);
+            // InformationLog("InsertWindMonthlyLineLoss function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -2853,12 +2860,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 m_ErrorLog.SetError(",Solar Monthly Target KPI File empty,");
             }
-           // InformationLog("InsertSolarMonthlyTargetKPI function Completed : " + DateTime.Now);
+            // InformationLog("InsertSolarMonthlyTargetKPI function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertWindMonthlyTargetKPI(string status, DataSet ds)
         {
-           // InformationLog("InsertWindMonthlyTargetKPI function Called : " + DateTime.Now);
+            // InformationLog("InsertWindMonthlyTargetKPI function Called : " + DateTime.Now);
             long rowNumber = 1;
             int errorCount = 0;
             List<bool> errorFlag = new List<bool>();
@@ -2959,12 +2966,12 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 m_ErrorLog.SetError(",Wind Monthly Target KPI File empty,");
             }
-           // InformationLog("InsertWindMonthlyTargetKPI function Completed : " + DateTime.Now);
+            // InformationLog("InsertWindMonthlyTargetKPI function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertSolarDailyLoadShedding(string status, DataSet ds)
         {
-          //  InformationLog("InsertSolarDailyLoadShedding function Called : " + DateTime.Now);
+            //  InformationLog("InsertSolarDailyLoadShedding function Called : " + DateTime.Now);
             long rowNumber = 1;
             List<bool> errorFlag = new List<bool>();
             int errorCount = 0;
@@ -3411,12 +3418,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //No data in the file
                 m_ErrorLog.SetError(",Wind Daily Target KPI File is empty,");
             }
-           // InformationLog("InsertWindDailyTargetKPI function Completed : " + DateTime.Now);
+            // InformationLog("InsertWindDailyTargetKPI function Completed : " + DateTime.Now);
             return responseCode;
         }
         private async Task<int> InsertSolarSiteMaster(string status, DataSet ds)
         {
-           // InformationLog("InsertSolarSiteMaster function Called : " + DateTime.Now);
+            // InformationLog("InsertSolarSiteMaster function Called : " + DateTime.Now);
             int responseCode = 400;
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 0;
@@ -3726,7 +3733,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarLocationMaster"+ rowNumber);
+                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarLocationMaster" + rowNumber);
                         ErrorLog(",Exception Occurred In Function: InsertSolarLocationMaster: " + e.ToString());
                         errorCount++;
                     }
@@ -4003,7 +4010,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
             }
         }
-        
+
         //HashTable List
         public void masterHashtable_WtgToWtgId()
         {
@@ -4282,7 +4289,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 else
                 {
-                    m_ErrorLog.SetError(",Solar Break Import API Failed. Error code <"+ responseCodeBreak + ">");
+                    m_ErrorLog.SetError(",Solar Break Import API Failed. Error code <" + responseCodeBreak + ">");
                 }
             }
 
@@ -4400,14 +4407,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     m_ErrorLog.SetInformation(",Wind BreakDown Import API Successful:");
-                   // InformationLog("InsertWindUploadingFileBreakDown success ");
+                    // InformationLog("InsertWindUploadingFileBreakDown success ");
 
                 }
                 else
                 {
                     //responseCodeBreak = (int)response.StatusCode;
                     m_ErrorLog.SetError(",Wind BreakDown Import API Failed. Error code <" + responseCodeBreak + ">\r\n");
-                   // InformationLog("InsertWindUploadingFileBreakDown Failed code line :3745 " + responseCodeBreak);
+                    // InformationLog("InsertWindUploadingFileBreakDown Failed code line :3745 " + responseCodeBreak);
 
                 }
             }
@@ -4561,9 +4568,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         m_ErrorLog.SetError(", User does not have access to site : " + siteName[siteId] + ",");
                         invalidSiteUniformity = true;
                     }
-                    
+
                 }
-                else if(fileSheets.Contains("Uploading_File_Generation") && importData[0] == "Solar")
+                else if (fileSheets.Contains("Uploading_File_Generation") && importData[0] == "Solar")
                 {
                     if (siteId == 0)
                     {
@@ -4584,17 +4591,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
                 else
                 {
-                   /*if (windSiteUserAccess.Contains(siteId))
-                    {
-                        //add error log : user has access to site
-                        m_ErrorLog.SetInformation(", User has access to site : " + siteName[siteId] + ",");
-                    }
-                    else
-                    {
-                        //add error log : user does not have access to site
-                        m_ErrorLog.SetError(", User does not have access to site : " + siteName[siteId] + ",");
-                        invalidSiteUniformity = true;
-                    }*/
+                    /*if (windSiteUserAccess.Contains(siteId))
+                     {
+                         //add error log : user has access to site
+                         m_ErrorLog.SetInformation(", User has access to site : " + siteName[siteId] + ",");
+                     }
+                     else
+                     {
+                         //add error log : user does not have access to site
+                         m_ErrorLog.SetError(", User does not have access to site : " + siteName[siteId] + ",");
+                         invalidSiteUniformity = true;
+                     }*/
                 }
                 //valdiate if the user has access to this site
                 //Collection of site for upload access
@@ -4617,13 +4624,13 @@ namespace DGRA_V1.Areas.admin.Controllers
             TimeSpan dayDiff = dtToday - dtImportDate;
             int dayOfWeek = (int)dtToday.DayOfWeek;
 
-            
+
             //for DayOfWeek function 
             //if it's not true that file-date is of previous day and today is from Tuesday-Friday
             //&& dayOfWeek > 1 && dayOfWeek < 6
             if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
             {
-                if(siteUserRole == "Admin")
+                if (siteUserRole == "Admin")
                 {
                     m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
                 }
@@ -4635,29 +4642,29 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
 
             }
-            if(retValue == false)
+            if (retValue == false)
             {
                 //if date is within 5 days
                 //Check if the data is already import and/or Approved
-                
+
                 int IBStatus = 0;
                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetBatchStatus?site_id=" + siteID + "&import_type=" + importType + "&import_date=" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd");
-                
-                string result ="";
-               // string line = "";
+
+                string result = "";
+                // string line = "";
                 WebRequest request = WebRequest.Create(url);
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     Stream receiveStream = response.GetResponseStream();
                     using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                     {
-                       // result = readStream.ReadToEnd();
+                        // result = readStream.ReadToEnd();
                         result = readStream.ReadToEnd().Trim();
                     }
                     //ImportBatchStatus obj = new ImportBatchStatus();
                     //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
                     //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
-                    
+
                     IBStatus = Convert.ToInt32(result);
                     if (IBStatus == 1)
                     {
@@ -4924,7 +4931,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             bool retValue = false;
             importValue = 0;
 
-//            if (val is DBNull)
+            //            if (val is DBNull)
             if (dbNullError)
             {
                 //dont log error but set value to 0
@@ -5010,7 +5017,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 retVal = true;
             }
             string value = Convert.ToString(kwhValue);
-            if (kwhValue < 0 )
+            if (kwhValue < 0)
             {
                 m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : kWh value cannot be negative or null or 0,");
                 retVal = true;
@@ -5050,7 +5057,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         public string validateAndCleanSpChar(long rowNumber, string colName, string sActionTaken)
         {
             string retValue = "";
-            List<char> charsToRemove = new List<char>() { '\'', '/', '\\', ')', '('  };
+            List<char> charsToRemove = new List<char>() { '\'', '/', '\\', ')', '(' };
             retValue = Filter(rowNumber, colName, sActionTaken, charsToRemove);
             return retValue;
         }
@@ -5759,7 +5766,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             errorCount++;
                         }
                         addUnit.fy_date = isFy ? (string)(dr["FY Date"]) : "";
-                        if(addUnit.fy_date != "")
+                        if (addUnit.fy_date != "")
                         {
                             string finalDate = Convert.ToDateTime(addUnit.fy_date).ToString("yyyy-MM-dd");
                             addUnit.fy_date = finalDate;
@@ -5772,9 +5779,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         int year = isFy ? int.Parse(Convert.ToDateTime(addUnit.fy_date).ToString("yyyy")) : 0;
 
                         addUnit.year = (addUnit.month_no > 3) ? year : year += 1;
-                        if(!(dr["Time"] is DBNull || string.IsNullOrEmpty((string)dr["Time"])))
+                        if (!(dr["Time"] is DBNull || string.IsNullOrEmpty((string)dr["Time"])))
                         {
-                            addUnit.time =  Convert.ToDateTime(dr["Time"]).ToString("HH:mm:ss");
+                            addUnit.time = Convert.ToDateTime(dr["Time"]).ToString("HH:mm:ss");
                         }
 
                         addUnit.glob_hor = dr["GlobHor"] is DBNull || string.IsNullOrEmpty((string)dr["GlobHor"]) ? 0 : Convert.ToDouble(dr["GlobHor"]);
@@ -5887,7 +5894,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.onm_wtg = tabName;
                         addUnit.WTGs = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
-                        if(addUnit.WTGs == "")
+                        if (addUnit.WTGs == "")
                         {
                             addUnit.WTGs = equipmentId.ContainsKey(tabName) ? tabName : "";
                         }
@@ -5973,14 +5980,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (dr.Table.Columns.Contains("Average Active Power 10M (kW)"))
                         {
                             isActivePowerEmpty = dr["Average Active Power 10M (kW)"] is DBNull;
-                        }else if(dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
+                        } else if (dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
                         {
                             isActivePowerEmpty = dr["Average Active Power 10M \n(kW)"] is DBNull;
                         }
 
                         if (!isActivePowerEmpty)
                         {
-                            if(rowNumber > 39)
+                            if (rowNumber > 39)
                             {
                                 int te = 1;
                             }
@@ -5988,7 +5995,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             {
                                 addUnit.avg_active_power = string.IsNullOrEmpty((string)dr["Average Active Power 10M (kW)"]) ? 0 : Convert.ToDouble(dr["Average Active Power 10M (kW)"]);
                                 addUnit.status_code = 0;
-                            }else if(dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
+                            } else if (dr.Table.Columns.Contains("Average Active Power 10M \n(kW)"))
                             {
                                 addUnit.avg_active_power = string.IsNullOrEmpty((string)dr["Average Active Power 10M \n(kW)"]) ? 0 : Convert.ToDouble(dr["Average Active Power 10M \n(kW)"]);
                                 addUnit.status_code = 0;
@@ -6019,11 +6026,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                             addUnit.avg_wind_speed = dr["Average Wind Speed 10M \n(m/s)"] is DBNull || string.IsNullOrEmpty((string)dr["Average Wind Speed 10M \n(m/s)"]) ? 0 : Convert.ToDouble(dr["Average Wind Speed 10M \n(m/s)"]);
                         }
 
-                        if(dr.Table.Columns.Contains("Most restrictive WTG Status 10M ()"))
+                        if (dr.Table.Columns.Contains("Most restrictive WTG Status 10M ()"))
                         {
                             addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M ()"] is DBNull || string.IsNullOrEmpty((string)dr["Most restrictive WTG Status 10M ()"]) ? 1000 : Convert.ToInt32(dr["Most restrictive WTG Status 10M ()"]);
                         }
-                        else if(dr.Table.Columns.Contains("Most restrictive WTG Status 10M \n()"))
+                        else if (dr.Table.Columns.Contains("Most restrictive WTG Status 10M \n()"))
                         {
                             addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M \n()"] is DBNull || string.IsNullOrEmpty((string)dr["Most restrictive WTG Status 10M \n()"]) ? 1000 : Convert.ToInt32(dr["Most restrictive WTG Status 10M \n()"]);
                         }
@@ -6051,6 +6058,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
                     using (var client = new HttpClient())
                     {
+
                         client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                         var response = await client.PostAsync(url, data);
                         string returnResponse = response.Content.ReadAsStringAsync().Result;
@@ -6162,7 +6170,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("yyyy-MM-dd HH:mm:ss");
                             errorFlag.Add(stringNullValidation(addUnit.timestamp, "Time Stamp", rowNumber));
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             string msg = e.ToString();
                             m_ErrorLog.SetError(", File row<" + rowNumber + "> '" + timeStampTemp + "' is not recognised as valid date time, it should be 'yyyy-MM-dd HH:mm:ss'");
@@ -6442,7 +6450,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 string[] substrings = inputString.Split(separator);
                 string fileNameNew = substrings[0];
                 fileNameNew = fileNameNew.ToUpper();
-                int loopCount =  0;
+                int loopCount = 0;
 
                 string wtgName = onm2equipmentName.ContainsKey(fileNameNew) ? onm2equipmentName[fileNameNew].ToString() : "";
                 if (wtgName == "")
@@ -6457,7 +6465,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     InsertWindTMLData addUnit = new InsertWindTMLData();
                     try
                     {
-                        if (loopCount < rowCount-3)
+                        if (loopCount < rowCount - 3)
                         {
                             bool skipRow = false;
                             rowNumber++;
@@ -6738,7 +6746,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         int fromMinutes = Convert.ToInt32(fromArr[1]);
                         int reminder = fromMinutes % 10;
                         string finalFrom = "";
-                        if(reminder > 0)
+                        if (reminder > 0)
                         {
                             finalFrom = Convert.ToString(TimeSpan.Parse(previousFromTime).Add(TimeSpan.FromMinutes(10)));
                             fromtime = finalFrom;
@@ -6835,7 +6843,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 nextFrom = nextFinalFrom;
                             }
 
-                                if (addUnit.to_time != nextFrom)
+                            if (addUnit.to_time != nextFrom)
                             {
                                 InformationLog("previous to time <" + addUnit.to_time + "> next from time <" + nextFrom + ">.");
                                 int insideCount = 0;
@@ -7134,25 +7142,25 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     string inPut = toTime;
                                     char seP = ':';
                                     string[] outPut = inPut.Split(seP);
-                                    
+
                                     string inPutFrom = fromTime;
                                     char sePFrom = ':';
                                     string[] outPutFrom = inPutFrom.Split(sePFrom);
-                                    if(outPut.Length > 0 && outPutFrom.Length > 0 )
+                                    if (outPut.Length > 0 && outPutFrom.Length > 0)
                                     {
                                         int Hrs = Convert.ToInt32(outPut[0]);
                                         int Min = Convert.ToInt32(outPut[1]);
                                         int HrsFrom = Convert.ToInt32(outPutFrom[0]);
                                         int MinFrom = Convert.ToInt32(outPutFrom[1]);
                                         int difference = Min - 10;
-                                        if(difference != MinFrom)
+                                        if (difference != MinFrom)
                                         {
                                             toNeedToCorrect = true;
-                                            if (difference < MinFrom )
+                                            if (difference < MinFrom)
                                             {
                                                 isToHigher = true;
                                             }
-                                            if (difference >MinFrom )
+                                            if (difference > MinFrom)
                                             {
                                                 isToHigher = false;
                                             }
@@ -7275,31 +7283,31 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
                                 //Check if the from time is 10, 20, 30, 40, 50 if not convert it into the same.
                                 string finalFrom = "";
-                                if(fromTime != "" || finalToTime != "")
+                                if (fromTime != "" || finalToTime != "")
                                 {
                                     string inputFrom = fromTime;
                                     char sepr = ':';
                                     string[] output = inputFrom.Split(sepr);
-                                    if(output.Length > 0)
+                                    if (output.Length > 0)
                                     {
                                         int hrs = Convert.ToInt32(output[0]);
                                         int mins = Convert.ToInt32(output[1]);
                                         int secs = Convert.ToInt32(output[2]);
                                         int remainder = mins % 10;
-                                        if(remainder != 0)
+                                        if (remainder != 0)
                                         {
                                             TimeSpan actFrom = new TimeSpan();
                                             TimeSpan subFrom = new TimeSpan();
                                             actFrom = TimeSpan.Parse(finalToTime);
-                                            if(columnCount == 1)
+                                            if (columnCount == 1)
                                             {
                                                 finalFrom = "00:10:00";
                                             }
-                                            if(columnCount > 1)
+                                            if (columnCount > 1)
                                             {
                                                 subFrom = actFrom.Subtract(TimeSpan.FromMinutes(10));
                                                 finalFrom = subFrom.ToString();
-                                                if(finalFrom != "")
+                                                if (finalFrom != "")
                                                 {
                                                     //if(finalFrom != previoustoTime)
                                                     //{
@@ -7383,7 +7391,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     addSet.Add(addUnit);
                                 }
-                                if(columnCount > 70)
+                                if (columnCount > 70)
                                 {
                                     int trml = 0;
                                 }
@@ -7398,18 +7406,18 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     string[] nextToArr = nextTime[1].Split(':');
 
                                     string nextFrom = nextFromArr[0] + ":" + nextFromArr[1] + ":00";
-                                    string nextTo = nextToArr[0] + ":" + nextToArr[1] + ":00" ;
+                                    string nextTo = nextToArr[0] + ":" + nextToArr[1] + ":00";
 
                                     string inputFrom = nextFrom;
                                     char sepr = ':';
                                     string[] output = inputFrom.Split(sepr);
-                                    if(output.Length > 0)
+                                    if (output.Length > 0)
                                     {
                                         int hrs = Convert.ToInt32(output[0]);
                                         int mins = Convert.ToInt32(output[1]);
                                         int seconds = Convert.ToInt32(output[2]);
                                         int remainder = mins % 10;
-                                        if(remainder != 0)
+                                        if (remainder != 0)
                                         {
                                             TimeSpan nextfromtemp = new TimeSpan();
                                             nextfromtemp = TimeSpan.Parse(nextTo).Subtract(TimeSpan.FromMinutes(10));
@@ -7919,8 +7927,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         string returnResponse = response.Content.ReadAsStringAsync().Result;
                         if (response.IsSuccessStatusCode)
                         {
-                            
-                            
+
+
                             if (returnResponse == "0")
                             {
                                 //m_ErrorLog.SetInformation(",BD code REGEN API SuccessFul,");
@@ -8214,6 +8222,45 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
             }
             return responseCode;
+        }
+
+        private void LogInfo(int userId, int import_type, int module, string api_name, string Message)
+        {
+            //Level = 2;
+            //module ppt=0, upload=1, cal_KPI=2, email=3
+            //is_frontend = 0;
+            string line = "";
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/LogInfo?userId=" + userId + "&import_type=" + import_type + "&module=" + module + "&api_name=" + api_name + "&message=" + Message + "&is_frontend=0";
+            WebRequest request = WebRequest.Create(url);
+            using (WebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                Stream receiveStream = response.GetResponseStream();
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    line = readStream.ReadToEnd().Trim();
+                    //model = JsonConvert.DeserializeObject<LoginModel>(line);
+                }
+            }
+            //System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "*Validaion Information*" + Message + "\r\n");
+        }
+        private void LogError(int userId, int import_type, int module, string api_name, string Message)
+        {
+            //Level = 1;
+            //module ppt=0, upload=1, cal_KPI=2, email=3
+            //is_frontend = 0;
+            string line = "";
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/LogError?userId=" + userId + "&import_type=" + import_type + "&module=" + module + "&api_name=" + api_name + "&message=" + Message + "&is_frontend=0";
+            WebRequest request = WebRequest.Create(url);
+            using (WebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                Stream receiveStream = response.GetResponseStream();
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    line = readStream.ReadToEnd().Trim();
+                    //model = JsonConvert.DeserializeObject<LoginModel>(line);
+                }
+            }
+            //System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "*Validaion Information*" + Message + "\r\n");
         }
     }
 }

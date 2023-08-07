@@ -929,6 +929,38 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Route("LogInfo")]
+        [HttpGet]
+        public async Task<IActionResult> LogInfo(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
+        {
+            try
+            {
+                var data = await _dgrBs.LogInfo(userId, import_type, module, api_name, Message, is_frontend);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("LogError")]
+        [HttpGet]
+        public async Task<IActionResult> LogError(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
+        {
+            try
+            {
+                var data = await _dgrBs.LogError(userId, import_type, module, api_name, Message, is_frontend);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
         private void API_ErrorLog(string Message)
         {
