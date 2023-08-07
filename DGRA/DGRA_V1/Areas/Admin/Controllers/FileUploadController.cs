@@ -43,6 +43,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             m_ErrorLog = new ErrorLog(iwebhostobj);
             env = iwebhostobj;
         }
+        int user_id = 0;
         int batchIdDGRAutomation = 0;
         string siteUserRole;
         int previousSite = 0;
@@ -111,6 +112,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         [HttpPost]
         public async Task<ActionResult> Upload(string FileUpload)
         {
+            user_id = Convert.ToInt32(HttpContext.Session.GetString("userid"));
             try
             {
                 //  string response = await ExceldatareaderAndUpload(Request.Files["Path"]);
@@ -138,7 +140,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                 TempData["notification"] = "Failed to upload";
                 string message = ex.Message;
                 m_ErrorLog.SetError(",Failed to upload {fileUploadType},");
-                ErrorLog("Failed to upload <" + FileUpload + ">  File <" + HttpContext.Request.Form.Files[0] + "> Reason : " + ex.ToString());
+                string msg = "Failed to upload <" + FileUpload + ">  File <" + HttpContext.Request.Form.Files[0] + "> Reason : " + ex.ToString();
+                //ErrorLog(msg);
+                LogError(user_id, 0,4,"Upload", msg);
 
             }
             return View();
@@ -164,6 +168,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             //windSiteList = HttpContextAccessor.HttpContext.Session.GetString("UserAccess");
             siteUserRole = HttpContext.Session.GetString("role");
+            user_id = Convert.ToInt32(HttpContext.Session.GetString("userid"));
             m_ErrorLog.SetImportInformation("" + siteUserRole + " ,");
             DateTime today = DateTime.Now;
             m_ErrorLog.SetImportInformation("" + today.ToString("dd-MM-yyyy") + "_" + today.ToString("hh-mm-ss") + ",");
@@ -252,8 +257,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (dataSetMain == null)
                             {
                                 m_ErrorLog.SetError(",Unable to extract excel sheet data for importing,");
+                                string msg = "datSetMain null " + dataSetMain;
+                                //ErrorLog(msg);
+                                LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
                             }
-                            ErrorLog("datSetMain null " + dataSetMain);
 
 
                             //masterHashtable_SiteName_To_SiteId();//C
@@ -384,7 +391,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             status = "Wrong file upload type selected for pyranometer import";
                                             m_ErrorLog.SetError("," + status);
-                                            ErrorLog(status);
+                                            //ErrorLog(status);
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
+
                                         }
                                     }
                                 }
@@ -406,7 +415,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             status = "Wrong file upload type selected for pyranometer import";
                                             m_ErrorLog.SetError("," + status);
-                                            ErrorLog(status);
+                                            //ErrorLog(status);
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                     }
                                 }
@@ -579,6 +589,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             status = "Wrong file upload type selected for tracker_loss import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                     }
                                 }
@@ -596,6 +607,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             status = "Wrong file upload type selected for tracker_loss Monthly import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                     }
                                 }
@@ -613,6 +625,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             status = "Wrong file upload type selected for soiling_loss import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                     }
                                 }
@@ -630,6 +643,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             status = "Wrong file upload type selected for PVSyst_Loss import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                     }
                                 }
@@ -647,6 +661,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             status = "Wrong file upload type selected for Estimated_Hourly_Data import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                     }
                                 }
@@ -660,6 +675,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",TML_Data file cannot be imported for Solar");
                                             status = "Wrong file upload type selected for TML_Data import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                             //statusCode = await InsertWindTMLData(status, ds);
                                         }
                                         else
@@ -679,6 +695,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",TML_Data file cannot be imported for Solar");
                                             status = "Wrong file upload type selected for Power_Curve import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                             //statusCode = await InsertWindPowerCurve(status, ds);
                                         }
                                         else
@@ -698,6 +715,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",BD_Code_Gamesa file cannot be imported for Solar");
                                             status = "Wrong file upload type selected for BD_Code_Gamesa import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                         else
                                         {
@@ -716,6 +734,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",WindSpeed_TMD file cannot be imported for Solar");
                                             status = "Wrong file upload type selected for WindSpeed_TMD import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                             //statusCode = await InsertWindPowerCurve(status, ds);
                                         }
                                         else
@@ -735,6 +754,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",Reference_WTGs file cannot be imported for Solar");
                                             status = "Wrong file upload type selected for Reference_WTGs import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                             //statusCode = await InsertWindPowerCurve(status, ds);
                                         }
                                         else
@@ -754,6 +774,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",Suzlon_TMD filecannot be imported for Solar.");
                                             status = "wrong file upload type selected for Suzlon_TMD import.";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                         else
                                         {
@@ -772,6 +793,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",Inox_TMD filecannot be imported for Solar.");
                                             status = "wrong file upload type selected for Inox_TMD import.";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                         else
                                         {
@@ -790,6 +812,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",BD_Code_INOX filecannot be imported for Solar.");
                                             status = "wrong file upload type selected for BD_Code_INOX import.";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                         else
                                         {
@@ -808,6 +831,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",BD_Code_REGEN filecannot be imported for Solar.");
                                             status = "wrong file upload type selected for BD_Code_REGEN import.";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                         }
                                         else
                                         {
@@ -845,6 +869,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         {
                                             m_ErrorLog.SetError(",GKK file cannot be imported for Solar");
                                             status = "Wrong file upload type selected for GKK import";
+                                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                             //statusCode = await InsertWindTMR(status, ds, tabName);
                                         }
                                         else if (fileUploadType == "Wind")
@@ -858,7 +883,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     status = "Unsupported Tab name <" + excelSheet + ">. Pl do not change tab name.";
                                     m_ErrorLog.SetError(status);
-                                    ErrorLog(status);
+                                    //ErrorLog(status);
+                                    LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
                                     //responseCode = 400;
                                 }
                                 //clear all rows in ds
@@ -889,7 +915,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                 // m_ErrorLog.SetInformation("Url" + url);
                                                 using (var client = new HttpClient())
                                                 {
-                                                    InformationLog("added timeout to InfiniteTimeSpan");
+                                                    //InformationLog("added timeout to InfiniteTimeSpan");
                                                     client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                     var response = await client.GetAsync(url);
                                                     //status = "Respose" + response;
@@ -971,11 +997,21 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 {
                                     if (fileSheets.Contains("Uploading_File_Generation") || fileSheets.Contains("Uploading_File_Breakdown") || fileSheets.Contains("Uploading_PyranoMeter1Min") || fileSheets.Contains("Uploading_PyranoMeter15Min") || fileSheets.Contains("Solar_tracker_loss"))
                                     {
-                                        InformationLog("isGenValidationSuccess" + isGenValidationSuccess);
-                                        InformationLog("isPyro15ValidationSuccess" + isPyro15ValidationSuccess);
-                                        InformationLog("isPyro1ValidationSuccess" + isPyro1ValidationSuccess);
-                                        InformationLog("isTrackerLossvalidationSuccess " + isTrackerLossvalidationSuccess);
-                                        InformationLog("Before Validation");
+                                        string msg = "isGenValidationSuccess" + isGenValidationSuccess;
+                                        //InformationLog(msg);
+                                        LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
+                                        msg = "isPyro15ValidationSuccess" + isPyro15ValidationSuccess;
+                                        //InformationLog(msg);
+                                        LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
+                                        msg = "isPyro1ValidationSuccess" + isPyro1ValidationSuccess;
+                                        //InformationLog(msg);
+                                        LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
+                                        msg = "isTrackerLossvalidationSuccess " + isTrackerLossvalidationSuccess;
+                                        //InformationLog(msg);
+                                        LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
+                                        msg = "Before Validation";
+                                        //InformationLog(msg);
+                                        LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
                                         //pending : instead check the  success flags
                                         if (isGenValidationSuccess && isBreakdownValidationSuccess && isPyro15ValidationSuccess && isPyro1ValidationSuccess && isTrackerLossvalidationSuccess)
                                         {
@@ -995,11 +1031,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                 var client = new HttpClient();
                                                 var task = Task.Run(async () =>
                                                 {
-                                                    InformationLog("added timeout to InfiniteTimeSpan");
+                                                    //InformationLog("added timeout to InfiniteTimeSpan");
                                                     client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                     dttt = DateTime.Now;
-                                                    InformationLog("CalculateDailysolarKPI API Called." + dttt);
-                                                    InformationLog(url);
+                                                    string msg = "CalculateDailysolarKPI API Called." + dttt;
+                                                    //InformationLog(msg);
+                                                    LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
+                                                    //InformationLog(url);
+                                                    LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", url);
                                                     var response = await client.GetAsync(url);
                                                     //response.Timeout = TimeSpan.FromSeconds(300); // set the request timeout to 5 minutes
                                                     if (response.IsSuccessStatusCode)
@@ -1111,7 +1150,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             status = "Exception Caught Debugging Required";
                             m_ErrorLog.SetError("," + status + ":" + ex.Message);
-                            ErrorLog("Inside" + ex.ToString());
+                            //ErrorLog("Inside" + ex.ToString());
+                            string msg = status + " " + ex.ToString();
+                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
                         }
                     }
                     else if (ext == ".txt" || ext == ".csv")
@@ -1129,8 +1170,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (dataSetMain == null)
                             {
                                 m_ErrorLog.SetError(",Unable to extract imported file data for importing,");
+                                string msg = "datSetMain null " + dataSetMain;
+                                //ErrorLog(msg);
+                                LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
                             }
-                            ErrorLog("datSetMain null " + dataSetMain);
 
                             //masterHashtable_SiteName_To_SiteId();//C
                             masterHashtable_SiteIdToSiteName();
@@ -1158,7 +1201,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             status = "Exception Caught Debugging Required";
                             m_ErrorLog.SetError("," + status + ":" + ex.Message);
-                            ErrorLog("Inside" + ex.ToString());
+                            string msg = "Inside" + ex.ToString();
+                            //ErrorLog(msg);
+                            LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
                         }
                     }
                 }
@@ -1167,7 +1212,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     status = "Something went wrong : Exception Caught Debugging Required";
                     //status = status.Substring(0, (status.IndexOf("Exception") + 9));
                     m_ErrorLog.SetError("," + status);
-                    ErrorLog(status + "True\r\n" + ex.ToString());
+                    string msg = status + "True\r\n" + ex.ToString();
+                    //ErrorLog(msg);
+                    LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
                 }
             }
             else
@@ -1175,7 +1222,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 //excel file format condition
                 status = "File extension not supported. Upload type <" + fileUploadType + ">  Filename < " + csvFileName + ">";
                 m_ErrorLog.SetError("," + status + ":");
-                ErrorLog(status);
+                //ErrorLog(status);
+                LogError(user_id, 0, 4, "ExcelDataReadAndUpload", status);
             }
 
             m_ErrorLog.SaveToCSV(csvFileName);
@@ -1265,6 +1313,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     {
                                         status = "Something went wrong : Exception Caught Debugging Required";
                                         ex.GetType();
+                                        LogError(user_id, 0, 4, "GetDataTableFromExcel", status);
                                         //+ ex.ToString();
                                         //status = status.Substring(0, (status.IndexOf("Exception") + 8));
                                         // m_ErrorLog.SetError("," + status);
@@ -1278,6 +1327,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             status = "Exception Caught : " + ex.Message;
                             m_ErrorLog.SetError("," + status);
+                            LogError(user_id, 0, 4, "GetDataTableFromExcel", status);
                         }
                         // add rows
                     }
@@ -1288,6 +1338,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 status = "Exception Caught : " + ex.Message;
                 m_ErrorLog.SetError("," + status);
+                LogError(user_id, 0, 4, "GetDataTableFromExcel", ex.ToString());
                 //throw new Exception(ex.Message);
                 return dataSet;
             }
@@ -1330,6 +1381,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 status = "Something went wrong : Exception Caught Debugging Required";
                 m_ErrorLog.SetError("," + status + ",");
+                LogError(user_id, 0, 4, "GetDataTableFromExcel", ex.ToString());
                 throw new Exception(ex.Message);
             }
         }
@@ -1415,7 +1467,10 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 //m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format MM-dd-yyyy");
                 //ErrorLog("InsertSolarFileGeneration function exception while date conversion exception :"+e.ToString());
-                m_ErrorLog.SetError(",File Row <2> column <Date> Invalid Date Format. Use format dd-MM-yyyy");
+                string msg = ",File Row <2> column <Date> Invalid Date Format. Use format dd-MM-yyyy";
+                m_ErrorLog.SetError(msg);
+                msg += e.ToString();
+                LogError(user_id, 0, 4, "InsertSolarFileGeneration", msg);
                 fromDate = DateTime.MaxValue;
                 toDate = DateTime.MinValue;
             }
@@ -1596,7 +1651,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         WindUploadingFileGeneration addUnit = new WindUploadingFileGeneration();
                         bool skipRow = false;
                         rowNumber++;
-                        ErrorLog("Before date conversion\r\n");
+                        //ErrorLog("Before date conversion\r\n");
 
                         //addUnit.date = string.IsNullOrEmpty((string)dr["Date"]) ? "Nil" : Convert.ToString((string)dr["Date"]);
                         // errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
@@ -1604,7 +1659,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (addUnit.wtg == "" && addUnit.wind_speed == "" && addUnit.kwh == "" && addUnit.grid_hrs == "" && addUnit.lull_hrs == "")
                         {
                             m_ErrorLog.SetError(",File row <" + rowNumber + ">" + "Is blank.");
-                            ErrorLog(",File row <" + rowNumber + ">" + "Is blank.");
+                            string msg = ",File row <" + rowNumber + ">" + "Is blank.";
+                            //ErrorLog(msg);
+                            LogError(user_id, 2, 4, "InsertWIndFileGeneration", msg);
                             skipRow = true;
                             continue;
                         }
@@ -1722,7 +1779,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //developer errorlog
                         errorCount++;
                         m_ErrorLog.SetError(",File row <" + rowNumber + ">" + e.GetType() + ": Function: InsertWindFileGeneration,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindFileGeneration: " + e.ToString() + "");
+                        string msg = ",Exception Occurred In Function: InsertWindFileGeneration: " + e.ToString() + "";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindFileGeneration", msg);
                     }
                 }
                 if (!(errorCount > 0))
@@ -1788,7 +1847,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (addUnit.date == "" && addUnit.bd_type == "" && addUnit.action_taken == "")
                         {
                             m_ErrorLog.SetError(",File row <" + rowNumber + ">" + "Is blank.");
-                            ErrorLog(",Exception Occurred In : SolarUploadingFileBreakdown: ");
+                            string msg = ",Exception Occurred In : SolarUploadingFileBreakdown: ";
+                            //ErrorLog(msg);
+                            LogError(user_id, 1, 4, "InsertSolarFileBreakdown", msg);
                             skipRow = true;
                             continue;
                         }
@@ -1882,7 +1943,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File row <" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarFileBreakDown");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarFileBreakDown: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertSolarFileBreakDown: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarFileBreakdown", msg);
                         errorCount++;
                     }
                 }
@@ -1947,7 +2010,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (addUnit.wtg == "" && addUnit.bd_type == "" && addUnit.stop_from == "" && addUnit.stop_to == "" && addUnit.error_description == "" && addUnit.action_taken == "")
                         {
                             m_ErrorLog.SetError(",File row <" + rowNumber + ">" + "Is blank.");
-                            ErrorLog(",Exception Occurred In : WindUploadingFileBreakdown: ");
+                            string msg = ",Exception Occurred In : WindUploadingFileBreakdown: ";
+                            //ErrorLog(msg);
+                            LogError(user_id, 2, 4, "InsertWindFileBreakdown", msg);
                             skipRow = true;
                             continue;
                         }
@@ -2022,7 +2087,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File row <" + rowNumber + ">" + e.GetType() + ": Function: InsertWindFileBreakDown,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindFileBreakDown: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindFileBreakDown: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarFileBreakdown", msg);
                         errorCount++;
                     }
                 }
@@ -2154,7 +2221,9 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 //developer errorlog
                 m_ErrorLog.SetError(",Exception in Function: InsertSolarPyranoMeter1Min on line " + rowNumber);
-                ErrorLog(",Exception Occurred In Function: InsertSolarPyranoMeter1Min: " + e.ToString());
+                string msg = ",Exception Occurred In Function: InsertSolarPyranoMeter1Min: " + e.ToString();
+                //ErrorLog(msg);
+                LogError(user_id, 1, 4, "InsertSolarPyranometer1Min", msg);
             }
             //InformationLog("InsertSolarPyranoMeter1Min function Completed : " + DateTime.Now);
             return responseCode;
@@ -2267,7 +2336,9 @@ namespace DGRA_V1.Areas.admin.Controllers
             catch (Exception e)
             {
                 m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarPyranoMeter15Min " + rowNumber);
-                ErrorLog(",Exception Occurred In Function: InsertSolarPyranoMeter15Min: " + e.ToString());
+                string msg = ",Exception Occurred In Function: InsertSolarPyranoMeter15Min: " + e.ToString();
+                //ErrorLog(msg);
+                LogError(user_id, 1, 4, "InsertSolarPyranometer15Min", msg);
             }
             //InformationLog("InsertSolarPyranoMeter15Min function Completed : " + DateTime.Now);
             return responseCode;
@@ -2377,7 +2448,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyJMR " + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertSolarMonthlyJMR: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertSolarMonthlyJMR: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarJMR", msg);
                         errorCount++;
                     }
                 }
@@ -2512,7 +2585,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File row <" + rowNumber + "> exception type <" + e.GetType() + ">: Function: InsertWindMonthlyJMR");
-                        ErrorLog(",Exception <" + e.GetType() + "> Occurred In Function: InsertWindMonthlyJMR: " + e.ToString());
+                        string msg = ",Exception <" + e.GetType() + "> Occurred In Function: InsertWindMonthlyJMR: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindMonthlyJMR", msg);
                         errorCount++;
                     }
                 }
@@ -2610,7 +2685,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyLineLoss," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertSolarMonthlyLineLoss: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertSolarMonthlyLineLoss: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarMonthlyLineLoss", msg);
                     }
                 }
                 if (!(errorCount > 0))
@@ -2705,7 +2782,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindMonthlyLineLoss," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertWindMonthlyLineLoss: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertWindMonthlyLineLoss: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindMonthlyLineLoss", msg);
                         errorCount++;
                     }
                 }
@@ -2827,7 +2906,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyTargetKPI," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertSolarMonthlyTargetKPI: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertSolarMonthlyTargetKPI: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarMonthlyTargetKPI", msg);
                     }
                 }
                 if (!(errorCount > 0))
@@ -2930,7 +3011,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindMonthlyTargetKPI," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertWindMonthlyTargetKPI: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindMonthlyTargetKPI: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindMonthlyTargetKPI", msg);
                         errorCount++;
                     }
                 }
@@ -3030,7 +3113,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarDailyLoadShedding," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertSolarDailyLoadShedding: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertSolarDailyLoadShedding: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindMonthlyTargetKPI", msg);
                         errorCount++;
                     }
                 }
@@ -3129,7 +3214,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindDailyLoadShedding," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertWindDailyLoadShedding: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindDailyLoadShedding: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindDailyLoadShedding", msg);
                         errorCount++;
                     }
                 }
@@ -3281,7 +3368,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarDailyTargetKPI" + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertSolarDailyTargetKPI: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertSolarDailyTargetKPI: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarDailyTargetKPI", msg);
                     }
                 }
                 if (!(errorCount > 0))
@@ -3383,7 +3472,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindDailyTargetKPI," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertWindDailyTargetKPI: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindDailyTargetKPI: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindDailyTargetKPI", msg);
                         errorCount++;
                     }
                 }
@@ -3482,7 +3573,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarSiteMaster" + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertSolarSiteMaster: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertSolarSiteMaster: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarSiteMaster", msg);
                         errorCount++;
                     }
                 }
@@ -3600,7 +3693,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindSiteMaster," + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertWindSiteMaster: " + e.Message + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindSiteMaster: " + e.Message + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindSiteMaster", msg);
                         errorCount++;
                     }
                 }
@@ -3734,7 +3829,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarLocationMaster" + rowNumber);
-                        ErrorLog(",Exception Occurred In Function: InsertSolarLocationMaster: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertSolarLocationMaster: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarLocationMaster", msg);
                         errorCount++;
                     }
                 }
@@ -3824,7 +3921,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertWindLocationMaster");
-                        ErrorLog(",Exception Occurred In Function: InsertWindLocationMaster: " + e.ToString());
+                        string msg = ",Exception Occurred In Function: InsertWindLocationMaster: " + e.ToString();
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindLocationMaster", msg);
                         errorCount++;
                     }
                 }
@@ -3914,7 +4013,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarAcDcCapacity,");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarAcDcCapacity: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertSolarAcDcCapacity: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarAcDcCapacity", msg);
                         errorCount++;
                     }
                 }
@@ -4248,7 +4349,8 @@ namespace DGRA_V1.Areas.admin.Controllers
         // Automation files import.
         public async Task<int> dgrSolarImport(int batchId)
         {
-            InformationLog("Inside dgrSolarImport<br>\r\n");
+            //InformationLog("Inside dgrSolarImport<br>\r\n");
+            LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", "Inside dgrSolarImport");
             int responseCodeGen = 0;
             int responseCodeBreak = 0;
             int responseCodePyro1 = 0;
@@ -4314,7 +4416,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
             var dataPyro15Min = new StringContent(pyro15Json, Encoding.UTF8, "application/json");
             var urlPyro15Min = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarUploadingPyranoMeter15Min?batchId=" + batchId + "";
-            ErrorLog("15Min\r\n" + urlPyro15Min);
+            //ErrorLog("15Min\r\n" + urlPyro15Min);
             using (var client = new HttpClient())
             {
                 client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
@@ -4837,7 +4939,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                 // string standardTime = Convert.ToDateTime(timeValue, timeCulture).ToString("HH:mm:ss");
                 string standardTime = Convert.ToDateTime(timeValue).ToString("HH:mm:ss");
                 //if cell empty then throw empty error
-                ErrorLog("Standatd  Time :" + standardTime + "TimeValue :" + timeValue + "T\r\n");
+                string msg = "Standatd  Time :" + standardTime + "TimeValue :" + timeValue + "T";
+                //InformationLog(msg);
+                LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
                 if (timeValue == "Nil")
                 {
                     m_ErrorLog.SetError(",File row<" + rowNo + "> column<" + columnName + "> Cell value empty. Add valid time value in HH:mm:ss 24 hour format,");
@@ -5182,7 +5286,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             //developer errorlog
                             m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarTrackerLoss,");
-                            ErrorLog(",Exception Occurred In Function: InsertSolarTrackerLoss: " + e.ToString() + ",");
+                            string msg = ",Exception Occurred In Function: InsertSolarTrackerLoss: " + e.ToString() + ",";
+                            //ErrorLog(msg);
+                            LogError(user_id, 1, 4, "InsertSolarTrackerLoss", msg);
                             errorCount++;
                         }
                     }
@@ -5316,7 +5422,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarTrackerLossMonthly,");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarTrackerLossMonthly: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertSolarTrackerLossMonthly: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarTrackerLossMonthly", msg);
                         errorCount++;
                     }
                 }
@@ -5328,7 +5436,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertSolarTrackerLossMonthly";
                     using (var client = new HttpClient())
                     {
-                        InformationLog("added timeout to InfiniteTimeSpan");
+                        //InformationLog("added timeout to InfiniteTimeSpan");
                         client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                         var response = await client.PostAsync(url, data);
                         string returnResponse = response.Content.ReadAsStringAsync().Result;
@@ -5497,7 +5605,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarSoilingLoss,");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarSoilingLoss: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertSolarSoilingLoss: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarSoilingLoss", msg);
                         errorCount++;
                     }
                 }
@@ -5681,7 +5791,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarPVSystLoss,");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarPVSystLoss: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertSolarPVSystLoss: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarPVSystLoss", msg);
                         errorCount++;
                     }
                 }
@@ -5812,7 +5924,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarPVSystLoss,");
-                        ErrorLog(",Exception Occurred In Function: InsertSolarPVSystLoss: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertSolarPVSystLoss: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 1, 4, "InsertSolarPVSystLoss", msg);
                         errorCount++;
                     }
                 }
@@ -6046,7 +6160,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMR,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindTMR", msg);
                         errorCount++;
                     }
                 }
@@ -6245,7 +6361,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.Message + ": Function: InsertWindTMLData,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindTMLData", msg);
                         errorCount++;
                     }
                 }
@@ -6606,7 +6724,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMR,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindSuzlonTMD", msg);
                         errorCount++;
                     }
 
@@ -6845,7 +6965,9 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                             if (addUnit.to_time != nextFrom)
                             {
-                                InformationLog("previous to time <" + addUnit.to_time + "> next from time <" + nextFrom + ">.");
+                                string msg = "previous to time <" + addUnit.to_time + "> next from time <" + nextFrom + ">.";
+                                //InformationLog(msg);
+                                LogInfo(user_id, 2, 4, "InsertWindRegen", msg);
                                 int insideCount = 0;
                                 string missingTo = "";
                                 string missingFrom = "";
@@ -6907,7 +7029,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMLData,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindTMLData: at rownumber <" + rowNumber + ">" + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindRegenTMD", msg);
                         errorCount++;
                     }
 
@@ -7074,7 +7198,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 catch (Exception e)
                                 {
                                     string msg = "Exception while getting row numbers of required rows of each column, due to : " + e.ToString();
-                                    ErrorLog(msg);
+                                    //ErrorLog(msg);
+                                    LogError(user_id, 2, 4, "ImportWindInoxTMD", msg);
                                 }
                             }
                             //string cellValue = ds.Tables[0].Rows[row][columnCount].ToString();
@@ -7110,7 +7235,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
                                 else
                                 {
-                                    ErrorLog("substr array is blank.");
+                                    //ErrorLog("substr array is blank.");
+                                    LogError(user_id, 2, 4, "ImportWindInoxTMD", "substr array is blank.");
                                 }
 
                                 if (toTime == "24:00:00")
@@ -7484,7 +7610,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMR,");
-                        ErrorLog("\nException Occurred In Function: InsertWindTMR: " + e.ToString() + ", column count : " + columnCount);
+                        string msg = "Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ", column count : " + columnCount;
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "ImportWindInoxTMD", msg);
                         errorCount++;
                     }
                 }
@@ -7623,7 +7751,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindPowerCurve,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindPowerCurve: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindPowerCurve: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindPowerCurve", msg);
                         errorCount++;
                     }
                 }
@@ -7716,7 +7846,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindBDCodeGamesa,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeGamesa: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindBDCodeGamesa: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindBDCodeGamesa", msg);
                         errorCount++;
                     }
                 }
@@ -7810,7 +7942,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindBDCodeGamesa,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeInox: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindBDCodeInox: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindBDCodeInox", msg);
                         errorCount++;
                     }
                 }
@@ -7911,7 +8045,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindBDCodeREGEN,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindBDCodeREGEN: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindBDCodeREGEN: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindBDCodeRegen", msg);
                         errorCount++;
                     }
                 }
@@ -8067,7 +8203,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindSpeedTMD,");
-                        ErrorLog(",Exception Occurred In Function: InsertWindSpeedTMD: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: InsertWindSpeedTMD: " + e.ToString() + ",";
+                        //ErrorLog(msg);
+                        LogError(user_id, 2, 4, "InsertWindSpeedTMD", msg);
                         errorCount++;
                     }
                 }
@@ -8174,7 +8312,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         //developer errorlog
                         m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: ImportWindReferenceWtgs,");
-                        ErrorLog(",Exception Occurred In Function: ImportWindReferenceWtgs: " + e.ToString() + ",");
+                        string msg = ",Exception Occurred In Function: ImportWindReferenceWtgs: " + e.ToString() + ",";
+                        ErrorLog(msg);
+                        LogError(user_id, 2, 4, "ImportWindReferenceWtgs", msg);
                         errorCount++;
                     }
                 }
