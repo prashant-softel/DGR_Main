@@ -88,8 +88,9 @@ namespace DGRAPIs.BS
 
                 foreach(TimeSpan schduledTime in time)
                 {
-                    TimeSpan approxTime = timeNow.Subtract(TimeSpan.FromMinutes(5)) ;
-                    if ((schduledTime >= approxTime) && (schduledTime <= timeNow))
+                    TimeSpan endTime = schduledTime.Add(TimeSpan.FromMinutes(8)) ;
+                    //if ((schduledTime >= approxTime) && (schduledTime <= timeNow))
+                    if ((timeNow >= schduledTime) && (timeNow <= endTime))
                     {
                         using var smtp = new MailKit.Net.Smtp.SmtpClient();
                         smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
