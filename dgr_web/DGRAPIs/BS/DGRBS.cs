@@ -189,6 +189,9 @@ namespace DGRAPIs.BS
         Task<int> DeleteSolarSite(int siteid);
         Task<List<SolarOpertionalHead1>> GetTotalMWforDashbord(string w_site, string s_site);
 
+        Task<int> LogError(int userId, int import_type, int module, string api_name, string Message, int is_frontend);
+        Task<int> LogInfo(int userId, int import_type, int module, string api_name, string Message, int is_frontend);
+
         //Task<List<SolarDailyGenReports3>> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr);
         //Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType);
         //Task<WindOpertionalHead> GetOperationHeadData(string site);
@@ -2641,6 +2644,39 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.GetWindTmlPowerCurveData(site, fromDate, toDate, wtgs);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        
+        public async Task<int> LogInfo(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.LogInfo(userId, import_type, module, api_name, Message, is_frontend);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> LogError(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.LogError(userId, import_type, module, api_name, Message, is_frontend);
 
                 }
             }
