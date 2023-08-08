@@ -1030,9 +1030,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             {
                                                 //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?fromDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
                                                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
-                                                var client = new HttpClient();
-                                                //using (var client = new HttpClient())
-                                                var task = Task.Run(async () =>
+                                                //var client = new HttpClient();
+                                                //var task = Task.Run(async () =>
+                                                //{ });
+                                                using (var client = new HttpClient())
                                                 {
                                                     //InformationLog("added timeout to InfiniteTimeSpan");
                                                     client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
@@ -1117,7 +1118,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                             m_ErrorLog.SetError(", Records deletion failed due to incomplete upload");
                                                         }
                                                     }
-                                                });
+                                                }
                                             }
                                             else
                                             {
