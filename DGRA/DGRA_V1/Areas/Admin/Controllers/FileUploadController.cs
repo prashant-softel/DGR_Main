@@ -1018,10 +1018,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             DateTime dttt = DateTime.Now;
                                             //InformationLog("ImportMetaData function called from FUCtrl" + dttt);
                                             // Added Task
-                                            await Task.WhenAll(
-                                                importMetaData(fileUploadType, file.FileName, fileImportType),
-                                                dgrSolarImport(batchIdDGRAutomation)
-                                            );
+                                            //await Task.WhenAll(
+                                            //    importMetaData(fileUploadType, file.FileName, fileImportType),
+                                            //    dgrSolarImport(batchIdDGRAutomation)
+                                            //);
+                                            await importMetaData(fileUploadType, file.FileName, fileImportType);
+                                            statusCode = await dgrSolarImport(batchIdDGRAutomation);
                                             //await importMetaData(fileUploadType, file.FileName, fileImportType);
                                             //statusCode = await dgrSolarImport(batchIdDGRAutomation);
                                             if (statusCode == 200)
@@ -1029,12 +1031,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                 //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?fromDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
                                                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
                                                 var client = new HttpClient();
+                                                //using (var client = new HttpClient())
                                                 var task = Task.Run(async () =>
                                                 {
                                                     //InformationLog("added timeout to InfiniteTimeSpan");
                                                     client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                     dttt = DateTime.Now;
-                                                    string msg = "CalculateDailysolarKPI API Called." + dttt;
+                                                    msg = "CalculateDailysolarKPI API Called." + dttt;
                                                     //InformationLog(msg);
                                                     LogInfo(user_id, 1, 4, "ExcelDataReadANdUpload", msg);
                                                     //InformationLog(url);
