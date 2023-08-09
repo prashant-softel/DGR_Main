@@ -11136,7 +11136,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
-
+                    //await LogInfo(0, 2, 10, functionName, msg, backend);
                 }
                 catch (Exception e)
                 {
@@ -11153,6 +11153,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> InsertWindTMLData(List<InsertWindTMLData> set, int type)
         {
             //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon; type = 4 : Regen
+            string tmlMsg = "-------------------TML Insertion Started---------------------------";
+            TML_InfoLog(tmlMsg);
+            DateTime functionCall = DateTime.Now;
+            tmlMsg = "type : " + type + " at : " + functionCall;
+            TML_InfoLog(tmlMsg);
             int finalResult = 0;
             string date = "";
             int site_id = 0;
@@ -11219,6 +11224,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             deleteWindSpeedTmdQry += " AND wtg_id IN( " + deleteWindSpeedTmdValues.Substring(0, (deleteWindSpeedTmdValues.Length - 1)) + ") ;";
                             deleteWindSpeedTmdRes = await Context.ExecuteNonQry<int>(deleteWindSpeedTmdQry).ConfigureAwait(false);
+                            tmlMsg = "Delete Query completed at " + DateTime.Now + " QUERY :- " + deleteWindSpeedTmdQry;
+                            TML_InfoLog(tmlMsg);
                             finalResult = 1;
                         }
                         catch (Exception e)
@@ -11236,6 +11243,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 if (insertWindSpeedTmdRes > 0)
                                 {
                                     finalResult = 2;
+                                    tmlMsg = "Insert Query completed at " + DateTime.Now + " QUERY :- " + insertWinsSpeedTmdQry.Substring(0, (insertWinsSpeedTmdQry.Length - 1));
+                                    TML_InfoLog(tmlMsg);
                                     info = ("Insert into windSpeed tmd Data table successful. counter count : " + qryCounter);
                                     await LogInfo(0, 2, 6, functionName, info, backend);
                                     qryCounter = 0;
@@ -11260,6 +11269,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         deleteWindSpeedTmdQry += " AND wtg_id IN( " + deleteWindSpeedTmdValues.Substring(0, (deleteWindSpeedTmdValues.Length - 1)) + ") ;";
                         deleteWindSpeedTmdRes = await Context.ExecuteNonQry<int>(deleteWindSpeedTmdQry).ConfigureAwait(false);
+                        tmlMsg = "Delete Query completed at " + DateTime.Now + " QUERY :- " + deleteWindSpeedTmdQry;
+                        TML_InfoLog(tmlMsg);
                         finalResult = 1;
                     }
                     catch (Exception e)
@@ -11277,6 +11288,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             if (insertWindSpeedTmdRes > 0)
                             {
                                 finalResult = 2;
+                                tmlMsg = "Insert Query completed at " + DateTime.Now + " QUERY :- " + insertWinsSpeedTmdQry.Substring(0, (insertWinsSpeedTmdQry.Length - 1));
+                                TML_InfoLog(tmlMsg);
                                 info = ("Insert into windSpeed tmd Data table successful. counter count/no. of rows : " + qryCounter + " / " + set.Count);
                                 await LogInfo(0, 2, 6, functionName, info, backend);
                             }
@@ -11354,6 +11367,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int updateWindspeedTMDRes = 0;
             int deleteTmdDataRes = 0;
             int fetchReferenceWtgRes = 0;
+            string tmlMsg = "";
             //Hashtable ReferenceWtgHash = new Hashtable();
             List<ImportWindReferenceWtgs> referenceList = new List<ImportWindReferenceWtgs>();
             string fetchReferenceQry = "SELECT * FROM tml_reference_wtgs WHERE site_id = " + site_id + ";";
@@ -11372,6 +11386,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 referenceList = await Context.GetData<ImportWindReferenceWtgs>(fetchReferenceQry).ConfigureAwait(false);
+                tmlMsg = "Fetch Reference Query completed at " + DateTime.Now + " QUERY :- " + fetchReferenceQry;
+                TML_InfoLog(tmlMsg);
                 fetchReferenceWtgRes = referenceList.Count;
                 finalResult = 2;
             }
@@ -11445,6 +11461,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 List<WindSpeedData> avgeRefWindSpeed = await Context.GetData<WindSpeedData>(ReferenceWSQry).ConfigureAwait(false);
                                 unit.calculated_ws = avgeRefWindSpeed[0].windspeed;
                                 finalResult = 4;
+                                tmlMsg = "Fetch AvgReferenceWind Speed Query completed at " + DateTime.Now + " QUERY :- " + ReferenceWSQry;
+                                TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -11461,6 +11479,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 List<WindSpeedData> avgAllField = await Context.GetData<WindSpeedData>(averageTmlQry).ConfigureAwait(false);
                                 unit.calculated_ws = avgAllField[0].windspeed;
                                 finalResult = 5;
+                                tmlMsg = "Fetch averageTmlQry Speed Query completed at " + DateTime.Now + " QUERY :- " + averageTmlQry;
+                                TML_InfoLog(tmlMsg);
                             }
 
                             catch (Exception e)
@@ -11496,6 +11516,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 List<WindSpeedData> avgFivePrevNext = await Context.GetData<WindSpeedData>(averageTmlQry).ConfigureAwait(false);
                                 unit.calculated_ws = avgFivePrevNext[0].windspeed;
                                 finalResult = 7;
+                                tmlMsg = "Fetch averageTmlQry Query completed at " + DateTime.Now + " QUERY :- " + averageTmlQry;
+                                TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -11559,6 +11581,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 {
                                     deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
                                     deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
+                                    tmlMsg = "deleteFromTMDQry Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDQry;
+                                    TML_InfoLog(tmlMsg);
                                     finalResult = 1;
                                 }
                                 catch (Exception e)
@@ -11572,6 +11596,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 {
                                     updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry.Substring(0, (updateWindspeedTMDQry.Length - 1)) + " ;").ConfigureAwait(false);
                                     finalResult = 8;
+                                    tmlMsg = "updateWindspeedTMDQry Query completed at " + DateTime.Now + " QUERY :- " + updateWindspeedTMDQry;
+                                    TML_InfoLog(tmlMsg);
                                     info = ("Inserted values into uploading_file_tmr_data  counter : " + qryCounter);
                                     await LogInfo(0, 2, 6, functionName, info, backend);
                                 }
@@ -11623,6 +11649,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
                         deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
                         finalResult = 1;
+                        tmlMsg = "deleteFromTMDValues Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDValues;
+                        TML_InfoLog(tmlMsg);
                     }
                     catch (Exception e)
                     {
@@ -11635,6 +11663,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry.Substring(0, (updateWindspeedTMDQry.Length - 1)) + " ;").ConfigureAwait(false);
                         finalResult = 8;
+                        tmlMsg = "updateWindspeedTMDRes Query completed at " + DateTime.Now + " QUERY :- " + updateWindspeedTMDRes;
+                        TML_InfoLog(tmlMsg);
                         info = ("Inserted values into uploading_file_tmr_data  counter/no. of rows : " + qryCounter + " / " + set.Count);
                         await LogInfo(0, 2, 6, functionName, info, backend);
                     }
@@ -11652,6 +11682,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 info = ("Inserted all data into uploading_file_tmr_data table : counter/no. of rows : " + count + " / " + qryCounter + " ");
                 await LogInfo(0, 2, 6, functionName, info, backend);
+                TML_InfoLog(info);
             }
             else
             {
@@ -11678,6 +11709,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Some changes for INOX sucj as update all_bd as well with manual_bd column.
             int finalRes = 0;
             string functionName = "UpdateManualBdForTMLData";
+            TML_InfoLog(functionName + "------------------------");
+            string tmlMsg;
             //14-Mar-23
             string original_date = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
             List<WindDailyBreakdownReport> _WindBreakdownReport = new List<WindDailyBreakdownReport>();
@@ -11702,6 +11735,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 _WindBreakdownReport = await Context.GetData<WindDailyBreakdownReport>(getQry).ConfigureAwait(false);
                 finalRes = 1;
+                tmlMsg = "getQry Query completed at " + DateTime.Now + " QUERY :- " + getQry;
+                TML_InfoLog(tmlMsg);
                 windBDReportRows = _WindBreakdownReport.Count;
             }
             catch (Exception e)
@@ -11785,6 +11820,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     info = ("Query : " + addManualBdQry);
                     await LogInfo(0, 2, 6, functionName, info, backend);
                     updateManualRes = await Context.ExecuteNonQry<int>(addManualBdQry).ConfigureAwait(false);
+                    tmlMsg = "updateManualRes Query completed at " + DateTime.Now + " QUERY :- " + updateManualRes;
+                    TML_InfoLog(tmlMsg);
                     finalRes = 2;
                 }
                 catch (Exception e)
@@ -11842,6 +11879,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 string addManualBdQry2 = "UPDATE uploading_file_tmr_data SET manual_bd = '-' WHERE manual_bd IS NULL AND date = '" + date + "' AND site_id = " + site_id + ";";
                 updateManualRes2 = await Context.ExecuteNonQry<int>(addManualBdQry2).ConfigureAwait(false);
+                tmlMsg = "updateManualRes2 Query completed at " + DateTime.Now + " QUERY :- " + updateManualRes2;
+                TML_InfoLog(tmlMsg);
                 finalRes = 2;
             }
             catch (Exception e)
@@ -11871,6 +11910,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             int finalResult = 0;
             string functionName = "UpdateReconAndOther";
+            string tmlMsg = functionName + "---------------------------" + DateTime.Now;
+            TML_InfoLog(tmlMsg);
             string UpdateQry = "";
             string updateQryValues = "";
             int counter = 0;
@@ -11892,6 +11933,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 UpdatedTMLDataList = await Context.GetData<InsertWindTMLData>(fetchUpdatedTMLDataQry).ConfigureAwait(false);
+                tmlMsg = "UpdatedTMLDataList Query completed at " + DateTime.Now + " QUERY :- " + UpdatedTMLDataList;
+                TML_InfoLog(tmlMsg);
                 finalResult = 1;
                 fetchUpdatedTMLDataRes = UpdatedTMLDataList.Count;
             }
@@ -11906,6 +11949,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 List<InsertWindTMLData> fetchAverage = await Context.GetData<InsertWindTMLData>(fetchAverageWindSpeedQry).ConfigureAwait(false);
                 fetchAverageWindSpeedRes = fetchAverage.Count;
+                tmlMsg = "fetchAverage Query completed at " + DateTime.Now + " QUERY :- " + fetchAverage;
+                TML_InfoLog(tmlMsg);
                 averageWindSpeed = fetchAverage[0].calculated_ws;
                 finalResult = 2;
             }
@@ -11921,6 +11966,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     PowerCurveList = await Context.GetData<InsertWindPowerCurve>(getPowerCurveQry).ConfigureAwait(false);
+                    tmlMsg = "PowerCurveList Query completed at " + DateTime.Now + " QUERY :- " + PowerCurveList;
+                    TML_InfoLog(tmlMsg);
                     getPowerCurveRes = PowerCurveList.Count;
                     if (getPowerCurveRes > 0)
                     {
@@ -11974,6 +12021,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 List<InsertWindTMLData> avgeRefWindSpeed = await Context.GetData<InsertWindTMLData>(ReferenceWSQry).ConfigureAwait(false);
                                 reconstructedWS = avgeRefWindSpeed[0].calculated_ws;
                                 finalResult = 4;
+                                tmlMsg = "ReferenceWSQry Query completed at " + DateTime.Now + " QUERY :- " + ReferenceWSQry;
+                                TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -11996,6 +12045,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 List<InsertWindTMLData> avgeRefWindSpeed = await Context.GetData<InsertWindTMLData>(ReferenceWSQry).ConfigureAwait(false);
                                 reconstructedWS = avgeRefWindSpeed[0].calculated_ws;
                                 finalResult = 4;
+                                tmlMsg = "ReferenceWSQry Query completed at " + DateTime.Now + " QUERY :- " + ReferenceWSQry;
+                                TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -12248,6 +12299,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
                         finalResult = 8;
+                        tmlMsg = "UpdateQry Query completed at " + DateTime.Now + " QUERY :- " + UpdateQry;
+                        TML_InfoLog(tmlMsg);
                         qryCounter = 0;
                     }
                     counter++;
@@ -12259,6 +12312,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
                         finalResult = 8;
+                        tmlMsg = "UpdateQry Query completed at " + DateTime.Now + " QUERY :- " + UpdateQry;
+                        TML_InfoLog(tmlMsg);
                     }
                     catch (Exception e)
                     {
@@ -12272,6 +12327,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg1 = "Updated all records into datatbase counter / no. of records : " + counter + " / " + UpdatedTMLDataList.Count;
                     //info = (msg);
                     await LogInfo(0, 2, 6, functionName, msg1, backend);
+                    tmlMsg = "Function completed at " + DateTime.Now;
+                    TML_InfoLog(tmlMsg);
                 }
                 else
                 {
@@ -14889,8 +14946,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> LogError(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
         {
             int returnRes = 0;
+            Message = Message.Replace("'", "");
+            string finalMessage = TrimString(Message, 7999);
+            int isTrim = 0;
+            if (Message.Length >= 8000)
+            {
+                isTrim = 1;
+            }
             //Read variable from appsetting to enable disable log
-            string logStmt = "INSERT INTO log4netlog (user_id, import_type, Level, module, is_frontend, api_name, Message, created_on) VALUES( " + userId + ", " + import_type + ", 1, " + module + ", " + is_frontend + ", '" + api_name + "', '" + Message.Replace("'", "") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "' );";
+            string logStmt = "INSERT INTO log4netlog (user_id, import_type, Level, module, is_frontend, api_name, Message, created_on, isMsgTrim) VALUES( " + userId + ", " + import_type + ", 1, " + module + ", " + is_frontend + ", '" + api_name + "', '" + finalMessage + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "', " + isTrim + " );";
 
             var logged = await Context.ErrorLog(logStmt).ConfigureAwait(false);
             returnRes = logged;
@@ -14900,13 +14964,36 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> LogInfo(int userId, int import_type, int module, string api_name, string Message, int is_frontend)
         {
             int returnRes = 0;
+            Message = Message.Replace("'", "");
+            string finalMessage = TrimString(Message, 7999);
+            int isTrim = 0;
+            if(Message.Length >= 8000)
+            {
+                isTrim = 1;
+            }
             //Read variable from appsetting to enable disable log
-            string logStmt = "INSERT INTO log4netlog (user_id, import_type, Level, module, is_frontend, api_name, Message, created_on) VALUES( " + userId + ", " + import_type + ", 2, " + module + ", " + is_frontend + ", '" + api_name + "', '" + Message.Replace("'", "") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "' );";
+            string logStmt = "INSERT INTO log4netlog (user_id, import_type, Level, module, is_frontend, api_name, Message, created_on, isMsgTrim) VALUES( " + userId + ", " + import_type + ", 2, " + module + ", " + is_frontend + ", '" + api_name + "', '" + finalMessage + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "', " + isTrim + " );";
             
             var logged = await Context.ErrorLog(logStmt).ConfigureAwait(false);
             returnRes = logged;
 
             return returnRes;
+        }
+
+        string TrimString(string msgString, int maxLength)
+        {
+            if (msgString.Length > maxLength)
+            {
+                return msgString.Substring(0, maxLength);
+            }
+
+            return msgString;
+        }
+
+        private void TML_InfoLog(string Message)
+        {
+            //Read variable from appsetting to enable disable log
+            System.IO.File.AppendAllText(@"C:\LogFile\TML_Log.txt", "*Info*:" + Message + "\r\n");
         }
     }
 }
