@@ -228,8 +228,9 @@
     }
     let site_id = "";
     function getReport() {
-
-        var site = $('select#site option:selected').each(function () {
+        var site = "";
+        site_id = "";
+        site = $('select#site option:selected').each(function () {
             site_id += $(this).val() + ",";
         });
         site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
@@ -238,6 +239,8 @@
             return false;
         }
         document.getElementById("loader").style.display = 'flex';
+        document.getElementById("CloseViewTableBtn").style.display = 'none';
+        document.getElementById("DailyGenView").style.display = 'none';
         console.log(site_id);
         var daterange = $('#daterange').val();
         var arr1 = new Array();
@@ -368,8 +371,9 @@
                 //console.log(result);
                 console.log("GetWindTmlData fetched successfully.");
                 document.getElementById("loader").style.display = 'none';
-                document.getElementById("CloseViewTableBtn").style.display = 'flex';
                 document.getElementById("viewTableBtn").style.display = 'none';
+                document.getElementById("CloseViewTableBtn").style.display = 'flex';
+                document.getElementById("DailyGenView").style.display = 'flex';
                 //calling function of getting data for chart.
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
@@ -503,7 +507,15 @@
             success: function (result, status, xhr) {
                 console.log(result);
                 //document.getElementById("loader").style.display = 'none';
-                document.getElementById("viewTableBtn").style.display = 'flex';
+                var CloseBtnStatus = "";
+                CloseBtnStatus = document.getElementById("CloseViewTableBtn").style.display;
+                console.log("Close btn status : " + CloseBtnStatus + " type " + typeof (CloseBtnStatus));
+                if (CloseBtnStatus == "flex") {
+                    document.getElementById("viewTableBtn").style.display = 'none';
+                }
+                if (CloseBtnStatus == "none"){
+                    document.getElementById("viewTableBtn").style.display = 'flex';
+                }
                 getChartDataYearly(site_id);
 
                 if (result.length > 0) {
@@ -697,6 +709,7 @@
 
     function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
         console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
+        Plotly.purge('Waterfall');
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
         let t_usmh = Number(total_usmh).toFixed(2);
@@ -882,6 +895,7 @@
 
     function CreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
         console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
+        Plotly.purge('WaterfallYearly');
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
         let t_usmh = Number(total_usmh).toFixed(2);
