@@ -566,7 +566,8 @@
         //let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
 
         // Percentage Value 
-        let exp_percentage = ((t_expected - t_target) / t_target) * 100;
+        let tar_percentage = ((t_expected - t_target) / t_target) * 100;
+        let exp_percentage = 100;
         let usmh_percentage = (t_usmh / t_expected) * 100;
         let smh_percentage = (t_smh / t_expected) * 100;
         let oh_percentage = (t_oh / t_expected) * 100;
@@ -643,7 +644,7 @@
                     data_actual
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + data_target,
+                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2)+ '% )',
                     '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
                     '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
@@ -947,7 +948,8 @@ function getYearlyReport()
         //let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
 
         // Percentage Value 
-        let exp_percentage = ((t_expected - t_target) / t_target) * 100;
+        let tar_percentage = ((t_expected - t_target) / t_target) * 100;
+        let exp_percentage = 100;
         let usmh_percentage = (t_usmh / t_expected) * 100;
         let smh_percentage = (t_smh / t_expected) * 100;
         let oh_percentage = (t_oh / t_expected) * 100;
@@ -1024,7 +1026,7 @@ function getYearlyReport()
                     data_actual
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + data_target,
+                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
                     '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
                     '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',

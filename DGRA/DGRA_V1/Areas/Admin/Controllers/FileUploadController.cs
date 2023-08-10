@@ -6062,6 +6062,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                         try
                         {
                             convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                            //convertedDate = DateTime.ParseExact(tempDate, "yyyy/MM/dd HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                            //convertedDate = DateTime.ParseExact(tempDate, "dd-MM-yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                            //convertedDate = DateTime.ParseExact(tempDate, "yyyy-MM-dd HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+
+                            //convertedDate = Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
                         }
                         catch (Exception e)
                         {
