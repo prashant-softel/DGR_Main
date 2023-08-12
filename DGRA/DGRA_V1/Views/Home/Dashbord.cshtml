@@ -370,7 +370,7 @@
     var displaychart = {"wind":false,"solar":false};
     //var tendays = "";
     window.onload = function () {
-        getEmailReportTime();
+        //getEmailReportTime();
         updateLoginLog(UserID, "login");
         getYear();
         var today = new Date();
@@ -391,18 +391,14 @@
                     if (!wsite_list) {
                         $('#wind_site').multipleSelect();
                     }
-
                     getSolarSite();
-
                     displaychart.solar = true;
                 }
                 if (wsite_list) {
                     if (!ssite_list) {
                         $('#solar_site').multipleSelect();
                     }
-
                     displaychart.wind = true;
-
                     getWindSite();
                 }
             } else {
@@ -410,18 +406,33 @@
                 getSolarSite();
                 displaychart.wind = true;
                 displaychart.solar = true;
-
             }
         }
-        if (ssite_list != '' && wsite_list == '') {
-            chartSelection(1);
-        }
-        else if (ssite_list == '' && wsite_list != '') {
-            chartSelection(1);
-        }
-        else {
-            chartSelection(1);
-        }
+        var isOnloadGraph = 1;
+
+        GetWindChartData(tendays, "Last 10 Days", isOnloadGraph);
+        GetSolarData(tendays, "Last 10 Days", isOnloadGraph);
+        GetWindChartDataMonthly(monthdate, "Monthly", 0);
+        GetSolarDataMonthly(monthdate, "Monthly", 0);
+
+        //if (ssite_list != '' && wsite_list == '') {
+        //    //chartSelection(1);
+        //    GetWindChartData(tendays, chartTitle, isOnloadGraph);
+        //    GetSolarData(tendays, chartTitle, isOnloadGraph);
+        //}
+        //else if (ssite_list == '' && wsite_list != '') {
+        //    //chartSelection(1);
+        //    GetWindChartData(tendays, chartTitle, isOnloadGraph);
+        //    GetSolarData(tendays, chartTitle, isOnloadGraph);
+        //}
+        //else {
+        //    //chartSelection(1);
+        //    GetWindChartData(tendays, chartTitle, isOnloadGraph);
+        //    GetSolarData(tendays, chartTitle, isOnloadGraph);
+        //    //GetSolarData(tendays, chartTitle);
+        //    //GetWindChartData(monthdate, chartTitle);
+        //    //GetSolarData(monthdate, chartTitle);
+        //}
     }
 
     function getEmailReportTime() {
@@ -580,12 +591,15 @@
                     GetSolarDataByLastDay();
                     if ($("#customRadio1").is(":checked")) {
                         chartTitle = "Last 10 Days";
-                        setTimeout(GetSolarData(tendays, chartTitle), 5000);
+                        //setTimeout(GetSolarData(tendays, chartTitle), 5000);
+                        GetSolarData(tendays, chartTitle, 1);
+                        GetSolarDataMonthly(monthdate, chartTitle, 0);
                     }
                     if ($("#customRadio2").is(":checked")) {
                         chartTitle = "Monthly";
-                        setTimeout(GetSolarData(monthdate, chartTitle)
-                            , 5000);
+                        //setTimeout(GetSolarData(monthdate, chartTitle), 5000);
+                        GetSolarDataMonthly(monthdate, chartTitle, 1);
+                        GetSolarData(tendays, chartTitle, 0);
                     }
                 }
                 if (wsite_list) {
@@ -593,11 +607,13 @@
 
                     if ($("#customRadio1").is(":checked")) {
                         chartTitle = "Last 10 Days";
-                        GetWindChartData(tendays, chartTitle);
+                        GetWindChartData(tendays, chartTitle, 1);
+                        GetWindChartDataMonthly(monthdate, chartTitle, 0);
                     }
                     if ($("#customRadio2").is(":checked")) {
                         chartTitle = "Monthly";
-                        GetWindChartData(monthdate, chartTitle);
+                        GetWindChartDataMonthly(monthdate, chartTitle, 1);
+                        GetWindChartData(tendays, chartTitle, 0);
                     }
                 }
             }
@@ -921,8 +937,6 @@
         });
     }
 
-
-
     // Solar call
     function GetSolarDataByLastDay() {
         let solar_site = "";
@@ -1157,35 +1171,32 @@
             }
         });
     }
-    // chart
-    function chartSelection(type) {
 
+    //Wind Chart data
+    var wcd_title = "";
+    var wcd_taget_wind = [];
+    var wcd_actual_wind = [];
+    var wcd_target_energy = [];
+    var wcd_actual_energy = [];
+    var wcd_datelebels = [];
 
-        if (type == 1) {
-            chartTitle = "Last 10 Days";
-            if (displaychart.wind) {
-                GetWindChartData(tendays, chartTitle);
-            }
-            if (displaychart.solar) {
-                setTimeout(GetSolarData(tendays, chartTitle)
-                    , 5000);
-            }
-        }
-        if (type==2) {
-            chartTitle = "Monthly";
-            if (displaychart.wind) {
-                GetWindChartData(monthdate, chartTitle);
-            }
-            if (displaychart.solar) {
-                setTimeout(GetSolarData(monthdate, chartTitle)
-                    , 5000);
-            }
+    var wcd_title_md = "";
+    var wcd_taget_wind_md = [];
+    var wcd_actual_wind_md = [];
+    var wcd_target_energy_md = [];
+    var wcd_actual_energy_md = [];
+    var wcd_datelebels_md = [];
 
-        }
-    }
-
-    function GetWindChartData(date_arr,title) {
+    function GetWindChartData(date_arr, title, isOnloadGraph) {
         let site = "";
+        
+        wcd_title = "";
+        wcd_taget_wind = [];
+        wcd_actual_wind = [];
+        wcd_target_energy = [];
+        wcd_actual_energy = [];
+        wcd_datelebels = [];
+
         $('select#wind_site option:selected').each(function () {
             site += $(this).val() + ",";
             // console.log($(this).val());
@@ -1198,17 +1209,9 @@
         //var FY = $('select#fy option:selected').val();
         var FY = fyear;
         var ismonthly = false;
-        if (title == "Monthly") {
-            startDate = getFinancialYearDateStartDate(fyear).startdate;
-            ismonthly = true;
-        }
+        wcd_title = title;
         console.log(startDate);
 
-        var taget_wind = [];
-        var actual_wind = [];
-        var target_energy = [];
-        var actual_energy = [];
-        var datelebels = [];
         $.ajax({
             type: "GET",
             url: "/Dashboard/GetWindGraphData?startDate=" + startDate + "&endDate=" + endDate + "&FY=" + FY + "&sites=" + site + "&monthly=" + ismonthly,
@@ -1216,6 +1219,10 @@
 
             datatype: "html",
             success: function (result, status, xhr) {
+                //if (isOnloadGraph == 1) {
+                //}
+                //GetSolarData(tendays, chartTitle, isOnloadGraph);
+                //GetWindChartData(monthdate, chartTitle);
                 // console.log(result)
                 if (result.length > 0) {
                     let previous = "";
@@ -1227,47 +1234,195 @@
                     for (var w = 0; w < result.length; w++) {
 
                         var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
-                        if (title == "Monthly") {
-                            cnt++;
-                            var oneDate = moment(formattedDate, 'DD-MM-YYYY');
-                            var monthName = oneDate.format('MMMM');
-
-                            if (monthName != previous) {
-                                datelebels.push(monthName);
-                                previous = monthName;
-                            }
-
-                            //total_tar_wind = result[w].tarwind;
-                            //toral_ac_wind += result[w].wind;
-                            //total_tar_kwh += result[w].tarkwh;
-                            //totat_act_kwh += result[w].jmrkwh;
-                            taget_wind.push(result[w].tarwind.toFixed(1));
-                            actual_wind.push(result[w].wind.toFixed(1));
-                            target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
-                            actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
-
-                        }
-                        else {
-                            datelebels.push(formattedDate);
-                            taget_wind.push(result[w].tarwind.toFixed(1));
-                            actual_wind.push(result[w].wind .toFixed(1));
-                            target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
-                            actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
-                        }
-
-
-
-
+                            wcd_datelebels.push(formattedDate);
+                            wcd_taget_wind.push(result[w].tarwind.toFixed(1));
+                            wcd_actual_wind.push(result[w].wind .toFixed(1));
+                            wcd_target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
+                            wcd_actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
                     }
-                    /*if (title == "Monthly") {
-                        taget_wind.push((total_tar_wind / cnt).toFixed(1));
-                        actual_wind.push((toral_ac_wind / cnt).toFixed(1));
-                        target_energy.push((total_tar_kwh / 1000000).toFixed(1GetSolarSiteList
-                        actual_energy.push((totat_act_kwh / 1000000).toFixed(1));
-                    }*/
                 }
+                if (isOnloadGraph == 1) {
+                    windChart(wcd_title, wcd_datelebels, wcd_taget_wind, wcd_actual_wind, wcd_target_energy, wcd_actual_energy);
+                }
+            }
+        });
 
-                windChart(title,datelebels, taget_wind, actual_wind, target_energy, actual_energy);
+    }
+
+    //function GetWindChartData(date_arr, title, isOnloadGraph) {
+    //    let site = "";
+        
+    //    if (title == "Monthly") {
+    //        wcd_title_md = "";
+    //        wcd_taget_wind_md = [];
+    //        wcd_actual_wind_md = [];
+    //        wcd_target_energy_md = [];
+    //        wcd_actual_energy_md = [];
+    //        wcd_datelebels_md = [];
+    //    } else {
+    //        wcd_title = "";
+    //        wcd_taget_wind = [];
+    //        wcd_actual_wind = [];
+    //        wcd_target_energy = [];
+    //        wcd_actual_energy = [];
+    //        wcd_datelebels = [];
+    //    }
+    //    $('select#wind_site option:selected').each(function () {
+    //        site += $(this).val() + ",";
+    //        // console.log($(this).val());
+
+    //    });
+    //    site = site != "" ? site.slice(0, -1) : site;
+    //    //console.log(date_arr);
+    //    var startDate = date_arr.startdate;
+    //    var endDate = GetPreviousDate();//date_arr.enddate;
+    //    //var FY = $('select#fy option:selected').val();
+    //    var FY = fyear;
+    //    var ismonthly = false;
+    //    if (title == "Monthly") {
+    //        startDate = getFinancialYearDateStartDate(fyear).startdate;
+    //        ismonthly = true;
+    //        wcd_title_md = title;
+    //    } else {
+    //        wcd_title = title;
+    //    }
+    //    console.log(startDate);
+
+    //    $.ajax({
+    //        type: "GET",
+    //        url: "/Dashboard/GetWindGraphData?startDate=" + startDate + "&endDate=" + endDate + "&FY=" + FY + "&sites=" + site + "&monthly=" + ismonthly,
+    //        contentType: "application/json; charset=utf-8",
+
+    //        datatype: "html",
+    //        success: function (result, status, xhr) {
+    //            //if (isOnloadGraph == 1) {
+    //            //}
+    //            //GetSolarData(tendays, chartTitle, isOnloadGraph);
+    //            //GetWindChartData(monthdate, chartTitle);
+    //            // console.log(result)
+    //            if (result.length > 0) {
+    //                let previous = "";
+    //                let total_tar_wind = 0;
+    //                let toral_ac_wind = 0;
+    //                let total_tar_kwh = 0;
+    //                let totat_act_kwh = 0;
+    //                let cnt = 0;
+    //                for (var w = 0; w < result.length; w++) {
+
+    //                    var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+    //                    if (title == "Monthly") {
+    //                        cnt++;
+    //                        var oneDate = moment(formattedDate, 'DD-MM-YYYY');
+    //                        var monthName = oneDate.format('MMMM');
+
+    //                        if (monthName != previous) {
+    //                            wcd_datelebels_md.push(monthName);
+    //                            previous = monthName;
+    //                        }
+
+    //                        //total_tar_wind = result[w].tarwind;
+    //                        //toral_ac_wind += result[w].wind;
+    //                        //total_tar_kwh += result[w].tarkwh;
+    //                        //totat_act_kwh += result[w].jmrkwh;
+    //                        wcd_taget_wind_md.push(result[w].tarwind.toFixed(1));
+    //                        wcd_actual_wind_md.push(result[w].wind.toFixed(1));
+    //                        wcd_target_energy_md.push((result[w].tarkwh / 1000000).toFixed(1));
+    //                        wcd_actual_energy_md.push((result[w].jmrkwh / 1000000).toFixed(1));
+
+    //                    }
+    //                    else {
+    //                        wcd_datelebels.push(formattedDate);
+    //                        wcd_taget_wind.push(result[w].tarwind.toFixed(1));
+    //                        wcd_actual_wind.push(result[w].wind .toFixed(1));
+    //                        wcd_target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
+    //                        wcd_actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
+    //                    }
+
+
+
+
+    //                }
+    //                /*if (title == "Monthly") {
+    //                    taget_wind.push((total_tar_wind / cnt).toFixed(1));
+    //                    actual_wind.push((toral_ac_wind / cnt).toFixed(1));
+    //                    target_energy.push((total_tar_kwh / 1000000).toFixed(1GetSolarSiteList
+    //                    actual_energy.push((totat_act_kwh / 1000000).toFixed(1));
+    //                }*/
+    //            }
+    //            if (isOnloadGraph == 1) {
+    //                windChart(wcd_title, wcd_datelebels, wcd_taget_wind, wcd_actual_wind, wcd_target_energy, wcd_actual_energy);
+    //            }
+    //            //if (title == "Monthly") {
+    //            //    windChart(wcd_title_md, wcd_datelebels_md, wcd_taget_wind_md, wcd_actual_wind_md, wcd_target_energy_md, wcd_actual_energy_md);
+    //            //} else {
+    //            //    windChart(wcd_title, wcd_datelebels, wcd_taget_wind, wcd_actual_wind, wcd_target_energy, wcd_actual_energy);
+    //            //}
+    //        }
+    //    });
+
+    //}
+
+    function GetWindChartDataMonthly(date_arr, title, createChart) {
+        let site = "";
+        
+        wcd_title_md = "";
+        wcd_taget_wind_md = [];
+        wcd_actual_wind_md = [];
+        wcd_target_energy_md = [];
+        wcd_actual_energy_md = [];
+        wcd_datelebels_md = [];
+        
+        $('select#wind_site option:selected').each(function () {
+            site += $(this).val() + ",";
+            // console.log($(this).val());
+
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+        //console.log(date_arr);
+        var startDate = date_arr.startdate;
+        var endDate = GetPreviousDate();//date_arr.enddate;
+        //var FY = $('select#fy option:selected').val();
+        var FY = fyear;
+        var ismonthly = false;
+        startDate = getFinancialYearDateStartDate(fyear).startdate;
+        ismonthly = true;
+        wcd_title_md = title;
+        console.log(startDate);
+
+        $.ajax({
+            type: "GET",
+            url: "/Dashboard/GetWindGraphData?startDate=" + startDate + "&endDate=" + endDate + "&FY=" + FY + "&sites=" + site + "&monthly=" + ismonthly,
+            contentType: "application/json; charset=utf-8",
+
+            datatype: "html",
+            success: function (result, status, xhr) {
+                if (result.length > 0) {
+                    let previous = "";
+                    let total_tar_wind = 0;
+                    let toral_ac_wind = 0;
+                    let total_tar_kwh = 0;
+                    let totat_act_kwh = 0;
+                    let cnt = 0;
+                    for (var w = 0; w < result.length; w++) {
+
+                        var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                        cnt++;
+                        var oneDate = moment(formattedDate, 'DD-MM-YYYY');
+                        var monthName = oneDate.format('MMMM');
+
+                        if (monthName != previous) {
+                            wcd_datelebels_md.push(monthName);
+                            previous = monthName;
+                        }
+                        wcd_taget_wind_md.push(result[w].tarwind.toFixed(1));
+                        wcd_actual_wind_md.push(result[w].wind.toFixed(1));
+                        wcd_target_energy_md.push((result[w].tarkwh / 1000000).toFixed(1));
+                        wcd_actual_energy_md.push((result[w].jmrkwh / 1000000).toFixed(1));
+                    }
+                    if (createChart == 1) {
+                        windChart(wcd_title_md, wcd_datelebels_md, wcd_taget_wind_md, wcd_actual_wind_md, wcd_target_energy_md, wcd_actual_energy_md);
+                    }
+                }
             }
         });
 
@@ -1398,9 +1553,30 @@
             );
     }
 
+    //Solar Chart Data
+    var scd_title = "";
+    var scd_target_kwh = [];
+    var scd_actual_kwh = [];
+    var scd_target_ir = [];
+    var scd_actual_ir = [];
+    var scd_datelebels = [];
 
-    function GetSolarData(date_arr, title) {
+    var scd_title_md = "";
+    var scd_target_kwh_md = [];
+    var scd_actual_kwh_md = [];
+    var scd_target_ir_md = [];
+    var scd_actual_ir_md = [];
+    var scd_datelebels_md = [];
+
+    function GetSolarData(date_arr, title, isOnloadGraph) {
         let solar_site = "";
+        scd_title = "";
+        scd_target_kwh = [];
+        scd_actual_kwh = [];
+        scd_target_ir = [];
+        scd_actual_ir = [];
+        scd_datelebels = [];
+
         $('select#solar_site option:selected').each(function () {
             solar_site += $(this).val() + ",";
 
@@ -1412,15 +1588,9 @@
         //var FY = $('select#fy option:selected').val();
         var FY = fyear;
         var ismonthly = false;
-        if (title == "Monthly") {
-            startDate = getFinancialYearDateStartDate(fyear).startdate;
-            ismonthly = true;
-        }
-        var target_kwh = [];
-        var actual_kwh = [];
-        var target_ir = [];
-        var actual_ir = [];
-        var datelebels = [];
+        scd_title = title;
+
+
         $.ajax({
             type: "GET",
             url: "/Dashboard/GetSolarDashboardData?startDate=" + startDate + "&endDate=" + endDate + "&FY=" + FY + "&sites=" + solar_site + "&monthly=" + ismonthly,
@@ -1428,7 +1598,173 @@
             //data: '{"countryname":"' + selcountry + '"}',
             datatype: "html",
             success: function (result, status, xhr) {
-                //console.log(result)
+                if (result.length > 0) {
+                    let previous = "";
+                    let total_inv_kwh = 0;
+                    let total_tar_kwh = 0;
+                    let total_ir = 0;
+                    let total_tar_ir = 0;
+                    let scnt = 0;
+                    for (var s = 0; s < result.length; s++) {
+                        var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+
+                        scd_datelebels.push(formattedDate);
+
+                        scd_actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
+                        scd_target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
+                        scd_target_ir.push(result[s].tarIR.toFixed(1));
+                        scd_actual_ir.push(result[s].ir.toFixed(1));
+                    }
+                }
+                if (isOnloadGraph == 1) {
+                    solarChart(scd_title, scd_datelebels, scd_target_kwh, scd_actual_kwh, scd_target_ir, scd_actual_ir);
+                }
+            }
+        });
+    }
+
+    //function GetSolarData(date_arr, title, isOnloadGraph) {
+    //    let solar_site = "";
+    //    scd_title = "";
+    //    scd_target_kwh = [];
+    //    scd_actual_kwh = [];
+    //    scd_target_ir = [];
+    //    scd_actual_ir = [];
+    //    scd_datelebels = [];
+
+    //    scd_title_md = "";
+    //    scd_target_kwh_md = [];
+    //    scd_actual_kwh_md = [];
+    //    scd_target_ir_md = [];
+    //    scd_actual_ir_md = [];
+    //    scd_datelebels_md = [];
+
+    //    $('select#solar_site option:selected').each(function () {
+    //        solar_site += $(this).val() + ",";
+
+    //    });
+
+    //    solar_site = solar_site != "" ? solar_site.slice(0, -1) : solar_site;
+    //    var startDate = date_arr.startdate;
+    //    var endDate = GetPreviousDate();//date_arr.enddate;
+    //    //var FY = $('select#fy option:selected').val();
+    //    var FY = fyear;
+    //    var ismonthly = false;
+    //    if (title == "Monthly") {
+    //        startDate = getFinancialYearDateStartDate(fyear).startdate;
+    //        ismonthly = true;
+    //        scd_title_md = title;
+    //    } else {
+    //        scd_title = title;
+    //    }
+
+
+    //    $.ajax({
+    //        type: "GET",
+    //        url: "/Dashboard/GetSolarDashboardData?startDate=" + startDate + "&endDate=" + endDate + "&FY=" + FY + "&sites=" + solar_site + "&monthly=" + ismonthly,
+    //        contentType: "application/json; charset=utf-8",
+    //        //data: '{"countryname":"' + selcountry + '"}',
+    //        datatype: "html",
+    //        success: function (result, status, xhr) {
+    //            //console.log(result)
+    //            //GetSolarData(monthdate, chartTitle);
+    //            if (result.length > 0) {
+    //                let previous = "";
+    //                let total_inv_kwh = 0;
+    //                let total_tar_kwh = 0;
+    //                let total_ir = 0;
+    //                let total_tar_ir = 0;
+    //                let scnt = 0;
+    //                for (var s = 0; s < result.length; s++) {
+    //                    var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+
+
+    //                    if (title == "Monthly") {
+    //                        var oneDate = moment(formattedDate, 'DD-MM-YYYY');
+    //                        var monthName = oneDate.format('MMMM');
+    //                        scnt++;
+    //                        if (monthName != previous) {
+    //                            scd_datelebels_md.push(monthName);
+    //                            previous = monthName;
+    //                        }
+    //                        /*total_inv_kwh += result[s].inv_kwh;
+    //                        total_tar_kwh += result[s].tarkwh;
+    //                        total_ir += result[s].tarIR ;
+    //                        total_tar_ir += result[s].tarIR;*/
+
+    //                        scd_actual_kwh_md.push((result[s].jmrkwh / 1000000).toFixed(1));
+    //                        scd_target_kwh_md.push((result[s].tarkwh / 1000000).toFixed(1));
+    //                        scd_target_ir_md.push(result[s].tarIR.toFixed(1));
+    //                        scd_actual_ir_md.push(result[s].ir.toFixed(1));
+    //                    }
+    //                    else {
+    //                        scd_datelebels.push(formattedDate);
+
+    //                        scd_actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
+    //                        scd_target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
+    //                        scd_target_ir.push(result[s].tarIR.toFixed(1));
+    //                        scd_actual_ir.push(result[s].ir.toFixed(1));
+    //                    }
+
+    //                   // datelebels.push(formattedDate)
+    //                   // actual_kwh.push((result[s].inv_kwh/1000000).toFixed(2));
+    //                   // target_kwh.push((result[s].tarkwh /1000000).toFixed(2));
+    //                    //target_ir.push(result[s].tarIR.toFixed(2));
+    //                    //actual_ir.push(result[s].ir.toFixed(2));
+    //                    //target_energy.push((result[w].tarkwh / 1000000).toFixed(2));
+    //                    //actual_energy.push((result[w].jmrkwh / 1000000).toFixed(2));
+    //                }
+    //                /*if (title == "Monthly") {
+    //                    actual_kwh.push((total_inv_kwh / 1000000).toFixed(2));
+    //                    target_kwh.push((total_tar_kwh / 1000000).toFixed(2));
+    //                    target_ir.push((total_tar_ir / scnt).toFixed(2));
+    //                    actual_ir.push((total_ir / scnt).toFixed(2));
+    //                }*/
+    //            }
+    //            if (isOnloadGraph == 1) {
+    //                solarChart(scd_title, scd_datelebels, scd_target_kwh, scd_actual_kwh, scd_target_ir, scd_actual_ir);
+    //            }
+    //            //if (title == "Monthly") {
+    //            //    solarChart(scd_title_md, scd_datelebels_md, scd_target_kwh_md, scd_actual_kwh_md, scd_target_ir_md, scd_actual_ir_md);
+    //            //} else {
+    //            //    solarChart(scd_title, scd_datelebels, scd_target_kwh, scd_actual_kwh, scd_target_ir, scd_actual_ir);
+    //            //}
+
+    //        }
+    //    });
+    //}
+
+    function GetSolarDataMonthly(date_arr, title, createChart) {
+        let solar_site = "";
+        scd_title_md = "";
+        scd_target_kwh_md = [];
+        scd_actual_kwh_md = [];
+        scd_target_ir_md = [];
+        scd_actual_ir_md = [];
+        scd_datelebels_md = [];
+
+        $('select#solar_site option:selected').each(function () {
+            solar_site += $(this).val() + ",";
+
+        });
+
+        solar_site = solar_site != "" ? solar_site.slice(0, -1) : solar_site;
+        var startDate = date_arr.startdate;
+        var endDate = GetPreviousDate();//date_arr.enddate;
+        //var FY = $('select#fy option:selected').val();
+        var FY = fyear;
+        var ismonthly = false;
+        startDate = getFinancialYearDateStartDate(fyear).startdate;
+        ismonthly = true;
+        scd_title_md = title;
+        
+        $.ajax({
+            type: "GET",
+            url: "/Dashboard/GetSolarDashboardData?startDate=" + startDate + "&endDate=" + endDate + "&FY=" + FY + "&sites=" + solar_site + "&monthly=" + ismonthly,
+            contentType: "application/json; charset=utf-8",
+            //data: '{"countryname":"' + selcountry + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
                 if (result.length > 0) {
                     let previous = "";
                     let total_inv_kwh = 0;
@@ -1445,49 +1781,24 @@
                             var monthName = oneDate.format('MMMM');
                             scnt++;
                             if (monthName != previous) {
-                                datelebels.push(monthName);
+                                scd_datelebels_md.push(monthName);
                                 previous = monthName;
                             }
-                            /*total_inv_kwh += result[s].inv_kwh;
-                            total_tar_kwh += result[s].tarkwh;
-                            total_ir += result[s].tarIR ;
-                            total_tar_ir += result[s].tarIR;*/
-
-                            actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
-                            target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
-                            target_ir.push(result[s].tarIR.toFixed(1));
-                            actual_ir.push(result[s].ir.toFixed(1));
+                            scd_actual_kwh_md.push((result[s].jmrkwh / 1000000).toFixed(1));
+                            scd_target_kwh_md.push((result[s].tarkwh / 1000000).toFixed(1));
+                            scd_target_ir_md.push(result[s].tarIR.toFixed(1));
+                            scd_actual_ir_md.push(result[s].ir.toFixed(1));
                         }
-                        else {
-                            datelebels.push(formattedDate);
-
-                            actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
-                            target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
-                            target_ir.push(result[s].tarIR.toFixed(1));
-                            actual_ir.push(result[s].ir.toFixed(1));
-                        }
-
-                       // datelebels.push(formattedDate)
-                       // actual_kwh.push((result[s].inv_kwh/1000000).toFixed(2));
-                       // target_kwh.push((result[s].tarkwh /1000000).toFixed(2));
-                        //target_ir.push(result[s].tarIR.toFixed(2));
-                        //actual_ir.push(result[s].ir.toFixed(2));
-                        //target_energy.push((result[w].tarkwh / 1000000).toFixed(2));
-                        //actual_energy.push((result[w].jmrkwh / 1000000).toFixed(2));
                     }
-                    /*if (title == "Monthly") {
-                        actual_kwh.push((total_inv_kwh / 1000000).toFixed(2));
-                        target_kwh.push((total_tar_kwh / 1000000).toFixed(2));
-                        target_ir.push((total_tar_ir / scnt).toFixed(2));
-                        actual_ir.push((total_ir / scnt).toFixed(2));
-                    }*/
+
+                    if (createChart == 1) {
+                        solarChart(scd_title_md, scd_datelebels_md, scd_target_kwh_md, scd_actual_kwh_md, scd_target_ir_md, scd_actual_ir_md);
+                    }
                 }
-
-                solarChart(title,datelebels, target_kwh, actual_kwh, target_ir, actual_ir);
-
             }
         });
     }
+
     function solarChart(title, datelebels, target_kwh, actual_kwh, target_ir, actual_ir) {
         let chartStatus = Chart.getChart("energy_solar"); // <canvas> id
         if (chartStatus != undefined) {
@@ -1614,6 +1925,33 @@
             }
 
         });
+    }
+
+    function chartSelection(type) {
+
+        if (type == 1) {
+            chartTitle = "Last 10 Days";
+            if (displaychart.wind) {
+                windChart(wcd_title, wcd_datelebels, wcd_taget_wind, wcd_actual_wind, wcd_target_energy, wcd_actual_energy);
+                //GetWindChartData(tendays, chartTitle);
+            }
+            if (displaychart.solar) {
+                solarChart(scd_title, scd_datelebels, scd_target_kwh, scd_actual_kwh, scd_target_ir, scd_actual_ir);
+                //setTimeout(GetSolarData(tendays, chartTitle), 5000);
+            }
+        }
+        if (type == 2) {
+            chartTitle = "Monthly";
+            if (displaychart.wind) {
+                windChart(wcd_title_md, wcd_datelebels_md, wcd_taget_wind_md, wcd_actual_wind_md, wcd_target_energy_md, wcd_actual_energy_md);
+                //GetWindChartData(monthdate, chartTitle);
+            }
+            if (displaychart.solar) {
+                solarChart(scd_title_md, scd_datelebels_md, scd_target_kwh_md, scd_actual_kwh_md, scd_target_ir_md, scd_actual_ir_md);
+                //setTimeout(GetSolarData(monthdate, chartTitle), 5000);
+            }
+
+        }
     }
 
     function getCookie(cname) {
