@@ -3615,112 +3615,114 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly mail Reading mail Msg file path:- " + DateTime.Now + fname);
             string qry = "";
-            if (fname.Contains("Solar"))
-            {
-                //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains soalr " + fname);
-                qry = "select useremail from login where To_Weekly_Solar = 1;";
-                try
-                {
-                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    foreach (var item in data2)
-                    {
-                        AddTo.Add(item.useremail);
-                        //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar Weekly Mail Added to email id :" + item.useremail);
-                    }
-                }
-                catch (Exception e)
-                {
-                    string msg = e.ToString();
-                    //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
-                }
-                qry = "select useremail from login where Cc_Weekly_Solar = 1;";
-                try
-                {
-                    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    if (data3 != null)
-                    {
-                        foreach (var item in data3)
-                        {
-                            AddCc.Add(item.useremail);
-                            //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail Added CC email id :" + item.useremail);
-                        }
-                    }
-                    else
-                    {
-                       // PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail CC email List is Empty");
+            //if (fname.Contains("Solar"))
+            //{
+            //    //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains soalr " + fname);
+            //    qry = "select useremail from login where To_Weekly_Solar = 1;";
+            //    try
+            //    {
+            //        List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //        foreach (var item in data2)
+            //        {
+            //            AddTo.Add(item.useremail);
+            //            //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar Weekly Mail Added to email id :" + item.useremail);
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        string msg = e.ToString();
+            //        //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
+            //    }
+            //    qry = "select useremail from login where Cc_Weekly_Solar = 1;";
+            //    try
+            //    {
+            //        List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //        if (data3 != null)
+            //        {
+            //            foreach (var item in data3)
+            //            {
+            //                AddCc.Add(item.useremail);
+            //                //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail Added CC email id :" + item.useremail);
+            //            }
+            //        }
+            //        else
+            //        {
+            //           // PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Solar  Weekly Mail CC email List is Empty");
 
-                    }
-                }
-                catch (Exception e)
-                {
-                    string msg = e.ToString();
-                    //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg);
-                }
-            }
-            else
-            {
-                //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains wind");
-                qry = "select useremail from login where To_Weekly_Wind = 1;";
-                try
-                {
-                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    foreach (var item in data2)
-                    {
-                        AddTo.Add(item.useremail);
-                        //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added to email id :" + item.useremail);
-                    }
-                }
-                catch (Exception e)
-                {
-                    string msg = e.ToString();
-                    //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
-                }
-                qry = "select useremail from login where Cc_Weekly_Wind = 1;";
-                try
-                {
-                    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    if (data3 != null)
-                    {
-                        foreach (var item in data3)
-                        {
-                            AddCc.Add(item.useremail);
-                            //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added CC email id :" + item.useremail);
-                        }
-                    }
-                    else
-                    {
-                        //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail  CC email list is Empty ");
-                    }
-                }
-                catch (Exception e)
-                {
-                    string msg = e.ToString();
-                    //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg);
-                }
-            }
-           // AddTo.Add("tanvi@softeltech.in");
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        string msg = e.ToString();
+            //        //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg);
+            //    }
+            //}
+            //else
+            //{
+            //    //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains wind");
+            //    qry = "select useremail from login where To_Weekly_Wind = 1;";
+            //    try
+            //    {
+            //        List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //        foreach (var item in data2)
+            //        {
+            //            AddTo.Add(item.useremail);
+            //            //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added to email id :" + item.useremail);
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        string msg = e.ToString();
+            //        //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
+            //    }
+            //    qry = "select useremail from login where Cc_Weekly_Wind = 1;";
+            //    try
+            //    {
+            //        List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //        if (data3 != null)
+            //        {
+            //            foreach (var item in data3)
+            //            {
+            //                AddCc.Add(item.useremail);
+            //                //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail Added CC email id :" + item.useremail);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Wind Weekly Mail  CC email list is Empty ");
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        string msg = e.ToString();
+            //        //PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding CC emails : Due to : " + msg);
+            //    }
+            //}
+           AddTo.Add("tanvi@softeltech.in");
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
             string subject = "";
             if (fname.Contains("Solar"))
             {
                 subject = "Solar Weekly Reports";
+                info = "Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject;
                 //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject);
-                await LogInfo(0, 0, 0, functionName, "Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject, backend);
+                await LogInfo(0, 0, 0, functionName,info, backend);
 
             }
             else
             {
                 subject = "Wind Weekly Reports";
                 //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject);
-                await LogInfo(0, 0, 0, functionName, "Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject, backend);
+                info = "Inside MailSend function for Weekly Mail Send : Weekly Mail Subject selected : " + subject;
+                await LogInfo(0, 0, 0, functionName,info, backend);
 
             }
             request.Subject = subject;
             request.Body = Msg; 
             //var file = "C:\\Users\\tanvi kinjale\\Downloads\\" + fname + ".pptx";
             var file = "C:\\inetpub\\wwwroot\\DGR_WEB\\pptupload\\" + fname + ".pptx";
-            //PPT_InformationLog("Weekly Mail Reading file path:- " + file);
+            //PPT_InformationLog("Weekly Mail Reading file path:- " =+ file);
             try {
                 var formFile = new FormFile(System.IO.File.OpenRead(file), 0, new FileInfo(file).Length, null, Path.GetFileName(file));
                 List<IFormFile> list = new List<IFormFile>();
@@ -3729,37 +3731,43 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if(list.Count > 0)
                 {
                     //PPT_InformationLog("List of files attached : " + list[0].ToString());
-                    await LogInfo(0, 0, 0, functionName, "List of files attached : " + list[0].ToString(), backend);
+                    info = "List of files attached : " + list[0].ToString();
+                    await LogInfo(0, 0, 0, functionName, info, backend);
 
                 }
                 else
                 {
-                    await LogInfo(0, 0, 0, functionName, "List of Attachments is empty", backend);
+                    info = "List of Attachments is empty";
+                    await LogInfo(0, 0, 0, functionName, info, backend);
                     //PPT_InformationLog("List of Attachments is empty : ");
                 }
                 //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File opened for reading at path :" + file);
-                await LogInfo(0, 0, 0, functionName, "Weekly Mail File opened for reading at path :" + file, backend);
+                info = "Weekly Mail File opened for reading at path :" + file;
+                await LogInfo(0, 0, 0, functionName, info, backend);
 
 
             }
             catch (Exception ex)
             {
                 //PPT_ErrorLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File read failed exception :" + ex.Message);
-                await LogInfo(0, 0, 0, functionName, "Weekly Mail File read failed exception: " + ex.Message, backend);
+                info = "Weekly Mail File read failed exception: " + ex.Message;
+                await LogInfo(0, 0, 0, functionName, info, backend);
 
             }
             try
             {
                 var res = await MailService.SendEmailAsync(request, _settings);
                 //PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail SendEmailAsync function completed");
-                await LogInfo(0, 0, 0, functionName, "Weekly Mail SendEmailAsync function completed", backend);
+                info = "Weekly Mail SendEmailAsync function completed";
+                await LogInfo(0, 0, 0, functionName, info, backend);
 
             }
             catch (Exception e)
             {
                 string msg = e.Message;
                 //PPT_ErrorLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail SendEmailAsync function failed exception :" + e.Message);
-                await LogInfo(0, 0, 0, functionName, "Weekly Mail SendEmailAsync function failed exception :" + e.Message, backend);
+                info = "Weekly Mail SendEmailAsync function failed exception :" + e.Message;
+                await LogInfo(0, 0, 0, functionName, info, backend);
 
             }
             return 1;
@@ -11026,60 +11034,62 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<string> AddCc = new List<string>();
 
             string qry = "";
-            if (reportTitle.Contains("Solar"))
-            {
-                //PPT_InformationLog("MailDailySend function : Contains solar file");
-                qry = "select useremail from login where To_Daily_Solar = 1;";
-                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data2)
-                {
-                    AddTo.Add(item.useremail);
-                    //PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
+            //if (reportTitle.Contains("Solar"))
+            //{
+            //    //PPT_InformationLog("MailDailySend function : Contains solar file");
+            //    qry = "select useremail from login where To_Daily_Solar = 1;";
+            //    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    foreach (var item in data2)
+            //    {
+            //        AddTo.Add(item.useremail);
+            //        //PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
 
-                }
-                qry = "select useremail from login where Cc_Daily_Solar = 1;";
-                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                if (data3 != null)
-                {
-                    foreach (var item in data3)
-                    {
-                        AddCc.Add(item.useremail);
-                        //PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
+            //    }
+            //    qry = "select useremail from login where Cc_Daily_Solar = 1;";
+            //    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    if (data3 != null)
+            //    {
+            //        foreach (var item in data3)
+            //        {
+            //            AddCc.Add(item.useremail);
+            //            //PPT_InformationLog("MailDailySend function : Added solar cc email : " + item.useremail);
 
-                    }
-                }
-                else
-                {
-                    //PPT_InformationLog("MailDailySend function : solar cc email list is Empty " );
-                }
-            }
-            else
-            {
-                //PPT_InformationLog("MailDailySend function : Contains wind file");
+            //        }
+            //    }
+            //    else
+            //    {
+            //       // PPT_InformationLog("MailDailySend function : solar cc email list is Empty ");
+            //    }
+            //}
+            //else
+            //{
+            //    //PPT_InformationLog("MailDailySend function : Contains wind file");
 
-                qry = "select useremail from login where to_daily_wind = 1;";
-                List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                foreach (var item in data2)
-                {
-                    AddTo.Add(item.useremail);
-                    //PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
+            //    qry = "select useremail from login where to_daily_wind = 1;";
+            //    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    foreach (var item in data2)
+            //    {
+            //        AddTo.Add(item.useremail);
+            //        //PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
 
-                }
-                qry = "select useremail from login where Cc_Daily_Wind = 1;";
-                List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                if (data3 != null) {
-                    foreach (var item in data3)
-                    {
-                        AddCc.Add(item.useremail);
-                        //PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
+            //    }
+            //    qry = "select useremail from login where Cc_Daily_Wind = 1;";
+            //    List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+            //    if (data3 != null)
+            //    {
+            //        foreach (var item in data3)
+            //        {
+            //            AddCc.Add(item.useremail);
+            //            //PPT_InformationLog("MailDailySend function : Added wind cc email : " + item.useremail);
 
-                    }
-                }
-                else {
+            //        }
+            //    }
+            //    else
+            //    {
 
-                    //PPT_InformationLog("MailDailySend function :  wind cc email list is Empty");
-                }
-            }
+            //        //PPT_InformationLog("MailDailySend function :  wind cc email list is Empty");
+            //    }
+            //}
 
 
 
@@ -11088,7 +11098,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            
             //AddTo.Add("sujitkumar0304@gmail.com");
             //AddTo.Add("prashant@softetech.in");
-            //AddTo.Add("tanvi@softeltech.in");          
+            AddTo.Add("tanvi@softeltech.in");          
         
             request.ToEmail = AddTo;
             request.CcEmail = AddCc;
@@ -15003,6 +15013,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             int returnRes = 0;
             Message = Message.Replace("'", "");
+            bool isSlash = Message.Contains('\\');
+            if (isSlash)
+            {
+                Message = Message.Replace("\\", "--");
+            }
             string finalMessage = TrimString(Message, 7999);
             int isTrim = 0;
             if (Message.Length >= 8000)
@@ -15021,6 +15036,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             int returnRes = 0;
             Message = Message.Replace("'", "");
+            bool isSlash = Message.Contains('\\');
+            if (isSlash)
+            {
+                Message = Message.Replace("\\", "--");
+            }
             string finalMessage = TrimString(Message, 7999);
             int isTrim = 0;
             if(Message.Length >= 8000)
