@@ -123,7 +123,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-sm-4 col-form-label text-right">Solar Site : </label>
-                                <select class="form-control multi-select col-sm-8" id="solar_site" name="solar_site" multiple></select>
+                                <select class="form-control multi-select col-sm-8" id="solar_site" name="solar_site" multiple onchange="changedSolarSite()"></select>
                             </div>
                         </div>
                     </div>
@@ -367,7 +367,8 @@
     var fdate = "";
     var monthdate = "";
     var month = "";
-    var displaychart = {"wind":false,"solar":false};
+    var displaychart = { "wind": false, "solar": false };
+    var solarChanged = 0;
     //var tendays = "";
     window.onload = function () {
         //getEmailReportTime();
@@ -412,8 +413,9 @@
 
         GetWindChartData(tendays, "Last 10 Days", isOnloadGraph);
         GetSolarData(tendays, "Last 10 Days", isOnloadGraph);
-        GetWindChartDataMonthly(monthdate, "Monthly", 0);
-        GetSolarDataMonthly(monthdate, "Monthly", 0);
+        var isOnloadGraphMonthly = 0;
+        GetWindChartDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
+        GetSolarDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
 
         //if (ssite_list != '' && wsite_list == '') {
         //    //chartSelection(1);
@@ -433,6 +435,10 @@
         //    //GetWindChartData(monthdate, chartTitle);
         //    //GetSolarData(monthdate, chartTitle);
         //}
+    }
+
+    function changedSolarSite(){
+        solarChanged = 1;
     }
 
     function getEmailReportTime() {
@@ -591,15 +597,19 @@
                     GetSolarDataByLastDay();
                     if ($("#customRadio1").is(":checked")) {
                         chartTitle = "Last 10 Days";
+                        var graphGenerate = 1;
                         //setTimeout(GetSolarData(tendays, chartTitle), 5000);
-                        GetSolarData(tendays, chartTitle, 1);
-                        GetSolarDataMonthly(monthdate, chartTitle, 0);
+                        GetSolarData(tendays, chartTitle, graphGenerate);
+                        var graphGenerateMonthly = 0;
+                        GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                     }
                     if ($("#customRadio2").is(":checked")) {
                         chartTitle = "Monthly";
+                        var graphGenerateMonthly = 1;
                         //setTimeout(GetSolarData(monthdate, chartTitle), 5000);
-                        GetSolarDataMonthly(monthdate, chartTitle, 1);
-                        GetSolarData(tendays, chartTitle, 0);
+                        GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                        var graphGenerate = 0;
+                        GetSolarData(tendays, chartTitle, graphGenerate);
                     }
                 }
                 if (wsite_list) {
@@ -607,13 +617,17 @@
 
                     if ($("#customRadio1").is(":checked")) {
                         chartTitle = "Last 10 Days";
-                        GetWindChartData(tendays, chartTitle, 1);
-                        GetWindChartDataMonthly(monthdate, chartTitle, 0);
+                        var graphGenerate = 1;
+                        GetWindChartData(tendays, chartTitle, graphGenerate);
+                        var graphGenerateMonthly = 0;
+                        GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                     }
                     if ($("#customRadio2").is(":checked")) {
                         chartTitle = "Monthly";
-                        GetWindChartDataMonthly(monthdate, chartTitle, 1);
-                        GetWindChartData(tendays, chartTitle, 0);
+                        var graphGenerateMonthly = 1;
+                        GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                        var graphGenerate = 0;
+                        GetWindChartData(tendays, chartTitle, graphGenerate);
                     }
                 }
             }
@@ -624,14 +638,33 @@
 
                 if ($("#customRadio1").is(":checked")) {
                     chartTitle = "Last 10 Days";
-                    GetWindChartData(tendays, chartTitle);
-                    GetSolarData(tendays, chartTitle);
+                    //GetWindChartData(tendays, chartTitle);
+                    //GetSolarDataMonthly(tendays, chartTitle);
+                    var graphGenerate = 1;
+                    var graphGenerateMonthly = 0;
+
+                    if (solarChanged == 1) {
+                        GetSolarData(tendays, chartTitle, graphGenerate);
+                        GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                    } else {
+                        GetWindChartData(tendays, chartTitle, graphGenerate);
+                        GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                    }
                 }
                 if ($("#customRadio2").is(":checked")) {
                     chartTitle = "Monthly";
-                    GetWindChartData(monthdate, chartTitle);
-                    setTimeout(GetSolarData(monthdate, chartTitle)
-                        , 5000);
+                    //GetWindChartData(monthdate, chartTitle);
+                    //setTimeout(GetSolarData(monthdate, chartTitle), 5000);
+                    var graphGenerateMonthly = 1;
+                    var graphGenerate = 0;
+
+                    if (solarChanged == 1) {
+                        GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                        GetSolarData(tendays, chartTitle, graphGenerate);
+                    } else {
+                        GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                        GetWindChartData(tendays, chartTitle, graphGenerate);
+                    }
                 }
             }
         }
