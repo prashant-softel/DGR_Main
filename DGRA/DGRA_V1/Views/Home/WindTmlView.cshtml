@@ -393,7 +393,7 @@
                 tbl += '<th>Reconstructed Windspeed</th>';
                 tbl += '<th>Expected Power</th>';
                 tbl += '<th>Deviation kW</th>';
-                tbl += '<th>Loss kW</th>';
+                tbl += '<th>Loss kWh</th>';
                 tbl += '<th>Manual Breakdown </th>';
                 tbl += '<th>All Breakdown</th>';
                 tbl += '</tr></thead>';
@@ -726,7 +726,20 @@
 
 
         // Percentage Value
-        let exp_percentage = ((total_expected - total_target) / total_target) * 100;
+        //let exp_percentage = ((total_expected - total_target) / total_target) * 100;
+        //let usmh_percentage = (total_usmh / total_expected) * 100;
+        //let smh_percentage = (total_smh / total_expected) * 100;
+        //let oh_percentage = (total_oh / total_expected) * 100;
+        //let igbd_percentage = (total_igbd / total_expected) * 100;
+        //let egbd_percentage = (total_egbd / total_expected) * 100;
+        //let loadShedding_percentage = (loadShedding / total_expected) * 100;
+        //let lull_percentage = (total_lull / total_expected) * 100;
+        //let pcd_percentage = (total_pcd / total_expected) * 100;
+        //let line_percentage = (total_lineloss / total_expected) * 100;
+        //let actul_percentage = ((total_actual - total_expected) / total_expected) * 100;
+
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage = 100;
         let usmh_percentage = (total_usmh / total_expected) * 100;
         let smh_percentage = (total_smh / total_expected) * 100;
         let oh_percentage = (total_oh / total_expected) * 100;
@@ -840,7 +853,7 @@
                     Number(total_actual)
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + total_target,
+                    '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
                     '<b>USMH</b><br>Value: ' + total_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
                     '<b>SMH</b><br>Value: ' + total_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
@@ -911,7 +924,9 @@
 
 
         // Percentage Value
-        let exp_percentage = ((total_expected - total_target) / total_target) * 100;
+        /*let exp_percentage = ((total_expected - total_target) / total_target) * 100;*/
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage = 100;
         let usmh_percentage = (total_usmh / total_expected) * 100;
         let smh_percentage = (total_smh / total_expected) * 100;
         let oh_percentage = (total_oh / total_expected) * 100;
@@ -983,7 +998,7 @@
                     Number(total_actual)
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + total_target,
+                    '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
                     '<b>USMH</b><br>Value: ' + total_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
                     '<b>SMH</b><br>Value: ' + total_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
