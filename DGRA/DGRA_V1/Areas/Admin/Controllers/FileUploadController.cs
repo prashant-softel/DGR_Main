@@ -5995,6 +5995,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             long rowNumber = 1;
             int errorCount = 0;
             int responseCode = 400;
+            string fileDateFormat = "";
 
             if (ds.Tables.Count > 0)
             {
@@ -6059,9 +6060,38 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //    }
                         //}
                         string tempDate = Convert.ToString(dr["Date"]);
+                        if (rowNumber == 2)
+                        {
+                            fileDateFormat = getDateFormat(tempDate);
+                        }
                         try
                         {
-                            convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                            if (fileDateFormat != "Invalid Slash separated date" || fileDateFormat != "Invalid Slash separated date")
+                            {
+                                switch (fileDateFormat)
+                                {
+                                    case "dd/MM/yyyy HH:mm:ss" :
+                                        convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                                        break;
+                                    case "yyyy/MM/dd HH:mm:ss":
+                                        convertedDate = DateTime.ParseExact(tempDate, "yyyy/MM/dd HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                                        break;
+                                    case "Contains Hyphen":
+                                        convertedDate = Convert.ToDateTime(tempDate).ToString("yyyy-MM-dd HH:mm:ss");
+                                        break;
+                                    default:
+                                        m_ErrorLog.SetError(", Cannot recognize <" + tempDate + "> in Date column of Row <" + rowNumber + "> as date.");
+                                        break;
+                                }
+                            }
+                            //else if (fileDateFormat == "Contains Hyphen")
+                            //{
+
+                            //}
+
+                            //convertedDate = DateTime.ParseExact(tempDate, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+
+
                             //convertedDate = DateTime.ParseExact(tempDate, "yyyy/MM/dd HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
                             //convertedDate = DateTime.ParseExact(tempDate, "dd-MM-yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
                             //convertedDate = DateTime.ParseExact(tempDate, "yyyy-MM-dd HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
@@ -6246,6 +6276,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 string previousTime = "00:00:00";
                 string previousWTG = "";
                 string dataDate = "";
+                string fileDateFormat = "";
+                string convertedDate = "";
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     InsertWindTMLData addUnit = new InsertWindTMLData();
@@ -6290,9 +6322,31 @@ namespace DGRA_V1.Areas.admin.Controllers
                             continue;
                         }
                         string timeStampTemp = dr["Time Stamp"].ToString();
+                        if (rowNumber == 2)
+                        {
+                            fileDateFormat = getDateFormat(timeStampTemp);
+                        }
                         try
                         {
-                            addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("yyyy-MM-dd HH:mm:ss");
+                            if (fileDateFormat != "Invalid Slash separated date" || fileDateFormat != "Invalid Slash separated date")
+                            {
+                                switch (fileDateFormat)
+                                {
+                                    case "dd/MM/yyyy HH:mm:ss":
+                                        convertedDate = DateTime.ParseExact(timeStampTemp, "dd/MM/yyyy HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                                        break;
+                                    case "yyyy/MM/dd HH:mm:ss":
+                                        convertedDate = DateTime.ParseExact(timeStampTemp, "yyyy/MM/dd HH:mm:ss", null).ToString("yyyy-MM-dd HH:mm:ss");
+                                        break;
+                                    case "Contains Hyphen":
+                                        convertedDate = Convert.ToDateTime(timeStampTemp).ToString("yyyy-MM-dd HH:mm:ss");
+                                        break;
+                                    default:
+                                        m_ErrorLog.SetError(", Cannot recognize <" + timeStampTemp + "> in Date column of Row <" + rowNumber + "> as date.");
+                                        break;
+                                }
+                            }
+                            addUnit.timestamp = convertedDate;
                             errorFlag.Add(stringNullValidation(addUnit.timestamp, "Time Stamp", rowNumber));
                         }
                         catch (Exception e)
@@ -6303,11 +6357,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                             continue;
                         }
 
-                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time Stamp"]).ToString("dd-MMM-yy");
+                        addUnit.date = isdateEmpty ? "Nil" : Convert.ToDateTime(convertedDate).ToString("dd-MMM-yy");
                         //string temp_date = temp.Substring(0, 10);
                         if (rowNumber == 2)
                         {
-                            previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
+                            previousTime = Convert.ToDateTime(convertedDate).ToString("HH:mm:ss");
                             dataDate = addUnit.date;
                         }
                         if (rowNumber > 2 && (dataDate != addUnit.date || previousWTG != addUnit.WTGs))
@@ -6327,7 +6381,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             previousTime = "00:00:00";
                         }
 
-                        previousTime = Convert.ToDateTime(dr["Time Stamp"]).ToString("HH:mm:ss");
+                        previousTime = Convert.ToDateTime(convertedDate).ToString("HH:mm:ss");
 
                         bool isActivePowerEmpty = dr["Actual_Avg_Active_Power_10M"] is DBNull;
                         if (!isActivePowerEmpty)
@@ -8410,6 +8464,33 @@ namespace DGRA_V1.Areas.admin.Controllers
                 }
             }
             //System.IO.File.AppendAllText(@"C:\LogFile\test.txt", "*Validaion Information*" + Message + "\r\n");
+        }
+
+        public string getDateFormat(string sampleDate)
+        {
+            if (sampleDate.Contains("/"))
+            {
+                if (DateTime.TryParseExact(sampleDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                {
+                    return "dd/MM/yyyy HH:mm:ss";
+                }
+                else if (DateTime.TryParseExact(sampleDate, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                {
+                    return "yyyy/MM/dd HH:mm:ss";
+                }
+                else
+                {
+                    return "Invalid Slash separated date";
+                }
+            }
+            else if (sampleDate.Contains("-"))
+            {
+                return "Contains Hyphen";
+            }
+            else
+            {
+                return "Invalid date format";
+            }
         }
     }
 }
