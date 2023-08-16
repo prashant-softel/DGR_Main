@@ -11033,8 +11033,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             DataTable dt = await Context.FetchData(checkQry).ConfigureAwait(false);
             if (dt.Rows.Count == 0)
             {
-                //string qry = $"insert into mail_send_log (report_type,site_type,status) values({report_type},{site_type},1)";
-                string qry = "insert into `mail_send_log` (`report_type`,`site_type`,`status`) values(2, 2, 1)";
+                string qry = $"insert into mail_send_log (report_type,site_type,status) values({report_type},{site_type},1)";
                 int val = await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
                 return 0;
             }
