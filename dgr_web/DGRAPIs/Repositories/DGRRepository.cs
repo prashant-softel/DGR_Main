@@ -3619,6 +3619,13 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             string qry = "";
             if (fname.Contains("Solar"))
             {
+                //int val = await checkMaillog(2, 1);
+                //if (val == 1)
+                //{
+                //    PPT_InformationLog("MailSend function : Solar Weekly Mail already sent.");
+                //    return 1;
+                //}
+
                 PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains soalr " + fname);
                 qry = "select useremail from login where To_Weekly_Solar = 1;";
                 try
@@ -3661,6 +3668,13 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             else
             {
+                //int val = await checkMaillog(2, 2);
+                //if (val == 1)
+                //{
+                //    PPT_InformationLog("MailSend function : Wind Weekly Mail already sent.");
+                //    return 1;
+                //}
+
                 PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains wind");
                 qry = "select useremail from login where To_Weekly_Wind = 1;";
                 try
@@ -11013,9 +11027,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             // return res;
             return tb;
         }
-        internal async Task<int> MailDailySend(string data ,string reportTitle)
+        internal async Task<int> checkMaillog(int report_type, int site_type)
         {
-            PPT_InformationLog("Inside MailDailySend function from repository for wind");
+            string checkQry = $"select * from mail_send_log where report_type={report_type} and site_type={site_type} and status=1 and DATE(timestamp) = '{DateTime.Today.ToString("yyyy-MM-dd")}' ";
+            DataTable dt = await Context.FetchData(checkQry).ConfigureAwait(false);
+            if (dt.Rows.Count == 0)
+            {
+                //string qry = $"insert into mail_send_log (report_type,site_type,status) values({report_type},{site_type},1)";
+                string qry = "insert into `mail_send_log` (`report_type`,`site_type`,`status`) values(2, 2, 1)";
+                int val = await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+            
+        }
+        internal async Task<int> MailDailySend(string data ,string reportTitle)
+        { 
+            
+            PPT_InformationLog("Inside MailDailySend function from repository for" + reportTitle);
             string info = ("MailDailySend function called from repository for " + reportTitle);
             string functionName = "MailDailySend";
             //await LogInfo(0, 0, 3, functionName, info, backend);
@@ -11041,6 +11073,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry = "";
             if (reportTitle.Contains("Solar"))
             {
+                int val = await checkMaillog(1, 1);
+                if(val == 1)
+                {
+                    PPT_InformationLog("MailDailySend function : Solar Daily Mail already sent.");
+                    return 1;
+                }
+
                 PPT_InformationLog("MailDailySend function : Contains solar file");
                 qry = "select useremail from login where To_Daily_Solar = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
@@ -11068,6 +11107,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             else
             {
+                int val = await checkMaillog(1, 2);
+                if (val == 1)
+                {
+                    PPT_InformationLog("MailDailySend function : Wind Daily Mail already sent.");
+                    return 1;
+                }
+
                 PPT_InformationLog("MailDailySend function : Contains wind file");
 
                 qry = "select useremail from login where to_daily_wind = 1;";
@@ -11163,7 +11209,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //var logged = await Context.ErrorLog(qry).ConfigureAwait(false);
             try
             {
-                System.IO.File.AppendAllText(@"C:\LogFile\PPT_LogFromRepo.txt", "**Error**:" + Message + "\r\n");
+                System.IO.File.AppendAllText(@"C:\LogFile\PPT_LogFromRepo.txt", "**Info**:" + Message + "\r\n");
             }
             catch (Exception e)
             {
