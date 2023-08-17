@@ -5595,11 +5595,28 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             //and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where t1.approve_status=" + approve_status + " and " + datefilter + " group by site";
             List<SolarPerformanceReports1> data = new List<SolarPerformanceReports1>();
             data = await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);
-            
 
-                string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+            //sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,
+            //string act_kwhForTempQry = "SELECT t1.date,t3.site,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year=(t1.date)  left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.date >= '" + fromDate + "' AND t1.date <= '" + todate + "' group by t1.date ,t1.site;";
+
+            //string act_kwhForTempQry = "SELECT t1.site,SUM((t1.inv_act - t1.inv_act * (t2.LineLoss / 100)) + t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and t2.month_no=MONTH(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.date >= '" + fromDate + "' AND t1.date <= '" + todate + "' group by t1.date ,t1.site;";
+
+            //string act_kwhForTempQry = "SELECT t1.site, SUM((t1.inv_act - t1.inv_act * (t2.LineLoss / 100)) + t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 LEFT JOIN monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and t2.month_no = MONTH(t1.date) where t1.date >= '" + fromDate + "' AND t1.date <= '" + todate + "' ;";
+
+            //List<SolarPerformanceReports1> siteData = new List<SolarPerformanceReports1>();
+            //try
+            //{
+            //    siteData = await Context.GetData<SolarPerformanceReports1>(act_kwhForTempQry).ConfigureAwait(false);
+            //}
+            //catch(Exception e)
+            //{
+            //    string msg = "Exception while getting act_kwh for temp corrected pr fetch query, due to : " + e.ToString();
+            //    await LogError(0, 1, 5, functionName, msg, backend);
+            //}
+
+            string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
             
-            string getTempCorrPr = "SELECT t2.site, t1.site_id, (SUM(t1.jmrTempPR) * 100) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t1.site_id;";
+            string getTempCorrPr = "SELECT t2.site, t1.site_id, SUM(t1.jmrTempPR) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t1.site_id;";
                 List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
                 try
                 {
@@ -5665,9 +5682,16 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                 {
                     if (_dataelement.site == _tempdataelement.site)
                     {
-                        _dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
+                        _dataelement.temp_corrected_pr = ((_dataelement.act_kwh * 1000000) / _tempdataelement.temp_corrected_pr) * 100;
                     }
                 }
+                //foreach (SolarPerformanceReports1 _tempdataelement in siteData)
+                //{
+                //    if (_dataelement.site == _tempdataelement.site)
+                //    {
+                //        _dataelement.act_kwh_for_temp_corr = _tempdataelement.act_kwh_afterloss;
+                //    }
+                //}
 
 
             }
@@ -11284,10 +11308,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon; type = 4 : Regen
             string tmlMsg = "-------------------TML Insertion Started---------------------------";
-            TML_InfoLog(tmlMsg);
+            //TML_InfoLog(tmlMsg);
             DateTime functionCall = DateTime.Now;
             tmlMsg = "type : " + type + " at : " + functionCall;
-            TML_InfoLog(tmlMsg);
+            //TML_InfoLog(tmlMsg);
             int finalResult = 0;
             string date = "";
             int site_id = 0;
@@ -11355,7 +11379,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             deleteWindSpeedTmdQry += " AND wtg_id IN( " + deleteWindSpeedTmdValues.Substring(0, (deleteWindSpeedTmdValues.Length - 1)) + ") ;";
                             deleteWindSpeedTmdRes = await Context.ExecuteNonQry<int>(deleteWindSpeedTmdQry).ConfigureAwait(false);
                             tmlMsg = "Delete Query completed at " + DateTime.Now + " QUERY :- " + deleteWindSpeedTmdQry;
-                            TML_InfoLog(tmlMsg);
+                            //TML_InfoLog(tmlMsg);
                             finalResult = 1;
                         }
                         catch (Exception e)
@@ -11374,7 +11398,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 {
                                     finalResult = 2;
                                     tmlMsg = "Insert Query completed at " + DateTime.Now + " QUERY :- " + insertWinsSpeedTmdQry.Substring(0, (insertWinsSpeedTmdQry.Length - 1));
-                                    TML_InfoLog(tmlMsg);
+                                    //TML_InfoLog(tmlMsg);
                                     info = ("Insert into windSpeed tmd Data table successful. counter count : " + qryCounter);
                                     await LogInfo(0, 2, 6, functionName, info, backend);
                                     qryCounter = 0;
@@ -11400,7 +11424,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         deleteWindSpeedTmdQry += " AND wtg_id IN( " + deleteWindSpeedTmdValues.Substring(0, (deleteWindSpeedTmdValues.Length - 1)) + ") ;";
                         deleteWindSpeedTmdRes = await Context.ExecuteNonQry<int>(deleteWindSpeedTmdQry).ConfigureAwait(false);
                         tmlMsg = "Delete Query completed at " + DateTime.Now + " QUERY :- " + deleteWindSpeedTmdQry;
-                        TML_InfoLog(tmlMsg);
+                        //TML_InfoLog(tmlMsg);
                         finalResult = 1;
                     }
                     catch (Exception e)
@@ -11419,7 +11443,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             {
                                 finalResult = 2;
                                 tmlMsg = "Insert Query completed at " + DateTime.Now + " QUERY :- " + insertWinsSpeedTmdQry.Substring(0, (insertWinsSpeedTmdQry.Length - 1));
-                                TML_InfoLog(tmlMsg);
+                                //TML_InfoLog(tmlMsg);
                                 info = ("Insert into windSpeed tmd Data table successful. counter count/no. of rows : " + qryCounter + " / " + set.Count);
                                 await LogInfo(0, 2, 6, functionName, info, backend);
                             }
@@ -11517,7 +11541,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 referenceList = await Context.GetData<ImportWindReferenceWtgs>(fetchReferenceQry).ConfigureAwait(false);
                 tmlMsg = "Fetch Reference Query completed at " + DateTime.Now + " QUERY :- " + fetchReferenceQry;
-                TML_InfoLog(tmlMsg);
+                //TML_InfoLog(tmlMsg);
                 fetchReferenceWtgRes = referenceList.Count;
                 finalResult = 2;
             }
@@ -11592,7 +11616,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 unit.calculated_ws = avgeRefWindSpeed[0].windspeed;
                                 finalResult = 4;
                                 tmlMsg = "Fetch AvgReferenceWind Speed Query completed at " + DateTime.Now + " QUERY :- " + ReferenceWSQry;
-                                TML_InfoLog(tmlMsg);
+                                //TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -11610,7 +11634,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 unit.calculated_ws = avgAllField[0].windspeed;
                                 finalResult = 5;
                                 tmlMsg = "Fetch averageTmlQry Speed Query completed at " + DateTime.Now + " QUERY :- " + averageTmlQry;
-                                TML_InfoLog(tmlMsg);
+                                //TML_InfoLog(tmlMsg);
                             }
 
                             catch (Exception e)
@@ -11647,7 +11671,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 unit.calculated_ws = avgFivePrevNext[0].windspeed;
                                 finalResult = 7;
                                 tmlMsg = "Fetch averageTmlQry Query completed at " + DateTime.Now + " QUERY :- " + averageTmlQry;
-                                TML_InfoLog(tmlMsg);
+                                //TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -11712,7 +11736,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                     deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
                                     deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
                                     tmlMsg = "deleteFromTMDQry Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDQry;
-                                    TML_InfoLog(tmlMsg);
+                                    //TML_InfoLog(tmlMsg);
                                     finalResult = 1;
                                 }
                                 catch (Exception e)
@@ -11727,7 +11751,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                     updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry.Substring(0, (updateWindspeedTMDQry.Length - 1)) + " ;").ConfigureAwait(false);
                                     finalResult = 8;
                                     tmlMsg = "updateWindspeedTMDQry Query completed at " + DateTime.Now + " QUERY :- " + updateWindspeedTMDQry;
-                                    TML_InfoLog(tmlMsg);
+                                    //TML_InfoLog(tmlMsg);
                                     info = ("Inserted values into uploading_file_tmr_data  counter : " + qryCounter);
                                     await LogInfo(0, 2, 6, functionName, info, backend);
                                 }
@@ -11780,7 +11804,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
                         finalResult = 1;
                         tmlMsg = "deleteFromTMDValues Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDValues;
-                        TML_InfoLog(tmlMsg);
+                        //TML_InfoLog(tmlMsg);
                     }
                     catch (Exception e)
                     {
@@ -11794,7 +11818,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         updateWindspeedTMDRes = await Context.ExecuteNonQry<int>(updateWindspeedTMDQry.Substring(0, (updateWindspeedTMDQry.Length - 1)) + " ;").ConfigureAwait(false);
                         finalResult = 8;
                         tmlMsg = "updateWindspeedTMDRes Query completed at " + DateTime.Now + " QUERY :- " + updateWindspeedTMDRes;
-                        TML_InfoLog(tmlMsg);
+                        //TML_InfoLog(tmlMsg);
                         info = ("Inserted values into uploading_file_tmr_data  counter/no. of rows : " + qryCounter + " / " + set.Count);
                         await LogInfo(0, 2, 6, functionName, info, backend);
                     }
@@ -11812,7 +11836,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 info = ("Inserted all data into uploading_file_tmr_data table : counter/no. of rows : " + count + " / " + qryCounter + " ");
                 await LogInfo(0, 2, 6, functionName, info, backend);
-                TML_InfoLog(info);
+                //TML_InfoLog(info);
             }
             else
             {
@@ -11839,7 +11863,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Some changes for INOX sucj as update all_bd as well with manual_bd column.
             int finalRes = 0;
             string functionName = "UpdateManualBdForTMLData";
-            TML_InfoLog(functionName + "------------------------");
+            //TML_InfoLog(functionName + "------------------------");
             string tmlMsg;
             //14-Mar-23
             string original_date = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
@@ -11866,7 +11890,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 _WindBreakdownReport = await Context.GetData<WindDailyBreakdownReport>(getQry).ConfigureAwait(false);
                 finalRes = 1;
                 tmlMsg = "getQry Query completed at " + DateTime.Now + " QUERY :- " + getQry;
-                TML_InfoLog(tmlMsg);
+                //TML_InfoLog(tmlMsg);
                 windBDReportRows = _WindBreakdownReport.Count;
             }
             catch (Exception e)
@@ -11951,7 +11975,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     await LogInfo(0, 2, 6, functionName, info, backend);
                     updateManualRes = await Context.ExecuteNonQry<int>(addManualBdQry).ConfigureAwait(false);
                     tmlMsg = "updateManualRes Query completed at " + DateTime.Now + " QUERY :- " + updateManualRes;
-                    TML_InfoLog(tmlMsg);
+                    //TML_InfoLog(tmlMsg);
                     finalRes = 2;
                 }
                 catch (Exception e)
@@ -12010,7 +12034,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string addManualBdQry2 = "UPDATE uploading_file_tmr_data SET manual_bd = '-' WHERE manual_bd IS NULL AND date = '" + date + "' AND site_id = " + site_id + ";";
                 updateManualRes2 = await Context.ExecuteNonQry<int>(addManualBdQry2).ConfigureAwait(false);
                 tmlMsg = "updateManualRes2 Query completed at " + DateTime.Now + " QUERY :- " + updateManualRes2;
-                TML_InfoLog(tmlMsg);
+                //TML_InfoLog(tmlMsg);
                 finalRes = 2;
             }
             catch (Exception e)
@@ -12041,7 +12065,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int finalResult = 0;
             string functionName = "UpdateReconAndOther";
             string tmlMsg = functionName + "---------------------------" + DateTime.Now;
-            TML_InfoLog(tmlMsg);
+            //TML_InfoLog(tmlMsg);
             string UpdateQry = "";
             string updateQryValues = "";
             int counter = 0;
@@ -12064,7 +12088,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 UpdatedTMLDataList = await Context.GetData<InsertWindTMLData>(fetchUpdatedTMLDataQry).ConfigureAwait(false);
                 tmlMsg = "UpdatedTMLDataList Query completed at " + DateTime.Now + " QUERY :- " + UpdatedTMLDataList;
-                TML_InfoLog(tmlMsg);
+                //TML_InfoLog(tmlMsg);
                 finalResult = 1;
                 fetchUpdatedTMLDataRes = UpdatedTMLDataList.Count;
             }
@@ -12080,7 +12104,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 List<InsertWindTMLData> fetchAverage = await Context.GetData<InsertWindTMLData>(fetchAverageWindSpeedQry).ConfigureAwait(false);
                 fetchAverageWindSpeedRes = fetchAverage.Count;
                 tmlMsg = "fetchAverage Query completed at " + DateTime.Now + " QUERY :- " + fetchAverage;
-                TML_InfoLog(tmlMsg);
+                //TML_InfoLog(tmlMsg);
                 averageWindSpeed = fetchAverage[0].calculated_ws;
                 finalResult = 2;
             }
@@ -12097,7 +12121,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     PowerCurveList = await Context.GetData<InsertWindPowerCurve>(getPowerCurveQry).ConfigureAwait(false);
                     tmlMsg = "PowerCurveList Query completed at " + DateTime.Now + " QUERY :- " + PowerCurveList;
-                    TML_InfoLog(tmlMsg);
+                    //TML_InfoLog(tmlMsg);
                     getPowerCurveRes = PowerCurveList.Count;
                     if (getPowerCurveRes > 0)
                     {
@@ -12152,7 +12176,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 reconstructedWS = avgeRefWindSpeed[0].calculated_ws;
                                 finalResult = 4;
                                 tmlMsg = "ReferenceWSQry Query completed at " + DateTime.Now + " QUERY :- " + ReferenceWSQry;
-                                TML_InfoLog(tmlMsg);
+                                //TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -12176,7 +12200,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 reconstructedWS = avgeRefWindSpeed[0].calculated_ws;
                                 finalResult = 4;
                                 tmlMsg = "ReferenceWSQry Query completed at " + DateTime.Now + " QUERY :- " + ReferenceWSQry;
-                                TML_InfoLog(tmlMsg);
+                                //TML_InfoLog(tmlMsg);
                             }
                             catch (Exception e)
                             {
@@ -12430,7 +12454,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
                         finalResult = 8;
                         tmlMsg = "UpdateQry Query completed at " + DateTime.Now + " QUERY :- " + UpdateQry;
-                        TML_InfoLog(tmlMsg);
+                        //TML_InfoLog(tmlMsg);
                         qryCounter = 0;
                     }
                     counter++;
@@ -12443,7 +12467,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         updateRes = await Context.ExecuteNonQry<int>(UpdateQry).ConfigureAwait(false);
                         finalResult = 8;
                         tmlMsg = "UpdateQry Query completed at " + DateTime.Now + " QUERY :- " + UpdateQry;
-                        TML_InfoLog(tmlMsg);
+                        //TML_InfoLog(tmlMsg);
                     }
                     catch (Exception e)
                     {
@@ -12458,7 +12482,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     //info = (msg);
                     await LogInfo(0, 2, 6, functionName, msg1, backend);
                     tmlMsg = "Function completed at " + DateTime.Now;
-                    TML_InfoLog(tmlMsg);
+                    //TML_InfoLog(tmlMsg);
                 }
                 else
                 {
@@ -13818,9 +13842,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string functionName = "GetWindTMLGraphData";
 
             List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
-            string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
-            string todate = Convert.ToDateTime(toDate).ToString("dd-MMM-yy");
-            string tmrFilter = "date >= '" + fdate + "'  and date <= '" + todate + "'";
+            //string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
+            //string todate = Convert.ToDateTime(toDate).ToString("dd-MMM-yy");
+            string tmrFilter = "Date(Time_stamp) >= '" + fromDate + "'  and Date(Time_stamp) <= '" + toDate + "'";
             double lossIGBD = 0;
             double lossEGBD = 0;
             double lossLULL = 0;
@@ -14560,7 +14584,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     returnData[0].est_avg_mod_temp = est1HourData[0].t_array;
 
                     //string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site + " and t1.date = '" + datestring + "' group by t1.date ,t1.site";
-                    string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year=(t1.date)  left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = 10 and t1.date = '2023-07-30' group by t1.date ,t1.site;";
+                    string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year=(t1.date)  left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site + " and t1.date = '" + fromDate + "' group by t1.date ,t1.site;";
                     List<SolarPerformanceReports1> siteData = new List<SolarPerformanceReports1>();
                     try
                     {
@@ -14593,9 +14617,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
                     try
                     {
-                        returnData[0].plantTempPR = siteData[0].plant_kwh / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
+                        //returnData[0].plantTempPR = siteData[0].plant_kwh / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
 
-                        returnData[0].jmrTempPR = siteData[0].act_kwh_afterloss / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
+                        //returnData[0].jmrTempPR = siteData[0].act_kwh_afterloss / (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
+                        
+                        returnData[0].jmrTempPR = (avg_POA * siteData[0].dc_capacity * (1 - pvsystdata[0].alpha * (returnData[0].actModWtTemp - returnData[0].estModTemp)));
+
                         start = start.AddDays(1);
                         finalRes++;
                     }
@@ -14612,7 +14639,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 //Insert the calculated data into database temperature corrected PR table.
                 string deleteQry = "DELETE FROM temperature_corrected_pr WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "';";
-                string insertQry = "INSERT INTO temperature_corrected_pr(site_id, date, actModWtTemp, act_avg_mod_temp, estModTemp, est_avg_mod_temp, jmrTempPR, plantTempPR) VALUES (" + site + ", '" + fromDate + "', " + returnData[0].actModWtTemp + ", " + returnData[0].act_avg_mod_temp + ", " + returnData[0].estModTemp + ", " + returnData[0].est_avg_mod_temp + ", " + returnData[0].jmrTempPR + ", " + returnData[0].plantTempPR + ");";
+                string insertQry = "INSERT INTO temperature_corrected_pr(site_id, date, actModWtTemp, act_avg_mod_temp, estModTemp, est_avg_mod_temp, jmrTempPR) VALUES (" + site + ", '" + fromDate + "', " + returnData[0].actModWtTemp + ", " + returnData[0].act_avg_mod_temp + ", " + returnData[0].estModTemp + ", " + returnData[0].est_avg_mod_temp + ", " + returnData[0].jmrTempPR + ");";
                 int deleteRes = 0;
                 int insertRes = 0;
                 try
