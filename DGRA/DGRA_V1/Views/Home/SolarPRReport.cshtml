@@ -1154,6 +1154,7 @@
                         let act_prval = 0
 
                         let TCPr_var = 0;
+                        let actual_TempCorrectedPR = 0;
 
                         minr = ((result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif);
                         if (result[i].tar_kwh != 0) {
@@ -1161,10 +1162,10 @@
                         }
                         if (result[i].expected_kwh != 0) {
                             e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
-                            if (result[i].site == "Maragutti") {
-                                console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
+                            //if (result[i].site == "Maragutti") {
+                            //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
                             //    console.log(temp_e_var);
-                            }
+                            //}
                         }
                         if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
                             act_prval = 0
@@ -1185,7 +1186,10 @@
                         iga_var = (result[i].act_iga - result[i].tar_iga);
                         ega_var = (result[i].act_ega - result[i].tar_ega);
 
-                        TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
+                    //actual_TempCorrectedPR = result[i].act_kwh_for_temp_corr / result[i].temp_corrected_pr;
+
+                    //TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
+                        TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr);
                        
                         if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
                             gain_tar = 0;
@@ -1244,8 +1248,10 @@
                         total_capActEga += result[i].act_ega * result[i].capacity;
 
                         total_tar_TCpr += result[i].tar_pr;
+                    //total_act_TCpr += result[i].temp_corrected_pr;
                         total_act_TCpr += result[i].temp_corrected_pr;
                         total_capTarTCPr += result[i].tar_pr * result[i].capacity;
+                    //total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
                         total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
 
                         tbl += '<tr>';
