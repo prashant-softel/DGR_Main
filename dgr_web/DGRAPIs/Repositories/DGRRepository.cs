@@ -12296,6 +12296,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
 
                     //Calculate All Breakdown.
+                    //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon; type = 4 : Regen
                     //no need to calculate all_bd here for INOX already calculated before.
                     if (type == 1)
                     {
@@ -13848,10 +13849,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double lossIGBD = 0;
             double lossEGBD = 0;
             double lossLULL = 0;
-            double lossNC = 0;
+            double lossOthersHour = 0;
             double lossPCD = 0;
             double lossSMH = 0;
             double lossUSMH = 0;
+            double lossHealth = 0;
             double loadShedding = 0;
             double expected_power_sum = 0;
             double actual_active_power = 0;
@@ -13904,8 +13906,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 if (_tmlDataList.Count > 0)
                 {
                     foreach (var unit in _tmlDataList)
-                    {
-                        if (unit.all_bd == "IGBG")
+                    {//add other hrs remove nc
+                        if (unit.all_bd == "IGBD")
                         {
                             lossIGBD = unit.loss_kw;
                         }
@@ -13913,13 +13915,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             lossEGBD = unit.loss_kw;
                         }
-                        if (unit.all_bd == "LULL")
+                        //if (unit.all_bd == "LULL")
+                        //{
+                        //    lossLULL = unit.loss_kw;
+                        //}
+                        if (unit.all_bd == "OthersHour")
                         {
-                            lossLULL = unit.loss_kw;
-                        }
-                        if (unit.all_bd == "NC")
-                        {
-                            lossNC = unit.loss_kw;
+                            lossOthersHour = unit.loss_kw;
                         }
                         if (unit.all_bd == "PCD")
                         {
@@ -13933,11 +13935,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             lossUSMH = unit.loss_kw;
                         }
-                        if (unit.all_bd == "loadShedding")
+                        if (unit.all_bd == "LoadShedding")
                         {
                             loadShedding = unit.loss_kw;
                         }
+                        if (unit.all_bd == "HealthCheck")
+                        {
+                            lossHealth = unit.loss_kw;
+                        }
                     }
+                    lossUSMH += lossHealth;
                 }
 
             }
@@ -14127,9 +14134,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             _tmlDataList.Clear();
 
             //Calculating Difference in expected power.
-            allSum = expected_power_sum + lossUSMH + lossSMH + lossIGBD + lossEGBD + lossNC + lossPCD + lineloss_final;
+            gen_actual_active_power = (gen_actual_active_power / 1000000) + lineloss_final ;
+            actual_active_power = gen_actual_active_power;
+            allSum = expected_power_sum + lossUSMH + lossSMH + lossIGBD + lossEGBD + lossOthersHour + lossPCD + loadShedding + lineloss_final;//here NC contains other hours value., 
             double difference = 0;
-            difference = actual_active_power - allSum;
+            //difference = actual_active_power - allSum;
+            difference = gen_actual_active_power - allSum;
             if (difference != 0 )
             {
                 finalExpectedPower = expected_power_sum + difference;
@@ -14143,7 +14153,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 try
                 {
-                    string insertQry = "INSERT INTO exp_act_difference_wind(site_id, from_date, to_date, expected, actual, difference, final_expected, target, USMH, SMH, Other, IGBD, EGBD, LULL, PCD, Lineloss) VALUES ('" + site + "', '" + fromDate + "', '" + toDate + "', " + expected_power_sum + ", " + actual_active_power + ", " + difference + ", " + finalExpectedPower + ", " + target_sum + ", " + lossUSMH + ", " + lossSMH + ", " + lossNC + ", " + lossIGBD + ", " + lossEGBD + ", " + lossLULL + ", " + lossPCD + ", " + lineloss_final + ");";
+                    string insertQry = "INSERT INTO exp_act_difference_wind(site_id, from_date, to_date, expected, actual, difference, final_expected, target, USMH, SMH, Other, IGBD, EGBD, PCD, Lineloss) VALUES ('" + site + "', '" + fromDate + "', '" + toDate + "', " + expected_power_sum + ", " + actual_active_power + ", " + difference + ", " + finalExpectedPower + ", " + target_sum + ", " + lossUSMH + ", " + lossSMH + ", " + lossOthersHour + ", " + lossIGBD + ", " + lossEGBD + ", " + lossPCD + ", " + lineloss_final + ");";
                     int insertRes = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
 
                 }
@@ -14165,7 +14175,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     target_final = target_sum,
                     lossUSMH_final = lossUSMH,
                     lossSMH_final = lossSMH,
-                    lossNC_final = lossNC,
+                    lossNC_final = lossOthersHour,
                     lossIGBD_final = lossIGBD,
                     lossEGBD_final = lossEGBD,
                     lossLULL_final = lossLULL,
