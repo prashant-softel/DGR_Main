@@ -65,7 +65,7 @@ namespace DGRAPIs.Models
         public double tar_ega { get; set; }
         public double act_ega { get; set; }
         public double temp_corrected_pr { get; set; }
-
+        public double act_kwh_for_temp_corr { get; set; }
 
 
     }

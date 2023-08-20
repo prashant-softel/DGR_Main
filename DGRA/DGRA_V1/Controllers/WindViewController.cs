@@ -362,12 +362,12 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
         //GetWindTMLGraphData
-        public async Task<IActionResult> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin)
+        public async Task<IActionResult> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly)
         {
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindTMLGraphData?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&isAdmin=" + isAdmin;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindTMLGraphData?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&isAdmin=" + isAdmin + "&isYearly=" + isYearly;
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {

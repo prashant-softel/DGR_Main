@@ -58,6 +58,7 @@ namespace DGRAPIs.Models
     public class GetWindTMLGraphData
     {
         public string all_bd { get; set; }
+        public int month_no { get; set; }
         public double loss_kw { get; set; }
         public double expected_kw_sum { get; set; }
         public double active_power_sum { get; set; }

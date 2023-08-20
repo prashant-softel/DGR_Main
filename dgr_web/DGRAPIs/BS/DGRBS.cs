@@ -67,7 +67,7 @@ namespace DGRAPIs.BS
         Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
         Task<List<GetPowerCurveData>> GetWindPowerCurveData(string site, string fromDate, string toDate);
         Task<List<GetPowerCurveData>> GetWindTmlPowerCurveData(string site, string fromDate, string toDate, string wtgs);
-        Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin);
+        Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly);
         Task<int> InsertDailyTargetKPI(List<WindDailyTargetKPI> set);
         Task<int> InsertMonthlyTargetKPI(List<WindMonthlyTargetKPI> set);
         Task<int> InsertMonthlyUploadingLineLosses(List<WindMonthlyUploadingLineLosses> set);
@@ -2604,13 +2604,13 @@ namespace DGRAPIs.BS
 
         }
         //GetWindTMLGraphData
-        public async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin)
+        public async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.GetWindTMLGraphData(site, fromDate, toDate, isAdmin);
+                    return await repos.GetWindTMLGraphData(site, fromDate, toDate, isAdmin, isYearly);
 
                 }
             }
