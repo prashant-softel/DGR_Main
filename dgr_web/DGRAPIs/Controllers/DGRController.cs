@@ -899,11 +899,11 @@ namespace DGRAPIs.Controllers
         //GetWindTMLGraphData
         [Route("GetWindTMLGraphData")]
         [HttpGet]
-        public async Task<IActionResult> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin)
+        public async Task<IActionResult> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly)
         {
             try
             {
-                var data = await _dgrBs.GetWindTMLGraphData(site, fromDate, toDate, isAdmin);
+                var data = await _dgrBs.GetWindTMLGraphData(site, fromDate, toDate, isAdmin, isYearly);
                 return Ok(data);
             }
             catch (Exception ex)
