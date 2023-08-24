@@ -410,7 +410,7 @@
 
                         let pr_value = 0;
                         let total_breakdown = 0;
-                        total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                        total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
                         pr_value = result[i].inv_kwh - total_breakdown;
 
                         var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
@@ -602,7 +602,7 @@
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    prMeasure,
+                    rMeasure,
                     aMeasure
                 ],
                 x: [
@@ -778,7 +778,7 @@ function getYearlyReport()
                 let cal_data = [];
                 for (var i = 0; i < result.length; i++) {
                     let pr_value = 0;
-                    let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                    let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
                     pr_value = result[i].inv_kwh - total_breakdown;
                     cnt++;
                     total_target += result[i].target;
@@ -984,7 +984,7 @@ function getYearlyReport()
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    prMeasure,
+                    rMeasure,
                     aMeasure
                 ],
                 x: [
