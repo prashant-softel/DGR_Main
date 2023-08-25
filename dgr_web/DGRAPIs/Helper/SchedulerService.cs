@@ -87,7 +87,7 @@ namespace DGRAPIs.Helper
                             bool WindMailSuccess = false;
                             try
                             {
-                                string apiUrlSolar = hostName+ "/api/DGR/EmailSolarReport?fy=" + fy +"&fromDate="+ datetimenow.ToString("yyyy-MM-dd") +"&site=";
+                                string apiUrlSolar = hostName+ "/api/DGR/EmailSolarReport?fy=" + fy +"&fromDate="+ "2023-08-23" + "&site=";
                                 PPT_InformationLog("From Scheduler Service : For Daily Mail Send Solar : API URL " + apiUrlSolar);
                                 CallAPI(apiUrlSolar);
                                // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
@@ -100,8 +100,8 @@ namespace DGRAPIs.Helper
                                 PPT_ErrorLog("From Scheduler Service : For Daily Mail Send Solar : Inside catch Solar Daily mail failed" + msg);
                             }
                             try
-                            {
-                                string apiUrlWind = hostName + "/api/DGR/EmailWindReport?fy=" + fy + "&fromDate=" + datetimenow.ToString("yyyy-MM-dd") + "&site=";
+                            { //datetimenow.ToString("yyyy-MM-dd")
+                                string apiUrlWind = hostName + "/api/DGR/EmailWindReport?fy=" + fy + "&fromDate=" + "2023-08-23" + "&site=";
                                 PPT_InformationLog("From Scheduler Service : For Daily Mail Send Wind : API URL " + apiUrlWind);
                                 CallAPI(apiUrlWind);
                                 // await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
