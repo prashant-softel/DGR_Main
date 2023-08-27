@@ -77,6 +77,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         List<string> IGBD = new List<string>();
         List<string> SMBList = new List<string>();
         List<string> StringsList = new List<string>();
+        List<InsertWindTMLData> TMLDataSet = new List<InsertWindTMLData>();
 
 
         ErrorLog m_ErrorLog;
@@ -117,7 +118,13 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 //  string response = await ExceldatareaderAndUpload(Request.Files["Path"]);
                 string finalResponse = "";
-                for (int i = 0; i < HttpContext.Request.Form.Files.Count; i++)
+                int fileCount = HttpContext.Request.Form.Files.Count;
+                bool isMultiFiles = false;
+                if(fileCount > 1)
+                {
+                    isMultiFiles = true;
+                }
+                for (int i = 0; i < fileCount; i++)
                 {
                     //Clearing hashtables and list before importing new file.
                     equipmentId.Clear();
@@ -130,8 +137,62 @@ namespace DGRA_V1.Areas.admin.Controllers
                     eqSiteId.Clear();
                     finalResponse = "";
                     fileSheets.Clear();
-                    string response = await ExcelDataReaderAndUpload(HttpContext.Request.Form.Files[i], FileUpload);
+                    string response = await ExcelDataReaderAndUpload(HttpContext.Request.Form.Files[i], FileUpload, isMultiFiles);
                     finalResponse = response;
+                }
+                if (isMultiFiles)
+                {
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(TMLDataSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                        //***********Here sending dynamic type is remaining, as we have to test the performance. did for Inox multiple imports.*************
+                        //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
+                        using (var client = new HttpClient())
+                        {
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                                //for solar 0, wind 1, other 2;
+                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                if (deleteStatus == 1)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                }
+                                else if (deleteStatus == 0)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                }
+                            }
+                        }
+                        finalResponse += "Information : Calculation and storing of data successful. ";
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while sending data to api of TML for multiple files, due to : " + e.ToString();
+                        finalResponse += "Exception while sending data to api of TML for multiple files, due to : " + e.Message + ", ";
+                    }
                 }
                 TempData["notification"] = finalResponse;
             }
@@ -148,7 +209,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             return View();
         }
 
-        public async Task<string> ExcelDataReaderAndUpload(IFormFile file, string fileUploadType)
+        public async Task<string> ExcelDataReaderAndUpload(IFormFile file, string fileUploadType, bool isMultiFiles)
         {
             var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
             //var UserName = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserName"));
@@ -681,7 +742,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind TML_Data WorkSheet:");
-                                            statusCode = await InsertWindTMLData(status, ds, file.FileName);
+                                            statusCode = await InsertWindTMLData(status, ds, file.FileName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -779,7 +840,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             m_ErrorLog.SetInformation(", Importing Wind Suzlon_TMD Worksheet :");
-                                            statusCode = await ImportWindSuzlonTMD(status, ds, file.FileName);
+                                            statusCode = await ImportWindSuzlonTMD(status, ds, file.FileName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -798,7 +859,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             m_ErrorLog.SetInformation(", Importing Wind Inox_TMD Worksheet :");
-                                            statusCode = await ImportWindInoxTMD(status, ds, file.FileName);
+                                            statusCode = await ImportWindInoxTMD(status, ds, file.FileName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -875,7 +936,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Reviewing Wind TMR:");
-                                            statusCode = await InsertWindTMR(status, ds, tabName);
+                                            statusCode = await InsertWindTMR(status, ds, tabName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -1030,13 +1091,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             {
                                                 //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?fromDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&site=" + (string)kpiArgs[2] + "";
                                                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CalculateDailySolarKPI?site=" + (string)kpiArgs[2] + "&fromDate=" + Convert.ToDateTime(kpiArgs[0]).ToString("yyyy-MM-dd") + "&toDate=" + Convert.ToDateTime(kpiArgs[1]).ToString("yyyy-MM-dd") + "";
-                                                //var client = new HttpClient();
-                                                //var task = Task.Run(async () =>
-                                                //{ });
-                                                using (var client = new HttpClient())
-                                                {
-                                                    //InformationLog("added timeout to InfiniteTimeSpan");
-                                                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                                                //using (var client = new HttpClient())
+                                                var client = new HttpClient();
+                                  
+                                                //InformationLog("added timeout to InfiniteTimeSpan");
+                                                client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                     dttt = DateTime.Now;
                                                     msg = "CalculateDailysolarKPI API Called." + dttt;
                                                     //InformationLog(msg);
@@ -1082,6 +1141,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                         {
                                                             //InformationLog("Uploading User is Admin. So SetsolarApprovalFlagForImpoortBatches API call" +dttt);
                                                             var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetSolarApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
+
+                                                        var task = Task.Run(async () =>
+                                                        {
                                                             using (var client1 = new HttpClient())
                                                             {
                                                                 await Task.Delay(10000);
@@ -1097,6 +1159,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                                     //status = "Data Not Approved";
                                                                 }
                                                             }
+                                                        });
+                                                       
                                                         }
                                                     }
                                                     else
@@ -1118,7 +1182,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                             m_ErrorLog.SetError(", Records deletion failed due to incomplete upload");
                                                         }
                                                     }
-                                                }
+                                              
                                             }
                                             else
                                             {
@@ -1198,7 +1262,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (fileUploadType == "Wind")
                             {
                                 m_ErrorLog.SetInformation(",Reviewing Wind file for TML data import: " + file.FileName);
-                                statusCode = await InsertWindRegen(status, dataSetMain, file.FileName);
+                                statusCode = await InsertWindRegen(status, dataSetMain, file.FileName, isMultiFiles);
                             }
                         }
                         catch (Exception ex)
@@ -2276,7 +2340,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         objImportBatch.importSiteId = addUnit.site_id;
 
                         int logErrorFlag = 1;
-                        double importValue = 0.00;
+                        double importValue = 0.000000;
                         errorFlag.Add(validateNumeric(((string)dr["GHI-1"]), "GHI-1", rowNumber, dr["GHI-1"] is DBNull, logErrorFlag, out importValue));
                         addUnit.ghi_1 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["GHI-2"]), "GHI-2", rowNumber, dr["GHI-2"] is DBNull, logErrorFlag, out importValue));
@@ -5989,7 +6053,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //InsertWindTMR
-        private async Task<int> InsertWindTMR(string status, DataSet ds, string tabName)
+        private async Task<int> InsertWindTMR(string status, DataSet ds, string tabName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -6208,49 +6272,57 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
+                        using (var client = new HttpClient())
                         {
-                            if (returnResponse == "5")
+
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
                             {
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+                                //m_ErrorLog.SetInformation(",Wind TMR API SuccessFul,");
+                                return responseCode = (int)response.StatusCode;
+
                             }
                             else
                             {
-                                m_ErrorLog.SetError(",Error in Calculation.");
-                            }
-                            //m_ErrorLog.SetInformation(",Wind TMR API SuccessFul,");
-                            return responseCode = (int)response.StatusCode;
+                                m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
 
-                        }
-                        else
-                        {
-                            m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+                                //for solar 0, wind 1, other 2;
+                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                if (deleteStatus == 1)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                }
+                                else if (deleteStatus == 0)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                }
 
-                            //for solar 0, wind 1, other 2;
-                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
-                            if (deleteStatus == 1)
-                            {
-                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                return responseCode = (int)response.StatusCode;
                             }
-                            else if (deleteStatus == 0)
-                            {
-                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetInformation(", File not uploaded");
-                            }
-
-                            return responseCode = (int)response.StatusCode;
                         }
                     }
                 }
@@ -6263,7 +6335,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //TML_Data
-        private async Task<int> InsertWindTMLData(string status, DataSet ds, string fileName)
+        private async Task<int> InsertWindTMLData(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -6433,170 +6505,178 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (errorCount == 0)
                 {
                     m_ErrorLog.SetInformation(",Wind TML Data Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
+                        using (var client = new HttpClient())
                         {
-                            m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
-                            //FinalResult = 0 : Complete failure
-                            //FinalResult = 1 : Completed till deletion.
-                            //FinalResult = 2 : Completed till insertion.
-                            //FinalResult = 3 : Completed till updating manual bd column
-                            //FinalResult = 4 : Completed till updating reconstructed windspeed.
-                            //FinalResult = 5 : Completed till updating expected power column.
-                            //FinalResult = 6 : Completed till updating deviation kw column.
-                            //FinalResult = 7 : Completed till updating loss kw column.
-                            //FinalResult = 8 : Completed till updating all breakdown column.
-                            //FinalResult = 9 : Completed till updating all breakdown code column.
-
-                            if (returnResponse == "5")
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
                             {
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
+                                //FinalResult = 0 : Complete failure
+                                //FinalResult = 1 : Completed till deletion.
+                                //FinalResult = 2 : Completed till insertion.
+                                //FinalResult = 3 : Completed till updating manual bd column
+                                //FinalResult = 4 : Completed till updating reconstructed windspeed.
+                                //FinalResult = 5 : Completed till updating expected power column.
+                                //FinalResult = 6 : Completed till updating deviation kw column.
+                                //FinalResult = 7 : Completed till updating loss kw column.
+                                //FinalResult = 8 : Completed till updating all breakdown column.
+                                //FinalResult = 9 : Completed till updating all breakdown code column.
+
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+
+                                /*
+                                if (returnResponse == "1")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetError(",Error inserting new TML Data.");
+                                    m_ErrorLog.SetError(",Error updating manual BD column.");
+                                    m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                                    m_ErrorLog.SetError(",Error updating expected power column.");
+                                    m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                    m_ErrorLog.SetError(",Error updating loss kw column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "2")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    m_ErrorLog.SetError(",Error updating manual BD column.");
+                                    m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                                    m_ErrorLog.SetError(",Error updating expected power column.");
+                                    m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                    m_ErrorLog.SetError(",Error updating loss kw column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "3")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                    m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
+                                    m_ErrorLog.SetError(",Error updating expected power column.");
+                                    m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                    m_ErrorLog.SetError(",Error updating loss kw column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "4")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                    m_ErrorLog.SetError(",Error updating expected power column.");
+                                    m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                    m_ErrorLog.SetError(",Error updating loss kw column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                    m_ErrorLog.SetError(",Error updating deviation kw column.");
+                                    m_ErrorLog.SetError(",Error updating loss kw column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "6")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                    m_ErrorLog.SetError(",Error updating loss kw column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "7")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown column.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "8")
+                                {
+                                    m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
+                                    m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
+                                    m_ErrorLog.SetError(",Error updating all breakdown code column.");
+                                }
+                                if (returnResponse == "9")
+                                {
+                                    //m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
+                                    //m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
+                                    //m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
+                                    //m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
+                                    //m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
+                                    //m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
+                                    //m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
+                                    //m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
+                                    //m_ErrorLog.SetInformation(",Updated All Breakdown Code column successfully."); 
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                */
+                                return responseCode = (int)response.StatusCode;
                             }
                             else
                             {
-                                m_ErrorLog.SetError(",Error in Calculation.");
-                            }
+                                m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + "> due to exception : " + returnResponse);
 
-                            /*
-                            if (returnResponse == "1")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetError(",Error inserting new TML Data.");
-                                m_ErrorLog.SetError(",Error updating manual BD column.");
-                                m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
-                                m_ErrorLog.SetError(",Error updating expected power column.");
-                                m_ErrorLog.SetError(",Error updating deviation kw column.");
-                                m_ErrorLog.SetError(",Error updating loss kw column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "2")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetError(",Error updating manual BD column.");
-                                m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
-                                m_ErrorLog.SetError(",Error updating expected power column.");
-                                m_ErrorLog.SetError(",Error updating deviation kw column.");
-                                m_ErrorLog.SetError(",Error updating loss kw column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "3")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                m_ErrorLog.SetError(",Error updating reconstructed windspeed column.");
-                                m_ErrorLog.SetError(",Error updating expected power column.");
-                                m_ErrorLog.SetError(",Error updating deviation kw column.");
-                                m_ErrorLog.SetError(",Error updating loss kw column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "4")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
-                                m_ErrorLog.SetError(",Error updating expected power column.");
-                                m_ErrorLog.SetError(",Error updating deviation kw column.");
-                                m_ErrorLog.SetError(",Error updating loss kw column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "5")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
-                                m_ErrorLog.SetError(",Error updating deviation kw column.");
-                                m_ErrorLog.SetError(",Error updating loss kw column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "6")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
-                                m_ErrorLog.SetError(",Error updating loss kw column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "7")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
-                                m_ErrorLog.SetError(",Error updating all breakdown column.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "8")
-                            {
-                                m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
-                                m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
-                                m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
-                                m_ErrorLog.SetError(",Error updating all breakdown code column.");
-                            }
-                            if (returnResponse == "9")
-                            {
-                                //m_ErrorLog.SetInformation(",Old TML Data deleted successfully.");
-                                //m_ErrorLog.SetInformation(",Inserted new TML Data successfully.");
-                                //m_ErrorLog.SetInformation(",Updated Manual Breakdown column successfully.");
-                                //m_ErrorLog.SetInformation(",Updated Reconstructed Windspeed column successfully.");
-                                //m_ErrorLog.SetInformation(",Updated Expected Power column successfully.");
-                                //m_ErrorLog.SetInformation(",Updated Deviation kw column successfully.");
-                                //m_ErrorLog.SetInformation(",Updated Loss kw column successfully.");
-                                //m_ErrorLog.SetInformation(",Updated All Breakdown column successfully.");
-                                //m_ErrorLog.SetInformation(",Updated All Breakdown Code column successfully."); 
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
-                            }
-                            */
-                            return responseCode = (int)response.StatusCode;
-                        }
-                        else
-                        {
-                            m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + "> due to exception : " + returnResponse);
+                                //for solar 0, wind 1, other 2;
+                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                if (deleteStatus == 1)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                }
+                                else if (deleteStatus == 0)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                }
 
-                            //for solar 0, wind 1, other 2;
-                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
-                            if (deleteStatus == 1)
-                            {
-                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                return responseCode = (int)response.StatusCode;
                             }
-                            else if (deleteStatus == 0)
-                            {
-                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetInformation(", File not uploaded");
-                            }
-
-                            return responseCode = (int)response.StatusCode;
                         }
                     }
                 }
@@ -6609,7 +6689,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //ImportWindSuzlonTMD
-        private async Task<int> ImportWindSuzlonTMD(string status, DataSet ds, string fileName)
+        private async Task<int> ImportWindSuzlonTMD(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -6799,47 +6879,55 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=3";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=3";
+                        using (var client = new HttpClient())
                         {
-                            if (returnResponse == "5")
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
                             {
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+                                return responseCode = (int)response.StatusCode;
                             }
                             else
                             {
-                                m_ErrorLog.SetError(",Error in Calculation.");
-                            }
-                            return responseCode = (int)response.StatusCode;
-                        }
-                        else
-                        {
-                            m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+                                m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
 
-                            //for solar 0, wind 1, other 2;
-                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
-                            if (deleteStatus == 1)
-                            {
-                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
-                            }
-                            else if (deleteStatus == 0)
-                            {
-                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetInformation(", File not uploaded");
-                            }
+                                //for solar 0, wind 1, other 2;
+                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                if (deleteStatus == 1)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                }
+                                else if (deleteStatus == 0)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
@@ -6852,7 +6940,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //InsertWindRejen
-        private async Task<int> InsertWindRegen(string status, DataSet ds, string fileName)
+        private async Task<int> InsertWindRegen(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -7104,48 +7192,56 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (errorCount == 0)
                 {
                     m_ErrorLog.SetInformation(",Wind TML Data Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=4";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=4";
+                        using (var client = new HttpClient())
                         {
-                            m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
-
-                            if (returnResponse == "5")
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
                             {
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
+
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+                                return responseCode = (int)response.StatusCode;
                             }
                             else
                             {
-                                m_ErrorLog.SetError(",Error in Calculation.");
-                            }
-                            return responseCode = (int)response.StatusCode;
-                        }
-                        else
-                        {
-                            m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + "> due to exception : " + returnResponse);
+                                m_ErrorLog.SetError(",Wind TML Data API Failure,: responseCode <" + (int)response.StatusCode + "> due to exception : " + returnResponse);
 
-                            //for solar 0, wind 1, other 2;
-                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
-                            if (deleteStatus == 1)
-                            {
-                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
-                            }
-                            else if (deleteStatus == 0)
-                            {
-                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetInformation(", File not uploaded");
-                            }
+                                //for solar 0, wind 1, other 2;
+                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                if (deleteStatus == 1)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                }
+                                else if (deleteStatus == 0)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
@@ -7160,7 +7256,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         //ImportWindInoxTMD
         Hashtable bdCodeTypeHash = new Hashtable();
         Hashtable bdCodeHash = new Hashtable();
-        private async Task<int> ImportWindInoxTMD(string status, DataSet ds, string fileName)
+        private async Task<int> ImportWindInoxTMD(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -7682,48 +7778,56 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                        //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
+                        using (var client = new HttpClient())
                         {
-                            if (returnResponse == "5")
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
                             {
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+                                return responseCode = (int)response.StatusCode;
                             }
                             else
                             {
-                                m_ErrorLog.SetError(",Error in Calculation.");
-                            }
-                            return responseCode = (int)response.StatusCode;
-                        }
-                        else
-                        {
-                            m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+                                m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
 
-                            //for solar 0, wind 1, other 2;
-                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
-                            if (deleteStatus == 1)
-                            {
-                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
-                            }
-                            else if (deleteStatus == 0)
-                            {
-                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetInformation(", File not uploaded");
-                            }
+                                //for solar 0, wind 1, other 2;
+                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                if (deleteStatus == 1)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                }
+                                else if (deleteStatus == 0)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
