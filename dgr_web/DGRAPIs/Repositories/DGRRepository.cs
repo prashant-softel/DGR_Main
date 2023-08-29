@@ -5529,6 +5529,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
         }
         internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySiteWise(string fy, string fromDate, string todate,string site)
         {
+            PPT_InformationLog($"In GetSolarPerformanceReportBySiteWise : fromDate = {fromDate} , todate = {todate} ");
 
             /*string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
 
@@ -5582,8 +5583,23 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             }
 
             string qry6 = "SELECT site, sum(kwh_afterloss)/ 1000000 as act_kwh, avg(plf_afterloss) as act_plf FROM `temp_view2` where date between '" + fromDate + "' and '"+ todate + "' group by site";
+
             List<SolarPerformanceReports1> newdata = new List<SolarPerformanceReports1>();
-            newdata = await Context.GetData<SolarPerformanceReports1>(qry6).ConfigureAwait(false);
+            string jsonString = "";
+            try
+            {
+                newdata = await Context.GetData<SolarPerformanceReports1>(qry6).ConfigureAwait(false);
+                jsonString = JsonConvert.SerializeObject(newdata);
+            }
+            catch (Exception e)
+            {
+                string msg = e.ToString();
+                await LogError(0, 1, 5, functionName, msg, backend);
+            }
+            if (fromDate == todate)
+            {
+                PPT_InformationLog($"In GetSolarPerformanceReportBySiteWise : data from query (fetched from temp_view2) for act_kwh and act_plf  : {jsonString}");
+            }
 
             string qry = @"SELECT site,  
 (SELECT ac_capacity FROM site_master_solar where site=t1.site and state=t1.state)as capacity,
@@ -5666,6 +5682,11 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                     {
                         _dataelement.act_kwh = _tempdataelement.act_kwh;
                         _dataelement.act_plf = _tempdataelement.act_plf;
+                      
+                        PPT_InformationLog($"In GetSolarPerformanceReportBySiteWise : In foreach if... to assign act_kwh and act_plf to main obj ");
+                        PPT_InformationLog($"site {_dataelement.site} : act_kwh : {_tempdataelement.act_kwh} ");
+                        PPT_InformationLog($"site {_dataelement.site} : act_plf : {_tempdataelement.act_plf} ");
+
 
                     }
                 }
@@ -5695,6 +5716,8 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
 
 
             }
+            //string jsonString2 = JsonConvert.SerializeObject(data);
+            //PPT_InformationLog($"In GetSolarPerformanceReportBySiteWise End : returned Data : {jsonString2}");
 
             return data;
 
@@ -10561,6 +10584,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, lastDay, site);
+                string jsonString1 = JsonConvert.SerializeObject(lastdaypr);
+
+                PPT_InformationLog($"In EmailSolarReport try catch : last day data : {jsonString1}");
                 //PPT_InformationLog("EmailSolarReport function received data from GetSolarPerformanceReportBySiteWise in lastdaypr list");
 
             }
@@ -10571,7 +10597,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             yearlypr = await GetSolarPerformanceReportBySiteWise(fy, yfromDate, ytodate, site);
             monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site);
+
+            PPT_InformationLog($"In EmailSolarReport before GetSolarPerformanceReportBySiteWise func call for last day data ");
+
             lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, lastDay, site);
+
+            string jsonString = JsonConvert.SerializeObject(lastdaypr);
+
+            PPT_InformationLog($"In EmailSolarReport : last day data : {jsonString}");
+
+
+
+            //await LogError(0, 1, 0, "EmailSolarReport", "daily report", 1);
 
             string qry = "SELECT sum(gen_nos) as tar_kwh, sites as site FROM `daily_target_kpi_solar` where date >= '" + yfromDate + "' and date <='" + (lastYear.AddYears(1).ToString("yyyy")) + "-04-01' group by site_id;";
             List<SolarPerformanceReports1> tarData = new List<SolarPerformanceReports1>();
@@ -10736,6 +10773,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     if (yearlypr[i].site == lastdaypr[k].site)
                     {
                         dailyRecordFound = true;
+
                         if (lastdaypr[k].pr_expected_kwh == 0 || lastdaypr[k].act_kwh == 0)
                         {
                             act_prval_ld = 0;
@@ -10743,6 +10781,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         else
                         {
                             act_prval_ld = (lastdaypr[k].act_kwh / lastdaypr[k].pr_expected_kwh) * 100;
+                            PPT_InformationLog($"In EmailSolarReport calcutating act pr value : site {lastdaypr[k].site}: act_kwh ({lastdaypr[k].act_kwh})/ pr_exp_kwh ({lastdaypr[k].pr_expected_kwh}) * 100 = act pr val ({act_prval_ld})");
                         }
                         tar_mu_ld = (lastdaypr[k].tar_kwh / 1000000);
 
@@ -10770,7 +10809,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                         try { 
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].tar_kwh, 1) + "&nbsp;&nbsp;</td>";
+
+                        PPT_InformationLog($"In EmailSolarReport : site {lastdaypr[k].site}: tar_kwh : {lastdaypr[k].tar_kwh}");
+
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_kwh, 1) + "&nbsp;&nbsp;</td>";
+
+                        PPT_InformationLog($"In EmailSolarReport : site {lastdaypr[k].site}: act_kwh : {lastdaypr[k].act_kwh}");
+
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(t_var_ld, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].tar_poa, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_poa, 1) + "&nbsp;&nbsp;</td>";
@@ -10779,8 +10824,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_iga, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_ega, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_plf, 1) + "&nbsp;&nbsp;</td>";
-                        tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].tar_pr, 1) + "&nbsp;&nbsp;</td>";
+
+                        PPT_InformationLog($"In EmailSolarReport : site {lastdaypr[k].site}: CUF_AC (act_plf) : {lastdaypr[k].act_plf}");
+
+                        tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(lastdaypr[k].act_plf, 1) + "&nbsp;&nbsp;</td>";
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(act_prval_ld, 1) + "&nbsp;&nbsp;</td>";
+
+                        PPT_InformationLog($"In EmailSolarReport : site {lastdaypr[k].site}: act_pr (calulated) : {act_prval_ld}");
+
                         tb += "<td style='padding:0.5rem; text-align: right;'>" + Math.Round(pr_var_ld, 1) + "&nbsp;&nbsp;</td>";
                         }
                         catch (Exception ex)
