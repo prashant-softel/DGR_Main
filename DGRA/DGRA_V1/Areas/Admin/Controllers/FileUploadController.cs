@@ -2613,6 +2613,9 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.netExportKwh = Convert.ToDouble(dr["Net Export (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Export (kWh)"]) ? 0 : dr["Net Export (kWh)"]);
                         errorFlag.Add(negativeNullValidation(addUnit.netExportKwh, "Net Export (kWh)", rowNumber));
+                        
+                        addUnit.netBillableKwh = Convert.ToDouble(dr["Net Billable (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Billable (kWh)"]) ? 0 : dr["Net Billable (kWh)"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.netExportKwh, "Net Billable (kWh)", rowNumber));
 
                         addUnit.exportKvah = Convert.ToDouble(dr["Export (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Export (kWh)"]) ? 0 : dr["Export (kVAh)"]);
                         errorFlag.Add(negativeNullValidation(addUnit.exportKvah, "Export (kVAh)", rowNumber));
@@ -4944,15 +4947,22 @@ namespace DGRA_V1.Areas.admin.Controllers
         public bool numericNullValidation(double value, string columnName, long rowNo)
         {
             bool retVal = false;
-            if (value == 0)
+            if(columnName == "LineLoss")
             {
-                m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be null or zero,");
-                retVal = true;
+                return retVal;
             }
-            if (value < 0)
+            else
             {
-                m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be negative,");
-                retVal = true;
+                if (value == 0)
+                {
+                    m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be null or zero,");
+                    retVal = true;
+                }
+                if (value < 0)
+                {
+                    m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be negative,");
+                    retVal = true;
+                }
             }
             return retVal;
 

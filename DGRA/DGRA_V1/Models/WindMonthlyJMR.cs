@@ -53,6 +53,7 @@ namespace DGRA_V1.Models
         public dynamic exportKvarhLead { get; set; }
         public dynamic importKvarhLead { get; set; }
         public dynamic lineLoss { get; set; }
+        public dynamic netBillableKwh { get; set; }
     }
     public class WindMonthlyJMR1
     {
