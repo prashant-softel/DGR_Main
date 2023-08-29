@@ -30,6 +30,7 @@ namespace DGRAPIs.Models
         public dynamic exportKvarhLead { get; set; }
         public dynamic importKvarhLead { get; set; }
         public dynamic lineLoss { get; set; }
+        public dynamic netBillableKwh { get; set; }
     }
     public class WindMonthlyJMR1
     {
@@ -56,6 +57,6 @@ namespace DGRAPIs.Models
         public dynamic LineLoss { get; set; }
         public dynamic Line_Loss_percentage { get; set; }
         public dynamic RKVH_percentage { get; set; }
-
+        public dynamic netBillableKwh { get; set; }
     }
 }
