@@ -50,6 +50,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         int isInox = 0;
         int isSuzlon = 0;
         int isRegen = 0;
+        int TMLType = 0;
         string[] importData = new string[2];
         string generationDate = "";
         bool isGenValidationSuccess = false;
@@ -149,7 +150,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         //***********Here sending dynamic type is remaining, as we have to test the performance. did for Inox multiple imports.*************
                         //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
-                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=" + TMLType;
                         using (var client = new HttpClient())
                         {
                             client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
@@ -331,10 +332,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 masterHashtable_WtgToWtgId();
                                 masterHashtable_WtgToSiteId();
                             }
-                            if (fileUploadType == "Solar")
-                            {
-                                masterInverterList();
-                            }
+                            //if (fileUploadType == "Solar")
+                            //{
+                            //    masterInverterList();
+                            //}
 
                             if (fileSheets.Contains("Uploading_File_Breakdown"))
                             {
@@ -1518,6 +1519,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             long rowNumber = 1;
             int errorCount = 0;
             int responseCode = 400;
+            string siteName = "";
             DateTime dateValidate = DateTime.MinValue;
             DateTime fromDate;
             DateTime toDate;
@@ -1568,9 +1570,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
 
                         addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
                         if (rowNumber == 2)
                         {
                             generationDate = addUnit.date;
+                            siteName = addUnit.site;
+                            masterInverterList(siteName);
                         }
                         if (rowNumber > 2)
                         {
@@ -1584,7 +1589,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                         }
 
 
-                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
                         addUnit.site_id = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
                         errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
                         if (siteUserRole != "Admin")
@@ -4292,11 +4296,11 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
         }
         */
-        public void masterInverterList()
+        public void masterInverterList(string siteName)
         {
             DataTable dTable = new DataTable();
             //InformationLog("Inside masterInverterList function : Before getSolarLocationMaster API call :" + DateTime.Now);
-            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarLocationMaster";
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarLocationMasterForFileUpload?siteName=" + siteName;
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
             using (var response = (HttpWebResponse)request.GetResponse())
@@ -6070,6 +6074,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             int errorCount = 0;
             int responseCode = 400;
             string fileDateFormat = "";
+            TMLType = 1;
 
             if (ds.Tables.Count > 0)
             {
@@ -6350,6 +6355,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 1;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -6704,6 +6710,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 3;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -6955,6 +6962,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 4;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -7271,6 +7279,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 2;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
