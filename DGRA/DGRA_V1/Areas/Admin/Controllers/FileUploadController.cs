@@ -50,6 +50,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         int isInox = 0;
         int isSuzlon = 0;
         int isRegen = 0;
+        int TMLType = 0;
         string[] importData = new string[2];
         string generationDate = "";
         bool isGenValidationSuccess = false;
@@ -149,7 +150,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         //***********Here sending dynamic type is remaining, as we have to test the performance. did for Inox multiple imports.*************
                         //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
-                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=" + TMLType;
                         using (var client = new HttpClient())
                         {
                             client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
@@ -6073,6 +6074,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             int errorCount = 0;
             int responseCode = 400;
             string fileDateFormat = "";
+            TMLType = 1;
 
             if (ds.Tables.Count > 0)
             {
@@ -6353,6 +6355,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 1;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -6707,6 +6710,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 3;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -6958,6 +6962,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 4;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -7274,6 +7279,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 2;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
