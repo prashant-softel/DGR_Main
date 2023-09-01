@@ -38,8 +38,8 @@
         /* Position the tooltip */
         position: absolute;
         z-index: 1;
-        margin-top: 21px;
-        margin-left: -60px;
+        margin-top: 3px;
+        margin-left: -28px;
         border: 1px solid;
     }
 
@@ -652,11 +652,11 @@
 
                     if (solarChanged == 1) {
                         GetSolarData(tendays, chartTitle, graphGenerate);
-                        GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                       // GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                     }
                     if (windChanged == 1) {
                         GetWindChartData(tendays, chartTitle, graphGenerate);
-                        GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                       // GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                     }
                 }
                 if ($("#customRadio2").is(":checked")) {
@@ -668,11 +668,11 @@
 
                     if (solarChanged == 1) {
                         GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
-                        GetSolarData(tendays, chartTitle, graphGenerate);
+                        //GetSolarData(tendays, chartTitle, graphGenerate);
                     }
                     if (windChanged == 1) {
                         GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
-                        GetWindChartData(tendays, chartTitle, graphGenerate);
+                        //GetWindChartData(tendays, chartTitle, graphGenerate);
                     }
                 }
             }
@@ -2043,6 +2043,7 @@
                 //GetWindChartData(monthdate, chartTitle);
             }
             if (displaychart.solar) {
+                console.log("SCd_Title" + scd_title_md + "scd_datelebels_md" + scd_datelebels_md + "scd_target_kwh_md" + scd_target_kwh_md + "scd_target_ir_md" + scd_target_ir_md + "scd_actual_ir_md" + scd_actual_ir_md);
                 solarChart(scd_title_md, scd_datelebels_md, scd_target_kwh_md, scd_actual_kwh_md, scd_target_ir_md, scd_actual_ir_md);
                 //setTimeout(GetSolarData(monthdate, chartTitle), 5000);
             }

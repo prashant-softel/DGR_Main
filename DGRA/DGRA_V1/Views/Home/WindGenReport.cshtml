@@ -436,6 +436,10 @@
                     format: 'DD/MM/YYYY',
                 }
             });
+        console.log("Negative Value check ");
+        console.log(Math.abs(-2.00));
+        console.log("Negative Value check1 ");
+        console.log(Math.abs(-2.00).toFixed(2));
     });
     window.onload = function () {
         $('select#monthM').multipleSelect({
@@ -797,7 +801,7 @@
                 $("#wtg").html("").html(options);
                 $('select#wtg').multipleSelect({
                     "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
+                    "placeholder": "Select WTG(s)",
                     filter:true
                 });
 
@@ -836,7 +840,7 @@
                 $("#wtgM").html("").html(options);
                 $('select#wtgM').multipleSelect({
                     "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
+                    "placeholder": "Select WTG(s)",
                     filter:true
                 });
             }
@@ -873,7 +877,7 @@
                 $("#wtgY").html("").html(options);
                 $('select#wtgY').multipleSelect({
                     "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
+                    "placeholder": "Select WTG(s)",
                     filter:true
                 });
             }
@@ -1023,13 +1027,13 @@
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].usmh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs( result[i].smh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].others_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].igbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs( result[i].egbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].load_Shedding_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].total_loss).toFixed(2) + '</td>';
                             
                         tbl += '</tr>';
                     }
@@ -1221,13 +1225,13 @@
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].usmh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].smh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].others_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].igbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].egbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].load_Shedding_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].total_loss).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }
@@ -1447,13 +1451,13 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].usmh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].smh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].others_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].igbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].egbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].load_Shedding_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].total_loss).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1656,13 +1660,13 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                       tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                       tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].usmh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].smh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].others_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].igbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].egbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].load_Shedding_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].total_loss).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1881,13 +1885,13 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].usmh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].smh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].others_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].igbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].egbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].load_Shedding_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].total_loss).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -2089,13 +2093,13 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].usmh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].smh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].others_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].igbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].egbdh_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].load_Shedding_loss).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(result[i].total_loss).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }

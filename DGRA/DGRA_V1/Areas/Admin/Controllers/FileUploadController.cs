@@ -313,7 +313,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             DataTable dt = null;
 
                             string _filePath = @"C:\TempFile\docupload.xlsx";
-                            //string _filePath = @"G:\TempFile\docupload.xlsx";
+                           // string _filePath = @"G:\TempFile\docupload.xlsx";
                             //string _filePath = env.ContentRootPath + @"\TempFile\docupload.xlsx";
                             dataSetMain = GetDataTableFromExcel(_filePath, true, ref fileSheets);
                             if (dataSetMain == null)
@@ -3164,7 +3164,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(timeValidation(addUnit.Total_Time, "Total Time", rowNumber));
 
                         addUnit.Permissible_Load_MW = Convert.ToDouble(string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]) ? 0 : dr[" Permissible Load (MW)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.Permissible_Load_MW, " Permissible Load (MW)", rowNumber));
+                        //errorFlag.Add(numericNullValidation(addUnit.Permissible_Load_MW, " Permissible Load (MW)", rowNumber));
 
                         addUnit.Gen_loss_kWh = Convert.ToDouble(string.IsNullOrEmpty((string)dr["Generation loss in KWH due to Load shedding"]) ? 0 : dr["Generation loss in KWH due to Load shedding"]);
                         errorFlag.Add(negativeNullValidation(addUnit.Gen_loss_kWh, "Generation loss in KWH due to Load shedding", rowNumber));
@@ -3265,7 +3265,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(timeValidation(addUnit.totalTime, "Total Time", rowNumber));
 
                         addUnit.permLoad = string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]) ? 0 : Convert.ToDouble(dr[" Permissible Load (MW)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.permLoad, " Permissible Load (MW)", rowNumber));
+                        //errorFlag.Add(numericNullValidation(addUnit.permLoad, " Permissible Load (MW)", rowNumber));
 
                         addUnit.genShedding = string.IsNullOrEmpty((string)dr["Generation loss in KWH due to Load shedding"]) ? 0 : Convert.ToDouble(dr["Generation loss in KWH due to Load shedding"]);
                         errorFlag.Add(negativeNullValidation(addUnit.genShedding, "Generation loss in KWH due to Load shedding", rowNumber));

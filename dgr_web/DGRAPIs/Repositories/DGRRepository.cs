@@ -101,6 +101,7 @@ namespace DGRAPIs.Repositories
             string groupby = "";
             string groupby1 = "";
             string selfilter = "";
+            string temp_viewtbl = "";
             string filter = "(t1.date >= '" + startDate + "'  and t1.date<= '" + endDate + "')";
             if (!string.IsNullOrEmpty(sites))
             {
@@ -112,13 +113,15 @@ namespace DGRAPIs.Repositories
                 groupby = " MONTH(t1.date) ";
                 groupby1 = "MONTH(date) ";
                 selfilter = "MONTH(date) as month";
+                temp_viewtbl = "temp_view_month";
             }
             else {
                 groupby = " t1.date ";
                 groupby1 = "date ";
                 selfilter = "date as tar_date ";
+                temp_viewtbl = "temp_view3";
             }
-            string qry1 = "create or replace view temp_view3 as select t1.date, t1.site_id, t1.site, t1.kwh, t1.wind_speed from daily_target_kpi t1," +
+            string qry1 = "create or replace view "+ temp_viewtbl + " as select t1.date, t1.site_id, t1.site, t1.kwh, t1.wind_speed from daily_target_kpi t1," +
                  " daily_gen_summary t2 where t1.date = t2.date and t1.site_id = t2.site_id and " + filter +
                  " group by t1.date, t1.site_id;";
             try
@@ -129,7 +132,7 @@ namespace DGRAPIs.Repositories
             {
                 //
             }
-            string qry2 = " select site, site_id," + selfilter + ", sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view3 group by " + groupby1 +"" ;
+            string qry2 = " select site, site_id," + selfilter + ", sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from "+ temp_viewtbl + " group by " + groupby1 +"" ;
             List<WindDashboardData> _WindDashboardData2 = new List<WindDashboardData>();
             _WindDashboardData2 = await Context.GetData<WindDashboardData>(qry2).ConfigureAwait(false);
 
@@ -147,7 +150,7 @@ namespace DGRAPIs.Repositories
             _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
 
             string qry6 = " select site, total_mw from site_master group by site;";
-            string qry7 = "select site, site_id," + selfilter + ",sum(wind_speed)/count(wind_speed) as tarwind from temp_view3 group by " + groupby1 + ",site order by date;";
+            string qry7 = "select site, site_id," + selfilter + ",sum(wind_speed)/count(wind_speed) as tarwind from "+ temp_viewtbl + " group by " + groupby1 + ",site order by date;";
             string qry8 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,sum(t1.Wind)/count(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, sum(t1.wind_speed)/count(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and year = year(t1.date)  left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by " + groupby + ",site order by t1.Date"; 
 
             List<WindDashboardData> _WindDashboardData6 = new List<WindDashboardData>();
@@ -698,6 +701,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             string groupby1 = "";
             string groupby2 = "";
             string selfilter = "";
+            string temp_viewtbl = "";
             string filter = "(t1.date >= '" + startDate + "'  and t1.date<= '" + endDate + "')";
             if (!string.IsNullOrEmpty(sites))
             {
@@ -710,6 +714,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                 groupby1 = " MONTH(date)";
                 groupby2 = "month";
                 selfilter = "MONTH(date) as month";
+                temp_viewtbl = "temp_view_month_solar";
             }
             else
             {
@@ -717,8 +722,9 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                 groupby1 = " date ";
                 selfilter = "date as Date ";
                 groupby2 = "date";
+                temp_viewtbl = "temp_view4";
             }
-            string qry1 = "create or replace view temp_view4 as select t1.date,t1.site_id, t1.sites as Site , t1.poa, gen_nos from daily_target_kpi_solar t1, daily_gen_summary_solar t2 where t1.date = t2.date and t1.site_id = t2.site_id and "
+            string qry1 = "create or replace view "+ temp_viewtbl + " as select t1.date,t1.site_id, t1.sites as Site , t1.poa, gen_nos from daily_target_kpi_solar t1, daily_gen_summary_solar t2 where t1.date = t2.date and t1.site_id = t2.site_id and "
                 + filter + " group by t1.date, t2.site_id;";
 
             try
@@ -729,7 +735,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             {
                 string msg = ex.Message;
             }
-            string qry2 = "select Site, site_id, "+ selfilter + " ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from temp_view4 group by "+ groupby1 + "";
+            string qry2 = "select Site, site_id, "+ selfilter + " ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from " + temp_viewtbl + " group by " + groupby1 + "";
             List<SolarDashboardData> tempdata = new List<SolarDashboardData>();
             tempdata = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
@@ -1966,7 +1972,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         if (data.site == trackerData.site)
                         {
                             data.tracker_losses = trackerData.tracker_losses;
-                            data.total_losses = data.total_losses + data.tracker_losses;
+                            data.total_losses = data.total_losses;// + data.tracker_losses;
+                            //data.total_losses = data.total_losses + data.tracker_losses;
                         }
                     }
                 }
@@ -6485,10 +6492,11 @@ FROM daily_bd_loss_solar where   " + datefilter;
         }
         internal async Task<List<WindViewDailyLoadShedding>> GetWindDailyloadShedding(string site, string fromDate, string toDate)
         {
-            if (site == "") return new List<WindViewDailyLoadShedding>();
+           // if (site == "") return new List<WindViewDailyLoadShedding>();
+
             string datefilter = " where site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + toDate + "') ";
             string qry = @"SELECT * FROM daily_load_shedding " + datefilter;
-
+          
             return await Context.GetData<WindViewDailyLoadShedding>(qry).ConfigureAwait(false);
         }
         internal async Task<List<SolarDailyLoadShedding>> GetSolarDailyloadShedding(string site, string fromDate, string toDate)
@@ -8309,7 +8317,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Pending : Iteration 2 => to add a formula parser to evaludate formuals as defined by user
             switch (Formula)
             {
-                case "24-(USMH+SMH))/24": // MA_Actual_FormulaID / //Machine Availability Actual
+                //case "24-(USMH+SMH))/24": // MA_Actual_FormulaID / //Machine Availability Actual
                 case "(24-(USMH+SMH))/24": // MA_Actual_FormulaID / //Machine Availability Actual
                     returnValue = (24 - (U + S)) / 24;
                     break;
@@ -14477,7 +14485,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
 
                     gen_loss = (poa - ghi) * breakdown_tracker_cap * prTarget / 100;
-
+                    //double total_gen_losses = 0;
+                    if (gen_loss < 0)
+                    {
+                        gen_loss = 0;
+                    }
+                    else { }
                     //string insertQuery = " update `Tracker_Losses` set gen_loss = " + gen_loss + " where site_id = " + site + " and date = " + _eachRow.date;
                     //try
                     //{

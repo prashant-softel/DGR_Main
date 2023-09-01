@@ -182,9 +182,13 @@
                         tbl += '<tr>';
                         tbl += '<td class="text-left" >' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
-                        tbl += '<td class="text-left">' + result[i].start_Time['totalHours'].toFixed(2) + '</td>';
-                        tbl += '<td class="text-left">' + result[i].end_Time['totalHours'].toFixed(2) + '</td>';
-                        tbl += '<td class="text-left">' + result[i].total_Time['totalHours'].toFixed(2) + '</td>';
+                       // tbl += '<td class="text-left">' + result[i].start_Time['totalHours'].toFixed(2) + '</td>';
+                        //tbl += '<td class="text-left">' + result[i].end_Time['totalHours'].toFixed(2) + '</td>';
+                        //tbl += '<td class="text-left">' + result[i].total_Time['totalHours'].toFixed(2) + '</td>';
+
+                        tbl += '<td class="text-left">' + result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes'] + '</td>';
+                        tbl += '<td class="text-left">' + result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes'] + '</td>';
+                        tbl += '<td class="text-left">' + result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes'] + '</td>';
                         tbl += '<td class="text-right">' + result[i].permissible_Load_MW+ '</td>';
                         tbl += '<td class="text-right">' + result[i].gen_loss_kWh + '</td>';
                         tbl += '</tr>';
