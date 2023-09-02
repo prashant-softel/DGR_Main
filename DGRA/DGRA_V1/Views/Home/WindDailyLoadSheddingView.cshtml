@@ -191,9 +191,13 @@
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
-                        tbl += '<td class="text-right">' + result[i].start_Time['totalHours'].toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].end_Time['totalHours'].toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_Time['totalHours'].toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].start_Time['totalHours'].toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].end_Time['totalHours'].toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].total_Time['totalHours'].toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes'] + '</td>';
+                        tbl += '<td class="text-right">' + result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes'] +'</td>';
+                        tbl += '<td class="text-right">' + result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes'] +'</td>';
+
                         tbl += '<td class="text-right">' + result[i].permissible_Load_MW + '</td>';
                         tbl += '<td class="text-right">' + result[i].gen_loss_kWh.toFixed(2) + '</td>';
                         tbl += '</tr>';
@@ -201,7 +205,8 @@
                 }
                 else {
 
-                    tbl += '<tr><td colspan="7">No Data Present</td></tr>';
+                   // tbl += '<tr><td colspan="7">No Data Present</td></tr>';
+                    document.getElementById("loader").style.display = 'none';
                 }
                 tbl += '</tbody></table>';
                 $("#DailyLoadShedding").html("").html(tbl);
