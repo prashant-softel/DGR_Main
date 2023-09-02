@@ -270,10 +270,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 masterHashtable_WtgToWtgId();
                                 masterHashtable_WtgToSiteId();
                             }
-                            if (fileUploadType == "Solar")
-                            {
-                                masterInverterList();
-                            }
+                            //if (fileUploadType == "Solar")
+                            //{
+                            //    masterInverterList();
+                            //}
 
                             if (fileSheets.Contains("Uploading_File_Breakdown"))
                             {
@@ -1454,6 +1454,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             long rowNumber = 1;
             int errorCount = 0;
             int responseCode = 400;
+            string siteName = "";
             DateTime dateValidate = DateTime.MinValue;
             DateTime fromDate;
             DateTime toDate;
@@ -1504,9 +1505,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
 
                         addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
                         if (rowNumber == 2)
                         {
                             generationDate = addUnit.date;
+                            siteName = addUnit.site;
+                            masterInverterList(siteName);
                         }
                         if (rowNumber > 2)
                         {
@@ -1520,7 +1524,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                         }
 
 
-                        addUnit.site = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
                         addUnit.site_id = dr["Site"] is DBNull || string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
                         errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
                         if (siteUserRole != "Admin")
@@ -4225,11 +4228,11 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
         }
         */
-        public void masterInverterList()
+        public void masterInverterList(string siteName)
         {
             DataTable dTable = new DataTable();
             //InformationLog("Inside masterInverterList function : Before getSolarLocationMaster API call :" + DateTime.Now);
-            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarLocationMaster";
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarLocationMasterForFileUpload?siteName=" + siteName;
             var result = string.Empty;
             WebRequest request = WebRequest.Create(url);
             using (var response = (HttpWebResponse)request.GetResponse())

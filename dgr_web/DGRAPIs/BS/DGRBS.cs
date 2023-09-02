@@ -33,6 +33,7 @@ namespace DGRAPIs.BS
         Task<List<WindLocationMaster>> GetWindLocationMaster(string site);
         Task<List<SolarSiteMaster>> GetSolarSiteMaster(string site);
         Task<List<SolarLocationMaster>> GetSolarLocationMaster();
+        Task<List<SolarLocationMaster>> GetSolarLocationMasterForFileUpload(string siteName);
         Task<List<SolarLocationMaster>> GetSolarLocationMasterBySite(string site);
         Task<List<WindDailyGenReports>> GetWindDailyGenerationReport(string fromDate, string toDate, string country, string state, string spv, string site, string wtg,string reportType);
         Task<List<SolarDailyGenReports>> GetSolarDailyGenerationReport(string fromDate, string toDate, string country, string state, string spv, string site, string inv, string reportType);
@@ -422,6 +423,23 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+
+        public async Task<List<SolarLocationMaster>> GetSolarLocationMasterForFileUpload(string siteName)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetSolarLocationMasterForFileUpload(siteName);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<SolarLocationMaster>> GetSolarLocationMasterBySite(string site)
         {
             try

@@ -140,6 +140,23 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("GetSolarLocationMasterForFileUpload")]
+        [HttpGet]
+        public async Task<IActionResult> GetSolarLocationMasterForFileUpload(string siteName)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarLocationMasterForFileUpload(siteName);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         [Route("GetSolarLocationMasterBySite")]
         [HttpGet]
         public async Task<IActionResult> GetSolarLocationMasterBySite(string site)
