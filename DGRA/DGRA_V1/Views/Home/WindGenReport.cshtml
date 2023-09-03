@@ -1023,13 +1023,21 @@
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
                             
                         tbl += '</tr>';
                     }
@@ -1221,15 +1229,26 @@
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
+                        console.log(typeof (result[i].usmh_loss));
+                        console.log(Math.abs(parseFloat(result[i].usmh_loss)));
+                        console.log(Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2));
                     }
                 }
                 else {
@@ -1447,13 +1466,21 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1656,13 +1683,21 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                       tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                       tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                       // tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
+                       // tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
+                       // tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
+                       // tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
+                       // tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
+                       //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                       //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1881,13 +1916,21 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -2089,13 +2132,21 @@
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
+                        //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
+
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }

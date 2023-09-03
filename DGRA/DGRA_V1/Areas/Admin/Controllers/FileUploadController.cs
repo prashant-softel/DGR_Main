@@ -3095,8 +3095,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.Total_Time = (string.IsNullOrEmpty((string)dr["Total Time"])) ? "Nil" : Convert.ToString(dr["Total Time"]);
                         errorFlag.Add(timeValidation(addUnit.Total_Time, "Total Time", rowNumber));
 
-                        addUnit.Permissible_Load_MW = Convert.ToDouble(string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]) ? 0 : dr[" Permissible Load (MW)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.Permissible_Load_MW, " Permissible Load (MW)", rowNumber));
+                        //addUnit.Permissible_Load_MW = Convert.ToDouble(string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]) ? "" : dr[" Permissible Load (MW)"]);
+                        bool isNullOrEmpty = dr[" Permissible Load (MW)"] is DBNull || string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]);
+                        if (isNullOrEmpty)
+                        {
+
+                        }
+                        else
+                        {
+                            addUnit.Permissible_Load_MW =  Convert.ToDouble((string)dr[" Permissible Load (MW)"]);
+                        }
+                        //errorFlag.Add(numericNullValidation(addUnit.Permissible_Load_MW, " Permissible Load (MW)", rowNumber));
 
                         addUnit.Gen_loss_kWh = Convert.ToDouble(string.IsNullOrEmpty((string)dr["Generation loss in KWH due to Load shedding"]) ? 0 : dr["Generation loss in KWH due to Load shedding"]);
                         errorFlag.Add(negativeNullValidation(addUnit.Gen_loss_kWh, "Generation loss in KWH due to Load shedding", rowNumber));
@@ -3196,8 +3205,17 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.totalTime = string.IsNullOrEmpty((string)dr["Total Time"]) ? "Nil" : Convert.ToString(dr["Total Time"]);
                         errorFlag.Add(timeValidation(addUnit.totalTime, "Total Time", rowNumber));
 
-                        addUnit.permLoad = string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]) ? 0 : Convert.ToDouble(dr[" Permissible Load (MW)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.permLoad, " Permissible Load (MW)", rowNumber));
+                        //addUnit.permLoad = string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]) ? 0 : Convert.ToDouble(dr[" Permissible Load (MW)"]);
+                        //errorFlag.Add(numericNullValidation(addUnit.permLoad, " Permissible Load (MW)", rowNumber));
+                        bool isNullOrEmpty = dr[" Permissible Load (MW)"] is DBNull || string.IsNullOrEmpty((string)dr[" Permissible Load (MW)"]);
+                        if (isNullOrEmpty)
+                        {
+
+                        }
+                        else
+                        {
+                            addUnit.permLoad = Convert.ToDouble((string)dr[" Permissible Load (MW)"]);
+                        }
 
                         addUnit.genShedding = string.IsNullOrEmpty((string)dr["Generation loss in KWH due to Load shedding"]) ? 0 : Convert.ToDouble(dr["Generation loss in KWH due to Load shedding"]);
                         errorFlag.Add(negativeNullValidation(addUnit.genShedding, "Generation loss in KWH due to Load shedding", rowNumber));

@@ -177,7 +177,8 @@
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
-
+                        //var permissible = result[i].permissible_Load_MW ? result[i].permissible_Load_MW : "-";
+                        var permissible = (result[i].permissible_Load_MW !== null && result[i].permissible_Load_MW !== undefined) ? result[i].permissible_Load_MW : "-";
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left" >' + result[i].site + '</td>';
@@ -189,7 +190,7 @@
                         tbl += '<td class="text-left">' + result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes'] + '</td>';
                         tbl += '<td class="text-left">' + result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes'] + '</td>';
                         tbl += '<td class="text-left">' + result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes'] + '</td>';
-                        tbl += '<td class="text-right">' + result[i].permissible_Load_MW+ '</td>';
+                        tbl += '<td class="text-right">' + permissible + '</td>';
                         tbl += '<td class="text-right">' + result[i].gen_loss_kWh + '</td>';
                         tbl += '</tr>';
                     }
