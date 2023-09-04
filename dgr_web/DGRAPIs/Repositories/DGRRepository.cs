@@ -3940,8 +3940,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             tableData = await Context.GetData<WindMonthlyJMR>(fetchQry).ConfigureAwait(false);
             WindMonthlyJMR existingRecord = new WindMonthlyJMR();
             int val = 0;
-            string qry = "insert into monthly_jmr (FY, Site, site_id, Plant_Section, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Month_no, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage) values";
-            string updateQry = "INSERT INTO monthly_jmr(monthly_jmr_id, Plant_Section, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, LineLoss, Line_Loss_percentage, RKVH_percentage) VALUES";
+            string qry = "insert into monthly_jmr (FY, Site, site_id, Plant_Section, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, netBillableKwh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Month_no, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage) values";
+            string updateQry = "INSERT INTO monthly_jmr(monthly_jmr_id, Plant_Section, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, netBillableKwh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, LineLoss, Line_Loss_percentage, RKVH_percentage) VALUES";
             string insertValues = "";
             string updateValues = "";
             foreach (var unit in set)
@@ -3949,15 +3949,15 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 existingRecord = tableData.Find(tSite => tSite.siteId.Equals(unit.siteId) && tSite.jmrYear.Equals(unit.jmrYear) && tSite.jmrMonth_no.Equals(unit.jmrMonth_no));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.fy + "','" + unit.site + "','" + unit.siteId + "','" + unit.plantSection + "','" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "', '" + unit.importKvarhLead + "', '" + unit.jmrDate + "','" + unit.jmrMonth + "','" + unit.jmrMonth_no + "', '" + unit.jmrYear + "', '" + unit.lineLoss + "', '" + unit.lineLossPercent + "', '" + unit.rkvhPercent + "'),";
+                    insertValues += "('" + unit.fy + "','" + unit.site + "','" + unit.siteId + "','" + unit.plantSection + "','" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.netBillableKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "', '" + unit.importKvarhLead + "', '" + unit.jmrDate + "','" + unit.jmrMonth + "','" + unit.jmrMonth_no + "', '" + unit.jmrYear + "', '" + unit.lineLoss + "', '" + unit.lineLossPercent + "', '" + unit.rkvhPercent + "'),";
                 }
                 else
                 {
-                    updateValues += "(" + existingRecord.monthly_jmr_id + ",'" + unit.plantSection + "','" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "','" + unit.importKvarhLead + "','" + unit.jmrDate + "','" + unit.lineLoss + "','" + unit.lineLossPercent + "','" + unit.rkvhPercent + "'),";
+                    updateValues += "(" + existingRecord.monthly_jmr_id + ",'" + unit.plantSection + "','" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.netBillableKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "','" + unit.importKvarhLead + "','" + unit.jmrDate + "','" + unit.lineLoss + "','" + unit.lineLossPercent + "','" + unit.rkvhPercent + "'),";
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_jmr_id = VALUES(monthly_jmr_id), Plant_Section = VALUES(Plant_Section), Controller_KWH_INV = VALUES(Controller_KWH_INV), Scheduled_Units_kWh = VALUES(Scheduled_Units_kWh), Export_kWh = VALUES(Export_kWh), Import_kWh = VALUES(Import_kWh), Net_Export_kWh = VALUES(Net_Export_kWh), Export_kVAh = VALUES(Export_kVAh), Import_kVAh = VALUES(Import_kVAh), Export_kVArh_lag = VALUES(Export_kVArh_lag), Import_kVArh_lag = VALUES(Import_kVArh_lag), Export_kVArh_lead = VALUES(Export_kVArh_lead), Import_kVArh_lead = VALUES(Import_kVArh_lead), JMR_date = VALUES(JMR_date), LineLoss = VALUES(LineLoss), Line_Loss_percentage = VALUES(Line_Loss_percentage), RKVH_percentage = VALUES(RKVH_percentage);";
+            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_jmr_id = VALUES(monthly_jmr_id), Plant_Section = VALUES(Plant_Section), Controller_KWH_INV = VALUES(Controller_KWH_INV), Scheduled_Units_kWh = VALUES(Scheduled_Units_kWh), Export_kWh = VALUES(Export_kWh), Import_kWh = VALUES(Import_kWh), Net_Export_kWh = VALUES(Net_Export_kWh),  netBillableKwh = VALUES(netBillableKwh), Export_kVAh = VALUES(Export_kVAh), Import_kVAh = VALUES(Import_kVAh), Export_kVArh_lag = VALUES(Export_kVArh_lag), Import_kVArh_lag = VALUES(Import_kVArh_lag), Export_kVArh_lead = VALUES(Export_kVArh_lead), Import_kVArh_lead = VALUES(Import_kVArh_lead), JMR_date = VALUES(JMR_date), LineLoss = VALUES(LineLoss), Line_Loss_percentage = VALUES(Line_Loss_percentage), RKVH_percentage = VALUES(RKVH_percentage);";
 
             if (!(string.IsNullOrEmpty(insertValues)))
             {
@@ -4133,8 +4133,17 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             foreach (var unit in set)
             {
-                values += "('" + unit.Site + "','" + unit.Site_Id + "','" + unit.Date + "','" + unit.Start_Time + "','" + unit.End_Time + "','" + unit.Total_Time + "','" + unit.Permissible_Load_MW + "','" + unit.Gen_loss_kWh + "'),";
-                delqry += " Site_ID = " + unit.Site_Id + " and Date = '" + unit.Date + "' or";
+                //|| string.IsNullOrEmpty((string)unit.Permissible_Load_MW)
+                if (unit.Permissible_Load_MW is null || unit.Permissible_Load_MW is DBNull)
+                {
+                    values += "('" + unit.Site + "','" + unit.Site_Id + "','" + unit.Date + "','" + unit.Start_Time + "','" + unit.End_Time + "','" + unit.Total_Time + "', null,'" + unit.Gen_loss_kWh + "'),";
+                    delqry += " Site_ID = " + unit.Site_Id + " and Date = '" + unit.Date + "' or";
+                }
+                else
+                {
+                    values += "('" + unit.Site + "','" + unit.Site_Id + "','" + unit.Date + "','" + unit.Start_Time + "','" + unit.End_Time + "','" + unit.Total_Time + "','" + unit.Permissible_Load_MW + "','" + unit.Gen_loss_kWh + "'),";
+                    delqry += " Site_ID = " + unit.Site_Id + " and Date = '" + unit.Date + "' or";
+                }
             }
             qry += values;
             await Context.ExecuteNonQry<int>(delqry.Substring(0, (delqry.Length - 2)) + ";").ConfigureAwait(false);
@@ -11998,11 +12007,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00"; AND date = 14-May-23
                     if (type == 1 || type == 4)
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = '" + date + "' AND site_id IN("+ site_id +") ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND Date(Time_stamp) = '" + original_date + "' AND site_id IN("+ site_id +") ;";
                     }
                     else if (type == 2 || type == 3)
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = ' " + date + "' AND site_id IN(" + site_id + ") ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND Date(Time_stamp) = '" + original_date + "' AND site_id IN(" + site_id + ") ;";
                     }
                 }
                 try

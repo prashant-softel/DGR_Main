@@ -50,6 +50,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         int isInox = 0;
         int isSuzlon = 0;
         int isRegen = 0;
+        int TMLType = 0;
         string[] importData = new string[2];
         string generationDate = "";
         bool isGenValidationSuccess = false;
@@ -77,6 +78,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         List<string> IGBD = new List<string>();
         List<string> SMBList = new List<string>();
         List<string> StringsList = new List<string>();
+        List<InsertWindTMLData> TMLDataSet = new List<InsertWindTMLData>();
 
 
         ErrorLog m_ErrorLog;
@@ -117,7 +119,13 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 //  string response = await ExceldatareaderAndUpload(Request.Files["Path"]);
                 string finalResponse = "";
-                for (int i = 0; i < HttpContext.Request.Form.Files.Count; i++)
+                int fileCount = HttpContext.Request.Form.Files.Count;
+                bool isMultiFiles = false;
+                if(fileCount > 1)
+                {
+                    isMultiFiles = true;
+                }
+                for (int i = 0; i < fileCount; i++)
                 {
                     //Clearing hashtables and list before importing new file.
                     equipmentId.Clear();
@@ -130,8 +138,62 @@ namespace DGRA_V1.Areas.admin.Controllers
                     eqSiteId.Clear();
                     finalResponse = "";
                     fileSheets.Clear();
-                    string response = await ExcelDataReaderAndUpload(HttpContext.Request.Form.Files[i], FileUpload);
+                    string response = await ExcelDataReaderAndUpload(HttpContext.Request.Form.Files[i], FileUpload, isMultiFiles);
                     finalResponse = response;
+                }
+                if (isMultiFiles)
+                {
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(TMLDataSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                        //***********Here sending dynamic type is remaining, as we have to test the performance. did for Inox multiple imports.*************
+                        //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=" + TMLType;
+                        using (var client = new HttpClient())
+                        {
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                                //for solar 0, wind 1, other 2;
+                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                if (deleteStatus == 1)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                }
+                                else if (deleteStatus == 0)
+                                {
+                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                }
+                            }
+                        }
+                        finalResponse += "Information : Calculation and storing of data successful. ";
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while sending data to api of TML for multiple files, due to : " + e.ToString();
+                        finalResponse += "Exception while sending data to api of TML for multiple files, due to : " + e.Message + ", ";
+                    }
                 }
                 TempData["notification"] = finalResponse;
             }
@@ -148,7 +210,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             return View();
         }
 
-        public async Task<string> ExcelDataReaderAndUpload(IFormFile file, string fileUploadType)
+        public async Task<string> ExcelDataReaderAndUpload(IFormFile file, string fileUploadType, bool isMultiFiles)
         {
             var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
             //var UserName = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserName"));
@@ -681,7 +743,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind TML_Data WorkSheet:");
-                                            statusCode = await InsertWindTMLData(status, ds, file.FileName);
+                                            statusCode = await InsertWindTMLData(status, ds, file.FileName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -779,7 +841,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             m_ErrorLog.SetInformation(", Importing Wind Suzlon_TMD Worksheet :");
-                                            statusCode = await ImportWindSuzlonTMD(status, ds, file.FileName);
+                                            statusCode = await ImportWindSuzlonTMD(status, ds, file.FileName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -798,7 +860,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else
                                         {
                                             m_ErrorLog.SetInformation(", Importing Wind Inox_TMD Worksheet :");
-                                            statusCode = await ImportWindInoxTMD(status, ds, file.FileName);
+                                            statusCode = await ImportWindInoxTMD(status, ds, file.FileName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -875,7 +937,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Reviewing Wind TMR:");
-                                            statusCode = await InsertWindTMR(status, ds, tabName);
+                                            statusCode = await InsertWindTMR(status, ds, tabName, isMultiFiles);
                                         }
                                     }
                                 }
@@ -1198,7 +1260,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (fileUploadType == "Wind")
                             {
                                 m_ErrorLog.SetInformation(",Reviewing Wind file for TML data import: " + file.FileName);
-                                statusCode = await InsertWindRegen(status, dataSetMain, file.FileName);
+                                statusCode = await InsertWindRegen(status, dataSetMain, file.FileName, isMultiFiles);
                             }
                         }
                         catch (Exception ex)
@@ -2552,6 +2614,9 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.netExportKwh = Convert.ToDouble(dr["Net Export (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Export (kWh)"]) ? 0 : dr["Net Export (kWh)"]);
                         errorFlag.Add(negativeNullValidation(addUnit.netExportKwh, "Net Export (kWh)", rowNumber));
+                        
+                        addUnit.netBillableKwh = Convert.ToDouble(dr["Net Billable (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Billable (kWh)"]) ? 0 : dr["Net Billable (kWh)"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.netExportKwh, "Net Billable (kWh)", rowNumber));
 
                         addUnit.exportKvah = Convert.ToDouble(dr["Export (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Export (kWh)"]) ? 0 : dr["Export (kVAh)"]);
                         errorFlag.Add(negativeNullValidation(addUnit.exportKvah, "Export (kVAh)", rowNumber));
@@ -4901,15 +4966,22 @@ namespace DGRA_V1.Areas.admin.Controllers
         public bool numericNullValidation(double value, string columnName, long rowNo)
         {
             bool retVal = false;
-            if (value == 0)
+            if(columnName == "LineLoss")
             {
-                m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be null or zero,");
-                retVal = true;
+                return retVal;
             }
-            if (value < 0)
+            else
             {
-                m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be negative,");
-                retVal = true;
+                if (value == 0)
+                {
+                    m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be null or zero,");
+                    retVal = true;
+                }
+                if (value < 0)
+                {
+                    m_ErrorLog.SetError(",Row <" + rowNo + "> column <" + columnName + "> : value <" + value + "> cannot be negative,");
+                    retVal = true;
+                }
             }
             return retVal;
 
@@ -6010,13 +6082,14 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //InsertWindTMR
-        private async Task<int> InsertWindTMR(string status, DataSet ds, string tabName)
+        private async Task<int> InsertWindTMR(string status, DataSet ds, string tabName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
             int responseCode = 400;
             string fileDateFormat = "";
+            TMLType = 1;
 
             if (ds.Tables.Count > 0)
             {
@@ -6229,11 +6302,18 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
+                        using (var client = new HttpClient())
+                        {
 
                         client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                         var response = await client.PostAsync(url, data);
@@ -6271,7 +6351,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(", File not uploaded");
                             }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
@@ -6284,11 +6365,12 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //TML_Data
-        private async Task<int> InsertWindTMLData(string status, DataSet ds, string fileName)
+        private async Task<int> InsertWindTMLData(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 1;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -6454,27 +6536,34 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (errorCount == 0)
                 {
                     m_ErrorLog.SetInformation(",Wind TML Data Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=1";
+                        using (var client = new HttpClient())
                         {
-                            m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
-                            //FinalResult = 0 : Complete failure
-                            //FinalResult = 1 : Completed till deletion.
-                            //FinalResult = 2 : Completed till insertion.
-                            //FinalResult = 3 : Completed till updating manual bd column
-                            //FinalResult = 4 : Completed till updating reconstructed windspeed.
-                            //FinalResult = 5 : Completed till updating expected power column.
-                            //FinalResult = 6 : Completed till updating deviation kw column.
-                            //FinalResult = 7 : Completed till updating loss kw column.
-                            //FinalResult = 8 : Completed till updating all breakdown column.
-                            //FinalResult = 9 : Completed till updating all breakdown code column.
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
+                                //FinalResult = 0 : Complete failure
+                                //FinalResult = 1 : Completed till deletion.
+                                //FinalResult = 2 : Completed till insertion.
+                                //FinalResult = 3 : Completed till updating manual bd column
+                                //FinalResult = 4 : Completed till updating reconstructed windspeed.
+                                //FinalResult = 5 : Completed till updating expected power column.
+                                //FinalResult = 6 : Completed till updating deviation kw column.
+                                //FinalResult = 7 : Completed till updating loss kw column.
+                                //FinalResult = 8 : Completed till updating all breakdown column.
+                                //FinalResult = 9 : Completed till updating all breakdown code column.
 
                             if (returnResponse == "5")
                             {
@@ -6617,7 +6706,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(", File not uploaded");
                             }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
@@ -6630,11 +6720,12 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //ImportWindSuzlonTMD
-        private async Task<int> ImportWindSuzlonTMD(string status, DataSet ds, string fileName)
+        private async Task<int> ImportWindSuzlonTMD(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 3;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -6820,30 +6911,37 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=3";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=3";
+                        using (var client = new HttpClient())
                         {
-                            if (returnResponse == "5")
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
                             {
-                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                if (returnResponse == "5")
+                                {
+                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                }
+                                return responseCode = (int)response.StatusCode;
                             }
                             else
                             {
-                                m_ErrorLog.SetError(",Error in Calculation.");
-                            }
-                            return responseCode = (int)response.StatusCode;
-                        }
-                        else
-                        {
-                            m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+                                m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
 
                             //for solar 0, wind 1, other 2;
                             int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
@@ -6860,7 +6958,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(", File not uploaded");
                             }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
@@ -6873,11 +6972,12 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //InsertWindRejen
-        private async Task<int> InsertWindRegen(string status, DataSet ds, string fileName)
+        private async Task<int> InsertWindRegen(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 4;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -7125,17 +7225,24 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (errorCount == 0)
                 {
                     m_ErrorLog.SetInformation(",Wind TML Data Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=4";
-                    using (var client = new HttpClient())
+                    if (isMultiFiles)
                     {
-                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                        var response = await client.PostAsync(url, data);
-                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                        if (response.IsSuccessStatusCode)
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=4";
+                        using (var client = new HttpClient())
                         {
-                            m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
+                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                            var response = await client.PostAsync(url, data);
+                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                m_ErrorLog.SetInformation(",Wind TML Data API SuccessFul,");
 
                             if (returnResponse == "5")
                             {
@@ -7166,7 +7273,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(", File not uploaded");
                             }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
@@ -7181,11 +7289,12 @@ namespace DGRA_V1.Areas.admin.Controllers
         //ImportWindInoxTMD
         Hashtable bdCodeTypeHash = new Hashtable();
         Hashtable bdCodeHash = new Hashtable();
-        private async Task<int> ImportWindInoxTMD(string status, DataSet ds, string fileName)
+        private async Task<int> ImportWindInoxTMD(string status, DataSet ds, string fileName, bool isMultiFiles)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
             int errorCount = 0;
+            TMLType = 2;
             int responseCode = 400;
 
             if (ds.Tables.Count > 0)
@@ -7703,8 +7812,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
-                    var json = JsonConvert.SerializeObject(addSet);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    if (isMultiFiles)
+                    {
+                        TMLDataSet.AddRange(addSet);
+                        return responseCode = (int)200;
+                    }
+                    else
+                    {
+                        var json = JsonConvert.SerializeObject(addSet);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
 
                     //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
                     var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=2";
@@ -7744,7 +7860,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetInformation(", File not uploaded");
                             }
 
-                            return responseCode = (int)response.StatusCode;
+                                return responseCode = (int)response.StatusCode;
+                            }
                         }
                     }
                 }
