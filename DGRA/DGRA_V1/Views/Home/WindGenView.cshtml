@@ -178,20 +178,20 @@
                 console.log(result); //table
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 150%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width:150px">Date</th>';
+                tbl += '<th style="text-wrap: nowrap;">Date</th>';
                 tbl += '<th>State</th>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>WTG</th>';
-                tbl += '<th>Wind (m/s)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
                 tbl += '<th>kWh</th>';
                 tbl += '<th>Feeder</th>';
-                tbl += '<th>MA ACT (%)</th>';
-                tbl += '<th>MA CON (%)</th>';
-                tbl += '<th>IGA (%)</th>';
-                tbl += '<th style="width: 6%;">EGA (A) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
-                tbl += '<th>PLF (%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>PLF<br>(%)</th>';
                 tbl += '<th>Grid_hrs</th>';
                 tbl += '<th>Lull_hrs</th>';
                 tbl += '<th>Pro_hrs</th>';
@@ -200,7 +200,7 @@
                 tbl += '<th>Others</th>';
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
-                tbl += '<th>Load Shedding</th>';
+                tbl += '<th>LS</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -209,7 +209,7 @@
                         
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        tbl += '<td  class="text-left" >' + formattedDate + '</td>';
+                        tbl += '<td  class="text-left"  style="text-wrap: nowrap;" >' + formattedDate + '</td>';
                         tbl += '<td  class="text-left">' + result[i].state + '</td>';
                         tbl += '<td  class="text-left">' + result[i].site + '</td>';
                         tbl += '<td  class="text-left">' + result[i].wtg + '</td>';
@@ -277,13 +277,13 @@
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
                             //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA (A) (%) i") {
+                            if ($(this).text() == "EGA_A(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA (B) (%) i") {
+                            if ($(this).text() == "EGA_B(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA (C) (%) i") {
+                            if ($(this).text() == "EGA_C(%) i") {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })

@@ -952,15 +952,15 @@
                 tbl += '<th>SPV</th>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>WTG</th>';
-                tbl += '<th>Wind (m/s)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
                 tbl += '<th>kWh</th>';
-                tbl += '<th>PLF (%)</th>';
-                tbl += '<th style="width: 5%;">MA ACT (%)</th>';
-                tbl += '<th style="width: 5%;">MA CON (%)</th>';
-                tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
 
@@ -969,17 +969,17 @@
                 tbl += '<th>Others</th>';
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
-                tbl += '<th>Load Shedding</th>';
-                tbl += '<th>Total BD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
 
 
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>Others Loss</th>';
-                tbl += '<th>IGBDH Loss</th>';
-                tbl += '<th>EGBDH Loss</th>';
-                tbl += '<th>Load Shedding Loss</th>';
-                tbl += '<th>Total Loss</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -988,7 +988,11 @@
                     //    var dateB = new Date(b.date);
                     //    return dateA - dateB;
                     //});
+
+                    var total_losses = 0;
                     for (var i = 0; i < result.length; i++) {
+
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         //var dateOnly = result[i].date.split("T")[0];
                         //var splitDate = dateOnly.split("-");
@@ -1000,7 +1004,7 @@
                         tbl += '<td class="text-left">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + result[i].wtg + '</td>';
                         tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
@@ -1037,7 +1041,7 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
                             
                         tbl += '</tr>';
                     }
@@ -1081,13 +1085,13 @@
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
                             //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA (A) (%) i") {
+                            if ($(this).text() == "EGA_A(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA (B) (%) i") {
+                            if ($(this).text() == "EGA_B(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA (C) (%) i") {
+                            if ($(this).text() == "EGA_C(%) i") {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
@@ -1171,16 +1175,16 @@
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
                 tbl += '<th>Site</th>';
-                tbl += '<th>Capacity (MW)</th>';
-                tbl += '<th>Wind (m/s)</th>';
+                tbl += '<th>Capacity<br>(MW)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
                 tbl += '<th>kWh</th>';
-                tbl += '<th>PLF (%)</th>';
-                tbl += '<th style="width: 5%;">MA ACT (%)</th>';
-                tbl += '<th style="width: 5%;">MA CON (%)</th>';
-                tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1188,26 +1192,30 @@
                 tbl += '<th>Others</th>';
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
-                tbl += '<th>Load Shedding</th>';
-                tbl += '<th>Total BD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
 
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>Others Loss</th>';
-                tbl += '<th>IGBDH Loss</th>';
-                tbl += '<th>EGBDH Loss</th>';
-                tbl += '<th>Load Shedding Loss</th>';
-                tbl += '<th>Total Loss</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+
+                    var total_losses = 0;
                     for (var i = 0; i < result.length; i++) {
+
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
@@ -1243,7 +1251,7 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                         console.log(typeof (result[i].usmh_loss));
@@ -1290,13 +1298,13 @@
                    initComplete: function () {
                        this.api().columns().header().to$().each(function () {
                            //$(this).attr('title', 'title for ' + $(this).text())
-                           if ($(this).text() == "EGA (A) (%) i") {
+                           if ($(this).text() == "EGA_A(%) i") {
                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                            }
-                           if ($(this).text() == "EGA (B) (%) i") {
+                           if ($(this).text() == "EGA_B(%) i") {
                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
                            }
-                           if ($(this).text() == "EGA (C) (%) i") {
+                           if ($(this).text() == "EGA_C(%) i") {
                                $(this).attr('title', 'Load Shedding')
                            }
                        })
@@ -1408,15 +1416,15 @@
                 tbl += '<th>SPV</th>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>WTG</th>';
-                tbl += '<th>Wind (m/s)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
                 tbl += '<th>kWh</th>';
-                tbl += '<th>PLF (%)</th>';
-                tbl += '<th style="width: 5%;">MA ACT (%)</th>';
-                tbl += '<th style="width: 5%;">MA CON (%)</th>';
-                tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1424,27 +1432,30 @@
                 tbl += '<th>Others</th>';
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
-                tbl += '<th>Load Shedding</th>';
-                tbl += '<th>Total BD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
 
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>Others Loss</th>';
-                tbl += '<th>IGBDH Loss</th>';
-                tbl += '<th>EGBDH Loss</th>';
-                tbl += '<th>Load Shedding Loss</th>';
-                tbl += '<th>Total Loss</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    var total_losses = 0;
                     for (var i = 0; i < result.length; i++) {
+
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + year + '</td>';
                         tbl += '<td class="text-left">' + result[i].month + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + result[i].wtg + '</td>';
                         tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
@@ -1480,7 +1491,7 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1524,13 +1535,13 @@
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
                             //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA (A) (%) i") {
+                            if ($(this).text() == "EGA_A(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA (B) (%) i") {
+                            if ($(this).text() == "EGA_B(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA (C) (%) i") {
+                            if ($(this).text() == "EGA_C(%) i") {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
@@ -1625,16 +1636,16 @@
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
                 tbl += '<th>Site</th>';
-                tbl += '<th>Capacity (MW)</th>';
-                tbl += '<th>Wind (m/s)</th>';
+                tbl += '<th>Capacity<br>(MW)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
                 tbl += '<th>kWh</th>';
-                tbl += '<th>PLF (%)</th>';
-                tbl += '<th style="width: 5%;">MA ACT (%)</th>';
-                tbl += '<th style="width: 5%;">MA CON (%)</th>';
-                tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 7%;">EGA (A) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 7%;">EGA (B) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 7%;">EGA (C) (%) <span class="information">i<span></th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1642,18 +1653,22 @@
                 tbl += '<th>Others</th>';
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
-                tbl += '<th>Load Shedding</th>';
-                tbl += '<th>Total BD</th>';
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>Others Loss</th>';
-                tbl += '<th>IGBDH Loss</th>';
-                tbl += '<th>EGBDH Loss</th>';
-                tbl += '<th>Load Shedding Loss</th>';
-                tbl += '<th>Total Loss</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
+
+                    var total_losses = 0;
                     for (var i = 0; i < result.length; i++) {
+
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
                         cnt++;
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
@@ -1661,7 +1676,7 @@
                         tbl += '<td class="text-left">' + result[i].month + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
@@ -1697,7 +1712,7 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1744,13 +1759,13 @@
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
                             //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA (A) (%) i") {
+                            if ($(this).text() == "EGA_A(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA (B) (%) i") {
+                            if ($(this).text() == "EGA_B(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA (C) (%) i") {
+                            if ($(this).text() == "EGA_C(%) i") {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
@@ -1858,15 +1873,15 @@
                 tbl += '<th>SPV</th>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>WTG</th>';
-                tbl += '<th>Wind (m/s)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
                 tbl += '<th>kWh</th>';
-                tbl += '<th>PLF (%)</th>';
-                tbl += '<th style="width: 5%;">MA ACT (%)</th>';
-                tbl += '<th style="width: 5%;">MA CON (%)</th>';
-                tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 5%;">EGA (A) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -1874,27 +1889,29 @@
                 tbl += '<th>Others</th>';
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
-                tbl += '<th>Load Shedding</th>';
-                tbl += '<th>Total BD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
 
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>Others Loss</th>';
-                tbl += '<th>IGBDH Loss</th>';
-                tbl += '<th>EGBDH Loss</th>';
-                tbl += '<th>Load Shedding Loss</th>';
-                tbl += '<th>Total Loss</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
-
+                    var total_losses = 0;
                     for (var i = 0; i < result.length; i++) {
+
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
                        // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + fyyear  + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + result[i].wtg + '</td>';
                         tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
@@ -1930,7 +1947,7 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1974,13 +1991,13 @@
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
                             //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA (A) (%) i") {
+                            if ($(this).text() == "EGA_A(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA (B) (%) i") {
+                            if ($(this).text() == "EGA_B(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA (C) (%) i") {
+                            if ($(this).text() == "EGA_C(%) i") {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
@@ -2073,16 +2090,16 @@
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
                 tbl += '<th>Site</th>';
-                tbl += '<th>Capacity (MW)</th>';
-                tbl += '<th>Wind (m/s)</th>';
+                tbl += '<th>Capacity<br>(MW)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
                 tbl += '<th>kWh</th>';
-                tbl += '<th>PLF (%)</th>';
-                tbl += '<th style="width: 5%;">MA ACT (%)</th>';
-                tbl += '<th style="width: 5%;">MA CON (%)</th>';
-                tbl += '<th style="">IGA (%)</th>';
-                tbl += '<th style="width: 6%;">EGA (A) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (B) (%) <span class="information">i<span></th>';
-                tbl += '<th style="width: 6%;">EGA (C) (%) <span class="information">i<span></th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
                 tbl += '<th>USMH</th>';
@@ -2090,27 +2107,29 @@
                 tbl += '<th>Others</th>';
                 tbl += '<th>IGBDH</th>';
                 tbl += '<th>EGBDH</th>';
-                tbl += '<th>Load Shedding</th>';
-                tbl += '<th>Total BD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
 
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>Others Loss</th>';
-                tbl += '<th>IGBDH Loss</th>';
-                tbl += '<th>EGBDH Loss</th>';
-                tbl += '<th>Load Shedding Loss</th>';
-                tbl += '<th>Total Loss</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
-
+                var total_losses = 0;
                 if (result.length > 0) {
 
                     for (var i = 0; i < result.length; i++) {
                         // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
+
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + fyyear + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
@@ -2146,7 +2165,7 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].load_Shedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].total_loss)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                     }
@@ -2191,13 +2210,13 @@
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
                             //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA (A) (%) i") {
+                            if ($(this).text() == "EGA_A(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA (B) (%) i") {
+                            if ($(this).text() == "EGA_B(%) i") {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA (C) (%) i") {
+                            if ($(this).text() == "EGA_C(%) i") {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
