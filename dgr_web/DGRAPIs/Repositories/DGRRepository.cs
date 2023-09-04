@@ -11690,7 +11690,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 TimeSpan fromtimeSpan = TimeSpan.Parse(unit.from_time.ToString());
                                 TimeSpan fromTime = fromtimeSpan.Subtract(TimeSpan.FromHours(5));
                                 finalResult = 6;
-                                averageTmlQry = "SELECT AVG(windspeed) as windspeed FROM windspeed_tmd WHERE site_id = " + site_id + " AND date = '" + date + "' AND to_time BETWEEN '" + toTime + "' AND '" + fromTime + "' AND wtg = '" + unit.WTGs + "' AND windspeed > 0 ;";
+                                //averageTmlQry = "SELECT AVG(windspeed) as windspeed FROM windspeed_tmd WHERE site_id = " + site_id + " AND date = '" + date + "' AND to_time BETWEEN '" + toTime + "' AND '" + fromTime + "' AND wtg = '" + unit.WTGs + "' AND windspeed > 0 ;";
+                                averageTmlQry = "SELECT AVG(windspeed) as windspeed FROM windspeed_tmd WHERE site_id = " + site_id + " AND date = '" + date + "' AND to_time BETWEEN '" + fromTime + "' AND '" + toTime + "' AND wtg = '" + unit.WTGs + "' AND windspeed > 0 ;";
                             }
                             catch (Exception e)
                             {
@@ -11997,11 +11998,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     //UPDATE `uploading_file_tmr_data` SET manual_bd = "USMH" WHERE from_time >= "03:15:00" AND from_time <= "03:46:00"; AND date = 14-May-23
                     if (type == 1 || type == 4)
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = '" + date + "' ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = '" + date + "' AND site_id IN("+ site_id +") ;";
                     }
                     else if (type == 2 || type == 3)
                     {
-                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = ' " + date + "' ;";
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND date = ' " + date + "' AND site_id IN(" + site_id + ") ;";
                     }
                 }
                 try
