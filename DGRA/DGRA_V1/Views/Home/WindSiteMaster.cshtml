@@ -103,17 +103,17 @@
             var tbl = '<table id="example1"  class="table table-bordered table-striped dataTable dtr-inline">';
             tbl += '<thead class="tbl-head"><tr>';
             tbl += '<th>Country</th>';
-            tbl += '<th style="width: 11%;">Site</th>';
+            tbl += '<th>Site</th>';
             tbl += '<th>SPV</th>';
             tbl += '<th>State</th>';
             tbl += '<th>Model</th>';
-            tbl += '<th>Capacity (MW)</th>';
+            tbl += '<th>Capacity<br>(MW)</th>';
             tbl += '<th>WTG</th>';
-            tbl += '<th>Total MW</th>';
+            tbl += '<th>Total_MW</th>';
             tbl += '<th>Tariff</th>';
             tbl += '<th>GBI</th>';
-            tbl += '<th>Total Tariff</th>';
-            tbl += '<th>LL Compensation (%)</th>';
+            tbl += '<th>Total_Tariff</th>';
+            tbl += '<th>LL_Compensation<br>(%)</th>';
             if (userRole == "Admin") {
                 tbl += '<th style="width:10%">Action</th>';
             }
@@ -125,10 +125,10 @@
 
                     tbl += '<tr>';
                     tbl += '<td class="text-left">' + result[i].country + '</td>';
-                    tbl += '<td class="text-left">' + result[i].site + '</td>';
-                    tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                     tbl += '<td class="text-left">' + result[i].state + '</td>';
-                    tbl += '<td class="text-left">' + result[i].model + '</td>';
+                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].model + '</td>';
                     tbl += '<td class="text-right">' + result[i].capacity_mw.toFixed(2) + '</td>';
                     tbl += '<td class="text-right">' + result[i].wtg + '</td>';
                     tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';

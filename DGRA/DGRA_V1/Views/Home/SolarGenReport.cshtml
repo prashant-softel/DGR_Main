@@ -990,7 +990,7 @@
                // var tbl = '<div class="text-center"><h5></h5></div>';
                 var tbl = '<table id="example1"  class="table table-bordered table-striped" style="width:285%">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width: 5%;">Date</th>';
+                tbl += '<th >Date</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
@@ -1356,7 +1356,7 @@
                 tbl += '<thead class="tbl-head"><tr>';
                // tbl += '<th >Year</th>';
                // tbl += '<th >Month</th>';
-                tbl += '<th style="width: 4%;" >Date</th>';
+                tbl += '<th>Date</th>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
@@ -1407,12 +1407,12 @@
                         tbl += '<tr>';
                         //tbl += '<td class="text-left">' + result[i].year + '</td>';
                        // tbl += '<td class="text-left">' + result[i].month + '</td>';
-                        tbl += '<td class="text-left">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
 
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].dc_capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
@@ -1631,7 +1631,7 @@
                 //var tbl = '<div class="text-center"><h5></h5></div>';
                var  tbl = '<table id="example2"  class="table table-bordered table-striped" style="width:285%">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width:4%">FY</th>';
+                tbl += '<th>FY</th>';
                 tbl += '<th>Month</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
@@ -1683,13 +1683,13 @@
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
 
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + year + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + year + '</td>';
                         tbl += '<td class="text-left">' + result[i].month + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td class="text-left">' + result[i].inverter + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
                         tbl += '<td class="text-left">' + result[i].dc_capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-left">' + result[i].ac_capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
@@ -1895,7 +1895,7 @@
                // var tbl = '<div class="text-center"><h5></h5></div>';
               var   tbl = '<table id="example2"  class="table table-bordered table-striped" style="width:285%">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width:4%">FY</th>';
+                tbl += '<th>FY</th>';
                 tbl += '<th>Month</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
@@ -1947,7 +1947,7 @@
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         let totalFinal = result[i].total_losses + result[i].tracker_losses;
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + fyyear + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + fyyear + '</td>';
                         tbl += '<td class="text-left">' + result[i].month + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
@@ -2165,7 +2165,7 @@
               //  var tbl = '<div class="text-center"><h5></h5></div>';
                var  tbl = '<table id="example3"  class="table table-bordered table-striped" style="width:285%">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width:4%">FY</th>';
+                tbl += '<th>FY</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
@@ -2201,14 +2201,14 @@
                 tbl += '<th>Total_BD</th>';
 
 
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>OH Loss</th>';
-                tbl += '<th>IGBD Loss</th>';
-                tbl += '<th>EGBD Loss</th>';
-                tbl += '<th>Load_She Loss</th>';
-                tbl += '<th>LULL Loss</th>';
-                tbl += '<th>Total Loss</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>OH_Loss</th>';
+                tbl += '<th>IGBD_Loss</th>';
+                tbl += '<th>EGBD_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>LULL_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -2216,12 +2216,12 @@
                     for (var i = 0; i < result.length; i++) {
                        // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + fyyear  + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear  + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td class="text-left">' + result[i].inverter + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
                         tbl += '<td class="text-left">' + result[i].dc_capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-left">' + result[i].ac_capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
@@ -2414,7 +2414,7 @@
                 var tbl = '<div class="text-center"><h5></h5></div>';
                 tbl += '<table id="example3"  class="table table-bordered table-striped" style="width:285%">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width:3%">FY</th>';
+                tbl += '<th>FY</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
@@ -2465,7 +2465,7 @@
                         // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         let TotalFinal = result[i].total_losses + result[i].tracker_losses;
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + fyyear + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';

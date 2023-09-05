@@ -167,7 +167,7 @@
             datatype: "html",
             success: function (result, status, xhr) {
                 console.log(result);
-                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 150%;">';
+                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 140%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>Country</td>';
                 tbl += '<th>Site</td>';
@@ -178,16 +178,16 @@
                 tbl += '<th>INV</td>';
                 tbl += '<th>SMB</td>';
                 tbl += '<th>String</td>';
-                tbl += '<th>Str Conf.</td>';
-                tbl += '<th>Total Str Cur.(amp)</td>';
-                tbl += '<th>Total Str vol.</td>';
+                tbl += '<th>Str_Conf.</td>';
+                tbl += '<th>Total_Str_Cur.<br>(amp)</td>';
+                tbl += '<th>Total_Str_vol.</td>';
                 tbl += '<th>Modules</td>';
                 tbl += '<th>Wp</td>';
-                tbl += '<th>Capacity (kWp)</td>';
-                tbl += '<th>Module Make</td>';
-                tbl += '<th>Module Mod No.</td>';
-                tbl += '<th>Module Type</td>';
-                tbl += '<th>String/Central Inv</td>';
+                tbl += '<th>Capacity<br>(kWp)</td>';
+                tbl += '<th>Module_Make</td>';
+                tbl += '<th>Module_Mod_No.</td>';
+                tbl += '<th>Module_Type</td>';
+                tbl += '<th>String/Central_Inv</td>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
@@ -200,24 +200,24 @@
                         }
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
-                        tbl += '<td class="text-left" style="width: 5%;">' + result[i].site + '</td>';
-                        tbl += '<td class="text-left">' + result[i].eg + '</td>';
-                        tbl += '<td class="text-left">' + result[i].ig + '</td>';
-                        tbl += '<td class="text-left">' + result[i].icr_inv+ '</td>';
-                        tbl += '<td class="text-left">' + result[i].icr+ '</td>';
-                        tbl += '<td class="text-left">' + result[i].inv + '</td>';
-                        tbl += '<td class="text-left">' + result[i].smb + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].eg + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].ig + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].icr_inv+ '</td>';
+                        tbl += '<td class="text-left  style="text-wrap: nowrap;">' + result[i].icr+ '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].inv + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].smb + '</td>';
                         tbl += '<td class="text-left">' + result[i].strings + '</td>';
-                        tbl += '<td class="text-left">' + result[i].string_configuration + '</td>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].string_configuration + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_string_current.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_string_voltage.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].modules_quantity + '</td>';
                         tbl += '<td class="text-right">' + result[i].wp.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].capacity.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].module_make + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].module_model_no + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].module_type + '</td>';
-                        tbl += '<td  class="text-left">' + inverterStatus+ '</td>';
+                        tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + result[i].module_make + '</td>';
+                        tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + result[i].module_model_no + '</td>';
+                        tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + result[i].module_type + '</td>';
+                        tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + inverterStatus+ '</td>';
                         tbl += '</tr>';
                     }
                 }

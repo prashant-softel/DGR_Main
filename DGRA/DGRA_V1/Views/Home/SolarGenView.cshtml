@@ -183,7 +183,7 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 230%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width: 4%;">Date</th>';
+                tbl += '<th>Date</th>';
                 tbl += '<th>State</th>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>Inverter</th>';
@@ -230,7 +230,7 @@
                         tbl += '<td  class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
                         tbl += '<td  class="text-left">' + result[i].state + '</td>';
                         tbl += '<td  class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].location_name + '</td>';
+                        tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + result[i].location_name + '</td>';
                         tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';

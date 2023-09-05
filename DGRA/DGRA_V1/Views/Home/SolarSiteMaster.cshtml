@@ -106,9 +106,9 @@
                 tbl += '<th>State</th>';
                 tbl += '<th>SPV</th>';
                 tbl += '<th>Site</th>';
-                tbl += '<th>DC Capacity (MWp)</th>';
-                tbl += '<th>AC Capacity (MW)</th>';
-                tbl += '<th>Total Tariff</th>';
+                tbl += '<th>DC_Capacity<br>(MWp)</th>';
+                tbl += '<th>AC_Capacity<br>(MW)</th>';
+                tbl += '<th>Total_Tariff</th>';
                 if (userRole == "Admin") {
                     tbl += '<th style="width:10%">Action</th>';
                 }
@@ -120,7 +120,7 @@
                         tbl += '<tr>';
                         tbl += '<td  class="text-left">' + result[i].country + '</td>';
                         tbl += '<td  class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td  class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td  class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-right">' + result[i].dc_capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';

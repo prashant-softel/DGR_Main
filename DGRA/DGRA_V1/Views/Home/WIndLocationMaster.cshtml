@@ -113,16 +113,16 @@
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>Site</th>';
                 tbl += '<th>WTG</th>';
-                tbl += '<th style="width:15%">Feeder</th>';
-                tbl += '<th style="width:20%">Max kWh/Day</th>';
+                tbl += '<th>Feeder</th>';
+                tbl += '<th>Max_kWh/Day</th>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
 
 
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td class="text-left">' + result[i].wtg + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].wtg + '</td>';
                         tbl += '<td class="text-right">' + result[i].feeder.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].max_kwh_day.toFixed(2) + '</td>';
                         tbl += '</tr>';

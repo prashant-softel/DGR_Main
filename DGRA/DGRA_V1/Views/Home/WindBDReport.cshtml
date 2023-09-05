@@ -408,18 +408,18 @@
             datatype: "JSON",
             success: function (result, status, xhr) {
                 //console.log(result);
-                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline" style="width: 160%;">';
+                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline" style="width: 140%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width:100px;">Date</th>';
+                tbl += '<th>Date</th>';
                 tbl += '<th>Country</th>';
                 tbl += '<th>State</th>';
-                tbl += '<th style="width:90px;">SPV</th>';
-                tbl += '<th style="width: 7%;">Site</th>';
-                tbl += '<th style="width: 5%;">WTG</th>';
-                tbl += '<th style="width: 60px;">BD Type</th>';
-                tbl += '<th style="width: 78px;">Start From</th>';
-                tbl += '<th style="width: 60px">Stop To</th>';
-                tbl += '<th style="width: 78px;">Total Stop</th>';
+                tbl += '<th>SPV</th>';
+                tbl += '<th>Site</th>';
+                tbl += '<th>WTG</th>';
+                tbl += '<th>BD_Type</th>';
+                tbl += '<th>Start_From</th>';
+                tbl += '<th>Stop_To</th>';
+                tbl += '<th>Total_Stop</th>';
                 tbl += '<th>Reason of Breakdown</th>';
                 tbl += '<th>Action Taken</th>';
                 tbl += '</tr></thead>';
@@ -429,13 +429,13 @@
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
-                        tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + result[i].wtg + '</td>';
-                        tbl += '<td class="text-left">' + result[i].bd_type + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].bd_type + '</td>';
                         tbl += '<td class="text-right">' + toHoursAndMinutes(result[i].stop_from.totalSeconds) + '</td>';
                         tbl += '<td class="text-right">' + toHoursAndMinutes(result[i].stop_to.totalSeconds) + '</td>';
                         tbl += '<td class="text-right">' + toHoursAndMinutes(result[i].total_stop.totalSeconds) + '</td>';
