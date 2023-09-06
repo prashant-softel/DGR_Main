@@ -138,6 +138,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     eqSiteId.Clear();
                     finalResponse = "";
                     fileSheets.Clear();
+                    m_ErrorLog.SetInformation(",File Name : " + HttpContext.Request.Form.Files[i].FileName);
                     string response = await ExcelDataReaderAndUpload(HttpContext.Request.Form.Files[i], FileUpload, isMultiFiles);
                     finalResponse = response;
                 }
@@ -6491,7 +6492,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             if (string.IsNullOrEmpty((string)dr["Actual_Avg_Active_Power_10M"]))
                             {
-                                isActivePowerEmpty = false;
+                                isActivePowerEmpty = true;
                             }
                         }
 
@@ -6514,6 +6515,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.avg_wind_speed = dr["Actual_Avg_Wind_Speed_10M"] is DBNull || string.IsNullOrEmpty((string)dr["Actual_Avg_Wind_Speed_10M"]) ? 0 : Convert.ToDouble(dr["Actual_Avg_Wind_Speed_10M"]);
 
                         addUnit.restructive_WTG = dr["Most restrictive WTG Status 10M"] is DBNull || string.IsNullOrEmpty((string)dr["Most restrictive WTG Status 10M"]) ? 1000 : Convert.ToInt32(dr["Most restrictive WTG Status 10M"]);
+
                         //errorFlag.Add(numericNullValidation(addUnit.restructive_WTG, "Most restrictive WTG Status 10M", rowNumber));
 
                         previousWTG = addUnit.WTGs;
@@ -7323,7 +7325,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                 //TenMinLog_KBS05_01.04.2023
                 string inputString = fileName;
-                m_ErrorLog.SetInformation(",File Name : " + fileName);
+                //m_ErrorLog.SetInformation(",File Name : " + fileName);
                 char separator = '_';
                 string[] substrings = inputString.Split(separator);
                 string fileNameNew = substrings[1];
