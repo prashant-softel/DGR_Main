@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="input-group row">
-                            <label class="col-sm-4 col-form-label">Date Range : </label>
+                            <label class="col-sm-3 col-form-label">Date Range : </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
@@ -74,7 +74,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label text-left">SPV : </label>
+                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
                                 <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
                                 </select>
                             </div>
@@ -83,32 +83,38 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-2 col-form-label text-left">Site : </label>
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
                                 <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
                                 </select>
                             </div>
                         </div>
                     </div>
-
-
                     <div class="col-md-2">
-                        <div class="form-group">
-                            <div class="row">
-                                <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
-                                <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
-                                </select>-->
-                            </div>
+                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                            <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style="margin-left: -5rem; width: 5rem;">Search</button>
+                            <!--<button type="button" class="btn btn-block btn-danger" onclick="clearRecords()" style="margin-left:-5rem; width: 5rem;">Clear</button>-->
                         </div>
+                        <div class="col-md-1"></div>
                     </div>
+                   
+                    @*<div class="col-md-2">
+                <div class="form-group">
+                    <div class="row">
+                        <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
+                        <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
+        </select>-->
+                    </div>
+                </div>
+            </div>*@
 
                 </div>
-                <div class="row">
-                    <div class="col-md-5"></div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style=" width: 5rem;">Search</button>
-                    </div>
-                    <div class="col-md-5"></div>
-                </div>
+                @* <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style=" width: 5rem;">Search</button>
+            </div>
+            <div class="col-md-5"></div>
+        </div>*@
                 <hr>
                 <div class="row">
                     <!--<div class="col-sm-3"> PR Type :</div>-->
