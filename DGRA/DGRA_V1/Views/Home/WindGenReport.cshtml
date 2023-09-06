@@ -990,9 +990,13 @@
                     //});
 
                     var total_losses = 0;
+                    var total_hourse = 0;
                     for (var i = 0; i < result.length; i++) {
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
+
+                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         //var dateOnly = result[i].date.split("T")[0];
                         //var splitDate = dateOnly.split("-");
@@ -1025,7 +1029,7 @@
                         tbl += '<td  class="text-right">' + result[i].igbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
 
                         //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
@@ -1207,9 +1211,13 @@
                 if (result.length > 0) {
 
                     var total_losses = 0;
+                    var total_hourse = 0;
                     for (var i = 0; i < result.length; i++) {
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
+
+                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
@@ -1235,7 +1243,7 @@
                         tbl += '<td  class="text-right">' + result[i].igbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
 
                         //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
@@ -1446,9 +1454,13 @@
 
                 if (result.length > 0) {
                     var total_losses = 0;
+                    var total_hourse = 0;
                     for (var i = 0; i < result.length; i++) {
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
+
+                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + year + '</td>';
@@ -1475,7 +1487,7 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
 
                         //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
@@ -1666,9 +1678,13 @@
                 if (result.length > 0) {
 
                     var total_losses = 0;
+                    var total_hourse = 0;
                     for (var i = 0; i < result.length; i++) {
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
+
+                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+
                         cnt++;
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
@@ -1696,7 +1712,7 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                       tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
 
                        // tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                        // tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
@@ -1903,9 +1919,13 @@
 
                 if (result.length > 0) {
                     var total_losses = 0;
+                    var total_hourse = 0;
                     for (var i = 0; i < result.length; i++) {
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
+
+                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+
                        // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear  + '</td>';
@@ -1931,7 +1951,7 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
 
                         //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
@@ -2119,11 +2139,14 @@
                 tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
                 var total_losses = 0;
+                var total_hourse = 0;
                 if (result.length > 0) {
 
                     for (var i = 0; i < result.length; i++) {
                         // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].load_Shedding_loss));
+
+                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
 
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
@@ -2149,7 +2172,7 @@
                         tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].total_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
 
                         //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
