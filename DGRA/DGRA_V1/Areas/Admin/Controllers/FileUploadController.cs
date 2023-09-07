@@ -313,7 +313,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                             DataTable dt = null;
 
-                            string _filePath = @"C:\TempFile\docupload.xlsx";
+                             string _filePath = @"C:\TempFile\docupload.xlsx";
                             //string _filePath = @"G:\TempFile\docupload.xlsx";
                             //string _filePath = env.ContentRootPath + @"\TempFile\docupload.xlsx";
                             dataSetMain = GetDataTableFromExcel(_filePath, true, ref fileSheets);
@@ -2454,8 +2454,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.Plant_Section = dr["Plant Section"] is DBNull || string.IsNullOrEmpty((string)dr["Plant Section"]) ? "Nil" : Convert.ToString(dr["Plant Section"]);
                         //errorFlag.Add(stringNullValidation(addUnit.Plant_Section, "Plant Section", rowNumber));
 
-                        addUnit.Controller_KWH_INV = Convert.ToDouble((dr["Controller KWH/INV KWH"] is DBNull) ? 0 : dr["Controller KWH/INV KWH"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.Controller_KWH_INV, "Controller KWH/INV KWH", rowNumber));
+                        addUnit.Controller_KWH_INV = Convert.ToDouble((dr["Controller (kWh)/INV (kWh)"] is DBNull) ? 0 : dr["Controller (kWh)/INV (kWh)"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.Controller_KWH_INV, "Controller (kWh)/INV (kWh)", rowNumber));
 
                         addUnit.Scheduled_Units_kWh = Convert.ToDouble(dr["Scheduled Units (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Scheduled Units (kWh)"]) ? 0 : dr["Scheduled Units (kWh)"]);
                         // errorFlag.Add(negativeNullValidation(addUnit.Scheduled_Units_kWh, "Scheduled Units (kWh)", rowNumber));
@@ -2472,32 +2472,56 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.Net_Billable_kWh = Convert.ToDouble((dr["Net Billable (kWh)"] is DBNull) ? 0 : dr["Net Billable (kWh)"]);
                         errorFlag.Add(negativeNullValidation(addUnit.Net_Billable_kWh, "Net Billable (kWh)", rowNumber));
 
-                        addUnit.Export_kVAh = Convert.ToDouble((dr["Export (kVAh)"] is DBNull) ? 0 : dr["Export (kVAh)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.Export_kVAh, "Export (kVAh)", rowNumber));
+                        //addUnit.Export_kVAh = Convert.ToDouble((dr["Export (kVAh)"] is DBNull) ? 0 : dr["Export (kVAh)"]);
+                        addUnit.Export_kVAh = Convert.ToDouble(dr["Export (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Export (kVAh)"]) ? 0 : dr["Export (kVAh)"]);
+                        //errorFlag.Add(numericNullValidation(addUnit.Export_kVAh, "Export (kVAh)", rowNumber));
 
-                        addUnit.Import_kVAh = Convert.ToDouble((dr["Import (kVAh)"] is DBNull) ? 0 : dr["Import (kVAh)"]);
-                        errorFlag.Add(numericNullValidation(addUnit.Import_kVAh, "Import (kVAh)", rowNumber));
+                        //addUnit.Import_kVAh = Convert.ToDouble((dr["Import (kVAh)"] is DBNull) ? 0 : dr["Import (kVAh)"]);
+                        addUnit.Import_kVAh = Convert.ToDouble(dr["Import (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Import (kVAh)"]) ? 0 : dr["Import (kVAh)"]);
+                        //errorFlag.Add(numericNullValidation(addUnit.Import_kVAh, "Import (kVAh)", rowNumber));
 
-                        addUnit.Export_kVArh_lag = Convert.ToDouble((dr["Export (kVArh lag)"] is DBNull) ? 0 : dr["Export (kVArh lag)"]);
+                        //addUnit.Export_kVArh_lag = Convert.ToDouble((dr["Export (kVArh lag)"] is DBNull) ? 0 : dr["Export (kVArh lag)"]);
+                        addUnit.Export_kVArh_lag = Convert.ToDouble(dr["Export (kVArh lag)"] is DBNull || string.IsNullOrEmpty((string)dr["Export (kVArh lag)"]) ? 0 : dr["Export (kVArh lag)"]);
                         //errorFlag.Add(numericNullValidation(addUnit.Export_kVArh_lag, "Export (kVArh lag)", rowNumber));
 
-                        addUnit.Import_kVArh_lag = Convert.ToDouble((dr["Import (kVArh lag)"] is DBNull) ? 0 : dr["Import (kVArh lag)"]);
+                        //addUnit.Import_kVArh_lag = Convert.ToDouble((dr["Import (kVArh lag)"] is DBNull) ? 0 : dr["Import (kVArh lag)"]);
+                        addUnit.Import_kVArh_lag = Convert.ToDouble(dr["Import (kVArh lag)"] is DBNull || string.IsNullOrEmpty((string)dr["Import (kVArh lag)"]) ? 0 : dr["Import (kVArh lag)"]);
                         //errorFlag.Add(numericNullValidation(addUnit.Import_kVArh_lag, "Import (kVArh lag)", rowNumber));
 
-                        addUnit.Export_kVArh_lead = Convert.ToDouble((dr["Export (kVArh lead)"] is DBNull) ? 0 : dr["Export (kVArh lead)"]);
+                        //addUnit.Export_kVArh_lead = Convert.ToDouble((dr["Export (kVArh lead)"] is DBNull) ? 0 : dr["Export (kVArh lead)"]);
+                        addUnit.Export_kVArh_lead = Convert.ToDouble(dr["Export (kVArh lead)"] is DBNull || string.IsNullOrEmpty((string)dr["Export (kVArh lead)"]) ? 0 : dr["Export (kVArh lead)"]);
                         //errorFlag.Add(numericNullValidation(addUnit.Export_kVArh_lead, "Export (kVArh lead)", rowNumber));
 
-                        addUnit.Import_kVArh_lead = Convert.ToDouble((dr["Import (kVArh lead)"] is DBNull) ? 0 : dr["Import (kVArh lead)"]);
+                        //addUnit.Import_kVArh_lead = Convert.ToDouble((dr["Import (kVArh lead)"] is DBNull) ? 0 : dr["Import (kVArh lead)"]);
+                        addUnit.Import_kVArh_lead = Convert.ToDouble(dr["Import (kVArh lead)"] is DBNull || string.IsNullOrEmpty((string)dr["Import (kVArh lead)"]) ? 0 : dr["Import (kVArh lead)"]);
                         //errorFlag.Add(numericNullValidation(addUnit.Import_kVArh_lead, "Import (kVArh lead)", rowNumber));
 
-                        addUnit.LineLoss = Convert.ToDouble((dr["LineLoss"] is DBNull) ? 0 : dr["LineLoss"]);
-                        errorFlag.Add(numericNullValidation(addUnit.LineLoss, "LineLoss", rowNumber));
+                        addUnit.LineLoss = Convert.ToDouble((dr["Line Loss"] is DBNull) ? 0 : dr["Line Loss"]);
+                        //errorFlag.Add(numericNullValidation(addUnit.LineLoss, "LineLoss", rowNumber));
 
-                        addUnit.Line_Loss_percentage = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss%"]), "Line Loss%");
-                        errorFlag.Add((addUnit.Line_Loss_percentage > 100 || addUnit.Line_Loss_percentage < 0) ? true : false);
+                       // addUnit.Line_Loss_percentage = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss%"]), "Line Loss%");
+                        //errorFlag.Add((addUnit.Line_Loss_percentage > 100 || addUnit.Line_Loss_percentage < 0) ? true : false);
+                        bool isNullOrEmpty = dr["Line Loss%"] is DBNull || string.IsNullOrEmpty((string)dr["Line Loss%"]);
+                        if (isNullOrEmpty)
+                        {
+                           
+                        }
+                        else
+                        {
+                            addUnit.Line_Loss_percentage = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss%"]), "Line Loss%");
+                        }
 
-                        addUnit.RKVH_percentage = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["RKVH%"]), "RKVH%");
-                        errorFlag.Add((addUnit.RKVH_percentage > 100 || addUnit.RKVH_percentage < 0) ? true : false);
+                       //addUnit.RKVH_percentage = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["RKVH%"]), "RKVH%");
+                        //errorFlag.Add((addUnit.RKVH_percentage > 100 || addUnit.RKVH_percentage < 0) ? true : false);
+                        bool isNullOrEmptyRKVH = dr["RKVH%"] is DBNull || string.IsNullOrEmpty((string)dr["RKVH%"]);
+                        if (isNullOrEmptyRKVH)
+                        {
+                           
+                        }
+                        else
+                        {
+                            addUnit.RKVH_percentage =  commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["RKVH%"]), "RKVH%");
+                        }
 
                         errorFlag.Add(uniqueRecordCheckSolarPerMonthYear_JMR(addUnit, addSet, rowNumber));
                         foreach (bool item in errorFlag)
@@ -2595,16 +2619,37 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.jmrYear = string.IsNullOrEmpty((string)dr["JMR Year"]) ? 0 : Convert.ToInt32(dr["JMR Year"]);
                         errorFlag.Add(yearValidation(addUnit.jmrYear, rowNumber));
 
-                        addUnit.lineLossPercent = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss%"]), "Line Loss%");
-                        errorFlag.Add((addUnit.lineLossPercent > 100 || addUnit.lineLossPercent < 0) ? true : false);
 
-                        addUnit.rkvhPercent = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["RKVH%"]), "RKVH%");
-                        errorFlag.Add((addUnit.rkvhPercent > 100 || addUnit.rkvhPercent < 0) ? true : false);
 
-                        addUnit.controllerKwhInv = Convert.ToDouble(dr["Controller KWH/INV KWH"] is DBNull || string.IsNullOrEmpty((string)dr["Controller KWH/INV KWH"]) ? 0 : dr["Controller KWH/INV KWH"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.controllerKwhInv, "Controller KWH/INV KWH", rowNumber));
+                       //addUnit.lineLossPercent = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss%"]), "Line Loss%");
+                       //errorFlag.Add((addUnit.lineLossPercent > 100 || addUnit.lineLossPercent < 0) ? true : false);
+                        bool isNullOrEmpty = dr["Line Loss%"] is DBNull || string.IsNullOrEmpty((string)dr["Line Loss%"]);
+                        if (isNullOrEmpty)
+                        {
 
-                        addUnit.scheduledUnitsKwh = Convert.ToDouble(dr["Scheduled Units  (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Scheduled Units  (kWh)"]) ? 0 : dr["Scheduled Units  (kWh)"]);
+                        }
+                        else
+                        {
+                            addUnit.lineLossPercent = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Line Loss%"]), "Line Loss%");
+                        }
+
+
+                        //addUnit.rkvhPercent = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["RKVH%"]), "RKVH%");
+                        //errorFlag.Add((addUnit.rkvhPercent > 100 || addUnit.rkvhPercent < 0) ? true : false);
+                        bool isNullOrEmptyRKVH = dr["RKVH%"] is DBNull || string.IsNullOrEmpty((string)dr["RKVH%"]);
+                        if (isNullOrEmptyRKVH)
+                        {
+
+                        }
+                        else
+                        {
+                            addUnit.rkvhPercent = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["RKVH%"]), "RKVH%");
+                        }
+
+                        addUnit.controllerKwhInv = Convert.ToDouble(dr["Controller (kWh)/INV (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Controller (kWh)/INV (kWh)"]) ? 0 : dr["Controller (kWh)/INV (kWh)"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.controllerKwhInv, "Controller (kWh)/INV (kWh)", rowNumber));
+
+                        addUnit.scheduledUnitsKwh = Convert.ToDouble(dr["Scheduled Units (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Scheduled Units (kWh)"]) ? 0 : dr["Scheduled Units (kWh)"]);
                         //errorFlag.Add(negativeNullValidation(addUnit.scheduledUnitsKwh, "Scheduled Units  (kWh)", rowNumber));
 
                         addUnit.exportKwh = Convert.ToDouble(dr["Export (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Export (kWh)"]) ? 0 : dr["Export (kWh)"]);
@@ -2619,11 +2664,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.netBillableKwh = Convert.ToDouble(dr["Net Billable (kWh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Billable (kWh)"]) ? 0 : dr["Net Billable (kWh)"]);
                         errorFlag.Add(negativeNullValidation(addUnit.netExportKwh, "Net Billable (kWh)", rowNumber));
 
-                        addUnit.exportKvah = Convert.ToDouble(dr["Export (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Export (kWh)"]) ? 0 : dr["Export (kVAh)"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.exportKvah, "Export (kVAh)", rowNumber));
+                        addUnit.exportKvah = Convert.ToDouble(dr["Export (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Export (kVAh)"]) ? 0 : dr["Export (kVAh)"]);
+                        //errorFlag.Add(negativeNullValidation(addUnit.exportKvah, "Export (kVAh)", rowNumber));
 
-                        addUnit.importKvah = Convert.ToDouble(dr["Import (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Net Export (kWh)"]) ? 0 : dr["Import (kVAh)"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.importKvah, "Import (kVAh)", rowNumber));
+                        addUnit.importKvah = Convert.ToDouble(dr["Import (kVAh)"] is DBNull || string.IsNullOrEmpty((string)dr["Import (kVAh)"]) ? 0 : dr["Import (kVAh)"]);
+                        //errorFlag.Add(negativeNullValidation(addUnit.importKvah, "Import (kVAh)", rowNumber));
 
                         addUnit.exportKvarhLag = Convert.ToDouble(dr["Export (kVArh lag)"] is DBNull || string.IsNullOrEmpty((string)dr["Export (kVArh lag)"]) ? 0 : dr["Export (kVArh lag)"]);
                         //errorFlag.Add(numericNullValidation(addUnit.exportKvarhLag, "Export (kVArh lag)", rowNumber));
@@ -2637,8 +2682,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.importKvarhLead = Convert.ToDouble(dr["Import (kVArh lead)"] is DBNull || string.IsNullOrEmpty((string)dr["Import (kVArh lead)"]) ? 0 : dr["Import (kVArh lead)"]);
                         //errorFlag.Add(numericNullValidation(addUnit.importKvarhLead, "Import (kVArh lead)", rowNumber));
 
-                        addUnit.lineLoss = Convert.ToDouble(dr["LineLoss"] is DBNull || string.IsNullOrEmpty((string)dr["LineLoss"]) ? 0 : dr["LineLoss"]);
-                        errorFlag.Add(numericNullValidation(addUnit.lineLoss, "LineLoss", rowNumber));
+                        addUnit.lineLoss = Convert.ToDouble(dr["Line Loss"] is DBNull || string.IsNullOrEmpty((string)dr["Line Loss"]) ? 0 : dr["Line Loss"]);
+                        //errorFlag.Add(numericNullValidation(addUnit.lineLoss, "Line Loss", rowNumber));
                         foreach (bool item in errorFlag)
                         {
                             if (item)
