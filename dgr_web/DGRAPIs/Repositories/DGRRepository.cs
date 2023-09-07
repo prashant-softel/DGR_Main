@@ -14242,15 +14242,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             else
             {
-                if (lineloss_percentage > 0)
-                {
+                //if (lineloss_percentage > 0)
+                //{
                     double lineloss = lineloss_percentage / 100;
                     double temp = (lineloss * gen_actual_active_power) * -1; //6;
                     lineloss_final = temp / 1000000;
                     //string linelossTemp = lineloss_final.ToString("0.##############");
                     //linelossTemp = linelossTemp.TrimEnd('0').TrimEnd('.');
                     //lineloss_final = Convert.ToDouble(linelossTemp);
-                }
+                //}
                 _tmlDataList.Clear();
             }
 
