@@ -51,6 +51,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         int isSuzlon = 0;
         int isRegen = 0;
         int TMLType = 0;
+        int isMultiSheet = 0;
         string[] importData = new string[2];
         string generationDate = "";
         bool isGenValidationSuccess = false;
@@ -359,9 +360,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 }
                             }
 
-                            //Status Codes:
-                            //200 = Success ; 400 = Failure(BadRequest)
-                            FileSheetType.FileImportType fileImportType = FileSheetType.FileImportType.imporFileType_Invalid;
+                            if ((fileSheets[0].ToString().StartsWith("GKK") || fileSheets[0].ToString().StartsWith("GA") || fileSheets[0].ToString().StartsWith("GS") || fileSheets[0].ToString().StartsWith("GG") || fileSheets[0].ToString().StartsWith("BD") || fileSheets[0].ToString().StartsWith("NEW") || fileSheets[0].ToString().StartsWith("NL") || fileSheets[0].ToString().StartsWith("GK") || fileSheets[0].ToString().StartsWith("GBR") || fileSheets[0].ToString().StartsWith("G114")) && fileSheets.Count > 1)
+                            {
+                                isMultiSheet = 1;
+                            }
+
+                                //Status Codes:
+                                //200 = Success ; 400 = Failure(BadRequest)
+                                FileSheetType.FileImportType fileImportType = FileSheetType.FileImportType.imporFileType_Invalid;
                             foreach (var excelSheet in fileSheets)
                             {
                                 //InformationLog("Inside foreach loop line number : 238 : Excelsheet name :" +excelSheet);
@@ -938,7 +944,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         else if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Reviewing Wind TMR:");
-                                            statusCode = await InsertWindTMR(status, ds, tabName, isMultiFiles);
+                                            statusCode = await InsertWindTMR(status, ds, tabName, isMultiFiles, isMultiSheet);
                                         }
                                     }
                                 }
@@ -1211,6 +1217,61 @@ namespace DGRA_V1.Areas.admin.Controllers
                             else
                             {
                                 m_ErrorLog.SetError(",Import Operation Failed:");
+                            }
+
+                            if (isMultiSheet == 1 && TMLType == 1)
+                            {
+                                try
+                                {
+                                    var json = JsonConvert.SerializeObject(TMLDataSet);
+                                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                                    //***********Here sending dynamic type is remaining, as we have to test the performance. did for Inox multiple imports.*************
+                                    //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=" + TMLType;
+                                    using (var client = new HttpClient())
+                                    {
+                                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                                        var response = await client.PostAsync(url, data);
+                                        string returnResponse = response.Content.ReadAsStringAsync().Result;
+                                        if (response.IsSuccessStatusCode)
+                                        {
+                                            if (returnResponse == "5")
+                                            {
+                                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                            }
+                                            else
+                                            {
+                                                m_ErrorLog.SetError(",Error in Calculation.");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+
+                                            //for solar 0, wind 1, other 2;
+                                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                            if (deleteStatus == 1)
+                                            {
+                                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                            }
+                                            else if (deleteStatus == 0)
+                                            {
+                                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                            }
+                                            else
+                                            {
+                                                m_ErrorLog.SetInformation(", File not uploaded");
+                                            }
+                                        }
+                                    }
+                                    m_ErrorLog.SetInformation("Information : Calculation and storing of data successful. ");
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = "Exception while sending data to api of TML for multiple files, due to : " + e.ToString();
+                                    m_ErrorLog.SetError("Exception while sending data to api of TML for multiple files, due to : " + e.Message);
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -6128,7 +6189,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         }
 
         //InsertWindTMR
-        private async Task<int> InsertWindTMR(string status, DataSet ds, string tabName, bool isMultiFiles)
+        private async Task<int> InsertWindTMR(string status, DataSet ds, string tabName, bool isMultiFiles, int isMultiSheet)
         {
             List<bool> errorFlag = new List<bool>();
             long rowNumber = 1;
@@ -6348,7 +6409,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
-                    if (isMultiFiles)
+                    if (isMultiFiles || isMultiSheet == 1)
                     {
                         TMLDataSet.AddRange(addSet);
                         return responseCode = (int)200;
@@ -6495,6 +6556,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         break;
                                 }
                             }
+                            //string msg1 = "fileDateFormat = " + fileDateFormat + ", convertedDate = " + convertedDate;
+                            //LogError(user_id, 2, 4, "InsertWindTMLData", msg1);
                             addUnit.timestamp = convertedDate;
                             errorFlag.Add(stringNullValidation(addUnit.timestamp, "Time Stamp", rowNumber));
                         }

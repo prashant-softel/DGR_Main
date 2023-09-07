@@ -3200,7 +3200,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 string msg = "Exception while retrieving data for UI display, due to : " + e.ToString();
             }
             List<WindPerformanceReports> tmlData = new List<WindPerformanceReports>();
-            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw)/6 as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE " + tmlFilter + " GROUP BY t1.site_id";
+            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE " + tmlFilter + " GROUP BY t1.site_id";
             try
             {
                 tmlData = await Context.GetData<WindPerformanceReports>(tmlQry).ConfigureAwait(false);
@@ -3371,7 +3371,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             List<WindPerformanceReports> tmlData = new List<WindPerformanceReports>();
             //SELECT t1.site, t1.site_id, t1.WTGs, t2.spv FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= "2023-04-06" AND DATE(t1.Time_stamp) <= "2023-04-06" GROUP BY t2.spv;
-            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw)/6 as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "' GROUP BY t2.spv";
+            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "' GROUP BY t2.spv";
             try
             {
                 tmlData = await Context.GetData<WindPerformanceReports>(tmlQry).ConfigureAwait(false);
