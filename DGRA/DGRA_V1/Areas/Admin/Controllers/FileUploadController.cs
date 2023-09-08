@@ -76,6 +76,8 @@ namespace DGRA_V1.Areas.admin.Controllers
         List<int> solarSiteUserAccess = new List<int>();
         List<string> fileSheets = new List<string>();
         List<string> inverterList = new List<string>();
+        List<string> icrList = new List<string>();
+        List<string> invList = new List<string>();
         List<string> IGBD = new List<string>();
         List<string> SMBList = new List<string>();
         List<string> StringsList = new List<string>();
@@ -1986,6 +1988,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                         }
 
                         addUnit.site = string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
+                        if(rowNumber == 2)
+                        {
+                            masterIcrInvList(addUnit.site);
+                            masterInverterList(addUnit.site);
+                        }
                         addUnit.site_id = string.IsNullOrEmpty((string)dr["Site"]) ? 0 : Convert.ToInt32(siteNameId[addUnit.site]);
                         errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
                         objImportBatch.importSiteId = addUnit.site_id;
@@ -2002,8 +2009,16 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         //can be nil:
                         addUnit.icr = string.IsNullOrEmpty((string)dr["ICR"]) ? "Nil" : Convert.ToString(dr["ICR"]);
+                        if (addUnit.icr != "Nil")
+                        {
+                            errorFlag.Add(solarICRValidation((string)dr["ICR"], "ICR", rowNumber));
+                        }
                         //can be nil:
                         addUnit.inv = string.IsNullOrEmpty((string)dr["INV"]) ? "Nil" : Convert.ToString(dr["INV"]);
+                        if (addUnit.inv != "Nil")
+                        {
+                            errorFlag.Add(solarINVValidation((string)dr["INV"], "INV", rowNumber));
+                        }
                         //can be nil:
                         addUnit.smb = string.IsNullOrEmpty((string)dr["SMB"]) ? "Nil" : Convert.ToString(dr["SMB"]);
                         if (addUnit.smb != "Nil")
@@ -4448,6 +4463,32 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             //InformationLog("Inside masterInverterList function : Data Received : Inverter List : " + inverterList + "\n IGBD list " + IGBD + "\n SMBList "+SMBList + "\n StringList "+ StringsList);
         }
+
+        public void masterIcrInvList(string siteName)
+        {
+            DataTable dTable = new DataTable();
+            //InformationLog("Inside masterInverterList function : Before getSolarLocationMaster API call :" + DateTime.Now);
+            var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarLocationMasterForFileUpload?siteName=" + siteName;
+            var result = string.Empty;
+            WebRequest request = WebRequest.Create(url);
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                Stream receiveStream = response.GetResponseStream();
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    result = readStream.ReadToEnd();
+                }
+                dTable = JsonConvert.DeserializeObject<DataTable>(result);
+            }
+            //InformationLog("Inside masterInverterList function : After getSolarLocationMaster API call :" + DateTime.Now);
+            icrList.Clear();
+            invList.Clear();
+            foreach (DataRow dr in dTable.Rows)
+            {
+                icrList.Add((string)dr["icr"]);
+                invList.Add((string)dr["inv"]);
+            }
+        }
         public void masterHashtable_SiteIdToSiteName()
         {
             //fills a hashtable with as key = siteId and value = siteNameId from table : Wind Site Master
@@ -5201,6 +5242,26 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 retValue = true;
                 m_ErrorLog.SetError(",File row<" + rowNo + "> column<" + columnName + ">: Invalid IGBD value <" + IGBD_value + "> not found in master records,");
+            }
+            return retValue;
+        }
+        public bool solarICRValidation(string ICR_value, string columnName, long rowNo)
+        {
+            bool retValue = false;
+            if (string.IsNullOrEmpty(ICR_value) || !(icrList.Contains(ICR_value)))
+            {
+                retValue = true;
+                m_ErrorLog.SetError(",File row<" + rowNo + "> column<" + columnName + ">: Invalid ICR value <" + ICR_value + "> not found in master records,");
+            }
+            return retValue;
+        }
+        public bool solarINVValidation(string INV_value, string columnName, long rowNo)
+        {
+            bool retValue = false;
+            if (string.IsNullOrEmpty(INV_value) || !(invList.Contains(INV_value)))
+            {
+                retValue = true;
+                m_ErrorLog.SetError(",File row<" + rowNo + "> column<" + columnName + ">: Invalid INV value <" + INV_value + "> not found in master records,");
             }
             return retValue;
         }
