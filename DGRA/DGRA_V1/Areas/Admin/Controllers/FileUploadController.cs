@@ -1990,6 +1990,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.site = string.IsNullOrEmpty((string)dr["Site"]) ? "Nil" : Convert.ToString(dr["Site"]);
                         if(rowNumber == 2)
                         {
+                            errorFlag.Add(importDateValidation(2, addUnit.site_id, Convert.ToDateTime(addUnit.date)));
                             masterIcrInvList(addUnit.site);
                             masterInverterList(addUnit.site);
                         }
@@ -2284,6 +2285,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                             continue;
                         }
                         addUnit.date_time = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time stamp"]).ToString("yyyy-MM-dd HH:mm:ss");
+                        string dateFull = Convert.ToDateTime(addUnit.date_time).ToString("yyyy-MM-dd");
+                        if (rowNumber == 2)
+                        {
+                            errorFlag.Add(importDateValidation(2, addUnit.site_id, Convert.ToDateTime(dateFull)));
+                        }
                         errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
                         errorFlag.Add(dateNullValidation(addUnit.date_time, "Time stamp", rowNumber));
                         string temp = addUnit.date_time;
@@ -2400,6 +2406,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                             continue;
                         }
                         addUnit.date_time = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Time stamp"]).ToString("yyyy-MM-dd HH:mm:ss");
+                        string dateFull = Convert.ToDateTime(addUnit.date_time).ToString("yyyy-MM-dd");
+                        if (rowNumber == 2)
+                        {
+                            errorFlag.Add(importDateValidation(2, addUnit.site_id, Convert.ToDateTime(dateFull)));
+                        }
                         errorFlag.Add(stringNullValidation(addUnit.date_time, "Time stamp", rowNumber));
                         errorFlag.Add(dateNullValidation(addUnit.date_time, "Time stamp", rowNumber));
                         string temp = addUnit.date_time;
@@ -4968,54 +4979,62 @@ namespace DGRA_V1.Areas.admin.Controllers
             //for DayOfWeek function 
             //if it's not true that file-date is of previous day and today is from Tuesday-Friday
             //&& dayOfWeek > 1 && dayOfWeek < 6
-            if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
+            if (dayDiff.Days < 0)
             {
-                if (siteUserRole == "Admin")
-                {
-                    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
-                }
-                else
-                {
-                    // file date is incorrect
-                    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                    //retValue = true;
-                }
-
+                m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
+                retValue = true;
             }
-            if (retValue == false)
+            else
             {
-                //if date is within 5 days
-                //Check if the data is already import and/or Approved
-
-                int IBStatus = 0;
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetBatchStatus?site_id=" + siteID + "&import_type=" + importType + "&import_date=" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd");
-
-                string result = "";
-                // string line = "";
-                WebRequest request = WebRequest.Create(url);
-                using (var response = (HttpWebResponse)request.GetResponse())
+                if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
                 {
-                    Stream receiveStream = response.GetResponseStream();
-                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    if (siteUserRole == "Admin")
                     {
-                        // result = readStream.ReadToEnd();
-                        result = readStream.ReadToEnd().Trim();
+                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
                     }
-                    //ImportBatchStatus obj = new ImportBatchStatus();
-                    //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
-                    //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
-
-                    IBStatus = Convert.ToInt32(result);
-                    if (IBStatus == 1)
+                    else
                     {
-                        if (siteUserRole == "Admin")
+                        // file date is incorrect
+                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+                        //retValue = true;
+                    }
+
+                }
+                if (retValue == false)
+                {
+                    //if date is within 5 days
+                    //Check if the data is already import and/or Approved
+
+                    int IBStatus = 0;
+                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetBatchStatus?site_id=" + siteID + "&import_type=" + importType + "&import_date=" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd");
+
+                    string result = "";
+                    // string line = "";
+                    WebRequest request = WebRequest.Create(url);
+                    using (var response = (HttpWebResponse)request.GetResponse())
+                    {
+                        Stream receiveStream = response.GetResponseStream();
+                        using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                         {
-                            m_ErrorLog.SetInformation(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved but the admin user can reimport it.");
+                            // result = readStream.ReadToEnd();
+                            result = readStream.ReadToEnd().Trim();
                         }
-                        else
+                        //ImportBatchStatus obj = new ImportBatchStatus();
+                        //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
+                        //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
+
+                        IBStatus = Convert.ToInt32(result);
+                        if (IBStatus == 1)
                         {
-                            m_ErrorLog.SetError(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved. The site user cannot reimport it.");
-                            retValue = true;
+                            if (siteUserRole == "Admin")
+                            {
+                                m_ErrorLog.SetInformation(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved but the admin user can reimport it.");
+                            }
+                            else
+                            {
+                                m_ErrorLog.SetError(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved. The site user cannot reimport it.");
+                                retValue = true;
+                            }
                         }
                     }
                 }
@@ -6258,7 +6277,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             int responseCode = 400;
             string fileDateFormat = "";
             TMLType = 1;
-
+            bool isDateCorrect= false;
             if (ds.Tables.Count > 0)
             {
                 List<InsertWindTMLData> addSet = new List<InsertWindTMLData>();
@@ -6272,12 +6291,21 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         bool skipRow = false;
                         rowNumber++;
-
+                        if(rowNumber > 2)
+                        {
+                            if (!(isDateCorrect))
+                            {
+                                errorCount++;
+                                continue;
+                            }
+                        }
                         addUnit.onm_wtg = tabName;
                         addUnit.WTGs = onm2equipmentName.ContainsKey(tabName) ? onm2equipmentName[tabName].ToString() : "";
                         if (addUnit.WTGs == "")
                         {
-                            addUnit.WTGs = equipmentId.ContainsKey(tabName) ? tabName : "";
+                            //addUnit.WTGs = equipmentId.ContainsKey(tabName) ? tabName : "";
+                            m_ErrorLog.SetError(", ONM WTG not found as per master record.");
+                            errorCount++;
                         }
                         //error handling
                         //addUnit.wtg_id = equipmentId.ContainsKey(addUnit.wtg) ? Convert.ToInt32(equipmentId[addUnit.wtg]) : 0;
@@ -6376,6 +6404,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //string temp_date = temp.Substring(0, 10);
                         if (rowNumber == 2)
                         {
+                            isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(convertedDate));
+                            if (!(isDateCorrect))
+                            {
+                                errorCount++;
+                                continue;
+                            }
                             previousTime = Convert.ToDateTime(convertedDate).ToString("HH:mm:ss");
                             dataDate = addUnit.date;
                         }
@@ -6540,6 +6574,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             int errorCount = 0;
             TMLType = 1;
             int responseCode = 400;
+            bool isDateCorrect = false;
 
             if (ds.Tables.Count > 0)
             {
@@ -6557,6 +6592,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                         bool skipRow = false;
                         rowNumber++;
                         addUnit.file_name = fileName;
+                        if(rowNumber > 2)
+                        {
+                            if (!(isDateCorrect))
+                            {
+                                errorCount++;
+                                continue;
+                            }
+                        }
                         addUnit.onm_wtg = dr["WTGs"] is DBNull || string.IsNullOrEmpty((string)dr["WTGs"]) ? "Nil" : (string)(dr["WTGs"]);
                         if (addUnit.onm_wtg == "" || addUnit.onm_wtg == null)
                         {
@@ -6567,7 +6610,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.WTGs = onm2equipmentName.ContainsKey(addUnit.onm_wtg) ? onm2equipmentName[addUnit.onm_wtg].ToString() : "";
                         if (addUnit.WTGs == "" || addUnit.WTGs is DBNull || string.IsNullOrEmpty(addUnit.WTGs))
                         {
-                            addUnit.WTGs = addUnit.onm_wtg;
+                            //addUnit.WTGs = addUnit.onm_wtg;
+                            m_ErrorLog.SetError(", ONM WTG not found as per master record.");
+                            errorCount++;
                         }
                         if (addUnit.WTGs != " ")
                         {
@@ -6634,6 +6679,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //string temp_date = temp.Substring(0, 10);
                         if (rowNumber == 2)
                         {
+                            isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(convertedDate));
+                            if (!(isDateCorrect))
+                            {
+                                errorCount++;
+                                continue;
+                            }
                             previousTime = Convert.ToDateTime(convertedDate).ToString("HH:mm:ss");
                             dataDate = addUnit.date;
                         }
@@ -6898,6 +6949,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             int errorCount = 0;
             TMLType = 3;
             int responseCode = 400;
+            bool isDateCorrect = false;
 
             if (ds.Tables.Count > 0)
             {
@@ -6920,6 +6972,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 if (wtgName == "")
                 {
                     wtgName = fileNameNew;
+                    m_ErrorLog.SetError(", ONM WTG not found as per master record.");
+                    errorCount++;
                 }
                 int wtgId = equipmentId.ContainsKey(wtgName) ? Convert.ToInt32(equipmentId[wtgName]) : 0;
                 string siteName = SiteByWtg.ContainsKey(wtgName) ? SiteByWtg[wtgName].ToString() : "";
@@ -6933,6 +6987,16 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             bool skipRow = false;
                             rowNumber++;
+
+                            if (rowNumber > 2)
+                            {
+                                if (!(isDateCorrect))
+                                {
+                                    errorCount++;
+                                    continue;
+                                }
+                            }
+
                             addUnit.file_name = fileName;
                             addUnit.onm_wtg = fileNameNew;
                             addUnit.WTGs = wtgName;
@@ -6959,6 +7023,16 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 m_ErrorLog.SetError(", File row<" + rowNumber + "> '" + timeStampTemp + "' is not recognised as valid date time, it should be 'yyyy-MM-dd HH:mm:ss'");
                                 errorCount++;
                                 continue;
+                            }
+
+                            if(rowNumber == 2)
+                            {
+                                isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(addUnit.timestamp));
+                                if (!(isDateCorrect))
+                                {
+                                    errorCount++;
+                                    continue;
+                                }
                             }
 
                             LogTime = Convert.ToDateTime(addUnit.timestamp).ToString("yyyy-MM-dd");
@@ -7150,6 +7224,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             int errorCount = 0;
             TMLType = 4;
             int responseCode = 400;
+            bool isDateCorrect = false;
 
             if (ds.Tables.Count > 0)
             {
@@ -7171,7 +7246,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                 string wtgName = onm2equipmentName.ContainsKey(fileNameNew) ? onm2equipmentName[fileNameNew].ToString() : "";
                 if (wtgName == "")
                 {
-                    wtgName = fileNameNew;
+                    //wtgName = fileNameNew;
+                    m_ErrorLog.SetError(", ONM WTG not found as per master record.");
+                    errorCount++;
                 }
 
                 int wtgId = equipmentId.ContainsKey(wtgName) ? Convert.ToInt32(equipmentId[wtgName]) : 0;
@@ -7194,6 +7271,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                         bool skipRow = false;
                         rowNumber++;
 
+                        if (rowNumber > 2)
+                        {
+                            if (!(isDateCorrect))
+                            {
+                                errorCount++;
+                                continue;
+                            }
+                        }
                         addUnit.file_name = fileName;
 
                         addUnit.onm_wtg = fileNameNew;
@@ -7233,6 +7318,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                         string timeStamp = result.ToString("yyyy-MM-dd HH:mm:ss");
 
                         addUnit.timestamp = timeStamp;
+                        if(rowNumber == 2)
+                        {
+                            isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(addUnit.timestamp));
+                            if (!(isDateCorrect))
+                            {
+                                errorCount++;
+                                continue;
+                            }
+                        }
 
                         LogTime = Convert.ToDateTime(addUnit.timestamp).ToString("yyyy-MM-dd");
 
@@ -7467,6 +7561,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             int errorCount = 0;
             TMLType = 2;
             int responseCode = 400;
+            bool isDateCorrect = false;
 
             if (ds.Tables.Count > 0)
             {
@@ -7502,7 +7597,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                 string wtgName = onm2equipmentName.ContainsKey(fileNameNew) ? onm2equipmentName[fileNameNew].ToString() : "";
                 if (wtgName == "")
                 {
-                    wtgName = fileNameNew;
+                    //wtgName = fileNameNew;
+                    m_ErrorLog.SetError(", ONM WTG not found as per master record.");
+                    errorCount++;
                 }
                 int wtgId = equipmentId.ContainsKey(wtgName) ? Convert.ToInt32(equipmentId[wtgName]) : 0;
                 if (wtgId == 0)
@@ -7522,6 +7619,16 @@ namespace DGRA_V1.Areas.admin.Controllers
                     {
                         bool skipRow = false;
                         rowNumber++;
+
+                        if(rowNumber > 2)
+                        {
+                            if (!(isDateCorrect))
+                            {
+                                errorCount++;
+                                continue;
+                            }
+                        }
+
                         //addUnit.timestamp = dc["Variable"];
                         if (columnCount == 0)
                         {
@@ -7576,6 +7683,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                             if (finalResult == 1)
                             {
+                                if (columnCount > 1)
+                                {
+                                    if (!(isDateCorrect))
+                                    {
+                                        errorCount++;
+                                        continue;
+                                    }
+                                }
                                 addUnit.file_name = fileName;
                                 addUnit.onm_wtg = fileNameNew;
                                 addUnit.WTGs = wtgName;
@@ -7615,6 +7730,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     {
                                         m_ErrorLog.SetError(", Log Time (Local) value is empty.");
                                         errorCount++;
+                                    }
+                                    isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(ds.Tables[0].Rows[RowNo_timestamp][columnCount]));
+                                    if (!(isDateCorrect))
+                                    {
+                                        errorCount++;
+                                        continue;
                                     }
                                     LogTime = isdateEmpty ? "Nil" : Convert.ToDateTime(ds.Tables[0].Rows[RowNo_timestamp][columnCount]).ToString("yyyy-MM-dd");
                                 }
@@ -8800,6 +8921,58 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 return "Invalid date format";
             }
+        }
+
+        public bool importTMLDateValidation(int importType, int siteID, DateTime importDate)
+        {
+            bool retValue = false;
+            DateTime dtToday = DateTime.Now;
+            DateTime dtImportDate = Convert.ToDateTime(importDate);
+            TimeSpan dayDiff = dtToday - dtImportDate;
+            TimeSpan dayDiff2 = dtImportDate - dtToday;
+            int dayOfWeek = (int)dtToday.DayOfWeek;
+
+
+            //for DayOfWeek function 
+            //if it's not true that file-date is of previous day and today is from Tuesday-Friday
+            //&& dayOfWeek > 1 && dayOfWeek < 6
+            if(dayDiff.Days >= 0)
+            {
+                if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
+                {
+                    if (siteUserRole == "Admin")
+                    {
+                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
+                        retValue = true;
+                    }
+                    else
+                    {
+                        // file date is incorrect
+                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+                        retValue = false;
+                        //retValue = true;
+                    }
+
+                }
+                else
+                {
+                    retValue = true;
+                }
+            }else if (dayDiff.Days < 0)
+            {
+                m_ErrorLog.SetError(",The import date <" + importDate + ">  is future date so cannot import it.");
+                retValue = false;
+            }
+            //if (dayDiff2.Days > 0)
+            //{
+            //    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is future date so cannot import it.");
+            //    retValue = false;
+            //}
+            if (retValue == false)
+            {
+                //if date is within 5 days
+            }
+            return retValue;
         }
     }
 }
