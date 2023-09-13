@@ -191,7 +191,7 @@ namespace DGRA_V1.Controllers
                         if (string.IsNullOrEmpty(line)){
                                 
                                 login_status = false;
-                            return Content("Creadintial are Incorrect", "application/json");
+                            return Content("Credentials are Incorrect", "application/json");
                         }
                         else{
                                 login_status = true;
