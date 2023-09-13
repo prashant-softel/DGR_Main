@@ -7579,6 +7579,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                 int RowNo_plcMin = 0;
                 int RowNo_pc_validity = 0;
                 int RowNo_windspeed = 0;
+                bool lastDiscard = false;
+                int subtractLast = 0;
                 int finalResult = 0;
                 string LogTime = "";
                 string finalToTime = "";
@@ -7620,7 +7622,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         bool skipRow = false;
                         rowNumber++;
 
-                        if(rowNumber > 2)
+                        if(columnCount > 1)
                         {
                             if (!(isDateCorrect))
                             {
@@ -7636,6 +7638,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                             {
                                 try
                                 {
+                                    if (row == 1)
+                                    {
+                                        if(ds.Tables[0].Columns[ColumnCount-1].ToString() == "Source name")
+                                        {
+                                            lastDiscard = true;
+                                        }
+                                    }
                                     if (dc.ColumnName.ToString() == "Variable")
                                     {
                                         RowNo_variable = row; //0
@@ -7675,7 +7684,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                             //string cellValue = ds.Tables[0].Rows[row][columnCount].ToString();
                         }
-                        if (columnCount > 0 && columnCount < ColumnCount - 1)
+                        if (lastDiscard)
+                        {
+                            subtractLast = 1;
+                        }
+                        else
+                        {
+                            subtractLast = 0;
+                        }
+                        if (columnCount > 0 && columnCount < ColumnCount - subtractLast)
                         {
                             if (columnCount == 1)
                             {
