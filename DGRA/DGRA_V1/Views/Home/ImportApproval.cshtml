@@ -921,9 +921,9 @@
 
                         var formattedDate = moment(result1[j].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl1 += '<tr>';
-                        tbl1 += '<td style="font-size: 12px;">' + formattedDate + '</td>';
-                        tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].site_name + '</td>';
-                        tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].wtg + '</td>';
+                        tbl1 += '<td style="font-size: 12px; text-wrap: nowrap;">' + formattedDate + '</td>';
+                        tbl1 += '<td style="font-size: 12px;text-align: center; text-wrap: nowrap;">' + result1[j].site_name + '</td>';
+                        tbl1 += '<td style="font-size: 12px;text-align: center; text-wrap: nowrap;">' + result1[j].wtg + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].wind_speed.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].kwh.toFixed(2) + '</td>';
                         tbl1 += '<td style="font-size: 12px;text-align: center;">' + result1[j].ma_actual.toFixed(2) + '</td>';

@@ -40,6 +40,8 @@ namespace DGRAPIs.Models
         public double ma_contractual { get; set; }
         public double iga { get; set; }
         public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
         public double capacity_kw { get; set; }
         public double kwh_afterloss { get; set; }
         public double kwh_afterlineloss { get; set; }
