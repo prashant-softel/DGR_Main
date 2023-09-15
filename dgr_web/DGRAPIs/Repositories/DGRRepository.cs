@@ -7056,9 +7056,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             string qry1 = " insert into daily_gen_summary(state, site,site_id, date, wtg, wind_speed, kwh, kwh_afterlineloss, feeder, ma_contractual, ma_actual, iga, ega, ega_b, ega_c, plf,plf_afterlineloss,capacity_kw, grid_hrs, lull_hrs, production_hrs, unschedule_hrs, unschedule_num, schedule_hrs, schedule_num, others, others_num, igbdh, igbdh_num, egbdh, egbdh_num, load_shedding, load_shedding_num, approve_status,import_batch_id) values";
             string values = "";
+            int counter = 0;
+            string site = "";
+            int site_id = 0;
+            string date = "";
 
             foreach (var unit in _importedData)
             {
+                if(counter == 0)
+                {
+                    site = unit.site;
+                    site_id = unit.site_id;
+                    date = unit.date.ToString("yyyy-MM-dd");
+                }
                 values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "'," + unit.ega_b + ", " + unit.ega_c + ",'" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','"+ unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','"+ unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id+"'),";
 
                 string msg = "Insert into query " + qry1 + " " + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "'," + unit.ega_b + ", " + unit.ega_c + ",'" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','" + unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','" + unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id ;
@@ -7129,6 +7139,38 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     string msg = "Exception while updating uploading_file_breakdown " + e.ToString();
                     approval_ErrorLog(msg);
                     return 0;
+                }
+
+            }
+            if(finalResult == 5)
+            {
+                string checkTMLDataQry = "SELECT * FROM uploading_file_tmr_data WHERE site_id IN(" + site_id + ") AND Date(Time_stamp) = '" + date +"' GROUP BY Date(Time_stamp), site_id;" ;
+                List<InsertWindTMLData> _DataTML = new List<InsertWindTMLData>();
+                try
+                {
+                    _DataTML = await Context.GetData<InsertWindTMLData>(checkTMLDataQry).ConfigureAwait(false);
+                    finalResult = 6;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while fetching record from uploading_file_tmr_data table, due to : " + e.ToString();
+                    approval_ErrorLog(msg);
+                    return 0;
+                }
+                if(finalResult == 6)
+                {
+                    if(_DataTML.Count >= 0 && _DataTML[0].site_id > 0)
+                    {
+                        int result = await UpdateManualBdForTMLData(date, site_id, 9);
+                        if (result == 2)
+                        {
+                            finalResult = 7;
+                        }
+                        else
+                        {
+                            finalResult = 0;
+                        }
+                    }
                 }
 
             }
@@ -11556,7 +11598,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 if (insertMainWindSpeedtmdRes == 8)
                 {
                     finalResult = 3;
-                    UpdateManualBdForTMLDataRes = await UpdateManualBdForTMLData(set, date, site_id, type);
+                    UpdateManualBdForTMLDataRes = await UpdateManualBdForTMLData(date, site_id, type);
                 }
                 if (UpdateManualBdForTMLDataRes == 2)
                 {
@@ -11935,9 +11977,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //Get Manual Breakdown from uploading_file_breakdown table for TML_Data_Calculations.
-        internal async Task<int> UpdateManualBdForTMLData(List<InsertWindTMLData> set, string date, int site_id, int type)
+        internal async Task<int> UpdateManualBdForTMLData(string date, int site_id, int type)
         {
-            //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon; type = 4 : Regen
+            //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon; type = 4 : Regen; type = 9 : during import approval
             //Some changes for INOX sucj as update all_bd as well with manual_bd column.
             int finalRes = 0;
             string functionName = "UpdateManualBdForTMLData";
@@ -12043,6 +12085,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND Date(Time_stamp) = '" + original_date + "' AND site_id IN("+ site_id +") ;";
                     }
                     else if (type == 2 || type == 3)
+                    {
+                        addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND Date(Time_stamp) = '" + original_date + "' AND site_id IN(" + site_id + ") ;";
+                    }
+                    else if (type == 9)
                     {
                         addManualBdQry += "UPDATE uploading_file_tmr_data SET manual_bd = '" + unit.bd_type + "', all_bd = '" + unit.bd_type + "' WHERE WTGs = '" + unit.wtg + "' AND from_time >= '" + finalFrom + "' AND to_time <= '" + finalTo + "' AND Date(Time_stamp) = '" + original_date + "' AND site_id IN(" + site_id + ") ;";
                     }
