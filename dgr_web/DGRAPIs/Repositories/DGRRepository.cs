@@ -4268,6 +4268,14 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
         {
             string delqry = "delete from uploading_file_generation_solar  where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
             await Context.ExecuteNonQry<int>(delqry).ConfigureAwait(false);
+            // breakdown data delete
+            dynamic date = set[0].date;
+            int id = set[0].site_id;
+            int temp = await DeleteBreakdownDataFromUploading(date, id);
+
+            // Trackerloss
+            string deleteQry1 = "DELETE FROM uploading_file_tracker_loss WHERE site_id = " + set[0].site_id + " and date = '" + set[0].date + "';";
+            await Context.ExecuteNonQry<int>(deleteQry1).ConfigureAwait(false);
 
             string qry = " insert into uploading_file_generation_solar (date, site, site_id, inverter, inv_act, plant_act, pi, import_batch_id) values";
             string values = "";
@@ -4344,7 +4352,9 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
         internal async Task<int> InsertWindUploadingFileGeneration(List<WindUploadingFileGeneration> set, int batchId)
         {
             int finalResult = 0;
+            int finalResultbreakdown = 0;
             int deleteRes = 0;
+            int deletebreakRes = 0;
             int insertRes = 0;
             if(set.Count > 0)
             {
@@ -4362,7 +4372,20 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     await LogError(0, 2, 5, functionName, msg, backend);
                     return finalResult;
                 }
-                if(finalResult == 1)
+                string delqrybreakdown = "delete from uploading_file_breakdown where date = '" + set[0].date + "' and site_id='" + set[0].site_id + "';";
+                try
+                {
+                    deletebreakRes = await Context.ExecuteNonQry<int>(delqrybreakdown).ConfigureAwait(false);
+                    finalResultbreakdown = 1;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting records from uploading_file_breakdown, due to : " + e.ToString();
+                    //API_ErrorLog(msg);
+                    await LogError(0, 2, 5, functionName, msg, backend);
+                    return finalResultbreakdown;
+                }
+                if (finalResult == 1)
                 {
                     string qry = " insert into uploading_file_generation (site_name, site_id, date, wtg, wtg_id, wind_speed, grid_hrs, operating_hrs, lull_hrs, kwh, import_batch_id) values";
                     string values = "";
