@@ -7153,6 +7153,112 @@ namespace DGRA_V1.Areas.admin.Controllers
                     rowcount++;
                     loopCount++;
                 }
+                int sampleCount = addSet.Count();
+                if (sampleCount != 144)
+                {
+                    string lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
+                    string lastTo = Convert.ToString(addSet[sampleCount - 1].to_time);
+                    if (lastFrom != "23:50:00")
+                    {
+                        //string nextTime = ds.Tables[0].Rows[rowcount + 1]["time"].ToString();
+                        //string nextVariable = nextTime.Substring(7, 2) + ":" + nextTime.Substring(9, 2) + ":00";
+
+                        string nextFrom = "23:50:00";
+                        string prevToTime = lastTo;
+                        string prevFromTime = lastFrom;
+                        string[] nextfromArr = nextFrom.Split(':');
+                        int nextFromHrs = Convert.ToInt32(nextfromArr[0]);
+                        int nextFromMinutes = Convert.ToInt32(nextfromArr[1]);
+                        int nextReminder = nextFromMinutes % 10;
+                        string nextFinalFrom = "";
+                        //previousFromTime = lastFrom;
+                        if (nextReminder > 0)
+                        {
+                            nextFinalFrom = Convert.ToString(TimeSpan.Parse(prevFromTime).Add(TimeSpan.FromMinutes(10)));
+                            nextFrom = nextFinalFrom;
+                        }
+
+                        if (prevToTime != nextFrom)
+                        {
+                            string msg = "previous to time <" + prevToTime + "> next from time <" + nextFrom + ">.";
+                            //InformationLog(msg);
+                            LogInfo(user_id, 2, 4, "InsertWindSuzlonTMD", msg);
+                            int insideCount = 0;
+                            string missingTo = "";
+                            string missingFrom = "";
+                            do
+                            {
+                                TimeSpan fromTimeSpan = new TimeSpan();
+                                TimeSpan nextFromFinal = new TimeSpan();
+                                TimeSpan nextToFinal = new TimeSpan();
+
+                                if (insideCount == 0)
+                                {
+                                    fromTimeSpan = TimeSpan.Parse(prevFromTime);
+                                }
+                                if (insideCount > 0)
+                                {
+                                    fromTimeSpan = TimeSpan.Parse(missingFrom);
+                                }
+
+                                nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
+                                nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+
+                                InsertWindTMLData addMissingUnit = new InsertWindTMLData();
+                                
+                                addMissingUnit.file_name = fileName;
+                                addMissingUnit.onm_wtg = fileNameNew;
+                                addMissingUnit.WTGs = wtgName;
+                                addMissingUnit.site_id = siteId;
+                                addMissingUnit.wtg_id = wtgId;
+                                addMissingUnit.site = siteName;
+                                addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
+                                addMissingUnit.timestamp = LogTime + " " + nextToFinal.ToString();
+                                bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
+                                addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
+                                addMissingUnit.from_time = nextFromFinal.ToString();
+                                addMissingUnit.to_time = nextToFinal.ToString();
+                                addMissingUnit.status_code = 1;
+                                addMissingUnit.avg_wind_speed = 0;
+                                missingTo = addMissingUnit.to_time;
+                                missingFrom = addMissingUnit.from_time;
+                                prevToTime = addMissingUnit.to_time;
+                                prevFromTime = addMissingUnit.from_time;
+                                sampleCount++;
+                                addSet.Add(addMissingUnit);
+
+                                insideCount++;
+                            }
+                            while (missingTo != nextFrom);
+                        }
+
+                        lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
+                        if (lastFrom != "23:50:00" && sampleCount == 143)
+                        {
+                            InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
+
+                            addMissingUnit1.file_name = fileName;
+                            addMissingUnit1.onm_wtg = fileNameNew;
+                            addMissingUnit1.WTGs = wtgName;
+                            addMissingUnit1.site_id = siteId;
+                            addMissingUnit1.wtg_id = wtgId;
+                            addMissingUnit1.site = siteName;
+                            addMissingUnit1.variable = "23:50:00-23:59:59";
+                            addMissingUnit1.timestamp = LogTime + " 23:59:59";
+                            bool TimeEmpty1 = addMissingUnit1.timestamp == "" || addMissingUnit1.timestamp is DBNull || addMissingUnit1.timestamp == " " ? true : false;
+                            addMissingUnit1.date = TimeEmpty1 ? "Nil" : Convert.ToDateTime(addMissingUnit1.timestamp).ToString("dd-MMM-yy");
+                            addMissingUnit1.from_time = "23:50:00";
+                            addMissingUnit1.to_time = "23:59:59";
+                            addMissingUnit1.status_code = 1;
+                            addMissingUnit1.avg_wind_speed = 0;
+                            prevToTime = addMissingUnit1.to_time;
+                            prevFromTime = addMissingUnit1.from_time;
+                            sampleCount++;
+                            addSet.Add(addMissingUnit1);
+                        }
+
+                    }
+                }
                 if (!(errorCount > 0))
                 {
                     m_ErrorLog.SetInformation(",Wind TMR Validation SuccessFul,");
@@ -7237,6 +7343,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                 int rowcount = 0;
                 string LogTime = "";
                 int loopCount = 0;
+                int sampleCount = 0;
 
                 string inputString = fileName;
                 char separator = '_';
@@ -7393,6 +7500,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             addSet.Add(addUnit);
                         }
+                        
+                        sampleCount++;
 
                         //Code to get the missing samples.
                         if (rowcount < rowCount - 1)
@@ -7465,7 +7574,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     missingFrom = addMissingUnit.from_time;
                                     previousToTime = addMissingUnit.to_time;
                                     previousFromTime = addMissingUnit.from_time;
-
+                                    sampleCount++;
                                     addSet.Add(addMissingUnit);
 
                                     insideCount++;
@@ -7486,6 +7595,125 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                     rowcount++;
                     loopCount++;
+                }
+                if (sampleCount != 144)
+                {
+                    string lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
+                    string lastTo = Convert.ToString(addSet[sampleCount - 1].to_time);
+                    if (lastFrom != "23:50:00")
+                    {
+                        //string nextTime = ds.Tables[0].Rows[rowcount + 1]["time"].ToString();
+                        //string nextVariable = nextTime.Substring(7, 2) + ":" + nextTime.Substring(9, 2) + ":00";
+
+                        string nextFrom = "23:50:00";
+                        string prevToTime = lastTo;
+                        string prevFromTime = lastFrom;
+                        string[] nextfromArr = nextFrom.Split(':');
+                        int nextFromHrs = Convert.ToInt32(nextfromArr[0]);
+                        int nextFromMinutes = Convert.ToInt32(nextfromArr[1]);
+                        int nextReminder = nextFromMinutes % 10;
+                        string nextFinalFrom = "";
+                        //previousFromTime = lastFrom;
+                        if (nextReminder > 0)
+                        {
+                            nextFinalFrom = Convert.ToString(TimeSpan.Parse(prevFromTime).Add(TimeSpan.FromMinutes(10)));
+                            nextFrom = nextFinalFrom;
+                        }
+
+                        if (prevToTime != nextFrom)
+                        {
+                            string msg = "previous to time <" + prevToTime + "> next from time <" + nextFrom + ">.";
+                            //InformationLog(msg);
+                            LogInfo(user_id, 2, 4, "InsertWindRegen", msg);
+                            int insideCount = 0;
+                            string missingTo = "";
+                            string missingFrom = "";
+                            do
+                            {
+                                TimeSpan fromTimeSpan = new TimeSpan();
+                                TimeSpan nextFromFinal = new TimeSpan();
+                                TimeSpan nextToFinal = new TimeSpan();
+
+                                if (insideCount == 0)
+                                {
+                                    fromTimeSpan = TimeSpan.Parse(prevFromTime);
+                                }
+                                if (insideCount > 0)
+                                {
+                                    fromTimeSpan = TimeSpan.Parse(missingFrom);
+                                }
+
+                                nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
+                                nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+
+                                InsertWindTMLData addMissingUnit = new InsertWindTMLData();
+
+                                addMissingUnit.file_name = fileName;
+                                addMissingUnit.onm_wtg = fileNameNew;
+                                addMissingUnit.WTGs = wtgName;
+                                addMissingUnit.site_id = siteId;
+                                addMissingUnit.wtg_id = wtgId;
+                                addMissingUnit.site = siteName;
+                                addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
+                                addMissingUnit.timestamp = LogTime + " " + nextToFinal.ToString();
+                                bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
+                                addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
+                                addMissingUnit.from_time = nextFromFinal.ToString();
+                                addMissingUnit.to_time = nextToFinal.ToString();
+                                addMissingUnit.status_code = 1;
+                                addMissingUnit.avg_wind_speed = 0;
+                                addMissingUnit.operation_mode = 10000;
+                                addMissingUnit.low_wind_period = 10000;
+                                addMissingUnit.service = 10000;
+                                addMissingUnit.visit = 10000;
+                                addMissingUnit.error = 10000;
+                                addMissingUnit.operation = 10000;
+                                addMissingUnit.power_production = 10000;
+                                missingTo = addMissingUnit.to_time;
+                                missingFrom = addMissingUnit.from_time;
+                                prevToTime = addMissingUnit.to_time;
+                                prevFromTime = addMissingUnit.from_time;
+                                sampleCount++;
+                                addSet.Add(addMissingUnit);
+
+                                insideCount++;
+                            }
+                            while (missingTo != nextFrom);
+                        }
+
+                        lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
+                        if (lastFrom != "23:50:00" && sampleCount ==143)
+                        {
+                            InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
+
+                            addMissingUnit1.file_name = fileName;
+                            addMissingUnit1.onm_wtg = fileNameNew;
+                            addMissingUnit1.WTGs = wtgName;
+                            addMissingUnit1.site_id = siteId;
+                            addMissingUnit1.wtg_id = wtgId;
+                            addMissingUnit1.site = siteName;
+                            addMissingUnit1.variable = "23:50:00-23:59:59";
+                            addMissingUnit1.timestamp = LogTime + " 23:59:59";
+                            bool TimeEmpty1 = addMissingUnit1.timestamp == "" || addMissingUnit1.timestamp is DBNull || addMissingUnit1.timestamp == " " ? true : false;
+                            addMissingUnit1.date = TimeEmpty1 ? "Nil" : Convert.ToDateTime(addMissingUnit1.timestamp).ToString("dd-MMM-yy");
+                            addMissingUnit1.from_time = "23:50:00";
+                            addMissingUnit1.to_time = "23:59:59";
+                            addMissingUnit1.status_code = 1;
+                            addMissingUnit1.avg_wind_speed = 0;
+                            addMissingUnit1.operation_mode = 10000;
+                            addMissingUnit1.low_wind_period = 10000;
+                            addMissingUnit1.service = 10000;
+                            addMissingUnit1.visit = 10000;
+                            addMissingUnit1.error = 10000;
+                            addMissingUnit1.operation = 10000;
+                            addMissingUnit1.power_production = 10000;
+                            prevToTime = addMissingUnit1.to_time;
+                            prevFromTime = addMissingUnit1.from_time;
+                            sampleCount++;
+                            addSet.Add(addMissingUnit1);
+                        }
+
+                    }
                 }
                 if (errorCount == 0)
                 {
@@ -8116,6 +8344,119 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //ErrorLog(msg);
                         LogError(user_id, 2, 4, "ImportWindInoxTMD", msg);
                         errorCount++;
+                    }
+                }
+                int sampleCount = addSet.Count();
+                if (sampleCount != 144)
+                {
+                    string lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
+                    string lastTo = Convert.ToString(addSet[sampleCount - 1].to_time);
+                    if (lastFrom != "23:50:00")
+                    {
+                        //string nextTime = ds.Tables[0].Rows[rowcount + 1]["time"].ToString();
+                        //string nextVariable = nextTime.Substring(7, 2) + ":" + nextTime.Substring(9, 2) + ":00";
+
+                        string nextFrom = "23:50:00";
+                        string prevToTime = lastTo;
+                        string prevFromTime = lastFrom;
+                        string[] nextfromArr = nextFrom.Split(':');
+                        int nextFromHrs = Convert.ToInt32(nextfromArr[0]);
+                        int nextFromMinutes = Convert.ToInt32(nextfromArr[1]);
+                        int nextReminder = nextFromMinutes % 10;
+                        string nextFinalFrom = "";
+                        //previousFromTime = lastFrom;
+                        if (nextReminder > 0)
+                        {
+                            nextFinalFrom = Convert.ToString(TimeSpan.Parse(prevFromTime).Add(TimeSpan.FromMinutes(10)));
+                            nextFrom = nextFinalFrom;
+                        }
+
+                        if (prevToTime != nextFrom)
+                        {
+                            string msg = "previous to time <" + prevToTime + "> next from time <" + nextFrom + ">.";
+                            //InformationLog(msg);
+                            LogInfo(user_id, 2, 4, "InsertWindInox", msg);
+                            int insideCount = 0;
+                            string missingTo = "";
+                            string missingFrom = "";
+                            do
+                            {
+                                TimeSpan fromTimeSpan = new TimeSpan();
+                                TimeSpan nextFromFinal = new TimeSpan();
+                                TimeSpan nextToFinal = new TimeSpan();
+
+                                if (insideCount == 0)
+                                {
+                                    fromTimeSpan = TimeSpan.Parse(prevFromTime);
+                                }
+                                if (insideCount > 0)
+                                {
+                                    fromTimeSpan = TimeSpan.Parse(missingFrom);
+                                }
+
+                                nextFromFinal = fromTimeSpan.Add(TimeSpan.FromMinutes(10));
+                                nextToFinal = nextFromFinal.Add(TimeSpan.FromMinutes(10));
+
+                                InsertWindTMLData addMissingUnit = new InsertWindTMLData();
+
+                                addMissingUnit.file_name = fileName;
+                                addMissingUnit.onm_wtg = fileNameNew;
+                                addMissingUnit.WTGs = wtgName;
+                                addMissingUnit.site_id = siteId;
+                                addMissingUnit.wtg_id = wtgId;
+                                addMissingUnit.site = siteName;
+                                addMissingUnit.variable = nextFromFinal.ToString() + "-" + nextToFinal.ToString();
+                                addMissingUnit.timestamp = LogTime + " " + nextToFinal.ToString();
+                                bool TimeEmpty = addMissingUnit.timestamp == "" || addMissingUnit.timestamp is DBNull || addMissingUnit.timestamp == " " ? true : false;
+                                addMissingUnit.date = TimeEmpty ? "Nil" : Convert.ToDateTime(addMissingUnit.timestamp).ToString("dd-MMM-yy");
+                                addMissingUnit.from_time = nextFromFinal.ToString();
+                                addMissingUnit.to_time = nextToFinal.ToString();
+                                addMissingUnit.status_code = 1;
+                                addMissingUnit.avg_wind_speed = 0;
+                                missingTo = addMissingUnit.to_time;
+                                missingFrom = addMissingUnit.from_time;
+                                prevToTime = addMissingUnit.to_time;
+                                prevFromTime = addMissingUnit.from_time;
+                                sampleCount++;
+                                addSet.Add(addMissingUnit);
+
+                                insideCount++;
+                            }
+                            while (missingTo != nextFrom);
+                        }
+
+                        lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
+                        if (lastFrom != "23:50:00" && sampleCount == 143)
+                        {
+                            InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
+
+                            addMissingUnit1.file_name = fileName;
+                            addMissingUnit1.onm_wtg = fileNameNew;
+                            addMissingUnit1.WTGs = wtgName;
+                            addMissingUnit1.site_id = siteId;
+                            addMissingUnit1.wtg_id = wtgId;
+                            addMissingUnit1.site = siteName;
+                            addMissingUnit1.variable = "23:50:00-23:59:59";
+                            addMissingUnit1.timestamp = LogTime + " 23:59:59";
+                            bool TimeEmpty1 = addMissingUnit1.timestamp == "" || addMissingUnit1.timestamp is DBNull || addMissingUnit1.timestamp == " " ? true : false;
+                            addMissingUnit1.date = TimeEmpty1 ? "Nil" : Convert.ToDateTime(addMissingUnit1.timestamp).ToString("dd-MMM-yy");
+                            addMissingUnit1.from_time = "23:50:00";
+                            addMissingUnit1.to_time = "23:59:59";
+                            addMissingUnit1.status_code = 1;
+                            addMissingUnit1.avg_wind_speed = 0;
+                            addMissingUnit1.operation_mode = 10000;
+                            addMissingUnit1.low_wind_period = 10000;
+                            addMissingUnit1.service = 10000;
+                            addMissingUnit1.visit = 10000;
+                            addMissingUnit1.error = 10000;
+                            addMissingUnit1.operation = 10000;
+                            addMissingUnit1.power_production = 10000;
+                            prevToTime = addMissingUnit1.to_time;
+                            prevFromTime = addMissingUnit1.from_time;
+                            sampleCount++;
+                            addSet.Add(addMissingUnit1);
+                        }
+
                     }
                 }
                 if (!(errorCount > 0))
