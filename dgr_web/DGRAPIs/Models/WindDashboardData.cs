@@ -9,8 +9,8 @@ namespace DGRAPIs.Models
     {
         
         public dynamic Date { get; set; }
-        public int month { get; set; }
-        public int year { get; set; }
+        public dynamic month { get; set; }
+        public dynamic year { get; set; }
         public string fy { get; set; }
         public string Site { get; set; }
         public double Wind{ get; set; }

@@ -599,14 +599,14 @@
             if (userRole == "User") {
                 if (ssite_list) {
                     GetSolarDataByLastDay();
-                    if (changedSolarSite == 1) {
+                    if (solarChanged == 1) {
                         if ($("#customRadio1").is(":checked")) {
                             chartTitle = "Last 10 Days";
                             var graphGenerate = 1;
                             //setTimeout(GetSolarData(tendays, chartTitle), 5000);
                             GetSolarData(tendays, chartTitle, graphGenerate);
                             var graphGenerateMonthly = 0;
-                            GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                            //GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                         }
                         if ($("#customRadio2").is(":checked")) {
                             chartTitle = "Monthly";
@@ -614,26 +614,26 @@
                             //setTimeout(GetSolarData(monthdate, chartTitle), 5000);
                             GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                             var graphGenerate = 0;
-                            GetSolarData(tendays, chartTitle, graphGenerate);
+                            //GetSolarData(tendays, chartTitle, graphGenerate);
                         }
                     }
                 }
                 if (wsite_list) {
                     GetWindDataByLastDay();
-                    if (changedWindSite == 1) {
+                    if (windChanged == 1) {
                         if ($("#customRadio1").is(":checked")) {
                             chartTitle = "Last 10 Days";
                             var graphGenerate = 1;
                             GetWindChartData(tendays, chartTitle, graphGenerate);
                             var graphGenerateMonthly = 0;
-                            GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                            //GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                         }
                         if ($("#customRadio2").is(":checked")) {
                             chartTitle = "Monthly";
                             var graphGenerateMonthly = 1;
                             GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                             var graphGenerate = 0;
-                            GetWindChartData(tendays, chartTitle, graphGenerate);
+                            //GetWindChartData(tendays, chartTitle, graphGenerate);
                         }
                     }
                 }
@@ -1680,6 +1680,9 @@
                     //let total_ir = 0;
                     //let total_tar_ir = 0;
                     //let scnt = 0;
+                    var lengthOfres = result.length;
+                    var differenceOfRes = 10 - lengthOfres;
+                    console.log("Length of result : " + lengthOfres + " difference : " + differenceOfRes);
                     for (var s = 0; s < result.length; s++) {
                         var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
 
