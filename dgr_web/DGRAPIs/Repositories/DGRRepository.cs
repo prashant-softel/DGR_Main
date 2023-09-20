@@ -141,13 +141,31 @@ namespace DGRAPIs.Repositories
 
 
             //v1Qry 
-			string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,fy,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh,sum(t1.Wind)/count(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year,t2.fy, t1.Site, SUM(t1.kwh) as KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh, sum(t1.wind_speed)/count(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and year = year(t1.date)  left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.site asc ,t1.date asc) as t1 group by " + groupby + " order by t1.Date";
+            string qry5 = "";
+            if (monthly)
+            {
+			    qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,fy,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh,sum(t1.Wind)/count(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year,t2.fy, t1.Site, SUM(t1.kwh) as KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh, sum(t1.wind_speed)/count(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and year = year(t1.date)  left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.site asc ,t1.date asc) as t1 group by " + groupby + " order by t1.Date";
+            }
+            else
+            {
+                qry5 = "SELECT dr.date, IFNULL(jmr.month, MONTH(dr.date)) AS month, IFNULL(jmr.year, YEAR(dr.date)) AS year, IFNULL(jmr.fy, '-') AS fy, IFNULL(jmr.Site, '-') AS Site, IFNULL(jmr.jmrkwh, 0) AS jmrkwh, IFNULL(jmr.Wind, 0) AS Wind FROM( SELECT DISTINCT DATE_ADD('" + startDate + "', INTERVAL n DAY) AS date FROM( SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 ) AS numbers ) AS dr LEFT JOIN( SELECT t1.Date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t1.fy, t1.Site, SUM(t1.kwh) AS KWH, SUM(t1.jmrkwh) AS jmrkwh, SUM(t1.Wind) / COUNT(t1.Wind) AS Wind FROM( SELECT t1.Date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t2.fy, t1.Site, SUM(t1.kwh) AS KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) AS jmrkwh, SUM(t1.wind_speed) / COUNT(t1.wind_speed) AS Wind FROM `daily_gen_summary` AS t1 LEFT JOIN monthly_uploading_line_losses AS t2 ON t2.site_id = t1.site_id AND month_no = MONTH(t1.date) AND year = YEAR(t1.date) LEFT JOIN site_master AS t3 ON t3.site_master_id = t1.site_id WHERE" + filter +" GROUP BY t1.site, t1.date ORDER BY t1.site ASC, t1.date ASC ) AS t1 GROUP BY t1.date ) AS jmr ON dr.date = jmr.Date ORDER BY dr.date ASC; ";
+            }
+
+
 			//v2 Qry
 			//string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh,sum(t1.Wind)/count(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, SUM(t1.kwh) as KWH, t2.line_loss, SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100) as jmrkwh, sum(t1.wind_speed)/count(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by " + groupby ;
            
 
             List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
-            _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
+            try
+            {
+                _WindDashboardData = await Context.GetData<WindDashboardData>(qry5).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
 
             string qry6 = " select site, total_mw from site_master group by site;";
             string qry7 = "select site, site_id," + selfilter + ",sum(wind_speed)/count(wind_speed) as tarwind from "+ temp_viewtbl + " group by " + groupby1 + ",site order by date;";
@@ -180,11 +198,20 @@ namespace DGRAPIs.Repositories
                         _windData.tarkwh = _windData2.tarkwh;
                         //_windData.tarwind = _windData2.tarwind;
                     }
-                    else if (_windData.tar_date == _windData2.tar_date)
+                    else
                     {
-                        _windData.tarkwh = _windData2.tarkwh;
-                        // _windData.tarwind = _windData2.tarwind;
+                        _windData.tar_date = Convert.ToDateTime(_windData.tar_date);
+                        if (_windData.tar_date == _windData2.tar_date)
+                        {
+                            _windData.tarkwh = _windData2.tarkwh;
+                            // _windData.tarwind = _windData2.tarwind;
+                        }
                     }
+                    //else if (_windData.tar_date == _windData2.tar_date)
+                    //{
+                    //    _windData.tarkwh = _windData2.tarkwh;
+                    //    // _windData.tarwind = _windData2.tarwind;
+                    //}
                 }
 
 
@@ -703,6 +730,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             string selfilter = "";
             string temp_viewtbl = "";
             string filter = "(t1.date >= '" + startDate + "'  and t1.date<= '" + endDate + "')";
+            string tenFilter = "t1.date >= '" + startDate + "' AND t1.date <= '" + endDate + "'";
             if (!string.IsNullOrEmpty(sites))
             {
                 filter += " and t1.site_id in(" + sites + ")";
@@ -739,14 +767,36 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             List<SolarDashboardData> tempdata = new List<SolarDashboardData>();
             tempdata = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
+            string qry = "";
+            if (monthly)
+            {
+                qry = "select date, month,year,fy,Site,line_loss, sum(jmrkwh) as jmrkwh from(SELECT t1.date, MONTH(t1.date) as month, year(t1.date) as year,t2.fy, t1.site as Site, SUM(t1.inv_kwh) as inv_kwh, t2.LineLoss as line_loss, SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh, AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on year = year(t1.date) and month_no = MONTH(t1.date) and t2.site_id = t1.site_id  where " + filter + " group by  " + groupby + ", site order by t1.site asc, t1.date asc) as jmr group by " + groupby2 + " order by date asc";
+            }
+            else
+            {
+                qry = "SELECT dr.date, IFNULL(jmr.month, MONTH(dr.date)) AS month, IFNULL(jmr.year, YEAR(dr.date)) AS year, IFNULL(jmr.fy, '-') AS fy, IFNULL(jmr.Site, '-') AS Site, IFNULL(jmr.line_loss, 0) AS line_loss, IFNULL(jmr.jmrkwh, 0) AS jmrkwh FROM( SELECT DISTINCT DATE_ADD('" + startDate + "', INTERVAL n DAY) AS date FROM( SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 ) AS numbers ) AS dr LEFT JOIN(SELECT t1.date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t2.fy, t1.site AS Site, SUM(t1.inv_kwh) AS inv_kwh, t2.LineLoss AS line_loss, SUM(t1.inv_kwh) -SUM(t1.inv_kwh) * (t2.LineLoss / 100) AS jmrkwh, AVG(t1.poa) AS IR FROM `daily_gen_summary_solar` AS t1 LEFT JOIN monthly_line_loss_solar AS t2 ON YEAR = YEAR(t1.date) AND MONTH_NO = MONTH(t1.date) AND t2.site_id = t1.site_id WHERE(" + tenFilter + ") GROUP BY t1.date, site ) AS jmr ON dr.date = jmr.date ORDER BY dr.date ASC;";
+            }
+            //SELECT dr.date,  IFNULL(jmr.month, MONTH(dr.date)) AS month, IFNULL(jmr.year, YEAR(dr.date)) AS year, IFNULL(jmr.fy, '-') AS fy, IFNULL(jmr.Site, '-') AS Site, IFNULL(jmr.line_loss, 0) AS line_loss, IFNULL(jmr.jmrkwh, 0) AS jmrkwh FROM( SELECT DISTINCT DATE_ADD('2023-09-10', INTERVAL n DAY) AS date FROM( SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 ) AS numbers ) AS dr LEFT JOIN( SELECT t1.date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t2.fy, t1.site AS Site, SUM(t1.inv_kwh) AS inv_kwh, t2.LineLoss AS line_loss, SUM(t1.inv_kwh) -SUM(t1.inv_kwh) * (t2.LineLoss / 100) AS jmrkwh, AVG(t1.poa) AS IR FROM `daily_gen_summary_solar` AS t1 LEFT JOIN monthly_line_loss_solar AS t2 ON YEAR = YEAR(t1.date) AND MONTH_NO = MONTH(t1.date) AND t2.site_id = t1.site_id WHERE(t1.date >= '2023-09-10' AND t1.date <= '2023-09-19') GROUP BY t1.date, site ) AS jmr ON dr.date = jmr.date ORDER BY dr.date ASC;
+
+            //SELECT dr.date, IFNULL(jmr.month, MONTH(dr.date)) AS month, IFNULL(jmr.year, YEAR(dr.date)) AS year, IFNULL(jmr.fy, '-') AS fy, IFNULL(jmr.Site, '-') AS Site, IFNULL(jmr.line_loss, 0) AS line_loss, IFNULL(jmr.jmrkwh, 0) AS jmrkwh FROM( SELECT DISTINCT DATE_ADD('2023-09-10', INTERVAL n DAY) AS date FROM( SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 ) AS numbers ) AS dr LEFT JOIN(SELECT t1.date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t2.fy, t1.site AS Site, SUM(t1.inv_kwh) AS inv_kwh, t2.LineLoss AS line_loss, SUM(t1.inv_kwh) -SUM(t1.inv_kwh) * (t2.LineLoss / 100) AS jmrkwh, AVG(t1.poa) AS IR FROM `daily_gen_summary_solar` AS t1 LEFT JOIN monthly_line_loss_solar AS t2 ON YEAR = YEAR(t1.date) AND MONTH_NO = MONTH(t1.date) AND t2.site_id = t1.site_id WHERE(t1.date >= '2023-09-10' AND t1.date '2023-09-19') GROUP BY t1.date, site) AS jmr ON dr.date = jmr.date ORDER BY dr.date ASC;
+
+
             //string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as Site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,sum(t1.poa)/count(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + " group by "+ groupby + " order by t1.date asc ";
 
             //string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as Site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh ,AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by " + groupby + " order by t1.date asc ";
 
-            string qry = "select date, month,year,fy,Site,line_loss, sum(jmrkwh) as jmrkwh from(SELECT t1.date, MONTH(t1.date) as month, year(t1.date) as year,t2.fy, t1.site as Site, SUM(t1.inv_kwh) as inv_kwh, t2.LineLoss as line_loss, SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh, AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on year = year(t1.date) and month_no = MONTH(t1.date) and t2.site_id = t1.site_id  where " + filter + " group by  " + groupby + ", site order by t1.site asc, t1.date asc) as jmr group by " + groupby2+" order by date asc";
+
 
             List<SolarDashboardData> data = new List<SolarDashboardData>();
-            data = await Context.GetData<SolarDashboardData>(qry).ConfigureAwait(false);
+            try
+            {
+                data = await Context.GetData<SolarDashboardData>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching records for graph, due to : " + e.ToString();
+                string new12 = "";
+            }
 
             //string qry3 = " select site, ac_capacity from site_master_solar group by site";
             //List<SolarDashboardData> data3 = new List<SolarDashboardData>();
@@ -764,11 +814,21 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                             _dataelement.tarkwh = _tempdataelement.tarkwh;
                             // _dataelement.tarIR = _tempdataelement.tarIR;
                         }
-                        else if (monthly == false && _dataelement.Date == _tempdataelement.Date)
+                        else if (monthly == false )
                         {
-                            _dataelement.tarkwh = _tempdataelement.tarkwh;
-                            // _dataelement.tarIR = _tempdataelement.tarIR;
+                            //string tempDate = Convert.ToDateTime(_tempdataelement.Date).ToString("yyyy-MM-dd");
+                            _dataelement.Date = Convert.ToDateTime(_dataelement.Date);
+                            if (_dataelement.Date == _tempdataelement.Date)
+                            {
+                                _dataelement.tarkwh = _tempdataelement.tarkwh;
+                                // _dataelement.tarIR = _tempdataelement.tarIR;
+                            }
                         }
+                        //else if (monthly == false && _dataelement.Date == Convert.ToDateTime(_tempdataelement.Date).ToString("yyyy-MM-dd"))
+                        //{
+                        //    _dataelement.tarkwh = _tempdataelement.tarkwh;
+                        //    // _dataelement.tarIR = _tempdataelement.tarIR;
+                        //}
                     }
                     catch (Exception ex)
                     {
