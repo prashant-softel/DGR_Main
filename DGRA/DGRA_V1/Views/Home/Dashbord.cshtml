@@ -1314,17 +1314,19 @@
                                 wcd_actual_energy.push(0);
                             }
                         }
+                    } else {
+                        for (var w = 0; w < result.length; w++) {
+
+                            var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                                wcd_datelebels.push(formattedDate);
+                                wcd_taget_wind.push(result[w].tarwind.toFixed(1));
+                                wcd_actual_wind.push(result[w].wind .toFixed(1));
+                                wcd_target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
+                                wcd_actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
+                        }
+
                     }
 
-                    //for (var w = 0; w < result.length; w++) {
-
-                    //    var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
-                    //        wcd_datelebels.push(formattedDate);
-                    //        wcd_taget_wind.push(result[w].tarwind.toFixed(1));
-                    //        wcd_actual_wind.push(result[w].wind .toFixed(1));
-                    //        wcd_target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
-                    //        wcd_actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
-                    //}
                     console.log("result Length = " + result.length);
                     console.log(wcd_datelebels);
                     console.log(wcd_taget_wind);
@@ -1759,20 +1761,20 @@
                                 scd_actual_ir.push(0);
                             }
                         }
+                    } else {
+                        for (var s = 0; s < result.length; s++) {
+                            var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                            scd_datelebels.push(formattedDate);
+                            var dateConString = moment(result[s].date, 'YYYY-MM-DD').toString();
+
+                            scd_actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
+                            scd_target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
+                            scd_target_ir.push(result[s].tarIR.toFixed(1));
+                            scd_actual_ir.push(result[s].ir.toFixed(1));
+                        }
                     }
 
 
-                    //for (var s = 0; s < result.length; s++) {
-                    //    var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
-                    //    scd_datelebels.push(formattedDate);
-                    //    var dateConString = moment(result[s].date, 'YYYY-MM-DD').toString();
-
-                    //    scd_actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
-                    //    scd_target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
-                    //    scd_target_ir.push(result[s].tarIR.toFixed(1));
-                    //    scd_actual_ir.push(result[s].ir.toFixed(1));
-
-                    //}
                     console.log("After for loop data must be there : ");
                     console.log(scd_datelebels);
                     console.log(scd_actual_kwh);
