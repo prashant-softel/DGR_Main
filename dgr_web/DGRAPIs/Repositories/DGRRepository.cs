@@ -748,6 +748,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             {
                 groupby = " t1.date ";
                 groupby1 = " date ";
+               // groupby1 = " date , site ";
                 selfilter = "date as Date ";
                 groupby2 = "date";
                 temp_viewtbl = "temp_view4";
@@ -763,7 +764,8 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             {
                 string msg = ex.Message;
             }
-            string qry2 = "select Site, site_id, "+ selfilter + " ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from " + temp_viewtbl + " group by " + groupby1 + "";
+            //string qry2 = "select Site, site_id, "+ selfilter + " ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from " + temp_viewtbl + " group by " + groupby1 + "";
+            string qry2 = "select Site, site_id, " + selfilter + " ,sum(gen_nos)*1000000 as tarkwh, sum(poa)/count(poa) as tarIR from " + temp_viewtbl + " group by " + groupby1 + "";
             List<SolarDashboardData> tempdata = new List<SolarDashboardData>();
             tempdata = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
@@ -774,7 +776,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             }
             else
             {
-                qry = "SELECT dr.date, IFNULL(jmr.month, MONTH(dr.date)) AS month, IFNULL(jmr.year, YEAR(dr.date)) AS year, IFNULL(jmr.fy, '-') AS fy, IFNULL(jmr.Site, '-') AS Site, IFNULL(jmr.line_loss, 0) AS line_loss, IFNULL(jmr.jmrkwh, 0) AS jmrkwh FROM( SELECT DISTINCT DATE_ADD('" + startDate + "', INTERVAL n DAY) AS date FROM( SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 ) AS numbers ) AS dr LEFT JOIN(SELECT t1.date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t2.fy, t1.site AS Site, SUM(t1.inv_kwh) AS inv_kwh, t2.LineLoss AS line_loss, SUM(t1.inv_kwh) -SUM(t1.inv_kwh) * (t2.LineLoss / 100) AS jmrkwh, AVG(t1.poa) AS IR FROM `daily_gen_summary_solar` AS t1 LEFT JOIN monthly_line_loss_solar AS t2 ON YEAR = YEAR(t1.date) AND MONTH_NO = MONTH(t1.date) AND t2.site_id = t1.site_id WHERE(" + tenFilter + ") GROUP BY t1.date, site ) AS jmr ON dr.date = jmr.date ORDER BY dr.date ASC;";
+                qry = "SELECT dr.date, IFNULL(jmr.month, MONTH(dr.date)) AS month, IFNULL(jmr.year, YEAR(dr.date)) AS year, IFNULL(jmr.fy, '-') AS fy, IFNULL(jmr.Site, '-') AS Site, IFNULL(jmr.line_loss, 0) AS line_loss, IFNULL(jmr.jmrkwh, 0) AS jmrkwh FROM( SELECT DISTINCT DATE_ADD('" + startDate + "', INTERVAL n DAY) AS date FROM( SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 ) AS numbers ) AS dr LEFT JOIN(SELECT t1.date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t2.fy, t1.site AS Site, SUM(t1.inv_kwh) AS inv_kwh, t2.LineLoss AS line_loss, SUM(t1.inv_kwh) -SUM(t1.inv_kwh) * (t2.LineLoss / 100) AS jmrkwh, AVG(t1.poa) AS IR FROM `daily_gen_summary_solar` AS t1 LEFT JOIN monthly_line_loss_solar AS t2 ON YEAR = YEAR(t1.date) AND MONTH_NO = MONTH(t1.date) AND t2.site_id = t1.site_id WHERE(" + tenFilter + ") GROUP BY t1.date ) AS jmr ON dr.date = jmr.date ORDER BY dr.date ASC;";
             }
             //SELECT dr.date,  IFNULL(jmr.month, MONTH(dr.date)) AS month, IFNULL(jmr.year, YEAR(dr.date)) AS year, IFNULL(jmr.fy, '-') AS fy, IFNULL(jmr.Site, '-') AS Site, IFNULL(jmr.line_loss, 0) AS line_loss, IFNULL(jmr.jmrkwh, 0) AS jmrkwh FROM( SELECT DISTINCT DATE_ADD('2023-09-10', INTERVAL n DAY) AS date FROM( SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 ) AS numbers ) AS dr LEFT JOIN( SELECT t1.date, MONTH(t1.date) AS month, YEAR(t1.date) AS year, t2.fy, t1.site AS Site, SUM(t1.inv_kwh) AS inv_kwh, t2.LineLoss AS line_loss, SUM(t1.inv_kwh) -SUM(t1.inv_kwh) * (t2.LineLoss / 100) AS jmrkwh, AVG(t1.poa) AS IR FROM `daily_gen_summary_solar` AS t1 LEFT JOIN monthly_line_loss_solar AS t2 ON YEAR = YEAR(t1.date) AND MONTH_NO = MONTH(t1.date) AND t2.site_id = t1.site_id WHERE(t1.date >= '2023-09-10' AND t1.date <= '2023-09-19') GROUP BY t1.date, site ) AS jmr ON dr.date = jmr.date ORDER BY dr.date ASC;
 
