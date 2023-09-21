@@ -8588,6 +8588,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             addMissingUnit.from_time = nextFromFinal.ToString();
                                             addMissingUnit.to_time = nextToFinal.ToString();
                                             addMissingUnit.status_code = 1;
+                                            addMissingUnit.all_bd = "NC";
                                             addMissingUnit.avg_wind_speed = 0;
                                             missingTo = addMissingUnit.to_time;
                                             missingFrom = addMissingUnit.from_time;
@@ -8695,6 +8696,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     addMissingUnit.from_time = nextFromFinal.ToString();
                                     addMissingUnit.to_time = nextToFinal.ToString();
                                     addMissingUnit.status_code = 1;
+                                    addMissingUnit.all_bd = "NC";
                                     addMissingUnit.avg_wind_speed = 0;
                                     missingTo = addMissingUnit.to_time;
                                     missingFrom = addMissingUnit.from_time;
@@ -8728,6 +8730,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addMissingUnit1.from_time = "00:00:00";
                                 addMissingUnit1.to_time = "00:10:00";
                                 addMissingUnit1.status_code = 1;
+                                addMissingUnit1.all_bd = "NC";
                                 addMissingUnit1.avg_wind_speed = 0;
                                 prevToTime = addMissingUnit1.to_time;
                                 prevFromTime = addMissingUnit1.from_time;
@@ -8803,6 +8806,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     addMissingUnit.from_time = nextFromFinal.ToString();
                                     addMissingUnit.to_time = nextToFinal.ToString();
                                     addMissingUnit.status_code = 1;
+                                    addMissingUnit.all_bd = "NC";
                                     addMissingUnit.avg_wind_speed = 0;
                                     missingTo = addMissingUnit.to_time;
                                     missingFrom = addMissingUnit.from_time;
@@ -8834,6 +8838,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addMissingUnit1.from_time = "23:50:00";
                                 addMissingUnit1.to_time = "23:59:59";
                                 addMissingUnit1.status_code = 1;
+                                addMissingUnit1.all_bd = "NC";
                                 addMissingUnit1.avg_wind_speed = 0;
                                 prevToTime = addMissingUnit1.to_time;
                                 prevFromTime = addMissingUnit1.from_time;

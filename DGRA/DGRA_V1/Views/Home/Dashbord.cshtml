@@ -1275,15 +1275,56 @@
                     let total_tar_kwh = 0;
                     let totat_act_kwh = 0;
                     let cnt = 0;
-                    for (var w = 0; w < result.length; w++) {
 
-                        var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
-                            wcd_datelebels.push(formattedDate);
-                            wcd_taget_wind.push(result[w].tarwind.toFixed(1));
-                            wcd_actual_wind.push(result[w].wind .toFixed(1));
-                            wcd_target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
-                            wcd_actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
+                    let missingDates = [];
+                    const lengthOfRes = result.length;
+                    const differenceOfRes = 10 - lengthOfRes;
+                    console.log("Length of result : " + lengthOfRes + " difference : " + differenceOfRes);
+
+                    if (differenceOfRes > 0) {
+                        missingDates = getMissingDates(startDate, endDate);
+                        console.log(missingDates);
+                        console.log(result);
+
+                        for (var i = 0; i < missingDates.length; i++) {
+                            var dateConString = moment(missingDates[i], 'YYYY-MM-DD').toString();
+                            var formattedDate = moment(missingDates[i], 'YYYY-MM-DD').format('DD-MM-YYYY');
+                            var dataFound = false; // Flag to check if data was found for the current missing date
+
+                            for (var j = 0; j < result.length; j++) {
+                                if (dateConString === moment(result[j].date, 'YYYY-MM-DD').toString()) {
+                                    wcd_datelebels.push(formattedDate);
+                                    wcd_taget_wind.push(result[j].tarwind.toFixed(1));
+                                    wcd_actual_wind.push(result[j].wind.toFixed(1));
+                                    wcd_target_energy.push((result[j].tarkwh / 1000000).toFixed(1));
+                                    wcd_actual_energy.push((result[j].jmrkwh / 1000000).toFixed(1));
+
+                                    // Set the flag to true to indicate that data was found
+                                    dataFound = true;
+                                    break; // No need to continue checking the remaining results for this date
+                                }
+                            }
+
+                            // If no data was found for the current missing date, push zeros
+                            if (!dataFound) {
+                                wcd_datelebels.push(formattedDate);
+                                wcd_taget_wind.push(0);
+                                wcd_actual_wind.push(0);
+                                wcd_target_energy.push(0);
+                                wcd_actual_energy.push(0);
+                            }
+                        }
                     }
+
+                    //for (var w = 0; w < result.length; w++) {
+
+                    //    var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                    //        wcd_datelebels.push(formattedDate);
+                    //        wcd_taget_wind.push(result[w].tarwind.toFixed(1));
+                    //        wcd_actual_wind.push(result[w].wind .toFixed(1));
+                    //        wcd_target_energy.push((result[w].tarkwh / 1000000).toFixed(1));
+                    //        wcd_actual_energy.push((result[w].jmrkwh / 1000000).toFixed(1));
+                    //}
                     console.log("result Length = " + result.length);
                     console.log(wcd_datelebels);
                     console.log(wcd_taget_wind);
@@ -1680,19 +1721,58 @@
                     //let total_ir = 0;
                     //let total_tar_ir = 0;
                     //let scnt = 0;
-                    var lengthOfres = result.length;
-                    var differenceOfRes = 10 - lengthOfres;
-                    console.log("Length of result : " + lengthOfres + " difference : " + differenceOfRes);
-                    for (var s = 0; s < result.length; s++) {
-                        var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                    let missingDates = [];
+                    const lengthOfRes = result.length;
+                    const differenceOfRes = 10 - lengthOfRes;
+                    console.log("Length of result : " + lengthOfRes + " difference : " + differenceOfRes);
 
-                        scd_datelebels.push(formattedDate);
+                    if (differenceOfRes > 0) {
+                        missingDates = getMissingDates(startDate, endDate);
+                        console.log(missingDates);
+                        console.log(result);
 
-                        scd_actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
-                        scd_target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
-                        scd_target_ir.push(result[s].tarIR.toFixed(1));
-                        scd_actual_ir.push(result[s].ir.toFixed(1));
+                        for (var i = 0; i < missingDates.length; i++) {
+                            var dateConString = moment(missingDates[i], 'YYYY-MM-DD').toString();
+                            var formattedDate = moment(missingDates[i], 'YYYY-MM-DD').format('DD-MM-YYYY');
+                            var dataFound = false; // Flag to check if data was found for the current missing date
+
+                            for (var j = 0; j < result.length; j++) {
+                                if (dateConString === moment(result[j].date, 'YYYY-MM-DD').toString()) {
+                                    scd_datelebels.push(formattedDate);
+                                    scd_actual_kwh.push((result[j].jmrkwh / 1000000).toFixed(1));
+                                    scd_target_kwh.push((result[j].tarkwh / 1000000).toFixed(1));
+                                    scd_target_ir.push(result[j].tarIR.toFixed(1));
+                                    scd_actual_ir.push(result[j].ir.toFixed(1));
+
+                                    // Set the flag to true to indicate that data was found
+                                    dataFound = true;
+                                    break; // No need to continue checking the remaining results for this date
+                                }
+                            }
+
+                            // If no data was found for the current missing date, push zeros
+                            if (!dataFound) {
+                                scd_datelebels.push(formattedDate);
+                                scd_actual_kwh.push(0);
+                                scd_target_kwh.push(0);
+                                scd_target_ir.push(0);
+                                scd_actual_ir.push(0);
+                            }
+                        }
                     }
+
+
+                    //for (var s = 0; s < result.length; s++) {
+                    //    var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                    //    scd_datelebels.push(formattedDate);
+                    //    var dateConString = moment(result[s].date, 'YYYY-MM-DD').toString();
+
+                    //    scd_actual_kwh.push((result[s].jmrkwh / 1000000).toFixed(1));
+                    //    scd_target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
+                    //    scd_target_ir.push(result[s].tarIR.toFixed(1));
+                    //    scd_actual_ir.push(result[s].ir.toFixed(1));
+
+                    //}
                     console.log("After for loop data must be there : ");
                     console.log(scd_datelebels);
                     console.log(scd_actual_kwh);
@@ -2076,5 +2156,22 @@
             }
         }
         return "";
+    }
+
+    function getMissingDates(startDate, endDate) {
+        const missingDates = [];
+
+        // Convert start and end dates to Date objects
+        const currentDate = new Date(startDate);
+        const end = new Date(endDate);
+
+        // Iterate through dates between start and end
+        while (currentDate <= end) {
+            const currentDateString = currentDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            missingDates.push(currentDateString);
+            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+        }
+
+        return missingDates;
     }
 </script>
