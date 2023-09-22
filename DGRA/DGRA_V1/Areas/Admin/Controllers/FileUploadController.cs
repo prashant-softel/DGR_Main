@@ -7259,7 +7259,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addSet.InsertRange(0, MissingList);
                             }
                             firstFrom = Convert.ToString(addSet[0].from_time);
-                            if (firstFrom != "00:00:00" && sampleCount == 143)
+                            if (firstFrom != "00:00:00")
                             {
                                 InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
                                 MissingList.Clear();
@@ -7365,7 +7365,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
 
                             lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
-                            if (lastFrom != "23:50:00" && sampleCount == 143)
+                            if (lastFrom != "23:50:00")
                             {
                                 InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
 
@@ -7831,7 +7831,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addSet.InsertRange(0, MissingList);
                             }
                             firstFrom = Convert.ToString(addSet[0].from_time);
-                            if (firstFrom != "00:00:00" && sampleCount == 143)
+                            if (firstFrom != "00:00:00")
                             {
                                 InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
                                 MissingList.Clear();
@@ -7950,7 +7950,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
 
                             lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
-                            if (lastFrom != "23:50:00" && sampleCount ==143)
+                            if (lastFrom != "23:50:00")
                             {
                                 InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
 
@@ -8713,7 +8713,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 addSet.InsertRange(0, MissingList);
                             }
                             firstFrom = Convert.ToString(addSet[0].from_time);
-                            if (firstFrom != "00:00:00" && sampleCount == 143)
+                            if (firstFrom != "00:00:00")
                             {
                                 InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
                                 MissingList.Clear();
@@ -8821,7 +8821,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
 
                             lastFrom = Convert.ToString(addSet[sampleCount - 1].from_time);
-                            if (lastFrom != "23:50:00" && sampleCount == 143)
+                            if (lastFrom != "23:50:00")
                             {
                                 InsertWindTMLData addMissingUnit1 = new InsertWindTMLData();
 
