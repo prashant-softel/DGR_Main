@@ -412,12 +412,24 @@
         }
         var isOnloadGraph = 1;
 
-        GetSolarData(tendays, "Last 10 Days", isOnloadGraph);
-        GetWindChartData(tendays, "Last 10 Days", isOnloadGraph);
+        //GetSolarData(tendays, "Last 10 Days", isOnloadGraph);
+       // GetWindChartData(tendays, "Last 10 Days", isOnloadGraph);
         var isOnloadGraphMonthly = 0;
-        GetSolarDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
-        GetWindChartDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
-
+        //GetSolarDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
+       // GetWindChartDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
+        if (displaychart.solar == true) {
+            //let isOnloadGraph = 1;
+            GetSolarData(tendays, "Last 10 Days", isOnloadGraph);
+            //let isOnloadGraphMonthly = 0;
+            GetSolarDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
+        }
+        if (displaychart.wind == true) {
+            //let isOnloadGraphw = 1;
+            GetWindChartData(tendays, "Last 10 Days", isOnloadGraph);
+           // let isOnloadGraphMonthlyw = 0;
+            GetWindChartDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
+        }
+       
         //if (ssite_list != '' && wsite_list == '') {
         //    //chartSelection(1);
         //    GetWindChartData(tendays, chartTitle, isOnloadGraph);
