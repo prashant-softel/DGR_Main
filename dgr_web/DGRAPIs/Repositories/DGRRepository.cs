@@ -12423,7 +12423,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         if (PowerCurveHashRows > 0)
                         {
                             //double windSpeed = Math.Round(unit.recon_wind_speed, 1, MidpointRounding.ToEven);
-                            double windSpeed = Convert.ToDouble(unit.recon_wind_speed.ToString().Substring(0, unit.recon_wind_speed.ToString().IndexOf('.') + 2));
+                            //if (Convert.ToString(unit.from_time) == "10:30:00" || unit.avg_active_power == 1935.8)
+                            //{
+                            //    double hello = 3.2;
+                            //    hello = Convert.ToDouble(Math.Floor(Convert.ToDouble(unit.recon_wind_speed)));
+                            //}
+                            //double check = unit.recon_wind_speed;
+                            //double check1 = Math.Floor(Convert.ToDouble(unit.recon_wind_speed));
+                            //double check1 = Convert.ToDouble(unit.recon_wind_speed.ToString().Substring(0, unit.recon_wind_speed.ToString().IndexOf('.') + 1));
+                            double windSpeed = 0;
+                            if (unit.recon_wind_speed.ToString().Contains("."))
+                            {
+                                windSpeed = Convert.ToDouble(unit.recon_wind_speed.ToString().Substring(0, unit.recon_wind_speed.ToString().IndexOf('.') + 2));
+                            }
+                            else
+                            {
+                                windSpeed = Convert.ToDouble(unit.recon_wind_speed);
+                            }
                             double expPower = PowerCurveHash.ContainsKey(windSpeed) ? Convert.ToDouble(PowerCurveHash[windSpeed]) : 0;
                             if (expPower > 0)
                             {
