@@ -53,6 +53,7 @@ namespace DGRA_V1.Areas.admin.Controllers
         int isRegen = 0;
         int TMLType = 0;
         int isMultiSheet = 0;
+        int tmlMultiError = 0;
         string[] importData = new string[2];
         string generationDate = "";
         bool isGenValidationSuccess = false;
@@ -1224,64 +1225,71 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                             if (isMultiSheet == 1 && TMLType == 1)
                             {
-                                try
+                                if(tmlMultiError == 0)
                                 {
-                                    var json = JsonConvert.SerializeObject(TMLDataSet);
-                                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-                                    //***********Here sending dynamic type is remaining, as we have to test the performance. did for Inox multiple imports.*************
-                                    //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
-                                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=" + TMLType;
-                                    using (var client = new HttpClient())
+                                    try
                                     {
-                                        client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
-                                        var response = await client.PostAsync(url, data);
-                                        string returnResponse = response.Content.ReadAsStringAsync().Result;
-                                        if (response.IsSuccessStatusCode)
+                                        var json = JsonConvert.SerializeObject(TMLDataSet);
+                                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                                        //***********Here sending dynamic type is remaining, as we have to test the performance. did for Inox multiple imports.*************
+                                        //insertWindTMLData type = 1 : Gamesa ; type = 2 : INOX ; type = 3 : Suzlon.
+                                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=" + TMLType;
+                                        using (var client = new HttpClient())
                                         {
-                                            if (returnResponse == "5")
+                                            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                                            var response = await client.PostAsync(url, data);
+                                            string returnResponse = response.Content.ReadAsStringAsync().Result;
+                                            if (response.IsSuccessStatusCode)
                                             {
-                                                m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                                if (returnResponse == "5")
+                                                {
+                                                    m_ErrorLog.SetInformation("TML_Data file imported successfully.");
+                                                }
+                                                else
+                                                {
+                                                    m_ErrorLog.SetError(",Error in Calculation.");
+                                                }
                                             }
                                             else
                                             {
-                                                m_ErrorLog.SetError(",Error in Calculation.");
-                                            }
-                                        }
-                                        else
-                                        {
-                                            m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
+                                                m_ErrorLog.SetError(",Wind TMR API Failure,: responseCode <" + (int)response.StatusCode + ">");
 
-                                            //for solar 0, wind 1, other 2;
-                                            int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
-                                            if (deleteStatus == 1)
-                                            {
-                                                m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
-                                            }
-                                            else if (deleteStatus == 0)
-                                            {
-                                                m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
-                                            }
-                                            else
-                                            {
-                                                m_ErrorLog.SetInformation(", File not uploaded");
+                                                //for solar 0, wind 1, other 2;
+                                                int deleteStatus = await DeleteRecordsAfterFailure(importData[1], 2);
+                                                if (deleteStatus == 1)
+                                                {
+                                                    m_ErrorLog.SetInformation(", Records deleted successfully after incomplete upload");
+                                                }
+                                                else if (deleteStatus == 0)
+                                                {
+                                                    m_ErrorLog.SetInformation(", Records deletion failed due to incomplete upload");
+                                                }
+                                                else
+                                                {
+                                                    m_ErrorLog.SetInformation(", File not uploaded");
+                                                }
                                             }
                                         }
+                                        m_ErrorLog.SetInformation("Information : Calculation and storing of data successful. ");
+                                        m_ErrorLog.SaveToCSV(csvFileName);
+                                        //if (statusCode != 200)
+                                        ArrayList messageList1 = m_ErrorLog.errorLog();
+                                        foreach (var item in messageList1)
+                                        {
+                                            status += ((string)item).Replace(",", "") + ",";
+                                        }
+                                         return status;
                                     }
-                                    m_ErrorLog.SetInformation("Information : Calculation and storing of data successful. ");
-                                    m_ErrorLog.SaveToCSV(csvFileName);
-                                    //if (statusCode != 200)
-                                    ArrayList messageList1 = m_ErrorLog.errorLog();
-                                    foreach (var item in messageList1)
+                                    catch (Exception e)
                                     {
-                                        status += ((string)item).Replace(",", "") + ",";
+                                        string msg = "Exception while sending data to api of TML for multiple files, due to : " + e.ToString();
+                                        m_ErrorLog.SetError("Exception while sending data to api of TML for multiple files, due to : " + e.Message);
                                     }
-                                     return status;
                                 }
-                                catch (Exception e)
+                                if (tmlMultiError == 1)
                                 {
-                                    string msg = "Exception while sending data to api of TML for multiple files, due to : " + e.ToString();
-                                    m_ErrorLog.SetError("Exception while sending data to api of TML for multiple files, due to : " + e.Message);
+                                    m_ErrorLog.SetError("TML import failure.");
                                 }
                             }
                         }
@@ -4980,6 +4988,13 @@ namespace DGRA_V1.Areas.admin.Controllers
         {
             bool retValue = false;
             DateTime dtToday = DateTime.Now;
+            string currentDate = dtToday.ToString("yyyy-MM-dd");
+            string docDate = importDate.ToString("yyyy-MM-dd");
+            bool SameDate = true;
+            if (currentDate == docDate)
+            {
+                SameDate = false;
+            }
             DateTime dtImportDate = Convert.ToDateTime(importDate);
             TimeSpan dayDiff = dtToday - dtImportDate;
             int dayOfWeek = (int)dtToday.DayOfWeek;
@@ -4988,65 +5003,73 @@ namespace DGRA_V1.Areas.admin.Controllers
             //for DayOfWeek function 
             //if it's not true that file-date is of previous day and today is from Tuesday-Friday
             //&& dayOfWeek > 1 && dayOfWeek < 6
-            if (dayDiff.Days < 0)
+            if (SameDate)
             {
-                m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
-                retValue = true;
+                if (dayDiff.Days < 0)
+                {
+                    m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
+                    retValue = true;
+                }
+                else
+                {
+                    if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
+                    {
+                        if (siteUserRole == "Admin")
+                        {
+                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
+                        }
+                        else
+                        {
+                            // file date is incorrect
+                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+                            //retValue = true;
+                        }
+
+                    }
+                    if (retValue == false)
+                    {
+                        //if date is within 5 days
+                        //Check if the data is already import and/or Approved
+
+                        int IBStatus = 0;
+                        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetBatchStatus?site_id=" + siteID + "&import_type=" + importType + "&import_date=" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd");
+
+                        string result = "";
+                        // string line = "";
+                        WebRequest request = WebRequest.Create(url);
+                        using (var response = (HttpWebResponse)request.GetResponse())
+                        {
+                            Stream receiveStream = response.GetResponseStream();
+                            using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                            {
+                                // result = readStream.ReadToEnd();
+                                result = readStream.ReadToEnd().Trim();
+                            }
+                            //ImportBatchStatus obj = new ImportBatchStatus();
+                            //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
+                            //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
+
+                            IBStatus = Convert.ToInt32(result);
+                            if (IBStatus == 1)
+                            {
+                                if (siteUserRole == "Admin")
+                                {
+                                    m_ErrorLog.SetInformation(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved but the admin user can reimport it.");
+                                }
+                                else
+                                {
+                                    m_ErrorLog.SetError(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved. The site user cannot reimport it.");
+                                    retValue = true;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else
             {
-                if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
-                {
-                    if (siteUserRole == "Admin")
-                    {
-                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
-                    }
-                    else
-                    {
-                        // file date is incorrect
-                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                        //retValue = true;
-                    }
-
-                }
-                if (retValue == false)
-                {
-                    //if date is within 5 days
-                    //Check if the data is already import and/or Approved
-
-                    int IBStatus = 0;
-                    var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetBatchStatus?site_id=" + siteID + "&import_type=" + importType + "&import_date=" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd");
-
-                    string result = "";
-                    // string line = "";
-                    WebRequest request = WebRequest.Create(url);
-                    using (var response = (HttpWebResponse)request.GetResponse())
-                    {
-                        Stream receiveStream = response.GetResponseStream();
-                        using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
-                        {
-                            // result = readStream.ReadToEnd();
-                            result = readStream.ReadToEnd().Trim();
-                        }
-                        //ImportBatchStatus obj = new ImportBatchStatus();
-                        //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
-                        //obj = JsonConvert.DeserializeObject<ImportBatchStatus>(result);
-
-                        IBStatus = Convert.ToInt32(result);
-                        if (IBStatus == 1)
-                        {
-                            if (siteUserRole == "Admin")
-                            {
-                                m_ErrorLog.SetInformation(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved but the admin user can reimport it.");
-                            }
-                            else
-                            {
-                                m_ErrorLog.SetError(",Data for <" + Convert.ToDateTime(importDate).ToString("yyyy-MM-dd") + "> exist in database and is already approved. The site user cannot reimport it.");
-                                retValue = true;
-                            }
-                        }
-                    }
-                }
+                m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
+                retValue = true;
             }
             return retValue;
         }
@@ -6414,7 +6437,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         if (rowNumber == 2)
                         {
                             isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(convertedDate));
-                            if (!(isDateCorrect))
+                            if (isDateCorrect)
                             {
                                 errorCount++;
                                 continue;
@@ -6570,6 +6593,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                 else
                 {
                     m_ErrorLog.SetError(",Wind TML Data Validation Failed,");
+                    if (isMultiFiles || isMultiSheet == 1)
+                    {
+                        tmlMultiError = 1;
+                    }
                 }
             }
             return responseCode;
@@ -9676,6 +9703,13 @@ namespace DGRA_V1.Areas.admin.Controllers
         {
             bool retValue = false;
             DateTime dtToday = DateTime.Now;
+            string currentDate = dtToday.ToString("yyyy-MM-dd");
+            string docDate = importDate.ToString("yyyy-MM-dd");
+            bool SameDate = false;
+            if (currentDate == docDate)
+            {
+                SameDate = true;
+            }
             DateTime dtImportDate = Convert.ToDateTime(importDate);
             TimeSpan dayDiff = dtToday - dtImportDate;
             TimeSpan dayDiff2 = dtImportDate - dtToday;
@@ -9685,41 +9719,49 @@ namespace DGRA_V1.Areas.admin.Controllers
             //for DayOfWeek function 
             //if it's not true that file-date is of previous day and today is from Tuesday-Friday
             //&& dayOfWeek > 1 && dayOfWeek < 6
-            if(dayDiff.Days >= 0)
+            if (SameDate)
             {
-                if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
+                if(dayDiff.Days >= 0)
                 {
-                    if (siteUserRole == "Admin")
+                    if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
                     {
-                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
-                        retValue = true;
+                        if (siteUserRole == "Admin")
+                        {
+                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
+                            retValue = true;
+                        }
+                        else
+                        {
+                            // file date is incorrect
+                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+                            retValue = false;
+                            //retValue = true;
+                        }
+
                     }
                     else
                     {
-                        // file date is incorrect
-                        m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                        retValue = false;
-                        //retValue = true;
+                        retValue = true;
                     }
-
-                }
-                else
+                }else if (dayDiff.Days < 0)
                 {
-                    retValue = true;
+                    m_ErrorLog.SetError(",The import date <" + importDate + ">  is future date so cannot import it.");
+                    retValue = false;
                 }
-            }else if (dayDiff.Days < 0)
-            {
-                m_ErrorLog.SetError(",The import date <" + importDate + ">  is future date so cannot import it.");
-                retValue = false;
+                //if (dayDiff2.Days > 0)
+                //{
+                //    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is future date so cannot import it.");
+                //    retValue = false;
+                //}
+                if (retValue == false)
+                {
+                    //if date is within 5 days
+                }
             }
-            //if (dayDiff2.Days > 0)
-            //{
-            //    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is future date so cannot import it.");
-            //    retValue = false;
-            //}
-            if (retValue == false)
+            else
             {
-                //if date is within 5 days
+                m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
+                retValue = true;
             }
             return retValue;
         }
