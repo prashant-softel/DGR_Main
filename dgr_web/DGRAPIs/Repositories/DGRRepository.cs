@@ -7580,10 +7580,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " site_master_id IN(" + site + ")";
+                counter = 1;
             }
 
             if (!string.IsNullOrEmpty(state) && state != "All")
             {
+                if(counter == 1)
+                {
+                    filter += " AND ";
+                }
 
                 string[] siteSplit = state.Split(",");
                 if (siteSplit.Length > 0)
@@ -7606,10 +7611,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if (!string.IsNullOrEmpty(spv) && spv != "All")
             {
-                if(counter == 1)
+                if (counter == 1)
                 {
                     filter += " AND ";
                 }
+
                 string[] spvSplit = spv.Split(",");
                 if (spvSplit.Length > 0)
                 {
@@ -7702,14 +7708,61 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
         }
-        public async Task<List<WindLocationMaster>> GetWTGData(string siteid)
+        public async Task<List<WindLocationMaster>> GetWTGData(string siteid, string state, string spv)
         {
             string filter = "";
+            int chkfilter = 1;
             if (!string.IsNullOrEmpty(siteid))
             {
-                filter += " and site_master_id in (" + siteid + ") ";
+                siteid = siteid.TrimEnd(',');
+                filter += " and t1.site_master_id in (" + siteid + ") ";
+                chkfilter = 1;
             }
-            string query = "SELECT * FROM `location_master` where status = 1 " + filter;
+            if (!string.IsNullOrEmpty(state))
+            {
+                if (chkfilter == 1)
+                    filter += " and ";
+
+
+                string[] stateSplit = state.Split(",");
+                string states = "";
+                for (int i = 0; i < stateSplit.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(stateSplit[i]))
+                    {
+                        states += "'" + stateSplit[i] + "',";
+                    }
+                }
+                states = states.TrimEnd(',');
+                filter += " t1.state in(" + states + ")";
+                chkfilter = 1;
+            }
+            if (!string.IsNullOrEmpty(spv))
+            {
+                if (chkfilter == 1)
+                    filter += " and ";
+                else
+                    filter += " where ";
+
+                string[] spvSplit = spv.Split(",");
+                string spvs = "";
+                for (int i = 0; i < spvSplit.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spvSplit[i]))
+                    {
+                        spvs += "'" + spvSplit[i] + "',";
+                    }
+                }
+                spvs = spvs.TrimEnd(',');
+                filter += "t1.spv in(" + spvs + ")";
+            }
+
+            /* if (!string.IsNullOrEmpty(siteid))
+             {
+                 filter += " and site_master_id in (" + siteid + ") ";
+             }*/
+            string query = "SELECT t2.location_master_id, t2.site_master_id,t2.site,t2.wtg,t2.wtg_onm,t2.feeder,t2.max_kwh_day FROM `site_master` as t1 left join location_master as t2 on t2.site_master_id = t1.site_master_id where t2.status = 1" + filter;
+           // string query = "SELECT * FROM `location_master` where status = 1 " + filter;
             List<WindLocationMaster> _locattionmasterDate = new List<WindLocationMaster>();
             _locattionmasterDate = await Context.GetData<WindLocationMaster>(query).ConfigureAwait(false);
             return _locattionmasterDate;

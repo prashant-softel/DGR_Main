@@ -203,13 +203,13 @@ namespace DGRA_V1.Controllers
 
         }
         // Site List
-        public async Task<IActionResult> GetWTGList(string siteid)
+        public async Task<IActionResult> GetWTGList(string siteid, string state,string spv)
         {
            
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWTGList?siteid=" + siteid + "";
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWTGList?siteid=" + siteid + "&state=" + state + "&spv=" + spv;
                 //var url = "http://localhost:23835/api/DGR/GetWTGList?siteid=" + siteid + "";
                 WebRequest request = WebRequest.Create(url);
 

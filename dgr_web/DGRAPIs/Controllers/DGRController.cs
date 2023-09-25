@@ -2439,12 +2439,12 @@ namespace DGRAPIs.Controllers
         }
         [Route("GetWTGList")]
         [HttpGet]
-        public async Task<IActionResult> GetWTGList(string siteid)
+        public async Task<IActionResult> GetWTGList(string siteid, string state, string spv )
         {
             {
                 try
                 {
-                    var data = await _dgrBs.GetWTGList(siteid);
+                    var data = await _dgrBs.GetWTGList(siteid,state,spv);
                     return Ok(data);
 
                 }

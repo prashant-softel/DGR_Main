@@ -72,6 +72,11 @@
         .os-viewport {
             overflow-x: unset !important;
         }
+        .dropdown-menu-lg {
+            max-width: 278px !important;
+            min-width: 210px !important;
+            padding: 0;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -106,10 +111,10 @@
                         </div>
                     </a>
 
-                    <div class=" collapse dropdown-menu dropdown-menu-lg dropdown-menu-right " aria-labelledby="dropDownButton" id="userProfile"style="right: -2rem; top: 1.8rem;">
-                        <span class="dropdown-item dropdown-header">User Details</span>
+                    <div class=" collapse dropdown-menu dropdown-menu-lg dropdown-menu-right " aria-labelledby="dropDownButton" id="userProfile"style="right: -2rem !important; top: 1.8rem;">
+                        <span class="dropdown-item dropdown-header" style="background-color: #77CAE7 !important; color: black !important; line-height: 12px; ">User Details</span>
                         <div class="dropdown-divider"></div>
-                        <span class="dropdown-item">
+                        <span class="dropdown-item" style="text-align:center">
                             @HttpContextAccessor.HttpContext.Session.GetString("DisplayName") &nbsp;(@HttpContextAccessor.HttpContext.Session.GetString("role"))
 
                         </span>
@@ -121,7 +126,7 @@
                         <div class="dropdown-divider" onclick="clearSession()" ></div>
                         <div onclick="clearSession()" >
                         <a href="~/Home/Logout" class="dropdown-item text-center">
-                            <span class=""> Sign Out</span>
+                            <span class=""><img src="~/Content/img/log-out.png" width="17px"> Sign Out</span>
                             
                         </a>
 

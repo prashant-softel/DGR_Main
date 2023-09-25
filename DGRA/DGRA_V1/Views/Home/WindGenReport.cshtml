@@ -768,10 +768,18 @@
     }
     function GetWTG(fliterVal) {
         let siteid = "";
-        //$('select#site option:selected').each(function () {
-        //    siteid += $(this).val() + ",";
-        //});
-        //siteid = siteid != "" ? siteid.slice(0, -1) : siteid;
+        let state = "";
+        $('select#state option:selected').each(function () {
+            state += $(this).val() + ",";
+
+        });
+
+        let spv = "";
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+            // console.log($(this).val());
+
+        });
 
          if (fliterVal == false) {
              siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -784,7 +792,7 @@
             }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid,
+            url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid+ '&state=' + state + '&spv=' + spv,
             contentType: "application/json; charset=utf-8",
             // data: '{"state":"' + val + '"}',
             datatype: "html",
@@ -805,13 +813,21 @@
         });
     }
     function GetWTGM(fliterVal) {
+
+
         let siteid = "";
-        //$('select#siteM option:selected').each(function () {
-        //    siteid += $(this).val() + ",";
+        let state = "";
+        $('select#stateM option:selected').each(function () {
+            state += $(this).val() + ",";
 
-        //});
-        //siteid = siteid != "" ? siteid.slice(0, -1) : siteid;
+        });
 
+        let spv = "";
+        $('select#spvM option:selected').each(function () {
+            spv += $(this).val() + ",";
+            // console.log($(this).val());
+
+        });
          if (fliterVal == false) {
              siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
             }
@@ -823,7 +839,7 @@
             }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid,
+            url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid + '&state=' + state + '&spv=' + spv,
             contentType: "application/json; charset=utf-8",
             // data: '{"state":"' + val + '"}',
             datatype: "html",
@@ -843,7 +859,19 @@
         });
     }
     function GetWTGY(fliterVal) {
-        var siteid = "";
+        let siteid = "";
+        let state = "";
+        $('select#stateY option:selected').each(function () {
+            state += $(this).val() + ",";
+
+        });
+
+        let spv = "";
+        $('select#spvY option:selected').each(function () {
+            spv += $(this).val() + ",";
+            // console.log($(this).val());
+
+        });
          if (fliterVal == false) {
              siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
             }
@@ -860,7 +888,7 @@
 
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid,
+            url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid + '&state=' + state + '&spv=' + spv,
             contentType: "application/json; charset=utf-8",
             // data: '{"state":"' + val + '"}',
             datatype: "html",

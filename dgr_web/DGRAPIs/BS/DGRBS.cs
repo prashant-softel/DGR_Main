@@ -172,7 +172,7 @@ namespace DGRAPIs.BS
         Task<List<SPVList>> GetSPVListSolar(string state,string site);
         Task<List<WindSiteMaster>> GetSiteList(string state, string spvdata,string site);
         Task<List<SolarSiteMaster>> GetSiteListSolar(string state, string spvdata, string site);
-        Task<List<WindLocationMaster>> GetWTGList(string siteid);
+        Task<List<WindLocationMaster>> GetWTGList(string siteid, string state, string spv);
         Task<List<SolarLocationMaster>> GetInvList(string siteid, string state, string spv);
         Task<List<BDType>> GetBDType();
         Task<List<WindUploadingFilegeneration1>> GetImportGenData(int importId);
@@ -2250,13 +2250,13 @@ namespace DGRAPIs.BS
             }
 
         }
-        public async Task<List<WindLocationMaster>> GetWTGList(string siteid)
+        public async Task<List<WindLocationMaster>> GetWTGList(string siteid, string state, string spv)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.GetWTGData(siteid);
+                    return await repos.GetWTGData(siteid, state, spv);
                 }
             }
             catch (Exception ex)
