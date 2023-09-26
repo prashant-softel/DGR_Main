@@ -318,7 +318,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                             DataTable dt = null;
 
-                             string _filePath = @"C:\TempFile\docupload.xlsx";
+                            string _filePath = @"C:\TempFile\docupload.xlsx";
                             //string _filePath = @"G:\TempFile\docupload.xlsx";
                             //string _filePath = env.ContentRootPath + @"\TempFile\docupload.xlsx";
                             dataSetMain = GetDataTableFromExcel(_filePath, true, ref fileSheets);
@@ -4995,8 +4995,10 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 SameDate = false;
             }
+            DateTime CrDate = Convert.ToDateTime(currentDate);
             DateTime dtImportDate = Convert.ToDateTime(importDate);
-            TimeSpan dayDiff = dtToday - dtImportDate;
+            TimeSpan dayDiff = CrDate - dtImportDate;
+           
             int dayOfWeek = (int)dtToday.DayOfWeek;
 
 
@@ -9705,13 +9707,14 @@ namespace DGRA_V1.Areas.admin.Controllers
             DateTime dtToday = DateTime.Now;
             string currentDate = dtToday.ToString("yyyy-MM-dd");
             string docDate = importDate.ToString("yyyy-MM-dd");
-            bool SameDate = false;
+            bool SameDate = true;
             if (currentDate == docDate)
             {
-                SameDate = true;
+                SameDate = false;
             }
             DateTime dtImportDate = Convert.ToDateTime(importDate);
-            TimeSpan dayDiff = dtToday - dtImportDate;
+            DateTime CrDate = Convert.ToDateTime(currentDate);
+            TimeSpan dayDiff = CrDate - dtImportDate;
             TimeSpan dayDiff2 = dtImportDate - dtToday;
             int dayOfWeek = (int)dtToday.DayOfWeek;
 
