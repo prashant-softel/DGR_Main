@@ -58,22 +58,22 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="input-group row">
-                            <label class="col-sm-3 col-form-label">Date Range : </label>
+                            <label class="col-sm-4 col-form-label float-right">Date Range : </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right  col-sm-6" id="daterange" name="daterange">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-2 col-form-label text-left">Site : </label>
-                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-9" id="site" name="site[]" multiple>
                                 </select>
                             </div>
                         </div>
@@ -145,14 +145,14 @@
                 }
             });
       
-        $("#hide").click(function () {
+        /*$("#hide").click(function () {
             $("#chart").hide();
             $("#show").css('display', 'block');
         });
         $("#show").click(function () {
             $("chart").show();
             $("#hide").css('display', 'none');
-        });
+        });*/
       
     });
     var ghi_arr = [];
@@ -422,13 +422,15 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
+                document.getElementById("loader").style.display = 'none';
+                document.getElementById("wms_comparision").style.display = 'block';
             }
         });
     }
 
     function FifteenMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
         let dataset_arr = [];
-
+        let yaxisdata = [];
         if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
 
             dataset_arr.push({ yAxisID: 'A', label: "GHI 1", data: ghi_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1 });
@@ -458,9 +460,15 @@
         if (poa_arr7.length > 0 && poa_arr7.length != poaZeroArr7.length) {
             dataset_arr.push({ yAxisID: 'A', label: "POA 7", data: poa_arr7, pointRadius: 0.8, borderColor: "#F98027", fill: false, borderWidth: 1 });
         }
+        yaxisdata.push({ id: 'A', type: 'linear', position: 'left' });
+        if ((amp_temp_arr.length > 0 && amp_temp_arr.length != ampTempZeroArr.length) || (mod_arr_arr.length > 0 && mod_arr_arr.length != modZeroArr.length)) {
+            dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.8, borderColor: "#FFCA5A", fill: false, borderWidth: 1 });
+            dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1 });
+            yaxisdata.push({ id: 'B', type: 'linear', position: 'right' });
+        }
 
-        dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.8, borderColor: "#FFCA5A", fill: false, borderWidth: 1 });
-        dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1 });
+       // dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.8, borderColor: "#FFCA5A", fill: false, borderWidth: 1 });
+        //dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1 });
 
         console.log(dataset_arr);
         new Chart(document.getElementById("line-chart"), {
@@ -483,16 +491,7 @@
                     position: "bottom"
                 },
                 scales: {
-                    yAxes: [{
-                        id: 'A',
-                        type: 'linear',
-                        position: 'left',
-                    }, {
-                        id: 'B',
-                        type: 'linear',
-                        position: 'right',
-
-                    }]
+                    yAxes: yaxisdata,
                 }
 
             }

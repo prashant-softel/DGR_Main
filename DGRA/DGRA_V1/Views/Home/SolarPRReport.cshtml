@@ -78,34 +78,35 @@
             <div class="card-body">
                 <div class="row">
                     @*<div class="col-sm-3">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-left">FY : </label>
-                                <select class="form-control  col-sm-10" id="fy" name="fy" value="">
-                                    <option value="">Select Financial Year</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>*@
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 col-form-label text-left">FY : </label>
+                    <select class="form-control  col-sm-10" id="fy" name="fy" value="">
+                        <option value="">Select Financial Year</option>
+                    </select>
+                </div>
+            </div>
+        </div>*@
                     <div class="col-sm-4">
-                        <div class="input-group " >
+                        <div class="input-group ">
                             <label class="col-sm-2 col-form-label text-left">Date : </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-sm-2">
-                        <div class="row">
-                            <div class="col-sm-1 text-center"></div>
-                            <div class="col-sm-1 text-center">
-                                <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="width: 5rem;">Search</button>
-                            </div>
-                            <div class="col-sm-1 text-center"></div>
-                        </div>
+                    <div class="col-sm-1 text-left">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="margin-left:-2rem; width: 5rem;">Search</button>
+                    </div>
+                    <div class="col-sm-7 text-center"></div>
+                    <!--<div class="col-sm-2">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="width: 5rem;">Search</button>
+                    </div>
+                    <div class="col-sm-1 text-center"></div>-->
+                </div>
                     </div>
                     <div class="col-sm-3"></div>
                 </div>

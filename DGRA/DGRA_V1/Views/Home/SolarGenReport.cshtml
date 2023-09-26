@@ -89,14 +89,14 @@
                                     <div class="tab-pane fade show active" id="custom-tabs-three-daily" role="tabpanel" aria-labelledby="custom-tabs-three-daily-tab">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <div class="input-group " style="margin-left: -13%; width: 115%;">
+                                                <div class="input-group " style="margin-left: -14%; width: 118%;">
                                                     <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">
                                                             <i class="far fa-calendar-alt"></i>
                                                         </span>
                                                     </div>
-                                                    <input type="text" class="form-control float-right" id="daterange" name="daterange">
+                                                    <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
@@ -127,8 +127,8 @@
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
-                                                        <label class="col-sm-2 col-form-label text-lefft">SPV : </label>
-                                                        <select class="form-control  col-sm-10" id="spv" name="spv[]" value="" onchange="GetSite()" multiple></select>
+                                                        <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                                        <select class="form-control  col-sm-8" id="spv" name="spv[]" value="" onchange="GetSite()" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -183,7 +183,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">FY : </label>
-                                                        <select class="form-control  col-sm-9" id="fyM" name="fyM" value="">
+                                                        <select class="form-control  col-sm-8" id="fyM" name="fyM" value="">
                                                             <option value="">Select Financial Year</option>
                                                         </select>
                                                     </div>
@@ -194,7 +194,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Month : </label>
-                                                        <select class="form-control  col-sm-9" id="monthM" name="monthM[]" value="" multiple>
+                                                        <select class="form-control  col-sm-8" id="monthM" name="monthM[]" value="" multiple>
                                                             <option value="04">April</option>
                                                             <option value="05">May</option>
                                                             <option value="06">June</option>
@@ -215,7 +215,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Country : </label>
-                                                        <select class="form-control  col-sm-9" id="countryM" name="countryM" value="">
+                                                        <select class="form-control  col-sm-8" id="countryM" name="countryM" value="">
                                                             <option value="india" selected>India</option>
                                                         </select>
                                                     </div>
@@ -228,7 +228,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">State : </label>
-                                                        <select class="form-control  col-sm-9" id="stateM" name="stateM[]" value="" onchange="GetSPVM();" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="stateM" name="stateM[]" value="" onchange="GetSPVM();" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -237,7 +237,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">SPV : </label>
-                                                        <select class="form-control  col-sm-9" id="spvM" name="spvM[]" value="" onchange="GetSiteM()" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="spvM" name="spvM[]" value="" onchange="GetSiteM()" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -246,7 +246,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                                        <select class="form-control  col-sm-9" id="siteM" name="siteM[]" value="" onchange="GetInverterM(true)" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="siteM" name="siteM[]" value="" onchange="GetInverterM(true)" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -257,7 +257,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Inverter : </label>
-                                                        <select class="form-control  col-sm-9" id="invM" name="invM[]" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="invM" name="invM[]" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -293,7 +293,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-2 col-form-label text-right">FY : </label>
-                                                        <select class="form-control  col-sm-9" id="fyY" name="fyY" value="">
+                                                        <select class="form-control  col-sm-8" id="fyY" name="fyY" value="">
                                                             <option value="">Select Financial Year</option>
                                                         </select>
                                                     </div>
@@ -303,7 +303,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Country : </label>
-                                                        <select class="form-control  col-sm-9" id="countryY" name="countryY" value="">
+                                                        <select class="form-control  col-sm-8" id="countryY" name="countryY" value="">
                                                             <option value="india" selected>India</option>
                                                         </select>
                                                     </div>
@@ -313,7 +313,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">State : </label>
-                                                        <select class="form-control  col-sm-9" id="stateY" name="stateY[]" value="" onchange="GetSPVY();" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="stateY" name="stateY[]" value="" onchange="GetSPVY();" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -325,7 +325,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-2 col-form-label text-right">SPV : </label>
-                                                        <select class="form-control  col-sm-9" id="spvY" name="spvY[]" value="" onchange="GetSiteY()" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="spvY" name="spvY[]" value="" onchange="GetSiteY()" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -333,7 +333,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                                        <select class="form-control  col-sm-9" id="siteY" name="siteY[]" value="" onchange="GetInverterY(true)" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="siteY" name="siteY[]" value="" onchange="GetInverterY(true)" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -341,7 +341,7 @@
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Inverter : </label>
-                                                        <select class="form-control  col-sm-9" id="invY" name="invY[]" multiple></select>
+                                                        <select class="form-control  col-sm-8" id="invY" name="invY[]" multiple></select>
                                                     </div>
                                                 </div>
                                             </div>
