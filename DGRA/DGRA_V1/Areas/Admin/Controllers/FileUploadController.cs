@@ -5023,8 +5023,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         else
                         {
                             // file date is incorrect
-                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                            //retValue = true;
+                            m_ErrorLog.SetError(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+                            retValue = true;
                         }
 
                     }
@@ -6327,7 +6327,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         rowNumber++;
                         if(rowNumber > 2)
                         {
-                            if (!(isDateCorrect))
+                            if (isDateCorrect)
                             {
                                 errorCount++;
                                 continue;
@@ -6438,7 +6438,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //string temp_date = temp.Substring(0, 10);
                         if (rowNumber == 2)
                         {
-                            isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(convertedDate));
+                            isDateCorrect = importTMLDateValidationNew(TMLType, addUnit.site_id, Convert.ToDateTime(convertedDate));
                             if (isDateCorrect)
                             {
                                 errorCount++;
@@ -6632,7 +6632,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.file_name = fileName;
                         if(rowNumber > 2)
                         {
-                            if (!(isDateCorrect))
+                            if (isDateCorrect)
                             {
                                 errorCount++;
                                 continue;
@@ -6717,8 +6717,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         //string temp_date = temp.Substring(0, 10);
                         if (rowNumber == 2)
                         {
-                            isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(convertedDate));
-                            if (!(isDateCorrect))
+                            isDateCorrect = importTMLDateValidationNew(TMLType, addUnit.site_id, Convert.ToDateTime(convertedDate));
+                            if (isDateCorrect)
                             {
                                 errorCount++;
                                 continue;
@@ -7028,7 +7028,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                             if (rowNumber > 2)
                             {
-                                if (!(isDateCorrect))
+                                if (isDateCorrect)
                                 {
                                     errorCount++;
                                     continue;
@@ -7065,8 +7065,8 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                             if(rowNumber == 2)
                             {
-                                isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(addUnit.timestamp));
-                                if (!(isDateCorrect))
+                                isDateCorrect = importTMLDateValidationNew(TMLType, addUnit.site_id, Convert.ToDateTime(addUnit.timestamp));
+                                if (isDateCorrect)
                                 {
                                     errorCount++;
                                     continue;
@@ -7541,7 +7541,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         if (rowNumber > 2)
                         {
-                            if (!(isDateCorrect))
+                            if (isDateCorrect)
                             {
                                 errorCount++;
                                 continue;
@@ -7588,8 +7588,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.timestamp = timeStamp;
                         if(rowNumber == 2)
                         {
-                            isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(addUnit.timestamp));
-                            if (!(isDateCorrect))
+                            isDateCorrect = importTMLDateValidationNew(TMLType, addUnit.site_id, Convert.ToDateTime(addUnit.timestamp));
+                            if (isDateCorrect)
                             {
                                 errorCount++;
                                 continue;
@@ -8227,7 +8227,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             {
                                 if (columnCount > 1)
                                 {
-                                    if (!(isDateCorrect))
+                                    if (isDateCorrect)
                                     {
                                         errorCount++;
                                         continue;
@@ -8273,8 +8273,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         m_ErrorLog.SetError(", Log Time (Local) value is empty.");
                                         errorCount++;
                                     }
-                                    isDateCorrect = importTMLDateValidation(TMLType, addUnit.site_id, Convert.ToDateTime(ds.Tables[0].Rows[RowNo_timestamp][columnCount]));
-                                    if (!(isDateCorrect))
+                                    isDateCorrect = importTMLDateValidationNew(TMLType, addUnit.site_id, Convert.ToDateTime(ds.Tables[0].Rows[RowNo_timestamp][columnCount]));
+                                    if (isDateCorrect)
                                     {
                                         errorCount++;
                                         continue;
@@ -9701,7 +9701,74 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
         }
 
-        public bool importTMLDateValidation(int importType, int siteID, DateTime importDate)
+        //public bool importTMLDateValidation(int importType, int siteID, DateTime importDate)
+        //{
+        //    bool retValue = false;
+        //    DateTime dtToday = DateTime.Now;
+        //    string currentDate = dtToday.ToString("yyyy-MM-dd");
+        //    string docDate = importDate.ToString("yyyy-MM-dd");
+        //    bool SameDate = false;
+        //    if (currentDate == docDate)
+        //    {
+        //        SameDate = true;
+        //    }
+        //    DateTime dtImportDate = Convert.ToDateTime(importDate);
+        //    DateTime CrDate = Convert.ToDateTime(currentDate);
+        //    TimeSpan dayDiff = CrDate - dtImportDate;
+        //    TimeSpan dayDiff2 = dtImportDate - dtToday;
+        //    int dayOfWeek = (int)dtToday.DayOfWeek;
+
+
+        //    //for DayOfWeek function 
+        //    //if it's not true that file-date is of previous day and today is from Tuesday-Friday
+        //    //&& dayOfWeek > 1 && dayOfWeek < 6
+        //    if (SameDate)
+        //    {
+        //        if(dayDiff.Days >= 0)
+        //        {
+        //            if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
+        //            {
+        //                if (siteUserRole == "Admin")
+        //                {
+        //                    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
+        //                    retValue = true;
+        //                }
+        //                else
+        //                {
+        //                    // file date is incorrect
+        //                    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+        //                    retValue = false;
+        //                    //retValue = true;
+        //                }
+
+        //            }
+        //            else
+        //            {
+        //                retValue = true;
+        //            }
+        //        }else if (dayDiff.Days < 0)
+        //        {
+        //            m_ErrorLog.SetError(",The import date <" + importDate + ">  is future date so cannot import it.");
+        //            retValue = false;
+        //        }
+        //        //if (dayDiff2.Days > 0)
+        //        //{
+        //        //    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is future date so cannot import it.");
+        //        //    retValue = false;
+        //        //}
+        //        if (retValue == false)
+        //        {
+        //            //if date is within 5 days
+        //        }
+        //    }
+        //    else
+        //    {
+        //        m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
+        //        retValue = false;
+        //    }
+        //    return retValue;
+        //}
+        public bool importTMLDateValidationNew(int importType, int siteID, DateTime importDate)
         {
             bool retValue = false;
             DateTime dtToday = DateTime.Now;
@@ -9712,10 +9779,10 @@ namespace DGRA_V1.Areas.admin.Controllers
             {
                 SameDate = false;
             }
-            DateTime dtImportDate = Convert.ToDateTime(importDate);
             DateTime CrDate = Convert.ToDateTime(currentDate);
+            DateTime dtImportDate = Convert.ToDateTime(importDate);
             TimeSpan dayDiff = CrDate - dtImportDate;
-            TimeSpan dayDiff2 = dtImportDate - dtToday;
+
             int dayOfWeek = (int)dtToday.DayOfWeek;
 
 
@@ -9724,41 +9791,32 @@ namespace DGRA_V1.Areas.admin.Controllers
             //&& dayOfWeek > 1 && dayOfWeek < 6
             if (SameDate)
             {
-                if(dayDiff.Days >= 0)
+                if (dayDiff.Days < 0)
+                {
+                    m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
+                    retValue = true;
+                }
+                else
                 {
                     if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
                     {
                         if (siteUserRole == "Admin")
                         {
                             m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
-                            retValue = true;
                         }
                         else
                         {
                             // file date is incorrect
-                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                            retValue = false;
-                            //retValue = true;
+                            m_ErrorLog.SetError(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+                            retValue = true;
                         }
 
                     }
-                    else
+                    if (retValue == false)
                     {
-                        retValue = true;
+                        //if date is within 5 days
+                        //Check if the data is already import and/or Approved
                     }
-                }else if (dayDiff.Days < 0)
-                {
-                    m_ErrorLog.SetError(",The import date <" + importDate + ">  is future date so cannot import it.");
-                    retValue = false;
-                }
-                //if (dayDiff2.Days > 0)
-                //{
-                //    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is future date so cannot import it.");
-                //    retValue = false;
-                //}
-                if (retValue == false)
-                {
-                    //if date is within 5 days
                 }
             }
             else
