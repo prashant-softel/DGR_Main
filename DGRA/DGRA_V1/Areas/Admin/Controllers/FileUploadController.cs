@@ -9701,73 +9701,73 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
         }
 
-        public bool importTMLDateValidation(int importType, int siteID, DateTime importDate)
-        {
-            bool retValue = false;
-            DateTime dtToday = DateTime.Now;
-            string currentDate = dtToday.ToString("yyyy-MM-dd");
-            string docDate = importDate.ToString("yyyy-MM-dd");
-            bool SameDate = false;
-            if (currentDate == docDate)
-            {
-                SameDate = true;
-            }
-            DateTime dtImportDate = Convert.ToDateTime(importDate);
-            DateTime CrDate = Convert.ToDateTime(currentDate);
-            TimeSpan dayDiff = CrDate - dtImportDate;
-            TimeSpan dayDiff2 = dtImportDate - dtToday;
-            int dayOfWeek = (int)dtToday.DayOfWeek;
+        //public bool importTMLDateValidation(int importType, int siteID, DateTime importDate)
+        //{
+        //    bool retValue = false;
+        //    DateTime dtToday = DateTime.Now;
+        //    string currentDate = dtToday.ToString("yyyy-MM-dd");
+        //    string docDate = importDate.ToString("yyyy-MM-dd");
+        //    bool SameDate = false;
+        //    if (currentDate == docDate)
+        //    {
+        //        SameDate = true;
+        //    }
+        //    DateTime dtImportDate = Convert.ToDateTime(importDate);
+        //    DateTime CrDate = Convert.ToDateTime(currentDate);
+        //    TimeSpan dayDiff = CrDate - dtImportDate;
+        //    TimeSpan dayDiff2 = dtImportDate - dtToday;
+        //    int dayOfWeek = (int)dtToday.DayOfWeek;
 
 
-            //for DayOfWeek function 
-            //if it's not true that file-date is of previous day and today is from Tuesday-Friday
-            //&& dayOfWeek > 1 && dayOfWeek < 6
-            if (SameDate)
-            {
-                if(dayDiff.Days >= 0)
-                {
-                    if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
-                    {
-                        if (siteUserRole == "Admin")
-                        {
-                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
-                            retValue = true;
-                        }
-                        else
-                        {
-                            // file date is incorrect
-                            m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
-                            retValue = false;
-                            //retValue = true;
-                        }
+        //    //for DayOfWeek function 
+        //    //if it's not true that file-date is of previous day and today is from Tuesday-Friday
+        //    //&& dayOfWeek > 1 && dayOfWeek < 6
+        //    if (SameDate)
+        //    {
+        //        if(dayDiff.Days >= 0)
+        //        {
+        //            if (!(dayDiff.Days >= 0 && dayDiff.Days <= 5))
+        //            {
+        //                if (siteUserRole == "Admin")
+        //                {
+        //                    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the admin user can import it.");
+        //                    retValue = true;
+        //                }
+        //                else
+        //                {
+        //                    // file date is incorrect
+        //                    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is more than 5 days older but the site user cannot import it.");
+        //                    retValue = false;
+        //                    //retValue = true;
+        //                }
 
-                    }
-                    else
-                    {
-                        retValue = true;
-                    }
-                }else if (dayDiff.Days < 0)
-                {
-                    m_ErrorLog.SetError(",The import date <" + importDate + ">  is future date so cannot import it.");
-                    retValue = false;
-                }
-                //if (dayDiff2.Days > 0)
-                //{
-                //    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is future date so cannot import it.");
-                //    retValue = false;
-                //}
-                if (retValue == false)
-                {
-                    //if date is within 5 days
-                }
-            }
-            else
-            {
-                m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
-                retValue = false;
-            }
-            return retValue;
-        }
+        //            }
+        //            else
+        //            {
+        //                retValue = true;
+        //            }
+        //        }else if (dayDiff.Days < 0)
+        //        {
+        //            m_ErrorLog.SetError(",The import date <" + importDate + ">  is future date so cannot import it.");
+        //            retValue = false;
+        //        }
+        //        //if (dayDiff2.Days > 0)
+        //        //{
+        //        //    m_ErrorLog.SetInformation(",The import date <" + importDate + ">  is future date so cannot import it.");
+        //        //    retValue = false;
+        //        //}
+        //        if (retValue == false)
+        //        {
+        //            //if date is within 5 days
+        //        }
+        //    }
+        //    else
+        //    {
+        //        m_ErrorLog.SetError(",The import date <" + importDate + ">  is of future, so cannot import this.");
+        //        retValue = false;
+        //    }
+        //    return retValue;
+        //}
         public bool importTMLDateValidationNew(int importType, int siteID, DateTime importDate)
         {
             bool retValue = false;
