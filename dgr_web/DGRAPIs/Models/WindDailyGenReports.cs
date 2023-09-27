@@ -46,7 +46,7 @@ namespace DGRAPIs.Models
         public double others_loss { get; set; }
         public double igbdh_loss {get;set;}
         public double egbdh_loss { get; set; }
-        public double load_Shedding_loss { get; set; }
+        public double loadShedding_loss { get; set; }
         public double total_loss { get; set; }
         public double total_hrs { get; set; }
     }
@@ -90,7 +90,7 @@ namespace DGRAPIs.Models
         public double others_loss { get; set; }
         public double igbdh_loss { get; set; }
         public double egbdh_loss { get; set; }
-        public double load_Shedding_loss { get; set; }
+        public double loadShedding_loss { get; set; }
         public double total_loss { get; set; }
         public double total_hrs { get; set; }
     }
@@ -134,7 +134,7 @@ namespace DGRAPIs.Models
         public double others_loss { get; set; }
         public double igbdh_loss { get; set; }
         public double egbdh_loss { get; set; }
-        public double load_Shedding_loss { get; set; }
+        public double loadShedding_loss { get; set; }
         public double total_loss { get; set; }
         public double total_hrs { get; set; }
     }
