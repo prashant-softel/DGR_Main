@@ -1313,6 +1313,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                             DataTable dt = null;
 
                             string _filePath = @"C:\TempFile\docupload.csv";
+                            //string _filePath = @"G:\TempFile\docupload.csv";
                             dataSetMain = GetDataTableFromTxtOrCsv(_filePath, true, ref fileSheets);
                             if (dataSetMain == null)
                             {
