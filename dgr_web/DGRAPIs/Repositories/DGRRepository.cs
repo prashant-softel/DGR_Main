@@ -14123,6 +14123,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double lineloss_final = 0;
             double allSum = 0;
             double finalExpectedPower = 0;
+            int monthlyData = 0;
             try
             {
                 if (!string.IsNullOrEmpty(site))
@@ -14205,6 +14206,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                     }
                     lossUSMH += lossHealth;
+                }
+                else
+                {
+                    if (isYearly == 0)
+                    {
+                        monthlyData = 100;
+                    }
                 }
 
             }
@@ -14549,6 +14557,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         lossPCD_final = lossPCD,
                         actual_final = actPowerForYearly,
                         loadShedding = loadShedding,
+                        //monthlyData = monthlyData,
                     };
                     _tmlDataList.Add(finalDataYearly);
                 }
@@ -14568,6 +14577,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         lossPCD_final = lossPCD,
                         actual_final = actual_active_power,
                         loadShedding = loadShedding,
+                        monthlyData = monthlyData,
                     };
                     _tmlDataList.Add(finalData);
                 }
