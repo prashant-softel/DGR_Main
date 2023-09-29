@@ -8150,7 +8150,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         if(columnCount > 1)
                         {
-                            if (!(isDateCorrect))
+                            if (isDateCorrect)
                             {
                                 errorCount++;
                                 continue;

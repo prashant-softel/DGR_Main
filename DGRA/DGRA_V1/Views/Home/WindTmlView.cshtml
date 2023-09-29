@@ -110,6 +110,9 @@
                 </div>
                 <hr>
                 <div class="col-sm-12">
+                    <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                        <h2 id="dataNotPresent" style="display: none; color: #007bff;"></h2>
+                    </div>
                     <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
@@ -508,6 +511,7 @@
                 console.log(result);
                 //document.getElementById("loader").style.display = 'none';
                 var CloseBtnStatus = "";
+                var isMonthlyDataPresent = 0;
                 CloseBtnStatus = document.getElementById("CloseViewTableBtn").style.display;
                 console.log("Close btn status : " + CloseBtnStatus + " type " + typeof (CloseBtnStatus));
                 if (CloseBtnStatus == "flex") {
@@ -517,7 +521,7 @@
                     document.getElementById("viewTableBtn").style.display = 'flex';
                 }
                 getChartDataYearly(site_id);
-
+                
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         console.log("Expected : ", result[i].expected_final);
@@ -544,8 +548,19 @@
                         lossPCD_final = result[i].lossPCD_final;
                         actual_final = result[i].actual_final;
                         loadShedding = result[i].loadShedding;
+                        isMonthlyDataPresent = Number(result[i].monthlyData);
 
-                        CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                        if (isMonthlyDataPresent != 100) {
+                            document.getElementById("dataNotPresentDiv").style.display = "none";
+                            document.getElementById("Waterfall").style.display = "flex";
+                            CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                        } else {
+                            var division = document.getElementById("dataNotPresent");
+                            division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+                            division.style.display = "flex";
+                            document.getElementById("dataNotPresentDiv").style.display = "flex";
+                            document.getElementById("Waterfall").style.display = "none";
+                        }
 
                         console.log("-------------------------------------------");
                         console.log("Expected : ", expected_final);

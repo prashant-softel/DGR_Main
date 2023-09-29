@@ -78,5 +78,6 @@ namespace DGRAPIs.Models
         public double lossSMH_final { get; set; }
         public double lossUSMH_final { get; set; }
         public double loadShedding { get; set; }
+        public int monthlyData { get; set; }
     }
 }
