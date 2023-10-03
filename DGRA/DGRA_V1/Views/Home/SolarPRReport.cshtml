@@ -1205,7 +1205,7 @@
                         if (gain_act == 0 || gain_tar == 0) {
                             gain_var = 0;
                         } else {
-                            gain_var = ((gain_act - gain_tar) / gain_tar)*100;
+                            gain_var = ((gain_act - gain_tar)); /// gain_tar)*100;
                         }
 
                         console.log(result[i].pr_expected_kwh, result[i].act_kwh, act_prval);
