@@ -7431,7 +7431,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             info = " SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
             await LogInfo(0, 1, 5, functionName, info, backend);
-
+            if(finalResult !=0 || finalResult > 0)
+            {
+                int returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status);
+            }
             return finalResult;
         }
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
@@ -15574,6 +15577,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\TML_Log.txt", "*Info*:" + Message + "\r\n");
+        }
+
+        //DGR VERSION 3 FUNCTIONS
+
+        internal async Task<int> Upload_StatusOperation(string dataId, int approvedBy, string approvedByName, int status)
+        {
+            int finalResult = 0;
+
+            return finalResult;
         }
     }
 }
