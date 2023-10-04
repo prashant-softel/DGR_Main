@@ -7103,6 +7103,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> SetApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
             int finalResult = 0;
+            string functionName = "SetApprovalFlagForImportBatches";
             approval_InformationLog("Inside SetApprovalFlagForImportBatches wind function : ");
             string qry = "select t1.*,t2.site,t2.country,t2.state,t3.feeder from uploading_file_generation as t1 left join site_master as t2 on t2.site_master_id=t1.site_id left join location_master as t3 on t3.site_master_id=t1.site_id and t3.status =1  where import_batch_id IN(" + dataId + ")";
 
@@ -7226,20 +7227,37 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if(finalResult == 6)
                 {
-                    if(_DataTML.Count >= 0 && _DataTML[0].site_id > 0)
+                    if(_DataTML.Count > 0)
                     {
-                        int result = await UpdateManualBdForTMLData(date, site_id, 9);
-                        if (result == 2)
+                        if(_DataTML[0].site_id > 0)
                         {
-                            finalResult = 7;
-                        }
-                        else
-                        {
-                            finalResult = 0;
+                            int result = await UpdateManualBdForTMLData(date, site_id, 9);
+                            if (result == 2)
+                            {
+                                finalResult = 7;
+                            }
+                            else
+                            {
+                                finalResult = 0;
+                            }
                         }
                     }
                 }
 
+            }
+            if (finalResult != 0 || finalResult > 0)
+            {
+                int returnRes = 0;
+                try
+                {
+                    returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status, 1);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception in executing UploadStatusOperations function, due to : " + e.ToString();
+                    await LogError(0, 1, 5, functionName, msg, backend);
+                    return 0;
+                }
             }
             approval_InformationLog("At the end of function finalResult : " + finalResult);
             return finalResult;
@@ -7287,8 +7305,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string info = " Inside SetSolarApprovalFlagForImportBatches function. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
             await LogInfo(0, 1, 5, functionName, info, backend);
-            
 
+            //List<site_id_date> SiteDate = new List<site_id_date>();
             int finalResult = 0;
             approval_InformationLog("Inside SetSolarApprovalFlagForImportBatches function.");
 
@@ -7321,8 +7339,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (var unit in _importedData)
             {
-
-                values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.inverter + "','" + unit.ghi + "','" + unit.poa + "','" + unit.expected_kwh + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.inv_pr + "','" + unit.plant_pr + "','" + unit.ma + "','" + unit.iga + "','" + unit.ega + "','" + unit.ega_b + "','" + unit.ega_c + "','" + unit.inv_plf_ac+ "','" + unit.inv_plf_dc + "','" + unit.plant_plf_ac + "','" + unit.plant_plf_dc + "','" + unit.pi + "','" + unit.prod_hrs + "','" + unit.lull_hrs_bd + "','" + unit.usmh_bd + "','" + unit.smh_bd + "','" + unit.oh_bd+ "','" + unit.igbdh_bd + "','" + unit.egbdh_bd + "','" + unit.load_shedding_bd + "','" + unit.total_bd_hrs + "','" + unit.usmh + "','" + unit.smh + "','" + unit.oh + "','" + unit.igbdh + "','" + unit.egbdh + "','" + unit.load_shedding + "','" + unit.total_losses + "','1','" + unit.inv_act_afterloss + "','" + unit.plant_act_afterloss + "','" + unit.inv_plf_afterloss + "','" + unit.plant_plf_afterloss + "','"+unit.import_batch_id+"'),";
+                string datadate = unit.date.ToString("yyyy-MM-dd");
+                values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + datadate + "','" + unit.inverter + "','" + unit.ghi + "','" + unit.poa + "','" + unit.expected_kwh + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.inv_pr + "','" + unit.plant_pr + "','" + unit.ma + "','" + unit.iga + "','" + unit.ega + "','" + unit.ega_b + "','" + unit.ega_c + "','" + unit.inv_plf_ac+ "','" + unit.inv_plf_dc + "','" + unit.plant_plf_ac + "','" + unit.plant_plf_dc + "','" + unit.pi + "','" + unit.prod_hrs + "','" + unit.lull_hrs_bd + "','" + unit.usmh_bd + "','" + unit.smh_bd + "','" + unit.oh_bd+ "','" + unit.igbdh_bd + "','" + unit.egbdh_bd + "','" + unit.load_shedding_bd + "','" + unit.total_bd_hrs + "','" + unit.usmh + "','" + unit.smh + "','" + unit.oh + "','" + unit.igbdh + "','" + unit.egbdh + "','" + unit.load_shedding + "','" + unit.total_losses + "','1','" + unit.inv_act_afterloss + "','" + unit.plant_act_afterloss + "','" + unit.inv_plf_afterloss + "','" + unit.plant_plf_afterloss + "','"+unit.import_batch_id+"'),";
+                //site_id_date temp = new site_id_date();
+                //temp.date = datadate;
+                //temp.site_id = unit.site_id;
+                //SiteDate.Add(temp);
             }
 
             qry1 += values;
@@ -7433,7 +7455,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             await LogInfo(0, 1, 5, functionName, info, backend);
             if(finalResult !=0 || finalResult > 0)
             {
-                int returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status);
+                int returnRes = 0;
+                try
+                {
+                    returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status, 2);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception in executing UploadStatusOperations function, due to : " + e.ToString();
+                    await LogError(0, 1, 5, functionName, msg, backend);
+                    return 0;
+                }
             }
             return finalResult;
         }
@@ -15581,10 +15613,101 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         //DGR VERSION 3 FUNCTIONS
 
-        internal async Task<int> Upload_StatusOperation(string dataId, int approvedBy, string approvedByName, int status)
+        internal async Task<int> Upload_StatusOperation(string dataId, int approvedBy, string approvedByName, int status, int SolarOrWind)
         {
+            //SolarOrWind = 2 Solar, 1= Wind;
             int finalResult = 0;
+            string functionName = "Upload_StatusOperation";
+            if (SolarOrWind == 2)
+            {
+                List<ImportBatchesForUploadStatus> _importBatchesData = new List<ImportBatchesForUploadStatus>();
+                string fetchImportBatchesQry = "SELECT import_batch_id, import_type, site_id, import_date, data_date, imported_by, approved_by, is_approved FROM import_batches WHERE import_batch_id IN(" + dataId + ");";
+                string UpdateInsertQryStart = "INSERT INTO upload_status (type, site_id, import_date, data_date, approved_by, uploaded_by, import_batch_id, automation, approve_count) VALUES ";
+                string insertValues = "";
+                string updateValues = "";
+                string finalUpdateInsertQuery = "";
 
+                try
+                {
+                    _importBatchesData = await Context.GetData<ImportBatchesForUploadStatus>(fetchImportBatchesQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+                if (finalResult == 1)
+                {
+                    foreach(var unit in _importBatchesData)
+                    {
+                        string importDateCon = Convert.ToDateTime(unit.import_date).ToString("yyyy-MM-dd");
+                        insertValues = "(" + unit.import_type + ", " + unit.site_id + ", '" + importDateCon + "', '" + unit.data_date + "', " + unit.approved_by + ", " + unit.imported_by + ", " + unit.import_batch_id + ", 1, 1)";
+                        updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', approved_by = " + unit.approved_by +", uploaded_by = " + unit.imported_by + ", import_batch_id = " + unit.import_batch_id + ", automation = 1, approve_count = approve_count + 1;";
+                        finalUpdateInsertQuery += UpdateInsertQryStart + insertValues + updateValues;
+                    }
+
+                    try
+                    {
+                        int insertResult = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                        await LogError(0, 1, 7, functionName, msg, backend);
+                        finalResult = 0;
+                        return finalResult;
+                    }
+                }
+            }
+            else if (SolarOrWind == 1)
+            {
+                List<ImportBatchesForUploadStatus> _importBatchesData = new List<ImportBatchesForUploadStatus>();
+                string fetchImportBatchesQry = "SELECT import_batch_id, import_type, site_id, import_date, data_date, imported_by, approved_by, is_approved FROM import_batches WHERE import_batch_id IN(" + dataId + ");";
+                string UpdateInsertQryStart = "INSERT INTO upload_status (type, site_id, import_date, data_date, approved_by, uploaded_by, import_batch_id, automation, approve_count) VALUES ";
+                string insertValues = "";
+                string updateValues = "";
+                string finalUpdateInsertQuery = "";
+
+                try
+                {
+                    _importBatchesData = await Context.GetData<ImportBatchesForUploadStatus>(fetchImportBatchesQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+                if (finalResult == 1)
+                {
+                    foreach (var unit in _importBatchesData)
+                    {
+                        string importDateCon = Convert.ToDateTime(unit.import_date).ToString("yyyy-MM-dd");
+                        insertValues = "(" + unit.import_type + ", " + unit.site_id + ", '" + importDateCon + "', '" + unit.data_date + "', " + unit.approved_by + ", " + unit.imported_by + ", " + unit.import_batch_id + ", 1, 1)";
+                        updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', approved_by = " + unit.approved_by + ", uploaded_by = " + unit.imported_by + ", import_batch_id = " + unit.import_batch_id + ", automation = 1, approve_count = approve_count + 1;";
+                        finalUpdateInsertQuery += UpdateInsertQryStart + insertValues + updateValues;
+                    }
+
+                    try
+                    {
+                        int insertResult = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                        await LogError(0, 1, 7, functionName, msg, backend);
+                        finalResult = 0;
+                        return finalResult;
+                    }
+                }
+            }
             return finalResult;
         }
     }
