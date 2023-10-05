@@ -6529,7 +6529,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMR,");
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.Message + ": Function: InsertWindTMR,");
                         string msg = ",Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ",";
                         //ErrorLog(msg);
                         LogError(user_id, 2, 4, "InsertWindTMR", msg);
@@ -8453,11 +8453,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             TimeSpan actFrom = new TimeSpan();
                                             TimeSpan subFrom = new TimeSpan();
                                             actFrom = TimeSpan.Parse(finalToTime);
-                                            if (columnCount == 1)
+                                            if (columnCount == 1 && hrs == 00)
                                             {
                                                 finalFrom = "00:10:00";
                                             }
-                                            if (columnCount > 1)
+                                            if (columnCount > 1 || (columnCount == 1 && hrs != 00))
                                             {
                                                 subFrom = actFrom.Subtract(TimeSpan.FromMinutes(10));
                                                 finalFrom = subFrom.ToString();
