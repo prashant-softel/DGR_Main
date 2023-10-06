@@ -437,7 +437,7 @@ namespace DGRAPIs.Repositories
             }
             else
             {
-                qry = "SELECT t1.login_id,t1.site_type,if(t3.Page_type IS NOT NULL,t3.Page_type,3) as page_type,t1.identity,t1.upload_access,t3.display_name,t3.Action_url,t3.Controller_name FROM `user_access`as t1 left join hfe_pages as t3 on t3.Id=t1.identity and t1.category_id NOT IN(3) where t1.login_id='" + login_id + "'";
+                qry = "SELECT t1.login_id,t1.site_type,if(t3.Page_type IS NOT NULL,t3.Page_type,3) as page_type,t1.identity,t1.upload_access,t3.display_name,t3.Action_url,t3.Controller_name FROM `user_access`as t1 left join hfe_pages as t3 on t3.Id=t1.identity and t1.category_id NOT IN(3) where t1.login_id='" + login_id + "' order by t3.Site_Type , t3.Order_no asc";
             }
             List<UserAccess> _accesslist = new List<UserAccess>();
             _accesslist = await Context.GetData<UserAccess>(qry).ConfigureAwait(false);
