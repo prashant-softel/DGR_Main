@@ -8453,11 +8453,11 @@ namespace DGRA_V1.Areas.admin.Controllers
                                             TimeSpan actFrom = new TimeSpan();
                                             TimeSpan subFrom = new TimeSpan();
                                             actFrom = TimeSpan.Parse(finalToTime);
-                                            if (columnCount == 1 && hrs == 00)
+                                            if (columnCount == 1 && hrs == 00 && finalToTime == "00:20:00")
                                             {
                                                 finalFrom = "00:10:00";
                                             }
-                                            if (columnCount > 1 || (columnCount == 1 && hrs != 00))
+                                            else if (columnCount >= 1 || (columnCount == 1 && finalToTime != "00:20:00") && finalFrom == "")
                                             {
                                                 subFrom = actFrom.Subtract(TimeSpan.FromMinutes(10));
                                                 finalFrom = subFrom.ToString();
@@ -8508,7 +8508,7 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                                 addUnit.PC_validity = ds.Tables[0].Rows[RowNo_pc_validity][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_pc_validity][columnCount]) ? 0 : Convert.ToInt32(ds.Tables[0].Rows[RowNo_pc_validity][columnCount]);
 
-                                addUnit.avg_wind_speed = ds.Tables[0].Rows[RowNo_windspeed][columnCount] is DBNull ? 0 : Convert.ToDouble(ds.Tables[0].Rows[RowNo_windspeed][columnCount]);
+                                addUnit.avg_wind_speed = ds.Tables[0].Rows[RowNo_windspeed][columnCount] is DBNull || string.IsNullOrEmpty((string)ds.Tables[0].Rows[RowNo_windspeed][columnCount]) ? 0 : Convert.ToDouble(ds.Tables[0].Rows[RowNo_windspeed][columnCount]);
 
                                 //Calculation of PLC_state Code.
                                 if (isPlcMax || isPlcMin)
@@ -8638,7 +8638,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
                     catch (Exception e)
                     {
-                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMR,");
+                        m_ErrorLog.SetError(",File Column<" + rowNumber + ">" + e.Message + ": Function: InsertWindTMR,");
                         string msg = "Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ", column count : " + columnCount;
                         //ErrorLog(msg);
                         LogError(user_id, 2, 4, "ImportWindInoxTMD", msg);
