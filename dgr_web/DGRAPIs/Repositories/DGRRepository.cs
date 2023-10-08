@@ -11762,6 +11762,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if (UpdateReconWSAndOtherRes == 8)
                 {
+                    int tmlcount = await WindTMLRecordCount(date, site_id, type, set.Count);
                     finalResult = 5;
                     ReferenceWtgHash.Clear();
                 }
@@ -12109,6 +12110,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             if (count == set.Count)
             {
+
                 info = ("Inserted all data into uploading_file_tmr_data table : counter/no. of rows : " + count + " / " + qryCounter + " ");
                 await LogInfo(0, 2, 6, functionName, info, backend);
                 //TML_InfoLog(info);
@@ -15612,7 +15614,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //DGR VERSION 3 FUNCTIONS
-
+        
         internal async Task<int> Upload_StatusOperation(string dataId, int approvedBy, string approvedByName, int status, int SolarOrWind)
         {
             //SolarOrWind = 2 Solar, 1= Wind;
@@ -15709,6 +15711,92 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
             }
             return finalResult;
+        }
+
+        //Get the total wtgs for a particaular site and count of tml samples should be present.
+        internal async Task<int> WindTMLRecordCount(string date, int site_id, int type, int dataCount)
+        {
+            int returnResult = 0;
+            //Case 1 :- all tml files uploaded at once. simple import in table.
+            //Case 2 :- few wtgs left. (left but not duplicate) add to the existing count in the table.
+            //Case 3 :- reimport of files all wtgs delete and update the count in the table.
+            //Case 4 :- reimport the files few duplicate few new.
+
+            //SELECT COUNT(*) FROM `location_master` WHERE site_master_id = 217;
+            string fetchQry = "SELECT COUNT(*) as realCount FROM location_master WHERE site_master_id =" + site_id + ";";
+            List<TMLCountComparision> _CountData = new List<TMLCountComparision>();
+            try
+            {
+                _CountData = await Context.GetData<TMLCountComparision>(fetchQry).ConfigureAwait(false);
+                returnResult = 1;
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching wtg count from database, due to : " + e.ToString();
+
+                return 0;
+            }
+            try
+            {
+                if (_CountData.Count > 0)
+                {
+                    int realCount = _CountData[0].realCount;
+                    int actualCount = dataCount;
+                    int expectedCount = realCount * 144;
+                    int difference = expectedCount - actualCount;
+
+                    if (difference == 0)
+                    {
+                        DateTime today = DateTime.Now;
+                        string importDateCon = today.ToString("yyyy-MM-dd");
+                        string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                        string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " +expectedCount + ", " + actualCount + ", " + realCount + ")";
+                        string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML =" + actualCount + ", wtg_count=" + realCount;
+                        string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
+                        try
+                        {
+                            int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                            returnResult = 2;
+                        }
+                        catch(Exception e)
+                        {
+                            string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+
+                            return 0;
+                        }
+                    }
+                    //Implementation is remainging at he point while uploading TML files...after same site and data records are being deleted from the database tables it should also be deleted from the uploading_Status table containing count of expected vs actual. After deletion of same date and site records you will be having the count of how many records are being deleted.
+                    else if (difference >0)
+                    {
+                        DateTime today = DateTime.Now;
+                        string importDateCon = today.ToString("yyyy-MM-dd");
+                        string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                        string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ")";
+                        string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML = actual +" + actualCount + ", wtg_count=" + realCount;
+                        string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
+                        try
+                        {
+                            int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                            returnResult = 2;
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+
+                            return 0;
+                        }
+                    }
+
+                }
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while calculating expected and actual data count, due to : " + e.ToString();
+
+                return 0;
+            }
+
+            return returnResult;
         }
     }
 }
