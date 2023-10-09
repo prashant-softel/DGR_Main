@@ -330,6 +330,8 @@
    /// Get Fiter Data
     function getReport()
     {
+
+      
         var data_Array = [];
         document.getElementById("loader").style.display = 'flex';
         var daterange = $('#daterange').val();
@@ -351,11 +353,30 @@
             spv_list += $(this).val() + ",";
         });
         spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
-        var site = $('select#site option:selected').each(function () {
-            site_id += $(this).val() + ",";
-        });
-        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        
 
+     
+        var cnt = 0;
+        $('#site option').each(function () {
+            if ($(this).is(':selected')) {
+                cnt++;
+            }
+           
+        });
+        if (cnt > 0) {
+            var site = $('select#site option:selected').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        else {
+            $('select#site').find('option').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        console.log("SIte List", site_id);
+      
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetActualVSExpected", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
@@ -745,10 +766,32 @@ function getYearlyReport()
         spv_list += $(this).val() + ",";
     });
     spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
-    var site = $('select#site option:selected').each(function () {
+    /*var site = $('select#site option:selected').each(function () {
         site_id += $(this).val() + ",";
     });
-    site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+    site_id = site_id != "" ? site_id.slice(0, -1) : site_id;*/
+
+    var cnt = 0;
+    $('#site option').each(function () {
+        if ($(this).is(':selected')) {
+            cnt++;
+        }
+
+    });
+    if (cnt > 0) {
+        var site = $('select#site option:selected').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+    }
+    else {
+        $('select#site').find('option').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+    }
+    console.log("SIte List", site_id);
+
 
     $.ajax({
         type: "POST",
