@@ -1487,8 +1487,9 @@
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
 
-                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-
+                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+                        console.log("Total BD", total_hourse);
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + year + '</td>';
@@ -1711,7 +1712,8 @@
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
 
-                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
 
                         cnt++;
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
@@ -1952,7 +1954,8 @@
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
 
-                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
 
                        // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
@@ -2174,7 +2177,8 @@
                         // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
 
-                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
 
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
