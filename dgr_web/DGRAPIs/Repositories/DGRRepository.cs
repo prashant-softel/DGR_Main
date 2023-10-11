@@ -14330,7 +14330,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<GetWindTMLGraphData> _tmlActualGenYearly = new List<GetWindTMLGraphData>();
             if (isYearly == 1)
             {
-                fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date);";
+                fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date), site_id;";
                 try
                 {
                     _tmlActualGenYearly = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
@@ -14388,7 +14388,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<GetWindTMLGraphData> _tmlLineLossForYearly = new List<GetWindTMLGraphData>();
             if (isYearly == 1)
             {
-                fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no";
+                fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
 
                 try
                 {
@@ -14444,7 +14444,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     foreach (var _innerElement in _tmlLineLossForYearly)
                     {
-                        if (_element.month_no == _innerElement.month_no)
+                        if (_element.month_no == _innerElement.month_no && _element.site_id == _innerElement.site_id)
                         {
                             double lineloss = _innerElement.line_loss_per / 100;
                             double temp = (lineloss * _element.gen_actual_active_power) * -1; //6;
