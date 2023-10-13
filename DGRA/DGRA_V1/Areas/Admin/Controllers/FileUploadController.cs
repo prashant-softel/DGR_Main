@@ -2621,7 +2621,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         bool isNullOrEmptyRKVH = dr["RKVH%"] is DBNull || string.IsNullOrEmpty((string)dr["RKVH%"]);
                         if (isNullOrEmptyRKVH)
                         {
-                           
+                            addUnit.RKVH_percentage = 0.00;
                         }
                         else
                         {
@@ -2646,7 +2646,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
                     catch (Exception e)
                     {
-                        m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyJMR " + rowNumber);
+                        //m_ErrorLog.SetError("," + e.GetType() + ": Function: InsertSolarMonthlyJMR " + rowNumber);
+                        //m_ErrorLog.SetError(",File row <" + rowNumber + "> exception type <" + e.Message + ">: Function: InsertSolarMonthlyJMR");
+                        m_ErrorLog.SetError(",File row <" + rowNumber + "> exception type <" + e.Message + ">");
                         string msg = ",Exception Occurred In Function: InsertSolarMonthlyJMR: " + e.ToString();
                         //ErrorLog(msg);
                         LogError(user_id, 1, 4, "InsertSolarJMR", msg);
@@ -2744,7 +2746,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         bool isNullOrEmptyRKVH = dr["RKVH%"] is DBNull || string.IsNullOrEmpty((string)dr["RKVH%"]);
                         if (isNullOrEmptyRKVH)
                         {
-
+                            addUnit.rkvhPercent = 0.00;
                         }
                         else
                         {
@@ -2807,7 +2809,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError(",File row <" + rowNumber + "> exception type <" + e.GetType() + ">: Function: InsertWindMonthlyJMR");
+                        //m_ErrorLog.SetError(",File row <" + rowNumber + "> exception type <" + e.Message + ">: Function: InsertWindMonthlyJMR");
+                        m_ErrorLog.SetError(",File row <" + rowNumber + "> exception type <" + e.Message + ">");
                         string msg = ",Exception <" + e.GetType() + "> Occurred In Function: InsertWindMonthlyJMR: " + e.ToString();
                         //ErrorLog(msg);
                         LogError(user_id, 2, 4, "InsertWindMonthlyJMR", msg);
