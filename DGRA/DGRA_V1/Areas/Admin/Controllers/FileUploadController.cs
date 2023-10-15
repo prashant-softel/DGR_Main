@@ -2333,7 +2333,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.ghi_2 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-1"]), "POA-1", rowNumber, dr["POA-1"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_1 = importValue;
-                        errorFlag.Add(validateNumeric(((string)dr["POA-3"]), "POA-2", rowNumber, dr["POA-2"] is DBNull, logErrorFlag, out importValue));
+                        errorFlag.Add(validateNumeric(((string)dr["POA-2"]), "POA-2", rowNumber, dr["POA-2"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_2 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-3"]), "POA-3", rowNumber, dr["POA-3"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_3 = importValue;
@@ -2454,7 +2454,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.ghi_2 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-1"]), "POA-1", rowNumber, dr["POA-1"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_1 = importValue;
-                        errorFlag.Add(validateNumeric(((string)dr["POA-3"]), "POA-2", rowNumber, dr["POA-2"] is DBNull, logErrorFlag, out importValue));
+                        errorFlag.Add(validateNumeric(((string)dr["POA-2"]), "POA-2", rowNumber, dr["POA-2"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_2 = importValue;
                         errorFlag.Add(validateNumeric(((string)dr["POA-3"]), "POA-3", rowNumber, dr["POA-3"] is DBNull, logErrorFlag, out importValue));
                         addUnit.poa_3 = importValue;

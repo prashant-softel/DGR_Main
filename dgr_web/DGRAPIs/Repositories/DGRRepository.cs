@@ -4346,8 +4346,16 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             // Trackerloss
             string deleteQry1 = "DELETE FROM uploading_file_tracker_loss WHERE site_id = " + set[0].site_id + " and date = '" + set[0].date + "';";
-            await Context.ExecuteNonQry<int>(deleteQry1).ConfigureAwait(false);
 
+            try
+            {
+                await Context.ExecuteNonQry<int>(deleteQry1).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception due while deleting tracker_loss records from table, due to :" + e.ToString();
+                //return 0;
+            }
             string qry = " insert into uploading_file_generation_solar (date, site, site_id, inverter, inv_act, plant_act, pi, import_batch_id) values";
             string values = "";
             foreach (var unit in set)
@@ -14330,7 +14338,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<GetWindTMLGraphData> _tmlActualGenYearly = new List<GetWindTMLGraphData>();
             if (isYearly == 1)
             {
-                fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date), site_id;";
+                fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power, site_id FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date), site_id;";
                 try
                 {
                     _tmlActualGenYearly = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
@@ -14388,7 +14396,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<GetWindTMLGraphData> _tmlLineLossForYearly = new List<GetWindTMLGraphData>();
             if (isYearly == 1)
             {
-                fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
+                fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
 
                 try
                 {
