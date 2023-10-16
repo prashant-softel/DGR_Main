@@ -7056,7 +7056,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                             string timeStampTemp = dr["Timestamp"].ToString();
                             try
                             {
-                                addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("yyyy-MM-dd HH:mm:ss");
+                                addUnit.timestamp = isdateEmpty ? "Nil" : Convert.ToDateTime(dr["Timestamp"]).ToString("yyyy-MM-dd HH:mm");
+                                addUnit.timestamp += ":00";
                                 errorFlag.Add(dateNullValidation(addUnit.timestamp, "Timestamp", rowNumber));
                             }
                             catch (Exception e)
@@ -7090,7 +7091,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                             //    previousTime = "00:00:00";
                             //}
 
-                            addUnit.from_time = Convert.ToDateTime(dr["Timestamp"]).ToString("HH:mm:ss");
+                            addUnit.from_time = Convert.ToDateTime(dr["Timestamp"]).ToString("HH:mm");
+                            addUnit.from_time += ":00";
                             if (addUnit.from_time != "23:50:00")
                             {
                                 TimeSpan fromTime = TimeSpan.Parse(addUnit.from_time);
@@ -7130,7 +7132,8 @@ namespace DGRA_V1.Areas.admin.Controllers
                             if (rowcount < rowCount - 4)
                             {
                                 string nextVariable = ds.Tables[0].Rows[rowcount + 1]["Timestamp"].ToString();
-                                string nextFrom = Convert.ToDateTime(nextVariable).ToString("HH:mm:ss");
+                                string nextFrom = Convert.ToDateTime(nextVariable).ToString("HH:mm");
+                                nextFrom += ":00";
                                 if (addUnit.to_time != nextFrom)
                                 {
                                     int insideCount = 0;
@@ -7185,7 +7188,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     }
                     catch (Exception e)
                     {
-                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertWindTMR,");
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.Message + ": Function: InsertWindTMR,");
                         string msg = ",Exception Occurred In Function: InsertWindTMR: " + e.ToString() + ",";
                         //ErrorLog(msg);
                         LogError(user_id, 2, 4, "InsertWindSuzlonTMD", msg);
