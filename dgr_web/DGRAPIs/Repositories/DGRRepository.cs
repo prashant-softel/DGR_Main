@@ -14113,6 +14113,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly = 0)
         {
             string functionName = "GetWindTMLGraphData";
+            //if (site.Contains(',') || isYearly == 0)
+            //{
+            //    isYearly = 1;
+            //}
 
             List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
             //string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");

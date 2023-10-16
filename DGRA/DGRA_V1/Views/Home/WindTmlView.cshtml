@@ -529,6 +529,15 @@
 
     var data = [];
     function getChartData(site_id, fromDate, toDate) {
+
+        var fromToDates = getFinancialYearDates(toDate);
+        var isYearly = 0;
+        console.log("from date : " + fromToDates.fromDate + " to date : " + fromToDates.toDate);
+        if (fromDate == fromToDates.fromDate && toDate == fromToDates.toDate) {
+            isYearly = 1;
+            console.log("Yearly and monthly graph will be same.");
+        }
+
         var expected_final = 0.0;
         var lineloss_final = 0.0;
         var target_final = 0.0;
@@ -544,7 +553,7 @@
         //console.log("Inside getChartData function.");
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&isYearly=' + isYearly,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
 
