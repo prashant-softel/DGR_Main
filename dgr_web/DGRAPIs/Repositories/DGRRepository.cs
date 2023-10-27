@@ -8100,7 +8100,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     if (sCurrentWTG != sLastWTG)
                     {
                         //Update WTG KPIs
-                        CalculateAndUpdateKPIs(site_id, fromDate, sLastWTG, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
+                        await CalculateAndUpdateKPIs(site_id, fromDate, sLastWTG, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
                         // CalculateAndUpdatePLFandKWHAfterLineLoss(site_id, fromDate, sLastWTG);
                         Final_USMH_Time = TimeSpan.Zero;
                         Final_SMH_Time = TimeSpan.Zero;
@@ -8143,6 +8143,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         case 6:                 //if (bd_type_name.Equals("Others Hour"))                
                             result = Convert.ToDateTime(totalTime.ToString());
                             Final_OthersHour_Time = result.TimeOfDay;
+                            string info1 = "time_of_day : " + Final_OthersHour_Time + ", total_time : " + totalTime.ToString();
+                            await LogInfo(0, 2, 6, functionName, info1, backend);
                             break;
 
                         default:
@@ -8157,8 +8159,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
                 //Pending : validation of Total time to be 24
-                CalculateAndUpdateKPIs(site_id, fromDate, sCurrentWTG, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
-                CalculateAndUpdatePLFandKWHAfterLineLoss(site_id, fromDate, toDate, capacity_mw);
+                await CalculateAndUpdateKPIs(site_id, fromDate, sCurrentWTG, Final_USMH_Time, Final_SMH_Time, Final_IGBD_Time, Final_EGBD_Time, Final_OthersHour_Time, Final_LoadShedding_Time, MA_Actual_Formula, MA_Contractual_Formula, IGA_Formula, EGA_Formula);
+                await CalculateAndUpdatePLFandKWHAfterLineLoss(site_id, fromDate, toDate, capacity_mw);
             }
             catch (Exception ex)
             {
@@ -8427,7 +8429,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
 
             //API_InformationLog("CalculateAndUpdateKPIs: calculation data for sWTG_Name <" + sWTG_Name + ">  Final_USMH_Time <" + Final_USMH_Time + ">  Final_SMH_Time<" + Final_SMH_Time + ">  Final_IGBD_Time<" + Final_IGBD_Time + ">  Final_EGBD_Time<" + Final_EGBD_Time + ">  Final_OthersHour_Time<" + Final_OthersHour_Time + ">  Final_LoadShedding_Time<" + Final_LoadShedding_Time + ">");
-
+            string functionName = "CalculateAndUpdateKPIs";
             bool response = false;
             double Final_USMH = 0;
             double Final_SMH = 0;
@@ -8467,7 +8469,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 double dEGA_B = Math.Round(GetCalculatedValue(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, 0, EGA_Formula), 6);
                 double dEGA_C = Math.Round(GetCalculatedValue(Final_USMH, Final_SMH, Final_IGBD, 0 , Final_OthersHour, Final_LoadShedding, EGA_Formula), 6);
 
-
+                string info1 = "Other_hours :" + Final_OthersHour + "";
+                //await LogInfo(0, 2, 6, functionName, info1, backend);
 
                 string qryUpdate = "UPDATE `uploading_file_generation` set ma_actual = " + dMA_ACT + ", ma_contractual = " + dMA_CON + ", iga = " + dIGA + ", ega = " + dEGA + ", ega_b = " + dEGA_B + ", ega_c = " + dEGA_C;
                 qryUpdate += ", unschedule_hrs = '" + Final_USMH_Time + "', schedule_hrs = '" + Final_SMH_Time + "', igbdh = '" + Final_IGBD_Time + "', egbdh = '" + Final_EGBD_Time + "', others = '" + Final_OthersHour_Time + "', load_shedding = '" + Final_LoadShedding_Time + "', unschedule_num = '" + Final_USMH + "',schedule_num = '" + Final_SMH + "',igbdh_num = '" + Final_IGBD + "', egbdh_num = '" + Final_EGBD + "',others_num = '" + Final_OthersHour + "', load_shedding_num = '" + Final_LoadShedding + "'";
