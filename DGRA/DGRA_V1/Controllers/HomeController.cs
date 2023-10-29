@@ -1061,7 +1061,6 @@ namespace DGRA_V1.Controllers
             TempData["notification"] = "";
             return View();
         }
-
         public async Task<IActionResult> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
         {
             string line = "";
@@ -1084,6 +1083,12 @@ namespace DGRA_V1.Controllers
                 TempData["notification"] = "Data Not Presents !";
             }
             return Content(line, "application/json");
+        }
+        [TypeFilter(typeof(SessionValidation))]
+        public ActionResult OPWind()
+        {
+            TempData["notification"] = "";
+            return View();
         }
     }
 }
