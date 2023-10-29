@@ -11762,8 +11762,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if (UpdateReconWSAndOtherRes == 8)
                 {
-                    int tmlcount = await WindTMLRecordCount(date, site_id, type, set.Count);
-                    finalResult = 5;
+                    string convDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                    int tmlcount = await WindTMLRecordCount(convDate, site_id, type, set.Count,0);
+                    if(tmlcount > 0)
+                    {
+                        finalResult = 5;
+                    }
                     ReferenceWtgHash.Clear();
                 }
             }
@@ -12011,6 +12015,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 {
                                     deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
                                     deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
+                                    if (deleteTmdDataRes >0)
+                                    {
+                                        string conDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                                        int tmlcount = await WindTMLRecordCount(conDate, site_id, type, deleteTmdDataRes, 1);
+                                        if (tmlcount > 0)
+                                        {
+                                            finalResult = 5;
+                                        }
+                                    }
                                     tmlMsg = "deleteFromTMDQry Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDQry;
                                     //TML_InfoLog(tmlMsg);
                                     finalResult = 1;
@@ -12078,6 +12091,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
                         deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
+                        if(deleteTmdDataRes > 0)
+                        {
+                            string conDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                            int tmlcount = await WindTMLRecordCount(conDate, site_id, type, set.Count, 1);
+                            if (tmlcount > 0)
+                            {
+                                finalResult = 500;
+                            }
+                        }
                         finalResult = 1;
                         tmlMsg = "deleteFromTMDValues Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDValues;
                         //TML_InfoLog(tmlMsg);
@@ -15568,7 +15590,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //Read variable from appsetting to enable disable log
             string logStmt = "INSERT INTO log4netlog (user_id, import_type, Level, module, is_frontend, api_name, Message, created_on, isMsgTrim) VALUES( " + userId + ", " + import_type + ", 1, " + module + ", " + is_frontend + ", '" + api_name + "', '" + finalMessage + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "', " + isTrim + " );";
 
-            var logged = await Context.ErrorLog(logStmt).ConfigureAwait(false);
+            var logged = 0;
+
+            try
+            {
+                logged = await Context.ErrorLog(logStmt).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while inserting data  into log$netLog table, due to  : " + e.ToString();
+            }
+            
             returnRes = logged;
 
             return returnRes;
@@ -15714,8 +15746,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //Get the total wtgs for a particaular site and count of tml samples should be present.
-        internal async Task<int> WindTMLRecordCount(string date, int site_id, int type, int dataCount)
+        internal async Task<int> WindTMLRecordCount(string date, int site_id, int type, int dataCount, int isDelete)
         {
+            //isDelete: 0 don't delete, isDelete: 1 delete count from uploading file status table.
+            string functionName = "WindTMLRecordCount";
             int returnResult = 0;
             //Case 1 :- all tml files uploaded at once. simple import in table.
             //Case 2 :- few wtgs left. (left but not duplicate) add to the existing count in the table.
@@ -15733,70 +15767,152 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             catch(Exception e)
             {
                 string msg = "Exception while fetching wtg count from database, due to : " + e.ToString();
-
+                await LogError(0, 1, 7, functionName, msg, backend);
                 return 0;
             }
-            try
+
+            if (isDelete == 1)
             {
-                if (_CountData.Count > 0)
+                List<TMLCountComparision> _countData = new List<TMLCountComparision>();
+                int expected_TML = 0;
+                int actual_TML = 0;
+                int wtg_count = 0;
+
+                try
                 {
-                    int realCount = _CountData[0].realCount;
-                    int actualCount = dataCount;
-                    int expectedCount = realCount * 144;
-                    int difference = expectedCount - actualCount;
+                    string fetchActualCount = "SELECT expected_TML, actual_TML, wtg_count FROM upload_status WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
 
-                    if (difference == 0)
+                    _countData = await Context.GetData<TMLCountComparision>(fetchActualCount).ConfigureAwait(false);
+                    if (_countData.Count > 0)
                     {
-                        DateTime today = DateTime.Now;
-                        string importDateCon = today.ToString("yyyy-MM-dd");
-                        string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
-                        string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " +expectedCount + ", " + actualCount + ", " + realCount + ")";
-                        string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML =" + actualCount + ", wtg_count=" + realCount;
-                        string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
-                        try
-                        {
-                            int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
-                            returnResult = 2;
-                        }
-                        catch(Exception e)
-                        {
-                            string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+                        expected_TML = (int)_countData[0].expected_TML;
+                        actual_TML = (int)_countData[0].actual_TML;
+                        wtg_count = (int)_countData[0].wtg_count;
 
-                            return 0;
+                        if (actual_TML > dataCount)
+                        {
+                            dataCount = actual_TML - dataCount;
                         }
+                        else if (actual_TML < dataCount)
+                        {
+                            dataCount = dataCount - actual_TML;
+                        }
+                        //else
+                        //{
+                        //    dataCount = dataCount;
+                        //}
                     }
-                    //Implementation is remainging at he point while uploading TML files...after same site and data records are being deleted from the database tables it should also be deleted from the uploading_Status table containing count of expected vs actual. After deletion of same date and site records you will be having the count of how many records are being deleted.
-                    else if (difference >0)
-                    {
-                        DateTime today = DateTime.Now;
-                        string importDateCon = today.ToString("yyyy-MM-dd");
-                        string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
-                        string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ")";
-                        string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML = actual +" + actualCount + ", wtg_count=" + realCount;
-                        string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
-                        try
-                        {
-                            int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
-                            returnResult = 2;
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
-
-                            return 0;
-                        }
-                    }
-
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while fetching count records from upload_status table " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                }
+                try
+                {
+                    //string deleteQry = "UPDATE upload_status SET actual_TML = actual_TML - " + dataCount + " WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    //string deleteQry = "UPDATE upload_status SET actual_TML = " + dataCount + " WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    string deleteQry = "UPDATE upload_status SET actual_TML = 0 WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    int delRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting actual count, due to : " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
                 }
             }
-            catch(Exception e)
+            else
             {
-                string msg = "Exception while calculating expected and actual data count, due to : " + e.ToString();
+                try
+                {
+                    if (_CountData.Count > 0)
+                    {
+                        int realCount = Convert.ToInt32(_CountData[0].realCount);
+                        int actualCount = dataCount;
+                        int expectedCount = realCount * 144;
+                        int difference = expectedCount - actualCount;
 
-                return 0;
+                        if (difference == 0)
+                        {
+                            DateTime today = DateTime.Now;
+                            string importDateCon = today.ToString("yyyy-MM-dd");
+                            string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                            string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ")";
+                            string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML =" + actualCount + ", wtg_count=" + realCount;
+                            string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
+                            try
+                            {
+                                int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                                returnResult = 2;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+                                await LogError(0, 1, 7, functionName, msg, backend);
+                                return 0;
+                            }
+                        }
+                        //Implementation is remainging at he point while uploading TML files...after same site and data records are being deleted from the database tables it should also be deleted from the uploading_Status table containing count of expected vs actual. After deletion of same date and site records you will be having the count of how many records are being deleted.
+                        else if (difference > 0)
+                        {
+                            DateTime today = DateTime.Now;
+                            string importDateCon = today.ToString("yyyy-MM-dd");
+                            string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                            string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ")";
+                            string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML = actual_TML +" + actualCount + ", wtg_count=" + realCount;
+                            string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
+                            try
+                            {
+                                int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                                returnResult = 2;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+                                await LogError(0, 1, 7, functionName, msg, backend);
+                                return 0;
+                            }
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while calculating expected and actual data count, due to : " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
             }
-
             return returnResult;
+        }
+
+        //Fetch Heat Map data from upload_status table.
+        internal async Task<List<HeatMapData>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+            string functionName = "GetHeatMapData";
+            //upload_status has 2 as solar site, 
+
+            List<HeatMapData> _HeatMapData = new List<HeatMapData>();
+
+            //Dummy data for frontend development;
+            HeatMapData finalData = new HeatMapData()
+            {
+                type = 2,
+                import_date = "2023-09-27",
+                data_date = "2023-09-27",
+            };
+            _HeatMapData.Add(finalData);
+            finalData.import_date = "2023-09-28";
+            finalData.data_date = "2023-09-28";
+            _HeatMapData.Add(finalData);
+            finalData.import_date = "2023-09-29";
+            finalData.data_date = "2023-09-29";
+            _HeatMapData.Add(finalData);
+            finalData.import_date = "2023-09-30";
+            finalData.data_date = "2023-09-30";
+            _HeatMapData.Add(finalData);
+            return _HeatMapData;
         }
     }
 }

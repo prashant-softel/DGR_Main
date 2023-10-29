@@ -1,0 +1,738 @@
+﻿@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Heat Map";
+}
+@{
+    string windUserSiteList = "";
+    string solarUserSiteList = "";
+    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+
+}
+
+@{
+    bool windAccess = false;
+    bool solarAccess = false;
+
+
+}
+
+@for (int i = 0; i < @usermodel.access_list.Count; i++)
+{
+
+    if (@usermodel.access_list[i].page_type == 5 && @usermodel.access_list[i].site_type == 1)
+    {
+        windUserSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+
+    if (@usermodel.access_list[i].page_type == 5 && @usermodel.access_list[i].site_type == 2)
+    {
+        solarUserSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+}
+
+
+@if (@HttpContextAccessor.HttpContext.Session.GetString("role") != "Admin")
+{
+    var usermodel_1 = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+    for (int i = 0; i < @usermodel_1.access_list.Count; i++)
+    {
+        Console.WriteLine(usermodel_1.access_list);
+
+        if (@usermodel.access_list[i].page_type == 5 && @usermodel_1.access_list[i].site_type == 2)
+        {
+            windAccess = true;
+        }
+        if (@usermodel.access_list[i].page_type == 5 && @usermodel_1.access_list[i].site_type == 1)
+        {
+            solarAccess = true;
+        }
+
+
+    }
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+@*<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">*@
+<link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<style>
+    table th {
+        padding: 0.5rem !important;
+        font-size: 15px !important;
+    }
+
+    table td {
+        padding: 0.2rem !important;
+        font-size: 15px !important;
+    }
+
+    .dataTables_filter {
+        margin-top: -2.6% !important;
+    }
+
+    select {
+        width: 50%;
+        height: 36px;
+    }
+
+    .modal {
+        position: fixed !important;
+    }
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+
+    <section class="content-header">
+        <!--<div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Import Data Approval</li>
+                    </ol>
+                </div>
+            </div>
+        </div>-->
+    </section>
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-center">Daily Automation Heat Map</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-right">Site Type : </label>
+                                <select class="form-control  col-sm-8" id="siteType" name="siteType" value="" onchange="getSiteList()">
+                                    <option value="0">Select Site Type </option>
+                                    @if (windAccess == true)
+                                    {
+                                        <option value="2">Solar</option>
+                                    }
+                                    @if (solarAccess == true)
+                                    {
+                                        <option value="1">Wind</option>
+                                    }
+                                    @if (@HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
+                                    {
+                                        <option value="2">Solar</option>
+                                        <option value="1">Wind</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group row">
+                            <label class="col-sm-3 col-form-label text-right">Date : </label>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control float-right" id="daterange" name="daterange" style="max-width: 270px;">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" id="multple_site" style="display:none;">
+                            <div class="row">
+                                <label class="col-sm-4 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="normal_site" style="display:block;">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site_n" name="site_n">
+                                    <option value="">Please Select Site</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2" style="margin-left:0rem;">
+                        <div class="col-md-4"><button type="button" class="btn btn-block btn-primary" onclick="DummyGetReport()" style="float:left; width:5rem ">Search</button></div>
+                    </div>
+                </div>
+                <br>
+                <hr>
+                <div class="col-sm-12">
+                    <div id="HeatMap" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
+                </div>
+                <div id="LogData"></div>
+
+                <div id="loader" class="loader  center" style="display:none"></div>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+<!-- /.content-wrapper -->
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<!--Date Range -->
+<script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="~/Content/theme/plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
+
+<script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/dist/js/comman.js"></script>
+<script src='https://cdn.plot.ly/plotly-2.27.0.min.js'></script>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $('#daterange').daterangepicker(
+            {
+                maxDate: new Date(),
+                locale: {
+                    format: 'DD/MM/YYYY',
+                }
+            });
+    });
+
+    window.onload = function () {
+    }
+
+
+
+    function getSiteList() {
+        var siteType = $('select#siteType option:selected').val();
+        if (siteType == 2) {
+            console.log("siteType", siteType);
+            GetSolarSite();
+            document.getElementById("normal_site").style.display = 'none';
+            document.getElementById("multple_site").style.display = 'block';
+
+        }
+        else if (siteType == 1) {
+            document.getElementById("normal_site").style.display = 'none';
+            document.getElementById("multple_site").style.display = 'block';
+            GetWindSite();
+            console.log("siteType", siteType);
+        }
+    }
+    // Wind Site
+    function GetWindSite() {
+
+         var state = "";
+        var spv = "";
+         var site_ids = "@Html.Raw(windUserSiteList.TrimEnd(','))";
+        $.ajax({
+            type: "GET",
+           // url: "/WindReport/GetSiteList",
+            url: '@Url.Action("GetSiteList", "WindReport")' + '?sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            //data: '{"state":"' + val + '"}',
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
+                }
+                $("#site").multipleSelect('destroy');
+                $("#site").html(options);
+                $('select#site').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Wind Site(s)",
+                    filter:true
+                });
+            }
+        });
+    }
+     // Solar Site
+    function GetSolarSite() {
+        var site_ids = "@Html.Raw(solarUserSiteList.TrimEnd(','))";
+        var solar_total_mw = 0;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSolarSiteList", "Dashboard")' + '?sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+               // console.log(result);
+                var options = "";
+
+                for (var i = 0; i < result.length; i++) {
+                    solar_total_mw += result[i].ac_capacity;
+                    options += '<option value="' + result[i].site_master_solar_id + '">' + result[i].site + '</option>';
+                }
+                $("#site").multipleSelect('destroy');
+                $("#site").html(options);
+                $('select#site').multipleSelect({
+                   "minimumCountSelected": 2,
+                   "placeholder": "Select Solar Site(s)",
+                   filter:true
+                });
+            }
+        });
+    }
+    //Main onclick function.
+    function getReport() {
+        var siteType = $('select#siteType option:selected').val();
+        if (siteType == 2) {
+            getSolarReport();
+        }
+        else if (siteType == 1) {
+            getWindReport();
+        }
+    }
+    // Get Wind Data
+    function getWindReport() {
+        let site = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+        if (site == "" || site == null) {
+            alert("Please select site ");
+            return false;
+        }
+        document.getElementById("loader").style.display = 'flex';
+        console.log(site);
+        var status = $('select#status option:selected').val();
+        var siteType = $('select#siteType option:selected').val();
+        var daterange = $('#daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        // var fromDate = "2021-04-14";
+        //var toDate = "2021-04-20";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetImportBatches", "WindView")' + '?importFromDate=' + fromDate + '&importToDate=' + toDate + '&siteId=' + site + '&siteType=' + siteType + '&status='+status,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr) {
+                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th><input type="checkbox" class="" id="checkAllW" onclick="selectAll()" style= ""></th>';
+                tbl += '<th>Site</th>';
+                tbl += '<th style="width:100px">Import Date</th>';
+                tbl += '<th style="width:100px">Data Date</th>';
+                tbl += '<th>Imported By</th>';
+                tbl += '<th>Status</th>';
+                tbl += '<th>Verified Date</th>';
+                tbl += '<th>Verified By</th>';
+                tbl += '<th>Action</th>';
+                tbl += '</tr></thead>';
+                tbl += '<tbody>';
+
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        var formattedDate = moment(result[i].import_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        var formattedDate1 = moment(result[i].data_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        var status = "";
+                        var isDisable = "";
+                        if (result[i].is_approved == 0) {
+                            status = "Awaiting for Approval";
+                            isDisable = "";
+                        }
+                        if (result[i].is_approved == 0 && result[i].imported_by == @HttpContextAccessor.HttpContext.Session.GetString("userid")) {
+                            status = "Awaiting for Approval";
+                            isDisable = "disabled";
+                        }
+                        if (result[i].is_approved == 1) {
+                            status = "Approved";
+                            isDisable = "disabled";
+                        }
+                        if (result[i].is_approved == 2) {
+                            status = "Rejected";
+                            isDisable = "disabled";
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td><input type="checkbox" name="chk" class="form-check-input" id="checkapproveid_' + result[i].import_batch_id + '" data-id=' + result[i].import_batch_id + ' style="margin-left:0.5rem;    margin-top: -6px;" ' + isDisable + '></td>';
+                        tbl += '<td>' + result[i].site_name + '</td>';
+                        tbl += '<td>' + formattedDate + '</td>';
+                        tbl += '<td>' + formattedDate1 + '</td>';
+                        tbl += '<td>' + result[i].import_by_name + '</td>';
+                        tbl += '<td>' + status + '</td>';
+                        var approval_name = "";
+                        var verified_date = "";
+                        var verified_name = "";
+                        if (result[i].is_approved == 1) {
+                            //approval_name = "";
+                            verified_name = result[i].approved_by_name;
+                            if (result[i].approval_date == '0001-01-01T00:00:00' || result[i].approval_date == null) {
+                                verified_date = '';
+                            }
+                            else {
+                                verified_date = moment(result[i].approval_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                            }
+                        }
+                        else if (result[i].is_approved == 2) {
+                            // approval_name = result[i].approved_by_name;
+                            verified_name = result[i].rejected_by_name;
+                            if (result[i].rejected_date == '0001-01-01T00:00:00' || result[i].rejected_date == null) {
+                                verified_date = '';
+                            }
+                            else {
+                                verified_date = moment(result[i].rejected_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                            }
+                        }
+                        else {
+                            verified_name = "";
+                        }
+
+                        tbl += '<td>' + verified_date + '</td>';
+                        tbl += '<td>' + verified_name + '</td>';
+                        tbl += '<td style="width:250px"><div style="width: 25%;float: left;"><a href="#" title=" View Generation Data" class="btn btn-info" onclick="ViewGenData(' + result[i].import_batch_id + ')"  data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem">G</a></div>';
+                        tbl += '<div style="width: 25%;float: left;"><a href="#" title=" View Breakdown Data" class="btn  btn-info" onclick="ViewBreakdownData(' + result[i].import_batch_id + ')" data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem" >B</a></div>';
+                        //enter filenames paths
+                       // tbl += '<div style="width: 25%;float: left;"><a href="C:\LogFile\\'+ result[i].log_filename +'" title=" View Log File" class="btn  btn-info" download>F</a></div>';
+                       // tbl += '<div style="width: 25%;float: left;"><a href="C:\ImportedFile\"' + result[i].file_name + '" title=" View Imported File" class="btn  btn-info" download>L</a></div>';
+                        tbl += '</td ></tr>';
+                    }
+                }
+                else {
+                    $("input.checkAllW").attr("disabled", true);
+
+                    //tbl += '<tr><th colspan="7" style="text-align:center">Data Not Available <th></tr>';
+                }
+                tbl += '</tbody>';
+                tbl += '</table>';
+                $("#LogData").html("").html(tbl);
+                $('#example1').DataTable({
+                    dom: 'Bfrtip',
+                    title: 'ImportApproval',
+                    responsive: false,
+                    lengthChange: false,
+                    autoWidth: false,
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    pageLength: 50,
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Import Approval',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Import Approval',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis'
+                    ]
+                    /* "buttons": [
+                         'copy', 'excel', 'csv', 'colvis'
+                     ]*/
+                });//.buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $('#example1').removeClass('dataTable');
+                document.getElementById("loader").style.display = 'none';
+                document.getElementById("approvebtn").style.display = 'flex';
+            }
+        });
+
+    }
+
+    // Get Solar Report
+    function getSolarReport() {
+        let site = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+        if (site == "" || site == null) {
+            alert("Please select site ");
+            return false;
+        }
+        document.getElementById("loader").style.display = 'flex';
+        var status = $('select#status option:selected').val();
+        var siteType = $('select#siteType option:selected').val();
+        var daterange = $('#daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetImportBatches", "Home")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&siteType=2',
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr) {
+                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th><input type="checkbox" class="form-input" id="checkAllS" onclick="selectAllS()" style= ""></th>';
+                tbl += '<th>Site</th>';
+                tbl += '<th style="width:100px">Import Date</th>';
+                tbl += '<th style="width:100px">Data Date</th>';
+                tbl += '<th>Imported By</th>';
+                tbl += '<th>Status</th>';
+                tbl += '<th>Verified Date</th>';
+                tbl += '<th>Verified By</th>';
+                //tbl += '<th>Rej Date</th>';
+                //tbl += '<th>Rej. By</th>';
+                tbl += '<th>Action</th>';
+                tbl += '</tr></thead>';
+
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        var formattedDate = moment(result[i].import_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        var formattedDate1 = moment(result[i].data_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        var status = "";
+                        var isDisable = "";
+                        if (result[i].is_approved == 0) {
+                            status = "Awaiting for Approval";
+                            isDisable = "";
+                        }
+                        if (result[i].is_approved == 0 && result[i].imported_by == @HttpContextAccessor.HttpContext.Session.GetString("userid")) {
+                            status = "Awaiting for Approval";
+                            isDisable = "disabled";
+                        }
+                        if (result[i].is_approved == 1) {
+                            status = "Approved";
+                            isDisable = "disabled";
+                        }
+                        if (result[i].is_approved == 2) {
+                            status = "Rejected";
+                            isDisable = "disabled";
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td><input type="checkbox" class="form-check-input" name="chks" id="checkapproveid_' + result[i].import_batch_id + '" data-id=' + result[i].import_batch_id + ' style ="margin-left:0.5rem;    margin-top: -6px;" ' + isDisable + '></td>';
+                        tbl += '<td>' + result[i].site_name + '</td>';
+                        tbl += '<td>' + formattedDate + '</td>';
+                        tbl += '<td>' + formattedDate1 + '</td>';
+                        tbl += '<td>' + result[i].import_by_name + '</td>';
+                        tbl += '<td>' + status + '</td>';
+
+                        var approval_name = "";
+                        var verified_date = "";
+                        var verified_name = "";
+                        if (result[i].is_approved == 1) {
+                            //approval_name = "";
+                            verified_name = result[i].approved_by_name;
+                            if (result[i].approval_date == '0001-01-01T00:00:00' || result[i].approval_date == null) {
+                                verified_date = '';
+                            }
+                            else {
+                                verified_date = moment(result[i].approval_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                            }
+                        }
+                        else if (result[i].is_approved == 2) {
+                           // approval_name = result[i].approved_by_name;
+                            verified_name = result[i].rejected_by_name;
+                            if (result[i].rejected_date == '0001-01-01T00:00:00' || result[i].rejected_date == null) {
+                                verified_date = '';
+                            }
+                            else {
+                                verified_date = moment(result[i].rejected_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                            }
+                        }
+                        else {
+                            verified_name = "";
+                        }
+
+
+                        /*var rejected_name = "";
+                        if (result[i].rejected_by == 0) {
+                            rejected_name = "";
+                        }
+                        else {
+                            rejected_name = result[i].rejected_by_name;
+                        }*/
+                        tbl += '<td>' + verified_date + '</td>';
+                        tbl += '<td>' + verified_name + '</td>';
+                       // tbl += '<td>' + formattedDate2 + '</td>';
+                        //tbl += '<td>' + rejected_name + '</td>';
+                        tbl += '<td style="width:250px"><div id="G' + result[i].import_batch_id + '" style="width: 25%;float: left;"><a href="#" title=" View Generation Data" class="btn btn-info" onclick="ViewSolarGenData(' + result[i].import_batch_id + ')"  data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem">G</a></div>';
+                        tbl += '<div style="width: 25%;float: left;"><a href="#" title=" View Breakdown Data" class="btn  btn-info" onclick="ViewSolarBreakdownData(' + result[i].import_batch_id + ')" data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem" >B</a></div>';
+                        tbl += '<div style="width: 25%;float: left;"><a href="#" title=" View Pyranometer 1Min Data" class="btn  btn-info" onclick="ViewPY1Data(' + result[i].import_batch_id + ')" data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem" >P1</a></div>';
+                        tbl += '<div style="width: 25%;float: left;"><a href="#" title=" View Pyranometer 15Min Data" class="btn  btn-info" onclick="ViewPY15Data(' + result[i].import_batch_id + ')" data-toggle="modal" data-target="#modal-xl" style="padding: 0rem 0.75rem" >P15</a></div>';
+                        //enter filenames paths
+                       // tbl += '<div style="width: 25%;float: left;"><a href="C:\LogFile\\'+ result[i].log_filename +'" title=" View Log File" class="btn  btn-info" download>F</a></div>';
+                       // tbl += '<div style="width: 25%;float: left;"><a href="C:\ImportedFile\"' + result[i].file_name + '" title=" View Imported File" class="btn  btn-info" download>L</a></div>';
+                        tbl += '</td ></tr>';
+                    }
+                }
+                else {
+                    //tbl += '<tr><th colspan="7" style="text-align:center">Data Not Available <th></tr>';
+                    $("input.checkAllS").attr("disabled", true);
+                }
+                tbl += '</table>';
+                $("#LogData").html("").html(tbl);
+                $('#example1').DataTable({
+                    dom: 'Bfrtip',
+                    title: 'ImportApproval',
+                    responsive: false,
+                    lengthChange: false,
+                    autoWidth: false,
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    pageLength: 50,
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Import Approval',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Import Approval',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis'
+                    ]
+                    /* "buttons": [
+                         'copy', 'excel', 'csv', 'colvis'
+                     ]*/
+                });//.buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $('#example1').removeClass('dataTable');
+                document.getElementById("loader").style.display = 'none';
+                document.getElementById("approvebtn").style.display = 'flex';
+            }
+        });
+
+    }
+
+    function ExportToExcel() {
+        var values = '';
+        $.each($("input[class='form-check-input']:checked"), function () {
+            if (values == '') {
+                values = $(this).attr('data-id');
+            }
+            else {
+                values = values + "," + $(this).attr('data-id');
+            }
+        });
+        console.log(values);
+    }
+
+    function DummyGetReport() {
+        var xValues = ['20/09/2023', '21/09/2023', '22/09/2023', '23/09/2023', '24/09/2023'];
+
+        var yValues = ['DGRA'];
+
+        var zValues = [
+            [1,0,1,1,1,1]
+        ];
+
+        var colorscaleValue = [
+            [0, '#ee403d'],
+            [1, '#28a745']
+        ];
+
+        var data = [{
+            x: xValues,
+            y: yValues,
+            z: zValues,
+            xgap: 5,
+            ygap: 5,
+            type: 'heatmap',
+            colorscale: colorscaleValue,
+            showscale: false,
+            hovertemplate: [
+                '<b>20/09/2023</b><br>Uploaded',
+                '<b>21/09/2023</b><br>Missing',
+                '<b>22/09/2023</b><br>Uploaded',
+                '<b>23/09/2023</b><br>Uploaded',
+                '<b>24/09/2023</b><br>Uploaded',
+            ],
+        }];
+
+        var layout = {
+            title: 'Automation Heatmap',
+            annotations: [],
+            xaxis: {
+                ticks: '',
+                side: 'top'
+            },
+            yaxis: {
+                ticks: '',
+                ticksuffix: ' ',
+                width: 500,
+                height: 500,
+                autosize: false,
+            }
+        };
+
+        for (var i = 0; i < yValues.length; i++) {
+            for (var j = 0; j < xValues.length; j++) {
+                var currentValue = zValues[i][j];
+                if (currentValue != 0.0) {
+                    var textColor = 'white';
+                } else {
+                    var textColor = 'black';
+                }
+                var result = {
+                    xref: 'x1',
+                    yref: 'y1',
+                    x: xValues[j],
+                    y: yValues[i],
+                    text: zValues[i][j],
+                    font: {
+                        family: 'Arial',
+                        size: 12,
+                        color: 'rgb(50, 171, 96)'
+                    },
+                    showarrow: false,
+                    font: {
+                        color: textColor
+                    }
+                };
+                layout.annotations.push(result);
+            }
+        }
+
+        Plotly.newPlot('HeatMap', data);
+    }
+</script>

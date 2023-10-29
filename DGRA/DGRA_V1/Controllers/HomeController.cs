@@ -1052,5 +1052,38 @@ namespace DGRA_V1.Controllers
             TempData["notification"] = "";
             return View();
         }
+
+        //DGR version 3.
+
+        [TypeFilter(typeof(SessionValidation))]
+        public ActionResult heatMap()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+
+        public async Task<IActionResult> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetHeatMapData?site=" + site + "&fromDate=" + fromDate + "&toDate=" + toDate + "&isAdmin=" + isAdmin + "&siteType=" + siteType;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
     }
 }

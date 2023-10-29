@@ -196,6 +196,10 @@ namespace DGRAPIs.BS
         //Task<List<SolarDailyGenReports3>> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr);
         //Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType);
         //Task<WindOpertionalHead> GetOperationHeadData(string site);
+
+
+        //DGR V3.
+        Task<List<HeatMapData>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
     }
     public class DGRBS : IDGRBS
     {
@@ -2695,6 +2699,25 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.LogError(userId, import_type, module, api_name, Message, is_frontend);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+
+        //DGR version 3
+        public async Task<List<HeatMapData>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetHeatMapData(site, fromDate, toDate, isAdmin, siteType);
 
                 }
             }

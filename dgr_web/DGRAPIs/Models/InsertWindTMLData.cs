@@ -82,6 +82,9 @@ namespace DGRAPIs.Models
     }
     public class TMLCountComparision
     {
-        public int realCount { get; set; }
+        public Int64 realCount { get; set; }
+        public Int64 expected_TML { get; set; }
+        public Int64 actual_TML {get;set;}
+        public Int64 wtg_count {get;set;}
     }
 }

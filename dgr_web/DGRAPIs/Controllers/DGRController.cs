@@ -2783,6 +2783,23 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        //DGR Version 3.
+        //GetWindTMLGraphData
+        [Route("GetHeatMapData")]
+        [HttpGet]
+        public async Task<IActionResult> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+            try
+            {
+                var data = await _dgrBs.GetHeatMapData(site, fromDate, toDate, isAdmin, siteType);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         #endregion
     }
