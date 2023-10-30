@@ -22,7 +22,7 @@
         {
             solarSiteList += @usermodel.access_list[i].identity.ToString() + ",";
         }
- }
+    }
 }
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 <!-- Font Awesome -->
@@ -78,15 +78,15 @@
             <div class="card-body">
                 <div class="row">
                     @*<div class="col-sm-3">
-            <div class="form-group">
-                <div class="row">
-                    <label class="col-sm-2 col-form-label text-left">FY : </label>
-                    <select class="form-control  col-sm-10" id="fy" name="fy" value="">
-                        <option value="">Select Financial Year</option>
-                    </select>
-                </div>
-            </div>
-        </div>*@
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 col-form-label text-left">FY : </label>
+                                    <select class="form-control  col-sm-10" id="fy" name="fy" value="">
+                                        <option value="">Select Financial Year</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>*@
                     <div class="col-sm-4">
                         <div class="input-group ">
                             <label class="col-sm-2 col-form-label text-left">Date : </label>
@@ -107,31 +107,31 @@
                     </div>
                     <div class="col-sm-1 text-center"></div>-->
                 </div>
-                    </div>
-                    <div class="col-sm-3"></div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5">
-                        <div class="card-body table-responsive pad" style="margin-left: -4%; padding-bottom: 2px;">
-                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label class="btn bg-olive">
-                                    <input type="radio" name="reportType" value="Site" id="pr_b1" autocomplete="off" checked> Site Wise Report
-                                </label>
-                                <label class="btn bg-olive">
-                                    <input type="radio" name="reportType" value="SPV" id="pr_b2" autocomplete="off"> SPV Wise Report
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-2 text-center">
-
-                    </div>
-                    <div class="col-sm-5 text-center"></div>
-                </div>
-                <hr>
-                <div id="pr_reports" style="overflow-x: auto;" class="pr_reports"></div>
-                <div id="loader" class="loader  center" style="display:none"></div>
             </div>
+            <div class="col-sm-3"></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="card-body table-responsive pad" style="margin-left: -4%; padding-bottom: 2px;">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn bg-olive">
+                            <input type="radio" name="reportType" value="Site" id="pr_b1" autocomplete="off" checked> Site Wise Report
+                        </label>
+                        <label class="btn bg-olive">
+                            <input type="radio" name="reportType" value="SPV" id="pr_b2" autocomplete="off"> SPV Wise Report
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2 text-center">
+
+            </div>
+            <div class="col-sm-5 text-center"></div>
+        </div>
+        <hr>
+        <div id="pr_reports" style="overflow-x: auto;" class="pr_reports"></div>
+        <div id="loader" class="loader  center" style="display:none"></div>
+</div>
         </div>
     </section>
 </div>
@@ -186,7 +186,7 @@
                 for (var i = 0; i < result.length; i++) {
                     options += '<option value="' + result[i].financial_year + '">' + result[i].financial_year + '</option>';
                 }
-                $("#fy").html(options);    
+                $("#fy").html(options);
             }
         });
     }*@
@@ -375,14 +375,14 @@
                         }
 
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
-                       
+
                         pr_var = (act_prval.toFixed(2) - result[i].tar_pr.toFixed(2)) ;
                         plf_var = (result[i].act_plf.toFixed(2) - result[i].tar_plf.toFixed(2));
                         ma_var = (result[i].act_ma.toFixed(2) - result[i].tar_ma.toFixed(2));
                         iga_var = (result[i].act_iga.toFixed(2) - result[i].tar_iga.toFixed(2));
                         ega_var = (result[i].act_ega.toFixed(2) - result[i].tar_ega.toFixed(2));
 
-                       
+
                         console.log(result[i].pr_expected_kwh, result[i].act_kwh, act_prval);
                         if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
                             gain_tar = 0;
@@ -404,7 +404,7 @@
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += result[i].expected_kwh;
+                        total_expected_kwh += Number(result[i].expected_kwh) / 1000000;
                         total_act_kwh += result[i].act_kwh;
                         total_minr += minr;
                         total_tar_ghi += result[i].tar_ghi;
@@ -755,7 +755,7 @@
                                 }
                             }
                         },
-                       
+
                         {
                             extend: 'csv',
                             footer: true,
@@ -1056,7 +1056,7 @@
                 tbl += '<th>Act</th>';
                 tbl += '<th>T.Var (%)</th>';
                 tbl += '<th>E.Var (%)</th>';
-                    
+
                 tbl += '<th>(MINR)</th>';
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
@@ -1180,7 +1180,7 @@
                         if (result[i].tar_poa != 0) {
                             poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
                         }
-                        
+
                         pr_var = (act_prval - result[i].tar_pr);
                         plf_var = (result[i].act_plf - result[i].tar_plf);
                         ma_var = (result[i].act_ma - result[i].tar_ma);
@@ -1191,7 +1191,7 @@
 
                     //TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr);
-                       
+
                         if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
                             gain_tar = 0;
                         } else {
@@ -1369,7 +1369,7 @@
                     if (avg_tar_poa != 0) {
                         avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
                     }
-                   
+
                     avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
                     avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
                     avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));

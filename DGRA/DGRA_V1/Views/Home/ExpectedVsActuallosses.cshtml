@@ -96,25 +96,25 @@
                         </div>
                         <div class="col-md-1"></div>
                     </div>
-                   
+
                     @*<div class="col-md-2">
-                <div class="form-group">
-                    <div class="row">
-                        <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
-                        <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
-        </select>-->
-                    </div>
-                </div>
-            </div>*@
+                                <div class="form-group">
+                                    <div class="row">
+                                        <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
+                                        <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
+                        </select>-->
+                                    </div>
+                                </div>
+                            </div>*@
 
                 </div>
                 @* <div class="row">
-            <div class="col-md-5"></div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style=" width: 5rem;">Search</button>
-            </div>
-            <div class="col-md-5"></div>
-        </div>*@
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style=" width: 5rem;">Search</button>
+                        </div>
+                        <div class="col-md-5"></div>
+                    </div>*@
                 <hr>
                 <div class="row">
                     <!--<div class="col-sm-3"> PR Type :</div>-->
@@ -331,7 +331,7 @@
     function getReport()
     {
 
-      
+
         var data_Array = [];
         document.getElementById("loader").style.display = 'flex';
         var daterange = $('#daterange').val();
@@ -353,15 +353,15 @@
             spv_list += $(this).val() + ",";
         });
         spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
-        
 
-     
+
+
         var cnt = 0;
         $('#site option').each(function () {
             if ($(this).is(':selected')) {
                 cnt++;
             }
-           
+
         });
         if (cnt > 0) {
             var site = $('select#site option:selected').each(function () {
@@ -376,7 +376,7 @@
             site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
         }
         console.log("SIte List", site_id);
-      
+
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetActualVSExpected", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
@@ -570,39 +570,17 @@
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
-        // Percentage Value 
-        //let exp_percentage = ((t_expected - t_target) / t_target)*100;
-        //let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
-        //let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
-        //let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
-        //let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
-        //let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
-        //let cur_percentage = ((t_curtaiment - t_expected) / t_expected) * 100;
-        //let pr_percentage = ((t_pr - t_expected) / t_expected) * 100;;
-        //let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
-
-        // Percentage Value 
-        //let exp_percentage = ((t_expected - t_target) / t_target) * 100;
-        //let usmh_percentage = (t_usmh / t_expected) * 100;
-        //let smh_percentage = (t_smh / t_expected) * 100;
-        //let oh_percentage = (t_oh / t_expected) * 100;
-        //let igbd_percentage = (t_igbd / t_expected) * 100;
-        //let egbd_percentage = (t_egbd / t_expected) * 100;
-        //let cur_percentage = (t_curtaiment / t_expected) * 100;
-        //let pr_percentage = (t_pr / t_expected) * 100;
-        //let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
-
-        // Percentage Value 
-        let tar_percentage = ((t_expected - t_target) / t_target) * 100;
+        // Percentage Value
+        let tar_percentage = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (t_usmh / t_expected) * 100;
-        let smh_percentage = (t_smh / t_expected) * 100;
-        let oh_percentage = (t_oh / t_expected) * 100;
-        let igbd_percentage = (t_igbd / t_expected) * 100;
-        let egbd_percentage = (t_egbd / t_expected) * 100;
-        let cur_percentage = (t_curtaiment / t_expected) * 100;
-        let pr_percentage = (t_pr / t_expected) * 100;
-        let actul_percentage = ((t_actual) / t_expected) * 100;
+        let usmh_percentage = (data_usmh / data_expected) * 100;
+        let smh_percentage = (data_smh / data_expected) * 100;
+        let oh_percentage = (data_oh / data_expected) * 100;
+        let igbd_percentage = (data_igbd / data_expected) * 100;
+        let egbd_percentage = (data_egbd / data_expected) * 100;
+        let cur_percentage = (data_curtaiment / data_expected) * 100;
+        let pr_percentage = (data_pr / data_expected) * 100;
+        let actul_percentage = ((data_actual) / data_expected) * 100;
 
         //data_pr = 0.4;
         // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
@@ -852,7 +830,7 @@ function getYearlyReport()
                 actual_cal = (total_actual / total_expected) * 100;
 
 
-               
+
                 // Call function draw the yearly chart
                 yearlyChart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
 
@@ -865,101 +843,6 @@ function getYearlyReport()
     }
 
     function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
-        //let t_target = Number(total_target).toFixed(2);
-        //let t_expected = Number(total_expected).toFixed(2);
-        //let t_usmh = Number(total_usmh).toFixed(2);
-        //let t_smh = Number(total_smh).toFixed(2);
-        //let t_oh = Number(total_oh).toFixed(2);
-        //let t_igbd = Number(total_igbd).toFixed(2);
-        //let t_egbd = Number(total_egbd).toFixed(2);
-        //let t_curtaiment = Number(total_curtaiment).toFixed(2);
-        //let t_pr = Number(total_pr).toFixed(2);
-        //let t_actual = Number(total_actual).toFixed(2);
-
-        //var data = [
-        //    {
-        //        //name: "2018",
-        //        type: "waterfall",
-        //        orientation: "v",
-        //        measure: [
-        //            "relative",
-        //            "absolute",
-        //            "relative",
-        //            "relative",
-        //            "relative",
-        //            "relative",
-        //            "relative",
-        //            "relative",
-        //            "absolute",
-        //            "absolute"
-        //        ],
-        //        x: [
-        //            "Target",
-        //            "Expected",
-        //            "USMH",
-        //            "SMH",
-        //            "Other",
-        //            "IGBD",
-        //            "EGBD",
-        //            "Curtailment",
-        //            "PR",
-        //            "Actual"
-        //        ],
-        //        textposition: "outside",
-        //        //textposition: "inside",
-        //        text: [
-        //            t_target,
-        //            t_expected,
-        //            t_usmh,
-        //            t_smh,
-        //            t_oh,
-        //            t_igbd,
-        //            t_egbd,
-        //            t_curtaiment,
-        //            t_pr,
-        //            t_actual
-        //        ],
-        //        y: [
-        //            Number(total_target),
-        //            Number(total_expected),
-        //            Number(total_usmh),
-        //            Number(total_smh),
-        //            Number(total_oh),
-        //            Number(total_igbd),
-        //            Number(total_egbd),
-        //            Number(total_curtaiment),
-        //            Number(total_pr),
-        //            Number(total_actual)
-        //        ],
-        //        hovertemplate: '<b>%{x}</b><br>' +
-        //            /*'Column: %{x}<br>' +*/
-        //            'Value: %{text:.4f}',
-        //        totals: { marker: { color: "#86C466" } },
-        //        increasing: { marker: { color: "#77CAE7" } },
-        //        decreasing: { marker: { color: "#EE403D" } },
-        //        connector: {
-        //            line: {
-        //                color: "white"
-        //            }
-        //        },
-        //    }
-        //];
-        //layout = {
-        //    title: {
-        //        text: "Monthly"
-        //    },
-        //    xaxis: {
-        //        type: "category",
-        //        fixedrange: true
-        //    },
-        //    yaxis: {
-        //        type: "linear",
-        //        fixedrange: true,
-        //        range: [0, Math.max(...data[0].y) * 1.1]
-        //    },
-        //    autosize: true,
-        //    showlegend: true
-        //};
 
         console.log("Inside yearly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
 
@@ -985,28 +868,17 @@ function getYearlyReport()
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
-        // Percentage Value 
-        //let exp_percentage = ((t_expected - t_target) / t_target) * 100;
-        //let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
-        //let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
-        //let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
-        //let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
-        //let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
-        //let cur_percentage = ((t_curtaiment - t_expected) / t_expected) * 100;
-        //let pr_percentage = ((t_pr - t_expected) / t_expected) * 100;;
-        //let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
-
-        // Percentage Value 
-        let tar_percentage = ((t_expected - t_target) / t_target) * 100;
+        // Percentage Value
+        let tar_percentage = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (t_usmh / t_expected) * 100;
-        let smh_percentage = (t_smh / t_expected) * 100;
-        let oh_percentage = (t_oh / t_expected) * 100;
-        let igbd_percentage = (t_igbd / t_expected) * 100;
-        let egbd_percentage = (t_egbd / t_expected) * 100;
-        let cur_percentage = (t_curtaiment / t_expected) * 100;
-        let pr_percentage = (t_pr / t_expected) * 100;
-        let actul_percentage = ((t_actual) / t_expected) * 100;
+        let usmh_percentage = (data_usmh / data_expected) * 100;
+        let smh_percentage = (data_smh / data_expected) * 100;
+        let oh_percentage = (data_oh / data_expected) * 100;
+        let igbd_percentage = (data_igbd / data_expected) * 100;
+        let egbd_percentage = (data_egbd / data_expected) * 100;
+        let cur_percentage = (data_curtaiment / data_expected) * 100;
+        let pr_percentage = (data_pr / data_expected) * 100;
+        let actul_percentage = ((data_actual) / data_expected) * 100;
 
 
        // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
