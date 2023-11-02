@@ -490,7 +490,7 @@
 
 
                 //Call function draw the chart
-                    monthlychart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
+                    monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
 
             }
             else {
@@ -649,16 +649,16 @@
                     data_actual
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-                    '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2)+ '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment + '<br> (' + cur_percentage.toFixed(2) + '% )',
-                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
-                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )',
+                    '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2)+ '% )',
+                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
                 //    /*'Column: %{x}<br>' +*/
@@ -832,8 +832,7 @@ function getYearlyReport()
 
 
                 // Call function draw the yearly chart
-                yearlyChart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
-
+                yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
             }
             else {
             }
@@ -947,16 +946,16 @@ function getYearlyReport()
                     data_actual
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-                    '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment + '<br> (' + cur_percentage.toFixed(2) + '% )',
-                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
-                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                    '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
                 //    /*'Column: %{x}<br>' +*/

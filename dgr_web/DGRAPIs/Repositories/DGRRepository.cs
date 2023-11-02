@@ -8154,7 +8154,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             await LogError(0, 2, 5, functionName, msg, backend);
                             throw new Exception("Unsupported BD_TYPE " + bd_type_id + " For WTG " + sCurrentWTG + " for date " + fromDate);
                             break;
-
                     }
                 }
 
@@ -9950,8 +9949,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string updateQuery = "update uploading_file_generation_solar set expected_kwh = expected_kwh - " + (totalLoss/prTarget)*100 +
                 ", usmh = " + Final_USMH_Loss + ", smh=" + Final_SMH_Loss + ", oh=" + Final_OthersHour_Loss +
                 ", igbdh = " + Final_IGBD_Loss + ", egbdh = " + Final_EGBD_Loss + ", load_shedding = " + Final_LS_Loss +
-                ", ma = " + Math.Round(MA, 2) + ", iga = " + Math.Round(IGA, 2) + ", ega = " + Math.Round(EGA, 2) + ", ega_b = " + Math.Round(EGAB, 2) + ", ega_c = " + Math.Round(EGAC, 2) + ", lull_hrs_bd = " + Math.Round(Lull_Hr, 2) + ", usmh_bd = " + Math.Round(USMH_Hr, 2) + ", smh_bd = " + Math.Round(SMH_Hr, 2) + ", igbdh_bd =" + Math.Round(IGBD_Hr, 2) + ", egbdh_bd =" + Math.Round(EGBD_Hr, 2) +
-                ", load_shedding_bd = " + LS_Hr + ", total_bd_hrs = " + Math.Round(Lull_Hr + USMH_Hr + SMH_Hr + IGBD_Hr + EGBD_Hr + LS_Hr, 2) + ", usmh=" + Final_USMH_Loss + ", smh=" + Final_SMH_Loss + ", oh= " + Final_OthersHour_Loss + ", igbdh = " + Final_IGBD_Loss + ", egbdh= " + Final_EGBD_Loss +
+                ", ma = " + Math.Round(MA, 6) + ", iga = " + Math.Round(IGA, 6) + ", ega = " + Math.Round(EGA, 6) + ", ega_b = " + Math.Round(EGAB, 6) + ", ega_c = " + Math.Round(EGAC, 6) + ", lull_hrs_bd = " + Math.Round(Lull_Hr, 6) + ", usmh_bd = " + Math.Round(USMH_Hr, 6) + ", smh_bd = " + Math.Round(SMH_Hr, 6) + ", igbdh_bd =" + Math.Round(IGBD_Hr, 6) + ", egbdh_bd =" + Math.Round(EGBD_Hr, 6) +
+                ", load_shedding_bd = " + LS_Hr + ", total_bd_hrs = " + Math.Round(Lull_Hr + USMH_Hr + SMH_Hr + IGBD_Hr + EGBD_Hr + LS_Hr, 6) + ", usmh=" + Final_USMH_Loss + ", smh=" + Final_SMH_Loss + ", oh= " + Final_OthersHour_Loss + ", igbdh = " + Final_IGBD_Loss + ", egbdh= " + Final_EGBD_Loss +
                 ", total_losses=" + totalLoss + ", prod_hrs = " + FinalProductionHrs + " where site_id = " + site_id + " and inverter = '" + inverter + "' and date = '" + fromDate + "'";
 
             string updateqry = "update uploading_file_generation_solar set inv_pr=inv_act*100/expected_kwh, plant_pr=plant_act*100/expected_kwh where " +
@@ -15310,7 +15309,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                         degradation = (((start - commDate).TotalDays - 1) * LossData.yoy_degradation) / 365; //start date - 1 day.
 
+                        //Fetch from 15 min data.
                         string qry3 = "select *,date_time as stringdatetime from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + start.Year.ToString() + "-" + start.Month.ToString() + "-" + start.Day + "' order by date_time asc";
+
+                        //to fetch from 1 mon data
+                        //string qry3 = "select *,date_time as stringdatetime from `uploading_pyranometer_1_min_solar` where site_id = " + site + " and DATE(date_time)='" + start.Year.ToString() + "-" + start.Month.ToString() + "-" + start.Day + "' order by date_time asc";
                         List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
                         try
                         {
