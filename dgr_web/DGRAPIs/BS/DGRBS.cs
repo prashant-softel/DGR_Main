@@ -839,7 +839,7 @@ namespace DGRAPIs.BS
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.PowerExpected(site, fromDate, toDate, logFileName, "", "");
+                    return await repos.PowerExpected1MinPyrano(site, fromDate, toDate, logFileName, "", "");
                 }
             }
             catch (Exception ex)

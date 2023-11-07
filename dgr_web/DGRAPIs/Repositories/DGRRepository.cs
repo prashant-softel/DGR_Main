@@ -5755,7 +5755,11 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             //    await LogError(0, 1, 5, functionName, msg, backend);
             //}
 
-            string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+            //For getting Expectd power form 1 minute data. Here divide by 60
+            string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+
+            //For getting Expectd power form 15 minute data. Here divide by 4 
+            //string getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
             
             string getTempCorrPr = "SELECT t2.site, t1.site_id, SUM(t1.jmrTempPR) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t1.site_id;";
                 List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
@@ -5767,7 +5771,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                 }
                 catch (Exception e)
                 {
-                    string msg = "Exception while getting expected power from uploading_pyranometer_15_min_solar table." + e.ToString();
+                    string msg = "Exception while getting expected power from uploading_pyranometer_1_min_solar table." + e.ToString();
                     //API_ErrorLog(msg);
                     await LogError(0, 1, 5, functionName, msg, backend);
             }
@@ -5928,7 +5932,11 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
             List<SolarPerformanceReports1> data = new List<SolarPerformanceReports1>();
             data = await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);
 
-            string getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
+            //For 1 min data calculation.
+            string getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
+            
+            //For 15 min data calculation.
+            //string getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
             List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
             string functionName = "GetSolarPerformanceReportBySPVWise";
             try
@@ -8827,7 +8835,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     errorCodes += calculateTrackerLoss.ToString() + ",";
                 }
-                int powerExpected = await PowerExpected(site, fromDate, fromDate, "Daily", "", "");
+                int powerExpected = await PowerExpected1MinPyrano(site, fromDate, fromDate, "Daily", "", "");
                 if (powerExpected == 0)
                 {
                     //finalRes = 11022;
@@ -14790,11 +14798,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (prType == "AOP")
             {
                 //qry1 = "select site, t1.site_id, t1. date, pr, toplining_pr, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma) as ma, avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,sum(t2.gen_nos) as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter +                    " group by t1.site, t1.date ";
-                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+
+                //SUM(P_exp_degraded)/60 for 1 min data and SUM(P_exp_degraded)/4 for15 min data.
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
             }
             else if (prType == "toplining")
             {
-                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
 
                 //qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses, t2.gen_nos as target from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
 
@@ -15515,6 +15525,315 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 return finalRes;
             }
             
+        }
+
+        internal async Task<int> PowerExpected1MinPyrano(string site, string fromDate, string toDate, string type, string months, string fy)
+        {
+            string functionName = "PowerExpected1MinPyrano";
+            int finalRes = 1501;
+            double Pexpected = 0;
+            List<SolarPowerCalcReturn> result = new List<SolarPowerCalcReturn>();
+            //Get Loss Factor Constants
+            try
+            {
+                GetFinancialAndCurrentYear(fromDate, out int financialYear, out int currentYear);
+                int fyn = financialYear;
+                int cy = currentYear;
+                string qry1 = "";
+                if (type == "Daily")
+                {
+                    qry1 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no >= MONTH('" + fromDate + "') and month_no<= MONTH('" + toDate + "') and year = '" + fyn + "';";
+                }
+                else if (type == "Monthly")
+                {
+                    qry1 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no in (" + months + ") and fy = '" + fy + "'";
+                }
+                else if (type == "Yearly")
+                {
+                    string[] yearFY = fromDate.Split('-');
+                    string[] endYearFY = toDate.Split('-');
+                    qry1 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + "  and fy = '" + yearFY[0] + "-" + endYearFY[0].Substring(2, 2) + "'";
+                }
+                List<SolarPowerCalc> data = new List<SolarPowerCalc>();
+                try
+                {
+                    data = await Context.GetData<SolarPowerCalc>(qry1).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    throw new Exception("Exception occured in power expected function. " + msg);
+                    await LogError(0, 1, 5, functionName, msg, backend);
+
+                }
+                //Get Site Data
+                List<SolarSiteMaster> siteData = new List<SolarSiteMaster>();
+                string qry2 = "select dc_capacity, ac_capacity, doc as commissioning_date from `site_master_solar` where site_master_solar_id = " + site;
+                try
+                {
+                    siteData = await Context.GetData<SolarSiteMaster>(qry2).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching records from site_master_solar, due to : " + e.ToString();
+                    //API_ErrorLog(msg);
+                    await LogError(0, 1, 5, functionName, msg, backend);
+
+                }
+
+                foreach (SolarPowerCalc _dataElement in data)
+                {
+                    _dataElement.Loss_factor = 1 - ((1 + _dataElement.near_sheding) * (1 + _dataElement.iam_factor) * (1 + _dataElement.soiling_factor) * (1 + _dataElement.pv_loss) * (1 + _dataElement.lid) * (1 + _dataElement.array_missmatch) * (1 + _dataElement.dc_ohmic) * (1 + _dataElement.conversion_loss) * (1 + _dataElement.plant_auxilary) * (1 + _dataElement.system_unavailability) * (1 + _dataElement.ac_ohmic) * (1 + _dataElement.far_shading) * (1 + _dataElement.module_quality_loss) * (1 + _dataElement.electrical_loss) * (1 + _dataElement.night_consumption) * (1 + _dataElement.idt));
+
+                    //_dataElement.Loss_factor = 1 - ((1 + _dataElement.near_sheding / 100) * (1 + _dataElement.iam_factor / 100) * (1 + _dataElement.soiling_factor / 100) * (1 + _dataElement.pv_loss / 100) * (1 + _dataElement.lid / 100) * (1 + _dataElement.array_missmatch / 100) * (1 + _dataElement.dc_ohmic / 100) * (1 + _dataElement.conversion_loss / 100) * (1 + _dataElement.plant_auxilary / 100) * (1 + _dataElement.system_unavailability / 100) * (1 + _dataElement.ac_ohmic / 100) * (1 + _dataElement.external_transformer / 100));
+
+                }
+                DateTime commDate = new DateTime();
+                DateTime end = new DateTime();
+                DateTime start = new DateTime();
+                try
+                {
+                    string date = Convert.ToDateTime(siteData[0].commissioning_date).ToString("yyyy-MM-dd");
+                    string[] commissionDate = date.Split('-');
+                    DateTime commDate1 = new DateTime(Int32.Parse(commissionDate[0]), Int32.Parse(commissionDate[1]), Int32.Parse(commissionDate[2]));
+
+                    commDate = commDate1;
+                    DateTime end1 = new DateTime();
+                    end = end1;
+                    DateTime start1 = new DateTime();
+                    start = start1;
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    throw new Exception("Exception from power Expected function : Exception " + msg);
+                }
+                if (type == "Daily")
+                {
+                    string[] fromDateSplt = fromDate.Split('-');
+                    string[] toDateSplt = toDate.Split('-');
+                    start = new DateTime(Int32.Parse(fromDateSplt[0]), Int32.Parse(fromDateSplt[1]), Int32.Parse(fromDateSplt[2]));
+                    end = new DateTime(Int32.Parse(toDateSplt[0]), Int32.Parse(toDateSplt[1]), Int32.Parse(toDateSplt[2]));
+
+                    while (start <= end)
+                    {
+                        double degradation = 0;
+                        double dailyPexpected = 0;
+                        SolarPowerCalc LossData = new SolarPowerCalc();
+                        foreach (SolarPowerCalc _dataElement in data)
+                        {
+                            if (_dataElement.month_no == start.Month)
+                            {
+                                LossData = _dataElement;
+                                break;
+                            }
+                        }
+                        degradation = (((start - commDate).TotalDays - 1) * LossData.yoy_degradation) / 365; //start date - 1 day.
+
+                        //Fetch from 1 min data.
+                        string qry3 = "select *,date_time as stringdatetime from `uploading_pyranometer_1_min_solar` where site_id = " + site + " and DATE(date_time)='" + start.Year.ToString() + "-" + start.Month.ToString() + "-" + start.Day + "' order by date_time asc";
+
+                        List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
+                        try
+                        {
+                            data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qry3).ConfigureAwait(false);
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while fetching records from uploading_pyranometer_1_min_solar, due to : " + e.ToString();
+                            //API_ErrorLog(msg);
+                            await LogError(0, 1, 5, functionName, msg, backend);
+
+                        }
+                        foreach (SolarUploadingPyranoMeter1Min _temp1mindata in data1min)
+                        {
+                            if (_temp1mindata.avg_poa > 0)
+                            {
+                                /*double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                                double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + LossData.Loss_factor / 100) * (1 - (LossData.alpha / 100 * (T_cell - LossData.tstc))) * (_temp1mindata.avg_poa / 1000);
+                                dailyPexpected += localPexpected;*/
+                                //double degradation = (((_temp1mindata.date - commDate).TotalDays) * LossData.yoy_degradation) / 365;
+                                double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                                T_cell = Math.Round(T_cell, 5);
+                                double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa) * (1 - degradation) * (1 - LossData.Loss_factor) * (1 - (LossData.alpha * (T_cell - LossData.tstc))) / 1000;
+
+                                if ((siteData[0].ac_capacity * 1000) < localPexpected)
+                                {
+                                    localPexpected = siteData[0].ac_capacity * 1000;
+
+                                }
+                                double localPexpectedDegraded = localPexpected * (1 + data[0].line_losses) * (1 + data[0].external_transformer);
+                                dailyPexpected += localPexpected;
+
+                                string updateQry = " update `uploading_pyranometer_1_min_solar` set P_exp = " + localPexpected + ", P_exp_degraded = " + localPexpectedDegraded + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.stringdatetime.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
+                                try
+                                {
+                                    await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = "Exception while updating calculated data in uploading_pyranometer_1_min_solar, due to :  " + e.ToString();
+                                    //API_ErrorLog(msg);
+                                    await LogError(0, 1, 5, functionName, msg, backend);
+
+                                }
+
+                            }
+                        }
+                        SolarPowerCalcReturn obj = new SolarPowerCalcReturn();
+                        obj.site_id = site;
+                        obj.date = start.Date.ToString("yyyy-MM-dd");
+                        //obj.Pexpected = dailyPexpected;
+                        //Will be divide by 60 for 1 min data.
+                        obj.Pexpected = (dailyPexpected / 60) * (1 + data[0].line_losses) * (1 + data[0].external_transformer);
+                        result.Add(obj);
+                        start = start.AddDays(1);
+                    }
+                }
+                else if (type == "Monthly")
+                {
+                    string[] monthSplit = months.Split(',');
+                    string[] fySplit = fy.Split('-');
+                    foreach (string month in monthSplit)
+                    {
+                        //Monthly Pexpected
+                        double MonthlyPexp = 0;
+                        //Find Month's constants
+                        SolarPowerCalc LossData = new SolarPowerCalc();
+                        foreach (SolarPowerCalc _dataElement in data)
+                        {
+                            if (_dataElement.month_no == Int32.Parse(month))
+                            {
+                                LossData = _dataElement;
+                                break;
+                            }
+                        }
+                        //Each month in month-range
+                        string year = Int32.Parse(month) > 3 ? fySplit[0] : fySplit[0].Substring(0, 2);
+
+                        string qryMonth = "select t1.*, date(date_time) as date from `uploading_pyranometer_1_min_solar` t1 left join daily_gen_summary_solar t2 on t1.site_id = t2.site_id and date(date_time) = t2.date where month(date(date_time)) = " + month + " and year(date(date_time))='" + year + "' order by date_time asc;";
+                        List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
+                        try
+                        {
+                            data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryMonth).ConfigureAwait(false);
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while fetching records from uploading_pyranometer_1_min_solar, due to : " + e.ToString();
+                            //API_ErrorLog(msg);
+                            await LogError(0, 1, 5, functionName, msg, backend);
+
+                        }
+                        foreach (SolarUploadingPyranoMeter1Min _temp1mindata in data1min)
+                        {
+                            if (_temp1mindata.avg_poa > 0)
+                            {
+                                double degradation = (((_temp1mindata.date - commDate).TotalDays) * LossData.yoy_degradation) / 365;
+                                double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                                double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa) * (1 - degradation / 100) * (1 + LossData.Loss_factor / 100) * (1 - (LossData.alpha / 100 * (T_cell - LossData.tstc)));
+                                MonthlyPexp += localPexpected;
+                                /*
+                                double degradation = ((_temp1mindata.date - commDate).TotalDays - 365) * LossData.yoy_degradation / 365;
+
+                                double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * LossData.tcnd;
+                                double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + LossData.Loss_factor / 100) * (1 - (LossData.alpha / 100 * (T_cell - LossData.tstc))) * (_temp1mindata.avg_poa / 1000);
+                                MonthlyPexp += localPexpected; */
+
+
+
+                                string updateQry = " update `uploading_pyranometer_1_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.date_time + "' ";
+                                try
+                                {
+                                    await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = "Exception while updating calculated into uploading_pyranoter_1_min_solar table, due to : " + e.ToString();
+                                    //API_ErrorLog(msg);
+                                    await LogError(0, 1, 5, functionName, msg, backend);
+
+                                }
+                            }
+                        }
+                        SolarPowerCalcReturn obj = new SolarPowerCalcReturn();
+                        obj.site_id = site;
+                        obj.month_no = Int32.Parse(month);
+                        obj.year = Int32.Parse(year);
+                        obj.Pexpected = MonthlyPexp;
+                        result.Add(obj);
+                    }
+                }
+                else if (type == "Yearly")
+                {
+                    double YearlyPexp = 0;
+                    foreach (SolarPowerCalc _eachMonthData in data)
+                    {
+                        double MonthlyPexp = 0;
+                        int month_no = _eachMonthData.month_no;
+                        string[] fDateSplit = fromDate.Split('-');
+                        string[] tDateSplit = toDate.Split('-');
+                        string year = (month_no > 3) ? fDateSplit[0] : tDateSplit[0];
+
+                        string qryMonth = "select t1.*, date(date_time) as date from `uploading_pyranometer_1_min_solar` t1 left join daily_gen_summary_solar t2 on t1.site_id = t2.site_id and date(date_time) = t2.date where month(date(date_time)) = " + month_no + " and year(date(date_time))='" + year + "' order by date_time asc;";
+                        List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
+                        try
+                        {
+                            data1min = await Context.GetData<SolarUploadingPyranoMeter1Min>(qryMonth).ConfigureAwait(false);
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while fetching records from uploading_pyranometer_1_min_solar, due to : " + e.ToString();
+                            //API_ErrorLog(msg);
+                            await LogError(0, 1, 5, functionName, msg, backend);
+
+                        }
+                        foreach (SolarUploadingPyranoMeter1Min _temp1mindata in data1min)
+                        {
+                            if (_temp1mindata.avg_poa > 0)
+                            {
+                                double degradation = (((_temp1mindata.date - commDate).TotalDays) * _eachMonthData.yoy_degradation) / 365;
+                                //double degradation = ((_temp1mindata.date - commDate).TotalDays - 365) * _eachMonthData.yoy_degradation / 365;
+
+                                double T_cell = _temp1mindata.mod_temp + (_temp1mindata.avg_poa / 1000) * _eachMonthData.tcnd;
+                                double localPexpected = (siteData[0].dc_capacity * 1000) * (_temp1mindata.avg_poa) * (1 - degradation / 100) * (1 + _eachMonthData.Loss_factor / 100) * (1 - (_eachMonthData.alpha / 100 * (T_cell - _eachMonthData.tstc)));
+                                MonthlyPexp += localPexpected;
+
+                                //double localPexpected = (siteData[0].dc_capacity * 1000) * (1 + degradation / 100) * (1 + _eachMonthData.Loss_factor / 100) * (1 - (_eachMonthData.alpha / 100 * (T_cell - _eachMonthData.tstc))) * (_temp1mindata.avg_poa / 1000);
+                                //MonthlyPexp += localPexpected;
+
+                                string updateQry = " update `uploading_pyranometer_1_min_solar` set P_exp = " + localPexpected + " where site_id = " + _temp1mindata.site_id + " and date_time = '" + _temp1mindata.date_time + "' ";
+                                try
+                                {
+                                    await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = "Exception while updating calculated data into uploading_pyranometer_1_min_solar table : " + e.ToString();
+                                    //API_ErrorLog(msg);
+                                    await LogError(0, 1, 5, functionName, msg, backend);
+
+                                }
+                            }
+                        }
+                        YearlyPexp += MonthlyPexp;
+                    }
+                    SolarPowerCalcReturn obj = new SolarPowerCalcReturn();
+                    obj.site_id = site;
+                    obj.Pexpected = YearlyPexp;
+                    result.Add(obj);
+                }
+                finalRes = 0;
+                return finalRes;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while executing PowerExpected() function, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                await LogError(0, 1, 5, functionName, msg, backend);
+
+                return finalRes;
+            }
+
         }
 
         public void GetFinancialAndCurrentYear(string fromDate, out int financialYear, out int currentYear)
