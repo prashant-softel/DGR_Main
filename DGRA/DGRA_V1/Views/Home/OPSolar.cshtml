@@ -524,8 +524,15 @@
         }
     });
     }
+
     function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
         console.log("Inside monthly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
+
+        let total_opExpected = Number(total_expected) - Number(total_curtaiment);
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+
+        let t_opExpected = Number(total_opExpected).toFixed(2);
+        let t_total_bd = Number(total_bd).toFixed(2);
 
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
@@ -538,8 +545,11 @@
         let t_pr = Number(total_pr).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
+        let data_opExpected = Number(total_opExpected);
+        let data_total_bd = Number(total_bd);
+
         let data_target = Number(total_target);
-        let data_expected = Number(total_expected);
+        let data_expected = Number(total_expected) * -1;
         let data_usmh = Number(total_usmh) * -1;
         let data_smh = Number(total_smh) * -1;
         let data_oh = Number(total_oh) * -1;
@@ -549,39 +559,15 @@
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
-        // Percentage Value 
-        //let exp_percentage = ((t_expected - t_target) / t_target)*100;
-        //let usmh_percentage = ((t_usmh - t_expected) / t_expected) * 100;
-        //let smh_percentage = ((t_smh - t_expected) / t_expected) * 100;
-        //let oh_percentage = ((t_oh - t_expected) / t_expected) * 100;
-        //let igbd_percentage = ((t_igbd - t_expected) / t_expected) * 100;
-        //let egbd_percentage = ((t_egbd - t_expected) / t_expected) * 100;
-        //let cur_percentage = ((t_curtaiment - t_expected) / t_expected) * 100;
-        //let pr_percentage = ((t_pr - t_expected) / t_expected) * 100;;
-        //let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
 
         // Percentage Value 
-        //let exp_percentage = ((t_expected - t_target) / t_target) * 100;
-        //let usmh_percentage = (t_usmh / t_expected) * 100;
-        //let smh_percentage = (t_smh / t_expected) * 100;
-        //let oh_percentage = (t_oh / t_expected) * 100;
-        //let igbd_percentage = (t_igbd / t_expected) * 100;
-        //let egbd_percentage = (t_egbd / t_expected) * 100;
-        //let cur_percentage = (t_curtaiment / t_expected) * 100;
-        //let pr_percentage = (t_pr / t_expected) * 100;
-        //let actul_percentage = ((t_actual - t_expected) / t_expected) * 100;
-
-        // Percentage Value 
-        let tar_percentage = ((t_expected - t_target) / t_target) * 100;
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (t_usmh / t_expected) * 100;
-        let smh_percentage = (t_smh / t_expected) * 100;
-        let oh_percentage = (t_oh / t_expected) * 100;
-        let igbd_percentage = (t_igbd / t_expected) * 100;
-        let egbd_percentage = (t_egbd / t_expected) * 100;
-        let cur_percentage = (t_curtaiment / t_expected) * 100;
-        let pr_percentage = (t_pr / t_expected) * 100;
-        let actul_percentage = ((t_actual) / t_expected) * 100;
+        let bd_percentage = (total_bd / total_opExpected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
+        let egbd_percentage = (total_egbd / total_expected) * 100;
+        let pr_percentage = (total_pr / total_expected) * 100;
+        let actul_percentage = ((total_actual) / total_expected) * 100;
 
         //data_pr = 0.4;
         // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
@@ -606,20 +592,14 @@
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
+                    "BD",
                     "Other",
-                    "IGBD",
                     "EGBD",
-                    "Curtailment",
                     "PR",
                     "Actual"
                  ],
@@ -627,45 +607,31 @@
                 //textposition: "inside",
                 text: [
                     t_target,
-                    t_expected,
-                    t_usmh,
-                    t_smh,
+                    t_opExpected,
+                    t_total_bd,
                     t_oh,
-                    t_igbd,
                     t_egbd,
-                    t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
-                    data_expected,
-                    data_usmh,
-                    data_smh,
+                    data_opExpected,
+                    data_total_bd,
                     data_oh,
-                    data_igbd,
                     data_egbd,
-                    data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-                    '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2)+ '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + data_total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
                     '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment + '<br> (' + cur_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
-                //hovertemplate: '<b>%{x}</b><br>' +
-                //    /*'Column: %{x}<br>' +*/
-                //    'Value: %{y}',
-                //absolute: { marker: { color: "#77CAE7" } },
-               //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
                 increasing: { marker: { color: "#77CAE7" } },
                 decreasing: { marker: { color: "#EE403D" } },
@@ -688,10 +654,6 @@
             data[0].measure[8].marker = { color: '#14a105' };
         }
 
-        // Set the marker color for each data point using the columnColors array
-        //for (var i = 0; i < data[0].y.length; i++) {
-        //    data[0].measure[i].marker = { color: columnColors[i] };
-        //}
 
         layout = {
             title: {
@@ -710,9 +672,8 @@
             showlegend: true
         };
         Plotly.newPlot('Waterfall', data, layout);
-        //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
-
     }
+
     function getYearlyReport()
     {
         var data_Array1 = [];
@@ -821,6 +782,11 @@
 
     function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
         console.log("Inside yearly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
+        let total_opExpected = Number(total_expected) - Number(total_curtaiment);
+        let total_bd = Number(total_smh) + Number(total_usmh) + Number(total_igbd);
+
+        let t_opExpected = Number(total_opExpected).toFixed(2);
+        let t_bd = Number(total_bd).toFixed(2);
 
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
@@ -833,6 +799,9 @@
         let t_pr = Number(total_pr).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
+        let data_opExpected = Number(total_opExpected);
+        let data_bd = Number(total_bd);
+
         let data_target = Number(total_target);
         let data_expected = Number(total_expected);
         let data_usmh = Number(total_usmh) * -1;
@@ -844,17 +813,15 @@
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
+
         // Percentage Value 
-        let tar_percentage = ((t_expected - t_target) / t_target) * 100;
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (t_usmh / t_expected) * 100;
-        let smh_percentage = (t_smh / t_expected) * 100;
-        let oh_percentage = (t_oh / t_expected) * 100;
-        let igbd_percentage = (t_igbd / t_expected) * 100;
-        let egbd_percentage = (t_egbd / t_expected) * 100;
-        let cur_percentage = (t_curtaiment / t_expected) * 100;
-        let pr_percentage = (t_pr / t_expected) * 100;
-        let actul_percentage = ((t_actual) / t_expected) * 100;
+        let bd_percentage = (total_bd / total_opExpected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
+        let egbd_percentage = (total_egbd / total_expected) * 100;
+        let pr_percentage = (total_pr / total_expected) * 100;
+        let actul_percentage = ((total_actual) / total_expected) * 100;
 
        // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
         let prMeasure = "";
@@ -878,20 +845,14 @@
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
+                    "BD",
                     "Other",
-                    "IGBD",
                     "EGBD",
-                    "Curtailment",
                     "PR",
                     "Actual"
                 ],
@@ -899,37 +860,28 @@
                 //textposition: "inside",
                 text: [
                     t_target,
-                    t_expected,
-                    t_usmh,
-                    t_smh,
+                    t_opExpected,
+                    t_bd,
                     t_oh,
-                    t_igbd,
                     t_egbd,
-                    t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
-                    data_expected,
-                    data_usmh,
-                    data_smh,
+                    data_opExpected,
+                    data_bd,
                     data_oh,
-                    data_igbd,
                     data_egbd,
-                    data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-                    '<b>Expected</b><br>Value: ' + data_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>USMH</b><br>Value: ' + data_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
                     '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment + '<br> (' + cur_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
