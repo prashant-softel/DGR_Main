@@ -15673,7 +15673,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 break;
                             }
                         }
-                        degradation = (((start - commDate).TotalDays - 1) * LossData.yoy_degradation) / 365; //start date - 1 day.
+                        degradation = (((start - commDate).TotalDays) * LossData.yoy_degradation) / 365; //start date - 1 day.
+                        //degradation = (((start - commDate).TotalDays - 1) * LossData.yoy_degradation) / 365; //start date - 1 day.
 
                         //Fetch from 1 min data.
                         string qry3 = "select *,date_time as stringdatetime from `uploading_pyranometer_1_min_solar` where site_id = " + site + " and DATE(date_time)='" + start.Year.ToString() + "-" + start.Month.ToString() + "-" + start.Day + "' order by date_time asc";
