@@ -279,16 +279,7 @@
                             tbl += '<td class="text-left" >' + weather + '</td>';
 
                             tbl += '</tr>';
-                            // console.log("counter :" + i + "> DateTime :" + formattedDate + "Main date  :" + result[i].date_time);
 
-                            /*if (result[i].avg_poa > 0) {
-
-                                time_arr_arr.push(formattedtime);
-                                ghi_arr.push(result[i].avg_ghi.toFixed(1));
-                                poa_arr.push(result[i].avg_poa.toFixed(1));
-                                amp_temp_arr.push(result[i].amb_temp.toFixed(1));
-                                mod_arr_arr.push(result[i].mod_temp.toFixed(1));
-                            }*/
                             time_arr_arr.push(formattedDate1);
                             ghi_arr1.push(Number(result[i].ghi_1.toFixed(1)));
                             ghi_arr2.push(Number(result[i].ghi_1.toFixed(1)));
@@ -301,48 +292,11 @@
                             poa_arr7.push(Number(result[i].poa_7.toFixed(1)));
                             amp_temp_arr.push(Number(result[i].amb_temp.toFixed(1)));
                             mod_arr_arr.push(Number(result[i].mod_temp.toFixed(1)));
-
-                            /*
-                            if (result[i].ghi_1 > 0) {
-                                ghi_arr1.push(result[i].ghi_1.toFixed(1));
-                            }
-                            if (result[i].ghi_2 > 0) {
-                                ghi_arr2.push(result[i].ghi_1.toFixed(1));
-                            }
-                            if (result[i].poa_1 > 0) {
-                                poa_arr1.push(result[i].poa_1.toFixed(1));
-                            }
-                            if (result[i].poa_2 > 0) {
-                                poa_arr2.push(result[i].poa_2.toFixed(1));
-                            }
-                            if (result[i].poa_3 > 0) {
-                                poa_arr3.push(result[i].poa_3.toFixed(1));
-                            }
-                            if (result[i].poa_4 > 0) {
-                                poa_arr4.push(result[i].poa_4.toFixed(1));
-                            }
-                            if (result[i].poa_5 > 0) {
-                                poa_arr5.push(result[i].poa_5.toFixed(1));
-                            }
-                            if (result[i].poa_6 > 0) {
-                                poa_arr6.push(result[i].poa_6.toFixed(1));
-                            }
-                            if (result[i].poa_7 > 0) {
-                                poa_arr7.push(result[i].poa_7.toFixed(1));
-                            }
-                            if (result[i].amb_temp > 0) {
-                                amp_temp_arr.push(result[i].amb_temp.toFixed(1));
-                            }
-                            if (result[i].mod_temp > 0) {
-                                mod_arr_arr.push(result[i].mod_temp.toFixed(1));
-                            }
-                            */
                         }
                     }
 
                 }
                 else {
-
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
 
@@ -402,21 +356,6 @@
                         modZeroArr.push(i);
                     }
                 }
-
-                /*
-                console.log("for GHI ARRAY 1 found zero at index :" + ghiZeroArr1 + "_____" + ghiZeroArr1.length + " number of zeros out of " + ghi_arr1.length);
-                console.log("for GHI ARRAY 2 found zero at index :" + ghiZeroArr2 + "_____" + ghiZeroArr2.length + " number of zeros out of " + ghi_arr2.length);
-                console.log("for POA 1 ARRAY found zero at index :" + poaZeroArr1 + "_____" + poaZeroArr1.length + " number of zeros out of " + poa_arr1.length);
-                console.log("for POA 2 ARRAY found zero at index :" + poaZeroArr2 + "_____" + poaZeroArr2.length + " number of zeros out of " + poa_arr2.length);
-                console.log("for POA 3 ARRAY found zero at index :" + poaZeroArr3 + "_____" + poaZeroArr3.length + " number of zeros out of " + poa_arr3.length);
-                console.log("for POA 4 ARRAY found zero at index :" + poaZeroArr4 + "_____" + poaZeroArr4.length + " number of zeros out of " + poa_arr4.length);
-                console.log("for POA 5 ARRAY found zero at index :" + poaZeroArr5 + "_____" + poaZeroArr5.length + " number of zeros out of " + poa_arr5.length);
-                console.log("for POA 6 ARRAY found zero at index :" + poaZeroArr6 + "_____" + poaZeroArr6.length + " number of zeros out of " + poa_arr6.length);
-                console.log("for POA 7 ARRAY found zero at index :" + poaZeroArr7 + "_____" + poaZeroArr7.length + " number of zeros out of " + poa_arr7.length);
-                console.log("for AMP TEMP ARRAY found zero at index :" + ampTempZeroArr + "_____" + ampTempZeroArr.length + " number of zeros out of " + amp_temp_arr.length);
-                console.log("for MOD ARR ARRAY found zero at index :" + modZeroArr + "_____" + modZeroArr.length + " number of zeros out of " + mod_arr_arr.length);
-                //console.log("ONLY DATE ARRAY :" + date_arr_arr);
-                console.log("DATE AND TIME ARRAY :" + time_arr_arr); */
                
                 OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr);
                 tbl += '</table>';
@@ -470,76 +409,7 @@
             }
         });
     }
-    //var xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-  /*  function OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr)
-    {
-        console.log(ghi_arr1);
-        let dataset_arr = [];
-        //let datleble_arr = [
-        if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
-           
-            dataset_arr.push({ label: "GHI 1", data: ghi_arr1, borderColor: "#77CAE7", pointRadius: 0.5, borderWidth: 1, fill: false });
-        }
-        if (ghi_arr2.length > 0 && ghi_arr2.length != ghiZeroArr2.length) {
-           
-            dataset_arr.push({ label: "GHI 2", data: ghi_arr2, borderColor: "#86C466", pointRadius: 0.5,borderWidth: 1,fill: false });
-        }
-        if (poa_arr1.length > 0 && poa_arr1.length != poaZeroArr1.length) {
-            dataset_arr.push({ label: "POA 1", data: poa_arr1, borderColor: "#77CAE7", pointRadius: 0.5,borderWidth: 1, fill: false });
-        }
-        if (poa_arr2.length > 0 && poa_arr2.length != poaZeroArr2.length) {
-            dataset_arr.push({ label: "POA 2", data: poa_arr2, borderColor: "#31576D", pointRadius: 0.5, borderWidth: 1, fill: false });
-        }
-        if (poa_arr3.length > 0 && poa_arr3.length != poaZeroArr3.length) {
-            dataset_arr.push({ label: "POA 3", data: poa_arr3, borderColor: "#76D7C4", pointRadius: 0.5, borderWidth: 1, fill: false });
-        }
-        if (poa_arr4.length > 0 && poa_arr4.length != poaZeroArr4.length) {
-            dataset_arr.push({ label: "POA 4", data: poa_arr4, borderColor: "#58D68D", pointRadius: 0.5, borderWidth: 1, fill: false });
-        }
-        if (poa_arr5.length > 0 && poa_arr5.length != poaZeroArr5.length) {
-            dataset_arr.push({ label: "POA 5", data: poa_arr5, borderColor: "#F39C12", pointRadius: 0.5, borderWidth: 1, fill: false });
-        }
-        if (poa_arr6.length > 0 && poa_arr6.length != poaZeroArr6.length) {
-            dataset_arr.push({ label: "POA 6", data: poa_arr6, borderColor: "#27F9F3", pointRadius: 0.5, borderWidth: 1, fill: false });
-        }
-        if (poa_arr7.length > 0 && poa_arr7.length != poaZeroArr7.length) {
-            dataset_arr.push({ label: "POA 7", data: poa_arr7, borderColor: "#F98027", pointRadius: 0.5, borderWidth: 1,fill: false });
-        }
-        dataset_arr.push({ label: "Amb Temp", data: amp_temp_arr, borderColor: "#FFCA5A", pointRadius: 0.5,borderWidth: 1, fill: false });
-        dataset_arr.push({ label: "Mod Temp", data: mod_arr_arr, borderColor: "#31576D", pointRadius: 0.5,borderWidth: 1, fill: false });
-        //console.log("DataLeblets" + datleble_arr);
-        //];
-        new Chart("myChart", {
-            type: "line",
-            data: {
-                labels: time_arr_arr,
-                datasets: dataset_arr,
-            },
-            options: {
-                //legend: { display: false }
-                responsive: true,
-                tooltips: {
-                    mode: 'index'
-                },
-                title: {
-                    display: true,
-                    text: "WMS Comparison"
-                },
 
-                legend: {
-                    display: true,
-                    position: "bottom"
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'WMS Compatison'
-                    }
-                },
-
-            }
-        });
-    }*/
     function OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
        
         let dataset_arr = [];
@@ -579,13 +449,6 @@
             dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.5, borderColor: "#31576D", fill: false, borderWidth: 1 });
             yaxisdata.push({ id: 'B', type: 'linear', position: 'right' });
         }
-
-      
-       // if (mod_arr_arr.length > 0 && mod_arr_arr.length != modZeroArr.length) {
-            //dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.5, borderColor: "#31576D", fill: false, borderWidth: 1 });
-      //  }
-       // dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.5, borderColor: "#FFCA5A", fill: false, borderWidth: 1 });
-        //dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.5, borderColor: "#31576D", fill: false, borderWidth: 1 });
 
         console.log(yaxisdata);
         new Chart(document.getElementById("line-chart"), {

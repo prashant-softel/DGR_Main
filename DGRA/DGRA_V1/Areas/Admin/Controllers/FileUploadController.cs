@@ -4229,6 +4229,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
                         objImportBatch.importSiteId = addUnit.site_id;
 
+                        if(rowNumber == 2)
+                        {
+                            masterInverterList(addUnit.site);
+                        }
                         addUnit.inverter = Convert.ToString(dr["Inverter"]);
                         errorFlag.Add(solarInverterValidation((string)dr["Inverter"], "Inverter", rowNumber));
 
@@ -5568,20 +5572,28 @@ namespace DGRA_V1.Areas.admin.Controllers
                             errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
                             addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
 
-                            if (rowNumber == 2)
+                            if (generationDate != addUnit.date)
                             {
-                                generationDate = addUnit.date;
+                                m_ErrorLog.SetError(",Row <" + rowNumber + "> column <Date> : File Generation <" + generationDate + "> and Breakdown Date <" + addUnit.date + "> missmatched");
+                                errorCount++;
+                                skipRow = true;
+                                continue;
                             }
-                            if (rowNumber > 2)
-                            {
-                                if (generationDate != addUnit.date)
-                                {
-                                    m_ErrorLog.SetError(",Row <" + rowNumber + "> <Date> : <" + addUnit.date + "> mismatched with  <" + generationDate + "> ");
-                                    errorCount++;
-                                    skipRow = true;
-                                    continue;
-                                }
-                            }
+
+                            //if (rowNumber == 2)
+                            //{
+                            //    generationDate = addUnit.date;
+                            //}
+                            //if (rowNumber > 2)
+                            //{
+                            //    if (generationDate != addUnit.date)
+                            //    {
+                            //        m_ErrorLog.SetError(",Row <" + rowNumber + "> <Date> : <" + addUnit.date + "> mismatched with  <" + generationDate + "> ");
+                            //        errorCount++;
+                            //        skipRow = true;
+                            //        continue;
+                            //    }
+                            //}
 
                             // addUnit.stop_from = Convert.ToDateTime(dr["Stop From"]).ToString("HH:mm:ss");
                             addUnit.from_time = Convert.ToDateTime(dr["From Time"]).ToString("HH:mm:ss");
@@ -6112,7 +6124,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                     catch (Exception e)
                     {
                         //developer errorlog
-                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.GetType() + ": Function: InsertSolarPVSystLoss,");
+                        m_ErrorLog.SetError(",File Row<" + rowNumber + ">" + e.Message + ": Function: InsertSolarPVSystLoss,");
                         string msg = ",Exception Occurred In Function: InsertSolarPVSystLoss: " + e.ToString() + ",";
                         //ErrorLog(msg);
                         LogError(user_id, 1, 4, "InsertSolarPVSystLoss", msg);
