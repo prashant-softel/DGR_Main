@@ -13778,7 +13778,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 foreach (var unit in set)
                 {
-                    insertValues += "('" + unit.site + "','" + unit.site_id + "','" + unit.ac_capacity + "','" + unit.date + "','" + unit.from_time + "','" + unit.to_time + "','" + unit.trackers_in_BD + "','" + unit.module_tracker + "','" + unit.module_WP + "','" + unit.remark + "'),";
+                    insertValues += "('" + unit.site + "','" + unit.site_id + "','" + unit.ac_capacity + "','" + unit.date + "','" + unit.from_time + "','" + unit.to_time + "','" + unit.trackers_in_BD + "','" + unit.module_tracker + "','" + unit.module_WP + "','" + unit.reason + "'),";
                     if (count == 0)
                     {
                         id = unit.site_id;
