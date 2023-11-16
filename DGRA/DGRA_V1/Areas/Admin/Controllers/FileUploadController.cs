@@ -5558,6 +5558,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                             }
                             //errorFlag.Add(siteValidation(addUnit.site, addUnit.site_id, rowNumber));
                             objImportBatch.importSiteId = addUnit.site_id;
+                            bool siteIssue = siteValidation(addUnit.site, addUnit.site_id, rowNumber);
+                            errorFlag.Add(siteIssue);
+                            if (siteIssue)
+                            {
+                                errorCount++;
+                                continue;
+                            }
 
                             addUnit.ac_capacity = Convert.ToDouble(dr["Plant AC Capacity (MW)"]);
                             errorFlag.Add(numericNullValidation(addUnit.ac_capacity, "Plant AC Capacity (MW)", rowNumber));
@@ -5569,12 +5576,16 @@ namespace DGRA_V1.Areas.admin.Controllers
                                 continue;
                             }
                             addUnit.date = isdateEmpty ? "Nil" : Convert.ToString((string)dr["Date"]);
-                            errorFlag.Add(dateNullValidation(addUnit.date, "Date", rowNumber));
-                            addUnit.date = errorFlag[0] ? DateTime.MinValue.ToString("yyyy-MM-dd") : Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+                            bool dateIssue = dateNullValidation(addUnit.date, "Date", rowNumber);
+                            errorFlag.Add(dateIssue);
+                            if (!dateIssue)
+                            {
+                                addUnit.date = Convert.ToDateTime(dr["Date"]).ToString("yyyy-MM-dd");
+                            }
 
                             if (generationDate != addUnit.date)
                             {
-                                m_ErrorLog.SetError(",Row <" + rowNumber + "> column <Date> : File Generation <" + generationDate + "> and Breakdown Date <" + addUnit.date + "> missmatched");
+                                m_ErrorLog.SetError(",Row <" + rowNumber + "> column <Date> : File Generation <" + generationDate + "> and TrackerLoss Date <" + addUnit.date + "> missmatched");
                                 errorCount++;
                                 skipRow = true;
                                 continue;
