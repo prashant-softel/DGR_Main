@@ -1354,6 +1354,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                             LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
                         }
                     }
+                    else
+                    {
+                        string msg = ", Invalid file type <" + ext + "> Please upload file(s) either of 'xlsx' or 'txt' or 'csv'.";
+                        m_ErrorLog.SetError(msg);
+                        LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
+                    }
                 }
                 catch (Exception ex)
                 {
