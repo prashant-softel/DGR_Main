@@ -32,6 +32,7 @@
 <!-- DataTables -->
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />
 @*<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">*@
 
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
@@ -178,6 +179,7 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/dist/js/comman.js"></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 
 <script type="text/javascript">
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
@@ -455,7 +457,9 @@
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,

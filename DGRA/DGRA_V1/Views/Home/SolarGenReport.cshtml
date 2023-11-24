@@ -418,6 +418,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 <script type="text/javascript">
  var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
  var solarUserAccess ="@Html.Raw(solarSiteList.TrimEnd(','))";
@@ -1230,7 +1231,9 @@
                     $('#example1').DataTable({
                         dom: 'Bfrtip',
                         title: 'ImportApproval',
-                        responsive: false,
+                        fixedHeader: true,
+                        responsive: true,
+                        scrollX: true,
                         lengthChange: false,
                         autoWidth: true,
                         paging: true,
@@ -1469,7 +1472,9 @@
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -1755,7 +1760,9 @@
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2013,7 +2020,9 @@
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2282,7 +2291,9 @@
                 $('#example3').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2570,7 +2581,9 @@
                 $('#example3').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,

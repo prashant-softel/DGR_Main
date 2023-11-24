@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
@@ -43,6 +44,16 @@
     }
     hr {
         margin-top: -5px !important;
+    }
+</style>
+<style>
+    .dataTables_scrollBody {
+        margin-top: unset;
+    }
+
+    .scrolledTable > table > thead > tr {
+        visibility: unset !important;
+        height: unset !important;
     }
 </style>
 
@@ -2559,7 +2570,7 @@
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
-                    responsive: false,
+                     responsive: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -3291,7 +3302,8 @@
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
-                    responsive: false,
+                   
+                    responsive: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -3907,7 +3919,7 @@ function GetWindMajorBreakdown() {
                 //$.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example3').DataTable({
                     dom: 'Bfrtip',
-                    responsive: false,
+                    responsive: true,
                     lengthChange: false,
                     autoWidth: false,
                     paging: true,

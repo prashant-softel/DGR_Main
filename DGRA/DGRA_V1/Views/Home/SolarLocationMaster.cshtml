@@ -46,6 +46,16 @@
         font-weight: bold;
     }
 </style>
+<style>
+    .dataTables_scrollBody {
+        margin-top: unset;
+    }
+
+    .scrolledTable > table > thead > tr {
+        visibility: unset !important;
+        height: unset !important;
+    }
+</style>
 
 <div class="content-wrapper">
 
@@ -117,7 +127,7 @@
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 <script type="text/javascript">
 
     window.onload = function () {
@@ -229,7 +239,8 @@
                 $("#locationData").html(tbl);
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,

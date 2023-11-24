@@ -34,11 +34,22 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<style>
+    .dataTables_scrollBody {
+        margin-top: unset;
+    }
+
+    .scrolledTable > table > thead > tr {
+        visibility: unset !important;
+        height: unset !important;
+    }
+</style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <section class="content">
@@ -112,7 +123,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
-
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 <script type="text/javascript">
 
     window.onload = function () {
@@ -239,7 +250,8 @@
                 $("#DailyTargetKPIView").html("").html(tbl);
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
                     lengthChange: false,
                     autoWidth: false,
                     paging: true,

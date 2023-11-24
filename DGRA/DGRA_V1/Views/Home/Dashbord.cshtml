@@ -51,6 +51,10 @@
         width: 50%;
         height:36px;
     }
+    table td {
+        padding: 0rem !important;
+        font-size: 13px !important;
+    }
 </style>
 @{
     string windSiteList = "";
@@ -134,10 +138,10 @@
                     </div>
                     <div class="col-sm-2"></div>
                 </div>
-                <hr style="margin-top: -0.5rem;">
+                <hr style="margin-top: -0.9rem; margin-bottom: 0.2rem;">
                     <div class="row">
                         <div class="col-sm-6">
-                        <div class="card tbl-head" style="max-height: 165px; height: 165px; width: 100%; padding: 0.5rem 1rem 0 0; border-radius: 3rem;">
+                        <div class="card tbl-head" style="max-height: 135px; height:135px; width: 100%; padding: 0.5rem 1rem 0 0; border-radius: 3rem;">
                                 <table style="border-collapse: collapse; width: 100%;">
                                     <tbody>
                                         <tr style="border-bottom:2px solid lightgray">
@@ -150,7 +154,7 @@
                                                     <img src="~/Content/img/image002.png" width="40" height="40" />
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     Last Day Energy
                                                     <span class="d-tooltiptext" id="w_tar_enrgy"><b>0</b> MWH</span>
@@ -159,7 +163,7 @@
                                                 <span style="font-size:12px">MWh</span><br>
                                                 <span style="font-size:12px" id="lastday_enrgy_var">(0 %)</span><br>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     MTD Energy
                                                     <span class="d-tooltiptext" id="w_m_tar_enrgy"><b>0</b> GWh</span>
@@ -168,7 +172,7 @@
                                                 <span style="font-size:12px">GWh</span><br>
                                                 <span style="font-size:12px" id="manthly_enrgy_var">(0 %)</span><br>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     YTD Energy
                                                     <span class="d-tooltiptext" id="w_y_tar_enrgy"><b>0</b> GWh</span>
@@ -179,7 +183,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     Last Day WS
                                                     <span class="d-tooltiptext" id="w_ws_tar"><b>0</b> m/s</span>
@@ -188,7 +192,7 @@
                                                 <span style="font-size:12px">m/s</span><br>
                                                 <span style="font-size:12px" id="lastday_wspeed_var">(%)</span><br>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     MTD WS
                                                     <span class="d-tooltiptext" id="w_ws_tar_m"><b>0</b> m/s</span>
@@ -197,7 +201,7 @@
                                                 <span style="font-size:12px">m/s</span><br>
                                                 <span style="font-size:12px" id="monthly_wspeed_var">(0 %)</span><br>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     YTD WS
                                                     <span class="d-tooltiptext" id="w_ws_tar_y"><b>0</b> m/s</span>
@@ -214,7 +218,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6">
-                        <div class="card tbl-head" style="max-height: 165px; height: 165px; width: 100%; padding: 0.5rem 1rem 0 0; border-radius: 3rem;">
+                        <div class="card tbl-head" style="max-height: 135px; height: 135px; width: 100%; padding: 0.5rem 1rem 0 0; border-radius: 3rem;">
                                 <table style="border-collapse: collapse; width: 100%;">
                                     <tbody>
                                         <tr style="border-bottom:2px solid lightgray">
@@ -227,7 +231,7 @@
                                                     <img src="~/Content/img/image020.png" width="40" height="40" />
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 13px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     Last Day Energy
                                                     <span class="d-tooltiptext" id="s_l_tar_energy"><b>0</b> MWh</span>
@@ -237,7 +241,7 @@
                                                 <span style="font-size:12px" id="lastday_solar_enrgy_var">(0 %)</span><br>
 
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     MTD Energy
                                                     <span class="d-tooltiptext" id="s_m_tar_energy"><b>0</b> GWh</span>
@@ -246,7 +250,7 @@
                                                 <span style="font-size:12px">GWh</span><br>
                                                 <span style="font-size:12px" id="monthly_solar_enrgy_var">(0 %)</span><br>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     YTD Energy
                                                     <span class="d-tooltiptext" id="s_y_tar_energy"><b>0</b> GWh</span>
@@ -258,7 +262,7 @@
                                         </tr>
 
                                         <tr>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     Last Day IR
                                                     <span class="d-tooltiptext" id="s_l_tar_ir"><b>0</b> kWh/m<sup>2</sup></span>
@@ -268,7 +272,7 @@
                                                 <span style="font-size:12px" id="lastday_ir_var">(0 %)</span><br>
 
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     MTD IR
                                                     <span class="d-tooltiptext" id="s_m_tar_ir"><b>0</b> kWh/m<sup>2</sup></span>
@@ -277,7 +281,7 @@
                                                 <span style="font-size:12px">kWh/m<sup>2</sup></span><br>
                                                 <span style="font-size:12px" id="monthly_ir_var">(0 %)</span><br>
                                             </td>
-                                            <td>
+                                            <td  style=" padding: 0rem !important; font-size: 12px !important;">
                                                 <span style="font-size:14px" class="d-tooltip">
                                                     YTD IR
                                                     <span class="d-tooltiptext" id="s_y_tar_ir"><b>0</b> kWh/m<sup>2</sup></span>
@@ -295,12 +299,12 @@
                             </div>
                         </div>
                     </div>
-                <hr style="margin-top:-0.5rem">
-                    <div class="card-header">
-                        <h3 class="card-title text-center">Generation Trend</h3>
+                <hr style="margin-top: -0.7rem; margin-bottom: 0.2rem;">
+                    <div class="card-header" style="padding: 0.2rem 1.25rem;">
+                        <h4 class="card-title text-center">Generation Trend</h4>
                     </div>
                     <br>
-                <div class="row" style="margin-top:-1rem; margin-bottom:-1rem;">
+                <div class="row" style="margin-top:-1.5rem; margin-bottom:-1rem;">
                         <div class="col-sm-4">
                             <div class="form-group row">
                                 <div class="col-sm-6">
@@ -320,15 +324,15 @@
                         <div class="col-sm-8">
                         </div>
                     </div>
-                    <hr>
+                    <hr style="margin-bottom:0.2rem;margin-top:-0.9rem">
                     <div class="row">
                         <div class="col-sm-6">
 
-                        <canvas id="energy_wind" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 90%; width: 540px; margin-top: -1rem "></canvas>
+                        <canvas id="energy_wind" style="min-height: 360px; height: 360px; max-height: 360px; max-width: 90%; width: 540px; margin-top: -1rem "></canvas>
                     </div>
                     <div class="col-sm-6">
 
-                        <canvas id="energy_solar" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 90%; width: 540px; margin-top: -1rem "></canvas>
+                        <canvas id="energy_solar" style="min-height: 360px; height: 360px; max-height:360px; max-width: 90%; width: 540px; margin-top: -1rem "></canvas>
                     </div>
                 </div>
 
@@ -1575,7 +1579,8 @@
                             labels: {
                                 title: {
                                     font: {
-                                        weight: 'bold'
+                                        weight: 'bold',
+                                        size:8,
                                     }
                                 },
                             },
@@ -1596,9 +1601,8 @@
                             labels: {
                                 title: {
                                     font: {
-                                        weight: 'bold'
-
-                                    }
+                                        weight: 'bold',
+                                     }
                                 },
                             },
                         },
@@ -1654,7 +1658,12 @@
 
                     legend: {
                         display: true,
-                        position: "bottom"
+                        position: "bottom",
+                        labels: {
+                            font: {
+                                size: 8
+                            }
+                        }
                     }
 
                 },
@@ -2020,8 +2029,8 @@
                         labels: {
                             title: {
                                 font: {
-                                    weight: 'bold'
-
+                                    weight: 'bold',
+                                  
                                 }
                             },
                         },
@@ -2041,8 +2050,8 @@
                             labels: {
                                 title: {
                                     font: {
-                                        weight: 'bold'
-
+                                        weight: 'bold',
+                                    
                                     }
                                 },
                             },
@@ -2100,12 +2109,11 @@
                     legend: {
                         display: true,
                         position: "bottom",
-                       // labels: {
-                            // This more specific font property overrides the global property
-                          //  font: {
-                               // weight: "bold",
-                           // }
-                       // }
+                        labels: {
+                            font: {
+                                size: 8
+                            }
+                        }
 
                     }
 
