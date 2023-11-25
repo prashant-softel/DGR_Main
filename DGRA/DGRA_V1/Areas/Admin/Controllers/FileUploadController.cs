@@ -221,7 +221,7 @@ namespace DGRA_V1.Areas.admin.Controllers
             var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
             //var UserName = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserName"));
             var UserName = " ";
-            m_ErrorLog.SetImportInformation("" + UserName + " ,");
+            //m_ErrorLog.SetImportInformation("" + UserName + " ,");
 
             for (int i = 0; i < usermodel.access_list.Count; i++)
             {
@@ -382,7 +382,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation(" DGR Automation");
+                                        m_ErrorLog.SetImportInformation(" DGR Automation ,");
                                         if (fileUploadType == "Solar")
                                         {
                                             if (isBdSheet)
@@ -499,7 +499,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("Monthly JMR Input and Output");
+                                        m_ErrorLog.SetImportInformation("Monthly JMR Input and Output ,");
                                         if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Monthly_JMR_Input_and_Output WorkSheet:");
@@ -518,7 +518,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("Monthly Lineloss");
+                                        m_ErrorLog.SetImportInformation("Monthly Lineloss ,");
                                         if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Monthly_LineLoss WorkSheet:");
@@ -537,7 +537,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("Monthly Target KPI");
+                                        m_ErrorLog.SetImportInformation("Monthly Target KPI ,");
                                         if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Monthly_Target_KPI WorkSheet:");
@@ -556,7 +556,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("Daily Loadshedding");
+                                        m_ErrorLog.SetImportInformation("Daily Loadshedding ,");
                                         if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Daily_Load_Shedding WorkSheet:");
@@ -576,7 +576,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("Daily Target KPI");
+                                        m_ErrorLog.SetImportInformation("Daily Target KPI ,");
                                         if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Daily_Target_KPI WorkSheet:");
@@ -595,7 +595,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("Site Master");
+                                        m_ErrorLog.SetImportInformation("Site Master ,");
                                         if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Site_Master WorkSheet:");
@@ -614,7 +614,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("Location Master");
+                                        m_ErrorLog.SetImportInformation("Location Master ,");
                                         if (fileUploadType == "Wind")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Wind Location_Master WorkSheet:");
@@ -633,7 +633,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     ds.Tables.Add(dataSetMain.Tables[excelSheet].Copy());
                                     if (ds.Tables.Count > 0)
                                     {
-                                        m_ErrorLog.SetImportInformation("AC DC Capacity");
+                                        m_ErrorLog.SetImportInformation("AC DC Capacity ,");
                                         if (fileUploadType == "Solar")
                                         {
                                             m_ErrorLog.SetInformation(",Importing Solar AC_DC_Capacity WorkSheet:");
@@ -692,6 +692,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     {
                                         if (fileUploadType == "Solar")
                                         {
+                                            m_ErrorLog.SetImportInformation("Solar Soiling Loss ,");
                                             m_ErrorLog.SetInformation(",Reviewing Solar Soiling_Loss WorkSheet:");
                                             statusCode = await InsertSolarSoilingLoss(status, ds);
                                         }
@@ -710,6 +711,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     {
                                         if (fileUploadType == "Solar")
                                         {
+                                            m_ErrorLog.SetImportInformation("PVSyst Loss ,");
                                             m_ErrorLog.SetInformation(",Reviewing Solar PVSyst_Loss WorkSheet:");
                                             statusCode = await InsertSolarPVSystLoss(status, ds);
                                         }
@@ -728,6 +730,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                     {
                                         if (fileUploadType == "Solar")
                                         {
+                                            m_ErrorLog.SetImportInformation("Estimated Hourly Loss ,");
                                             m_ErrorLog.SetInformation(",Reviewing Solar Estimated_Hourly_Data WorkSheet:");
                                             statusCode = await InsertSolarEstimatedHourlyData(status, ds);
                                         }
@@ -753,6 +756,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("TML Data ,");
                                             m_ErrorLog.SetInformation(",Importing Wind TML_Data WorkSheet:");
                                             statusCode = await InsertWindTMLData(status, ds, file.FileName, isMultiFiles);
                                         }
@@ -773,6 +777,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("Power Curve ,");
                                             m_ErrorLog.SetInformation(",Importing Wind Power_Curve WorkSheet:");
                                             statusCode = await InsertWindPowerCurve(status, ds);
                                         }
@@ -792,6 +797,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("Breakdown Type ,");
                                             m_ErrorLog.SetInformation(",Importing Wind BD_Code_Gamesa WorkSheet:");
                                             statusCode = await InsertWindBDCodeGamesa(status, ds);
                                         }
@@ -812,6 +818,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("TML Data ,");
                                             m_ErrorLog.SetInformation(",Importing Wind WindSpeed_TMD WorkSheet:");
                                             statusCode = await InsertWindSpeedTMD(status, ds);
                                         }
@@ -832,6 +839,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("Reference WTG ,");
                                             m_ErrorLog.SetInformation(",Importing Wind Reference_WTGs WorkSheet:");
                                             statusCode = await ImportWindReferenceWtgs(status, ds);
                                         }
@@ -851,6 +859,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("TML Data ,");
                                             m_ErrorLog.SetInformation(", Importing Wind Suzlon_TMD Worksheet :");
                                             statusCode = await ImportWindSuzlonTMD(status, ds, file.FileName, isMultiFiles);
                                         }
@@ -870,6 +879,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("TML Data ,");
                                             m_ErrorLog.SetInformation(", Importing Wind Inox_TMD Worksheet :");
                                             statusCode = await ImportWindInoxTMD(status, ds, file.FileName, isMultiFiles);
                                         }
@@ -889,6 +899,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("Breakdown Codes ,");
                                             m_ErrorLog.SetInformation(", Importing Wind BD_Code_INOX Worksheet :");
                                             statusCode = await InsertWindBDCodeINOX(status, ds);
                                         }
@@ -908,6 +919,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else
                                         {
+                                            m_ErrorLog.SetImportInformation("Breakdown Codes ,");
                                             m_ErrorLog.SetInformation(", Importing Wind BD_Code_REGEN Worksheet :");
                                             statusCode = await InsertWindBDCodeREGEN(status, ds);
                                         }
@@ -947,6 +959,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                         }
                                         else if (fileUploadType == "Wind")
                                         {
+                                            m_ErrorLog.SetImportInformation("TML Data ,");
                                             m_ErrorLog.SetInformation(",Reviewing Wind TMR:");
                                             statusCode = await InsertWindTMR(status, ds, tabName, isMultiFiles, isMultiSheet);
                                         }
