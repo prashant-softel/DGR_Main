@@ -908,7 +908,8 @@
                 }
                 mydata += myArray[i] + "<br>";
             }
-
+            console.log(userInformation);
+            console.log(myArray)
             var headingErrorDiv = document.getElementById("headerInfo");
             userInformation = '<p style="margin: 0"> <strong> Username : </strong>@HttpContextAccessor.HttpContext.Session.GetString("DisplayName") &nbsp; <strong> Role : </strong>' + myArray[1] + " &nbsp; <strong> Imported on : </strong>" + myArray[2] + "&nbsp;  " + '</p> <p style="margin: 0"> <strong> File Name : </strong>' + myArray[3] + "&nbsp; <strong> Site Type : </strong> " + myArray[4] + "&nbsp; <strong> File Category :</strong> "  + myArray[5] + '</p> <hr>';
 

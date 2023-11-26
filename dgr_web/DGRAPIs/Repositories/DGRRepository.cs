@@ -7271,17 +7271,29 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if(finalResult == 6)
                 {
-                    if(_DataTML.Count >= 0 && _DataTML[0].site_id > 0)
+                    try
                     {
-                        int result = await UpdateManualBdForTMLData(date, site_id, 9);
-                        if (result == 2)
+                        if(_DataTML.Count > 0)
                         {
-                            finalResult = 7;
+                            if(_DataTML[0].site_id > 0)
+                            {
+                                int result = await UpdateManualBdForTMLData(date, site_id, 9);
+                                if (result == 2)
+                                {
+                                    finalResult = 7;
+                                }
+                                else
+                                {
+                                    finalResult = 0;
+                                }
+                            }
                         }
-                        else
-                        {
-                            finalResult = 0;
-                        }
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception during UpdateManualBD function call, due to : " + e.ToString();
+                        approval_ErrorLog(msg);
+                        return 0;
                     }
                 }
 

@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using DGRA_V1.Repository.Interface;
 using Microsoft.AspNetCore.Http;
+using System.Threading;
 
 namespace DGRA_V1.Controllers
 {
@@ -243,10 +244,9 @@ namespace DGRA_V1.Controllers
                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetApprovalFlagForImportBatches?dataId=" + data + "&approvedBy=" + approvedBy + "&approvedByName=" + approvedByName + "&status=" + status + "";
                 //var url = "http://localhost:23835/api/DGR/SetApprovalFlagForImportBatches?dataId=" + data + "&approvedBy=" + approvedBy + "&approvedByName=" + approvedByName + "&status=" + status + "";
                 WebRequest request = WebRequest.Create(url);
-
+                request.Timeout = Timeout.Infinite;
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {
-
                     Stream receiveStream = response.GetResponseStream();
                     using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
                     {
