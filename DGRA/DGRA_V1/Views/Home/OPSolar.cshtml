@@ -1,0 +1,919 @@
+﻿@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@model DGRA_V1.Models.DailyGenSummary
+
+@{
+    ViewData["Title"] = "SolarOperationalPerformance";
+}
+@{
+    string solarSiteList = "";
+
+    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+
+}
+@for (int i = 0; i < @usermodel.access_list.Count; i++)
+{
+
+    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 2)
+    {
+        solarSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+
+
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+<!-- dropdown search -->
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<style>
+    .anychart-credits {
+        display: none !important;
+    }
+
+    .modebar .modebar--hover .ease-bg {
+        display: none !important;
+    }
+
+    .groups {
+        display: none !important;
+    }
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-center">Solar Operational Performance </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="input-group row">
+                            <label class="col-sm-3 col-form-label">Date Range : </label>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-9" id="site" name="site[]" multiple>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                            <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style="margin-left: -5rem; width: 5rem;">Search</button>
+                            <!--<button type="button" class="btn btn-block btn-danger" onclick="clearRecords()" style="margin-left:-5rem; width: 5rem;">Clear</button>-->
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                   
+                    @*<div class="col-md-2">
+                <div class="form-group">
+                    <div class="row">
+                        <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
+                        <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
+        </select>-->
+                    </div>
+                </div>
+            </div>*@
+
+                </div>
+                @* <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style=" width: 5rem;">Search</button>
+            </div>
+            <div class="col-md-5"></div>
+        </div>*@
+                <hr>
+                <div class="row">
+                    <!--<div class="col-sm-3"> PR Type :</div>-->
+
+                    <div class="col-sm-4">
+
+                        <div class="form-group row">
+                            <span>PR Type :</span>
+                            <div class="col-sm-3">
+                                <div class="custom-control custom-radio " style="padding-left: 42px; margin-top: 3px; ">
+                                    <input class="custom-control-input solar_expected_report_load_el" type="radio" id="customRadio1" name="customRadio" value="1" checked>
+                                    <label for="customRadio1" class="custom-control-label">AOP</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="custom-control custom-radio " style="padding-left: 42px; margin-top: 3px; ">
+                                    <input class="custom-control-input solar_expected_report_load_el" type="radio" id="customRadio2" name="customRadio" value="2">
+                                    <label for="customRadio2" class="custom-control-label">Toplining</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-5"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                    </div>
+                </div>
+                <br>
+                <hr>
+                <br>
+                <div class="col-sm-12">
+                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
+                </div>
+                <br>
+                <hr>
+                <br>
+                <div class="col-sm-12">
+                    <div id="Waterfallyearly" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <!--<canvas id="yearly_chart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
+                </div>
+                <br>
+                <hr>
+                <div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>
+                <div id="loader" class="loader  center" style="display:none"></div>
+            </div>
+            <!-- <canvas id="Waterfall" width="600" height="350"></canvas>-->
+
+        </div>
+        @*<div id="water" style="overflow-x: auto; width: 100%; height: 1000px;"></div>*@
+        @*<div id='myDiv'></div>*@
+    </section>
+
+</div>
+<!-- /.content-wrapper -->
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<!--Date Range -->
+<script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src="~/Content/theme/plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
+<script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- DataTables  & Plugins -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/dist/js/comman.js"></script>
+<!--<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>-->
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
+<!--<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>-->
+<!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
+<script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
+@*------------------------------------------------------------------------------------------------------------------------------------------------*@
+<style>
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -60px;
+        }
+
+            .tooltip .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: black transparent transparent transparent;
+            }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#daterange').daterangepicker(
+        {
+            maxDate: new Date(),
+            locale: {
+                format: 'DD/MM/YYYY',
+            }
+        });
+    });
+
+    window.onload = function () {
+        var today = new Date();
+        fyear = getFinancialYear(today);
+        fdate = getFinancialYearDateStartDate(fyear);
+        //console.log(fdate);
+        GetSPV();
+    }
+    function handleMouseHover() {
+        //console.log("mose over");
+        var container = $('<div class="export-container">hiii</div>');
+        //$('.dataTables_wrapper').prepend(container);
+        var a = document.getElementById("info");
+        //a.style.display = "flex";
+    }
+    function handleMouseOut() {
+        //console.log("mouse out");
+        //document.getElementById("info").style.display = 'none';
+    }
+
+    function GetSPV() {
+        let state = "";
+        $('select#state option:selected').each(function () {
+            state += "'" + $(this).val() + "',";
+        });
+        state = state != "" ? state.slice(0, -1) : state;
+        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSPVList", "SolarReport")' + '?state=' + state + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var j = 0; j < result.length; j++) {
+                    options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
+                }
+                $("#spv").multipleSelect('destroy');
+                $("#spv").html(options);
+                $('select#spv').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select SPV(s)",
+                    filter:true
+                });
+            }
+        });
+        GetSite();
+    }
+
+    function GetSite() {
+        let state = "";
+        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        $('select#state option:selected').each(function () {
+            state += $(this).val() + ",";
+        });
+        let spv = "";
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSiteList", "SolarReport")' + '?state=' + state + '&spv=' + spv + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_master_solar_id + '">' + result[k].site + '</option>';
+                }
+                $("#site").multipleSelect('destroy');
+                $("#site").html(options);
+                $('select#site').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Site(s)",
+                    filter:true
+                });
+            }
+        });
+    }
+
+    $(".solar_expected_report_load_el").on("click", getReport);
+   /// Get Fiter Data
+    function getReport()
+    {
+        var data_Array = [];
+        document.getElementById("loader").style.display = 'flex';
+        var daterange = $('#daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        let site_id = "";
+        let spv_list = "";
+        let prType = "";
+        if ($("#customRadio1").prop("checked")) {
+            prType = "AOP";
+        }
+        if ($("#customRadio2").prop("checked")) {
+            // do something
+            prType = "toplining";
+        }
+        var spv = $('select#spv option:selected').each(function () {
+            spv_list += $(this).val() + ",";
+        });
+        spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
+        var site = $('select#site option:selected').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetActualVSExpected", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                //console.log(result);
+                document.getElementById("loader").style.display = 'none';
+                var tbl = '<div id="info" style="display: none; flex-direction: column;">Hello</div><table id="example1" class="table table-bordered table-striped" style="width: 100%;">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th style="width: 12%;">Date</th>';
+                tbl += '<th>Site</th>';
+                tbl += '<th>Target</th>';
+                tbl += '<th>Expected</th>';
+                tbl += '<th>USMH</th>';
+                tbl += '<th>SMH</th>';
+                tbl += '<th>Other</th>';
+                tbl += '<th>IGBD</th>';
+                tbl += '<th>EGBD</th>';
+                tbl += '<th>Curtaiment</th>';
+                tbl += '<th>PR</th>';
+                tbl += '<th>Actual</th>';
+                tbl += '<th>MA (%)<span class="information">i<span></th>';
+                tbl += '<th>IGA (%) <span class="information">i<span></th>';
+                tbl += '<th>EGA (%) <span class="information">i<span></th>';
+                tbl += '</tr></thead>';
+                if (result.length > 0) {
+                    let total_target = 0;
+                    let total_expected = 0;
+                    let total_usmh = 0;
+                    let total_smh = 0;
+                    let total_oh = 0;
+                    let total_igbd = 0;
+                    let total_egbd =0;
+                    let total_curtaiment = 0;
+                    let total_pr = 0;
+                    let avg_pr = 0;
+                    let total_actual = 0;
+                    let expected_cal = 0;
+                    let usmh_cal = 0;
+                    let smh_cal = 0;
+                    let oh_cal = 0;
+                    let igbd_cal = 0;
+                    let egbd_cal = 0;
+                    let curtailment_cal = 0;
+                    let pr_cal = 0;
+                    let pr_chart = 0;
+                    let actual_cal = 0;
+                    let main_data = [];
+                    let cal_data = [];
+                    var cnt = 0;
+                    for (var i = 0; i < result.length; i++) {
+                        let ma = (1 - ((result[i].usmh + result[i].smh) / result[i].pexpected)) * 100;
+                        let iga = (1 - ((result[i].igbdh) / result[i].pexpected)) * 100;
+                        let ega = (1 - ((result[i].egbdh + result[i].load_shedding) / result[i].pexpected)) * 100;
+                        //let usmh = (1 - (result[i].usmh / result[i].pexpected));
+
+
+                        let pr_value = 0;
+                        let total_breakdown = 0;
+                        total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                        pr_value = result[i].inv_kwh - total_breakdown;
+
+                        var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                        tbl += '<tr>';
+                        tbl += '<td  class="text-left">' + formattedDate + '</td>';
+                        tbl += '<td  class="text-left">' + result[i].site + '</td>';
+                        //tbl += '<td  class="text-left">0.00</td>';
+                        tbl += '<td  class="text-right">' + result[i].target.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (result[i].pexpected / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].usmh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].smh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].oh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].igbdh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].egbdh/1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].load_shedding/1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (pr_value/1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].inv_kwh    / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ega.toFixed(2) + '</td>';
+                        tbl += '</tr>';
+                        //console.log("Actual : " + result[i].inv_kwh);
+                        cnt++;
+                        total_target += result[i].target;
+                        total_expected += (result[i].pexpected / 1000000);
+                        total_usmh += (result[i].usmh / 1000000);
+                        total_smh += (result[i].smh / 1000000);
+                        total_oh += (result[i].oh / 1000000);
+                        total_actual += (result[i].inv_kwh/1000000);
+                        total_pr += pr_value / 1000000;
+                        total_igbd += (result[i].igbdh / 1000000);
+                        total_egbd += (result[i].egbdh / 1000000);
+                        total_curtaiment += (result[i].load_shedding / 1000000);
+                    }
+                    //console.log("Counter : " + cnt);
+                    expected_cal = (total_expected / total_expected) * 100;
+                    usmh_cal = (total_usmh / total_expected) * 100;
+                    smh_cal = (total_smh / total_expected) * 100;
+                    oh_cal = (total_oh / total_expected) * 100;
+                    igbd_cal = (total_igbd / total_expected) * 100;
+                    egbd_cal = (total_egbd / total_expected) * 100;
+                    curtailment_cal = (total_curtaiment / total_expected) * 100;
+                    pr_cal = (total_pr / total_expected) * 100;
+                    actual_cal = (total_actual / total_expected) * 100;
+
+
+                   // main_data.push(parseInt(total_target.toFixed(1)), parseInt(total_expected.toFixed(1)), parseInt(total_usmh.toFixed(1)), parseInt(total_smh.toFixed(1)), parseInt(total_oh.toFixed(1)), parseInt(total_igbd.toFixed(1)), parseInt(total_egbd.toFixed(1)), parseInt(total_curtaiment.toFixed(1)), parseInt(total_pr.toFixed(1)), parseInt(total_actual.toFixed(1)));
+
+                // Waterfall Chart Data collection
+
+
+                //Call function draw the chart
+                    monthlychart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
+
+            }
+            else {
+            }
+            tbl += '</table>';
+            $("#exp_vs_actual").html("").html(tbl);
+            $('#example1').DataTable({
+                dom: 'Bfrtip',
+                responsive: false,
+                lengthChange: false,
+                autoWidth: true,
+                paging: true,
+                lengthChange: false,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: true,
+                responsive: false,
+                pageLength: 50,
+                buttons: [
+                    {
+                        extend: 'excel',
+                        title: 'Solar Actual vs Expected',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        title: 'Solar Actual vs Expected',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    'colvis'
+                ],
+                initComplete: function () {
+                    $('.dt-buttons').append('<div style="text-align: center; margin-left: 20px; justify: center"><p style="text-align: center; justify: center">Note : Data Showing In Million Units</p></div>');
+                    this.api().columns().header().to$().each(function () {
+                        //$(this).attr('title', 'title for ' + $(this).text())
+                        if ($(this).text() == "MA (%)i" || $(this).text() == "IGA (%) i" || $(this).text() == "EGA (%) i") {
+                            $(this).attr('title', 'Energy Based Availability')
+                        }
+                    })
+                }
+            });
+            $(".dt-buttons").addClass('btn-group flex-wrap');
+            $(".dt-buttons > button").addClass('btn btn-secondary');
+            $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+            $('#example1').wrap("<div class='scrolledTable'></div>");
+            getYearlyReport();
+        }
+    });
+    }
+
+    function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+        console.log("Inside monthly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
+
+        let total_opExpected = Number(total_expected);
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+
+        let t_opExpected = Number(total_opExpected).toFixed(2);
+        let t_total_bd = Number(total_bd * -1).toFixed(2);
+        total_egbd = Number(total_egbd) + Number(total_curtaiment);
+
+        let t_target = Number(total_target).toFixed(2);
+        let t_expected = Number(total_expected).toFixed(2);
+        let t_usmh = Number(total_usmh * -1).toFixed(2);
+        let t_smh = Number(total_smh * -1).toFixed(2);
+        let t_oh = Number(total_oh * -1).toFixed(2);
+        let t_igbd = Number(total_igbd * -1).toFixed(2);
+        let t_egbd = Number(total_egbd * -1).toFixed(2);
+        let t_curtaiment = Number(total_curtaiment).toFixed(2);
+        let t_pr = Number(total_pr).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
+
+        let data_opExpected = Number(total_opExpected);
+        let data_total_bd = Number(total_bd) * -1;
+
+        let data_target = Number(total_target);
+        let data_expected = Number(total_expected) * -1;
+        let data_usmh = Number(total_usmh) * -1;
+        let data_smh = Number(total_smh) * -1;
+        let data_oh = Number(total_oh) * -1;
+        let data_igbd = Number(total_igbd) * -1;
+        let data_egbd = Number(total_egbd) * -1;
+        let data_curtaiment = Number(total_curtaiment) * -1;
+        let data_pr = Number(total_pr);
+        let data_actual = Number(total_actual);
+
+
+        // Percentage Value 
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage = 100;
+        let bd_percentage = (total_bd / total_opExpected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
+        let egbd_percentage = (total_egbd / total_expected) * 100;
+        let pr_percentage = (total_pr / total_expected) * 100;
+        let actul_percentage = ((total_actual) / total_expected) * 100;
+
+        //data_pr = 0.4;
+        // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
+        let prMeasure = "";
+        if (Number(total_pr) >= 0) {
+            prMeasure = "absolute";
+        } else {
+            prMeasure = "relative";
+        }
+        let rMeasure = "relative";
+        let aMeasure = "absolute";
+        // console.log(prMeasure);
+        var data = [
+            {
+                //name: "2018",
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    rMeasure,
+                    aMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    aMeasure
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "BD",
+                    "Other",
+                    "EGBD",
+                    "PR",
+                    "Actual"
+                 ],
+                textposition: "outside",
+                //textposition: "inside",
+                text: [
+                    t_target,
+                    t_opExpected,
+                    t_total_bd,
+                    t_oh,
+                    t_egbd,
+                    t_pr,
+                    t_actual
+                ],
+                y: [
+                    data_target,
+                    data_opExpected,
+                    data_total_bd,
+                    data_oh,
+                    data_egbd,
+                    data_pr,
+                    data_actual
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + data_total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )',
+                ],
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
+            }
+        ];
+        //#86C466 : green. #77CAE7 : blue. #EE403D : red. #14a105 : dark-green.
+        //
+        //var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
+        //if (data_curtaiment > 0) {
+        //    columnColors[7] = "#14a105";
+        //    data[0].measure[7].marker = { color: '#14a105' };
+        //}
+        //if (data_pr > 0) {
+        //    columnColors[8] = "#14a105";
+        //    data[0].measure[8].marker = { color: '#14a105' };
+        //}
+
+
+        layout = {
+            title: {
+                text: "Monthly"
+            },
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            autosize: true,
+            showlegend: true
+        };
+        Plotly.newPlot('Waterfall', data, layout);
+    }
+
+    function getYearlyReport()
+    {
+        var data_Array1 = [];
+        document.getElementById("loader").style.display = 'flex';
+        var daterange = $('#daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var today = new Date(arr1[0]);
+
+        fyear = getFinancialYear(today);
+        fdate = getFinancialYearDateStartDate(fyear);
+        var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
+        var fromToDates = getFinancialYearDates(toDate);
+        console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
+
+
+        let site_id = "";
+        let spv_list = "";
+        let prType = "";
+        if ($("#customRadio1").prop("checked")) {
+            prType = "AOP";
+        }
+        if ($("#customRadio2").prop("checked")) {
+            // do something
+             prType = "toplining";
+        }
+        var spv = $('select#spv option:selected').each(function () {
+            spv_list += $(this).val() + ",";
+        });
+        spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
+        var site = $('select#site option:selected').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromToDates.fromDate + '&toDate=' + fromToDates.toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                //console.log(result);
+                document.getElementById("loader").style.display = 'none';
+                if (result.length > 0) {
+                    let total_target = 0;
+                    let total_expected = 0;
+                    let total_usmh = 0;
+                    let total_smh = 0;
+                    let total_oh = 0;
+                    let total_igbd = 0;
+                    let total_egbd = 0;
+                    let total_curtaiment = 0;
+                    let total_pr = 0;
+                    let avg_pr = 0;
+                    let total_actual = 0;
+                    var cnt = 0;
+                    let expected_cal = 0;
+                    let usmh_cal = 0;
+                    let smh_cal = 0;
+                    let oh_cal = 0;
+                    let igbd_cal = 0;
+                    let egbd_cal = 0;
+                    let curtailment_cal = 0;
+                    let pr_cal = 0;
+                    let actual_cal = 0;
+                    let main_data = [];
+                    let cal_data = [];
+                    for (var i = 0; i < result.length; i++) {
+                        let pr_value = 0;
+                        let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                        pr_value = result[i].inv_kwh - total_breakdown;
+                        cnt++;
+                        total_target += result[i].target;
+                        total_expected += (result[i].pexpected/1000000);
+                        total_usmh += (result[i].usmh/1000000);
+                        total_smh += (result[i].smh/1000000);
+                        total_oh += (result[i].oh/1000000);
+                        total_actual += (result[i].inv_kwh / 1000000);
+                        total_pr += (pr_value/1000000);
+                        total_igbd += (result[i].igbdh/1000000);
+                        total_egbd += (result[i].egbdh/1000000);
+                        total_curtaiment += (result[i].load_shedding/1000000);
+                    }
+                    expected_cal = (total_expected / total_expected) * 100;
+                    usmh_cal = (total_usmh / total_expected) * 100;
+                    smh_cal = (total_smh / total_expected) * 100;
+                    oh_cal = (total_oh / total_expected) * 100;
+                    igbd_cal = (total_igbd / total_expected) * 100;
+                    egbd_cal = (total_egbd / total_expected) * 100;
+                    curtailment_cal = (total_curtaiment / total_expected) * 100;
+                    pr_cal = (total_pr / total_expected) * 100;
+                    actual_cal = (total_actual / total_expected) * 100;
+               
+                    // Call function draw the yearly chart
+                    yearlyChart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
+
+                }
+                else {
+                }
+
+            }
+        });
+        }
+
+    function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+        console.log("Inside yearly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
+        let total_opExpected = Number(total_expected) - Number(total_curtaiment);
+        let total_bd = Number(total_smh) + Number(total_usmh) + Number(total_igbd);
+        total_egbd = Number(total_egbd) + Number(total_curtaiment);
+
+        let t_opExpected = Number(total_opExpected).toFixed(2);
+        let t_bd = Number(total_bd * -1).toFixed(2);
+
+        let t_target = Number(total_target).toFixed(2);
+        let t_expected = Number(total_expected).toFixed(2);
+        let t_usmh = Number(total_usmh).toFixed(2);
+        let t_smh = Number(total_smh).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
+        let t_igbd = Number(total_igbd).toFixed(2);
+        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_curtaiment = Number(total_curtaiment).toFixed(2);
+        let t_pr = Number(total_pr).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
+
+        let data_opExpected = Number(total_opExpected);
+        let data_bd = Number(total_bd) * -1;
+
+        let data_target = Number(total_target);
+        let data_expected = Number(total_expected);
+        let data_usmh = Number(total_usmh) * -1;
+        let data_smh = Number(total_smh) * -1;
+        let data_oh = Number(total_oh) * -1;
+        let data_igbd = Number(total_igbd) * -1;
+        let data_egbd = Number(total_egbd) * -1;
+        let data_curtaiment = Number(total_curtaiment) * -1;
+        let data_pr = Number(total_pr);
+        let data_actual = Number(total_actual);
+
+
+        // Percentage Value 
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage = 100;
+        let bd_percentage = (total_bd / total_opExpected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
+        let egbd_percentage = (total_egbd / total_expected) * 100;
+        let pr_percentage = (total_pr / total_expected) * 100;
+        let actul_percentage = ((total_actual) / total_expected) * 100;
+
+       // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
+        let prMeasure = "";
+        if (Number(total_pr) >= 0) {
+            prMeasure = "absolute";
+        } else {
+            prMeasure = "relative";
+        }
+        let rMeasure = "relative";
+        let aMeasure = "absolute";
+        console.log(prMeasure);
+        var data = [
+            {
+                //name: "2018",
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    rMeasure,
+                    aMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    aMeasure
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "BD",
+                    "Other",
+                    "EGBD",
+                    "PR",
+                    "Actual"
+                ],
+                textposition: "outside",
+                //textposition: "inside",
+                text: [
+                    t_target,
+                    t_opExpected,
+                    t_bd,
+                    t_oh,
+                    t_egbd,
+                    t_pr,
+                    t_actual
+                ],
+                y: [
+                    data_target,
+                    data_opExpected,
+                    data_bd,
+                    data_oh,
+                    data_egbd,
+                    data_pr,
+                    data_actual
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>USMH</b><br>Value: ' + data_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                ],
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
+            }
+        ];
+        layout = {
+            title: {
+                text: "Yearly"
+            },
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            autosize: true,
+            showlegend: true
+        };
+        Plotly.newPlot('Waterfallyearly', data, layout);
+}
+
+</script>
