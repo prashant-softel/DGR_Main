@@ -589,6 +589,7 @@
         Plotly.purge('Waterfall');
         let total_opExpected = total_expected - total_lineloss;
         let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_egbd = Number(total_egbd) + Number(loadShedding);
 
         let t_target = Number(total_target).toFixed(2);
         let t_opExpected = Number(total_opExpected).toFixed(2);
@@ -697,7 +698,7 @@
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + total_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
                     '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
                     '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
@@ -748,7 +749,8 @@
         console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
         Plotly.purge('WaterfallYearly');
         let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
-        total_expected = Number(total_expected)- Number(total_lineloss);
+        total_expected = Number(total_expected) - Number(total_lineloss);
+        total_egbd = Number(total_egbd) + Number(loadShedding);
 
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
