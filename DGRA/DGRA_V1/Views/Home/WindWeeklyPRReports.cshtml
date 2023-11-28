@@ -2426,7 +2426,8 @@
                             wind_var = ((result[i].act_Wind.toFixed(2) - result[i].tar_wind.toFixed(2)) / result[i].tar_wind.toFixed(2)) * 100;
                         }
                         if (result[i].exp_power != 0) {
-                            e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                           // e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                            e_var = ((result[i].act_jmr_kwh_mu - (result[i].exp_power / 6) / 1000000) / ((result[i].exp_power / 6) / 1000000)) * 100;
                             //if (result[i].site == "Maragutti") {
                             //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
                             //    //    console.log(temp_e_var);
@@ -2443,7 +2444,8 @@
 			            total_capacity += result[i].total_mw;
                         total_tar_kwh_mu += (result[i].tar_kwh_mu / 1000000);
                         total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
-                        total_exp_power += result[i].exp_power / 1000000;
+                        //total_exp_power += result[i].exp_power / 1000000;
+                        total_exp_power += (result[i].exp_power / 6) / 1000000;
                         total_revenue += revenue;
                         total_tar_wind += result[i].tar_wind;
                         total_act_wind += result[i].act_Wind;
@@ -2471,7 +2473,7 @@
                         tbl += '<td class="text-left">' + result[i].spv + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].tar_kwh_mu / 1000000).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].exp_power / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ((result[i].exp_power / 6) / 1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_jmr_kwh_mu.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
@@ -2527,7 +2529,8 @@
                         avg_wind_var = ((avg_act_wind.toFixed(2) - avg_tar_wind.toFixed(2)) / avg_tar_wind.toFixed(2)) * 100;
                     }
                     if (total_exp_power != 0) {
-                        avg_e_var = (((total_act_jmr_kwh_mu.toFixed(2) - total_exp_power.toFixed(2)) / total_exp_power.toFixed(2)) * 100);
+                       avg_e_var = (((total_act_jmr_kwh_mu.toFixed(2) - total_exp_power.toFixed(2)) / total_exp_power.toFixed(2)) * 100);
+                      
                     }
                     avg_plf_var = (avg_act_plf - avg_tar_plf);
                     avg_ma_var = (avg_act_ma - avg_tar_ma);
@@ -3119,7 +3122,8 @@
                             wind_var = ((result[i].act_Wind.toFixed(2) - result[i].tar_wind.toFixed(2)) / result[i].tar_wind.toFixed(2)) * 100;
                         }
                         if (result[i].exp_power != 0) {
-                            e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                           // e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                            e_var = ((result[i].act_jmr_kwh_mu - (result[i].exp_power / 6) / 1000000) / ((result[i].exp_power / 6) / 1000000)) * 100;
                             //if (result[i].site == "Maragutti") {
                             //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
                             //    //    console.log(temp_e_var);
@@ -3168,7 +3172,8 @@
                         neg_wind_var.push(gw_negative);
                         total_capacity += result[i].total_mw;
                         total_tar_kwh_mu += (result[i].tar_kwh_mu / 1000000);
-                        total_exp_power += result[i].exp_power / 1000000;
+                        //total_exp_power += result[i].exp_power / 1000000;
+                        total_exp_power += (result[i].exp_power / 6) / 1000000;
                         total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
                         total_revenue += revenue;
                         total_tar_wind += result[i].tar_wind;
@@ -3197,7 +3202,7 @@
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].tar_kwh_mu / 1000000).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].exp_power / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ((result[i].exp_power / 6) / 1000000).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_jmr_kwh_mu.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
