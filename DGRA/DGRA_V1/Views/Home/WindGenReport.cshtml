@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
-<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<!--<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />-->
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
@@ -202,7 +202,7 @@
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">Month : </label>
                                                         <select class="form-control  col-sm-8" id="monthM" name="monthM[]" value="" multiple>
-                                                            
+
                                                             <option value="04">April</option>
                                                             <option value="05">May</option>
                                                             <option value="06">June</option>
@@ -426,7 +426,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     var windUserAccess ="@Html.Raw(windSiteList.TrimEnd(','))";
@@ -939,7 +939,7 @@
             site += $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-       
+
 
         if(!site){
             $('select#state option:selected').each(function () {
@@ -1076,7 +1076,7 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
-                            
+
                         tbl += '</tr>';
                     }
                 }
@@ -1090,15 +1090,15 @@
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
                     title: '',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
                     searching: true,
                     ordering: true,
-                    info: true,                  
+                    info: true,
                     pageLength: 50,
                     "order": [[4, "asc"]],
                     buttons: [
@@ -1309,9 +1309,9 @@
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -1552,9 +1552,9 @@
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -1780,9 +1780,9 @@
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2022,9 +2022,9 @@
                 $('#example3').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2247,9 +2247,9 @@
                 $('#example3').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,

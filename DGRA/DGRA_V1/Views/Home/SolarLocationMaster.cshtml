@@ -46,7 +46,7 @@
         font-weight: bold;
     }
 </style>
-<style>
+@*<style>
     .dataTables_scrollBody {
         margin-top: unset;
     }
@@ -56,7 +56,7 @@
         height: unset !important;
     }
 </style>
-
+*@
 <div class="content-wrapper">
 
     <section class="content-header">
@@ -127,7 +127,7 @@
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
 
     window.onload = function () {
@@ -239,7 +239,7 @@
                 $("#locationData").html(tbl);
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
                     lengthChange: false,
                     autoWidth: true,

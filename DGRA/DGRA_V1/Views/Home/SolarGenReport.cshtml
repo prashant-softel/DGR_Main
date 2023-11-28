@@ -418,7 +418,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
  var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
  var solarUserAccess ="@Html.Raw(solarSiteList.TrimEnd(','))";
@@ -1034,7 +1034,7 @@
                 tbl += '</tr></thead>';
                 $("#reportsDaily").html(tbl);
 
-               
+
 
                 if (result.length > 0) {
                     console.log("Datatable");
@@ -1043,7 +1043,7 @@
 
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
-                        
+
                         const row = document.createElement("tr");
 
                         const cell = document.createElement("td");
@@ -1081,7 +1081,7 @@
                         const cell39 = document.createElement("td");
                         cell39.textContent = result[i].ghi.toFixed(2);
                         row.appendChild(cell39);
-                        
+
 
                         const cell9 = document.createElement("td");
                         cell9.textContent = result[i].poa.toFixed(2);
@@ -1203,7 +1203,7 @@
                         cell38.textContent = result[i].total_losses.toFixed(2);
                         row.appendChild(cell38);
 
-                       
+
 
                         table.appendChild(row);
 
@@ -1212,14 +1212,14 @@
                             console.log("last obj :" + JSON.stringify(result[i]))
                                 ;
                         }
-                      
+
                     }
                 }
                 else {
                     console.log("Data not available");
 
                 }
-               
+
                 //tbl += '</table>';
                 //$("#reportsDaily").html(tbl);
 
@@ -1231,9 +1231,9 @@
                     $('#example1').DataTable({
                         dom: 'Bfrtip',
                         title: 'ImportApproval',
-                        fixedHeader: true,
+                       //fixedHeader: true,
                         responsive: true,
-                        scrollX: true,
+                        //scrollX: true,
                         lengthChange: false,
                         autoWidth: true,
                         paging: true,
@@ -1278,7 +1278,7 @@
                              'copy', 'excel', 'csv', 'colvis'
                          ]*/
                     });
-               
+
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
@@ -1296,7 +1296,7 @@
             }
         });
 
-                   
+
     }
    // -----------------------------------------------
 
@@ -1472,9 +1472,9 @@
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -1760,9 +1760,9 @@
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2020,9 +2020,9 @@
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2291,9 +2291,9 @@
                 $('#example3').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2581,9 +2581,9 @@
                 $('#example3').DataTable({
                     dom: 'Bfrtip',
                     title: 'ImportApproval',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,

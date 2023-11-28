@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
-<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<!--<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />-->
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
@@ -42,15 +42,15 @@
 
 
 @*<style>
-    .tbodydata {
-        font-size: 12px;
-    }
+        .tbodydata {
+            font-size: 12px;
+        }
 
-    .theaddata {
-        font-size: 12px;
-        font-weight: bold;
-    }
-</style>*@
+        .theaddata {
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>*@
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -135,7 +135,7 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
     $(document).ready(function () {
@@ -204,7 +204,7 @@
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
             success: function (result, status, xhr) {
-               
+
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th style="width: 12%;">Date Time</th>';
@@ -223,7 +223,7 @@
                 tbl += '<th>Amb Temp </th>';
                 tbl += '<th>Mod Temp</th>';
                 tbl += '<th>Weather Type</th>';
-               
+
                 tbl += '</tr></thead>';
                 time_arr_arr = [];
                 ghi_arr1 = [];
@@ -357,16 +357,16 @@
                         modZeroArr.push(i);
                     }
                 }
-               
+
                 OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr);
                 tbl += '</table>';
                // $("#DailyGenView").html(tbl);
                 $("#DailyGenView").html("").html(tbl);
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -414,7 +414,7 @@
     }
 
     function OneMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
-       
+
         let dataset_arr = [];
         let yaxisdata = [];
         if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {

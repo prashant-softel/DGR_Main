@@ -33,22 +33,22 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
-<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<!--<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />-->
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
 @*<style>
-    .tbodydata {
-        font-size: 12px;
-    }
+        .tbodydata {
+            font-size: 12px;
+        }
 
-    .theaddata {
-        font-size: 12px;
-        font-weight: bold;
-    }
-</style>*@
+        .theaddata {
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>*@
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -134,7 +134,7 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
     $(document).ready(function () {
@@ -146,7 +146,7 @@
                     format: 'DD/MM/YYYY',
                 }
             });
-      
+
         /*$("#hide").click(function () {
             $("#chart").hide();
             $("#show").css('display', 'block');
@@ -155,7 +155,7 @@
             $("chart").show();
             $("#hide").css('display', 'none');
         });*/
-      
+
     });
     var ghi_arr = [];
     var poa_arr = [];
@@ -385,9 +385,9 @@
                 $("#DailyGenView").html("").html(tbl);
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
-                    fixedHeader: true,
+                    //fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
