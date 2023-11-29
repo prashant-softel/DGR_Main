@@ -138,7 +138,7 @@
 <!-- DataTables  & Plugins -->
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
-
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -272,7 +272,7 @@
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
-                    //fixedHeader: true,
+                    fixedHeader: true,
                     responsive: true,
                     lengthChange: false,
                     autoWidth: false,
