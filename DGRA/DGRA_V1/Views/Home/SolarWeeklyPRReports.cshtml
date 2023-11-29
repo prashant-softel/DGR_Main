@@ -2736,7 +2736,8 @@
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += result[i].expected_kwh;
+                        //total_expected_kwh += result[i].expected_kwh;
+                        total_expected_kwh += Number(result[i].expected_kwh) / 1000000;
                         total_act_kwh += result[i].act_kwh;
                         total_revenue += revenue;
                         total_tar_ghi += result[i].tar_ghi;
