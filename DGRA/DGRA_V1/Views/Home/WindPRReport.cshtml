@@ -30,6 +30,7 @@
 <!-- DataTables -->
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/jquery/jquery.min.js">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables/jquery.dataTables.min.js">
@@ -66,13 +67,16 @@
     }*/
 </style>
 <style>
-    .dataTables_scrollBody {
+   @* .dataTables_scrollBody {
         margin-top: unset;
     }
 
     .scrolledTable > table > thead > tr {
         visibility: unset !important;
         height: unset !important;
+    }*@
+    div.dataTables_scrollBody > table {
+        margin-top: -33px !important;
     }
 </style>
 
@@ -197,7 +201,8 @@
 <!-- DataTables  & Plugins -->
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
-
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -523,14 +528,18 @@
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
+                    fixedHeader: true,
                     responsive: true,
+                    scrollX: true,
                    lengthChange: false,
                     paging: true,
                     lengthChange: false,
                     searching: true,
                     ordering: true,
                     info: true,
-                    responsive: false,
+                    fixedColumns: {
+                        left: 2
+                    },
                     autoWidth: true,
                     pageLength: 50,
                     buttons: [
@@ -793,7 +802,7 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                $('#example1').wrap("<div class='scrolledTable'></div>");
+               // $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
 
             }
@@ -1099,7 +1108,9 @@
                 $("#reportsDaily").html("").html(tbl);
                 $('#example2').DataTable({
                     dom: 'Bfrtip',
-                   
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -1108,7 +1119,9 @@
                     ordering: true,
                     info: true,
                     autoWidth: true,
-                    responsive: false,
+                    fixedColumns: {
+                        left: 2
+                    },
                     pageLength: 50,
                     buttons: [
                         {
@@ -1380,7 +1393,7 @@
                 //});
 
                 document.getElementById("loader").style.display = 'none';
-                $('#example2').wrap("<div class='scrolledTable'></div>");
+                //$('#example2').wrap("<div class='scrolledTable'></div>");
 
             }
         });
