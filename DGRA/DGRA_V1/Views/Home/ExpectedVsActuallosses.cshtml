@@ -183,6 +183,7 @@
 <!-- DataTables  & Plugins -->
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -238,16 +239,7 @@
             visibility: visible;
         }
 </style>
-/*<style>
-    .dataTables_scrollBody {
-        margin-top: unset;
-    }
 
-    .scrolledTable > table > thead > tr {
-        visibility: unset !important;
-        height: unset !important;
-    }
-</style>*/
 <script type="text/javascript">
     $(document).ready(function () {
         $('#daterange').daterangepicker(
@@ -511,7 +503,7 @@
             $("#exp_vs_actual").html("").html(tbl);
             $('#example1').DataTable({
                 dom: 'Bfrtip',
-                //fixedHeader: true,
+                fixedHeader: true,
                 responsive: true,
                 lengthChange: false,
                 autoWidth: true,
@@ -553,7 +545,7 @@
             $(".dt-buttons").addClass('btn-group flex-wrap');
             $(".dt-buttons > button").addClass('btn btn-secondary');
             $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-            $('#example1').wrap("<div class='scrolledTable'></div>");
+            //$('#example1').wrap("<div class='scrolledTable'></div>");
             getYearlyReport();
         }
     });
