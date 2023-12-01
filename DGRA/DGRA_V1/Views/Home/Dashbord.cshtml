@@ -107,7 +107,7 @@
                     <div class="col-sm-1"></div>
                     <div class="col-sm-1">
                         <div class="form-group row">
-                            <label class="col-form-label text-right">FY : &nbsp;&nbsp;&nbsp; <span id="fyearlebel"></span> </label>
+                            <label class="col-form-label text-right">FY : <span id="fyearlebel"></span> </label>
                             <!--<select class="form-control  col-sm-8" id="fy" name="fy" value="">
                 <option value="">Please select </option>
             </select>-->
@@ -307,7 +307,7 @@
                 <div class="row" style="margin-top:-1.2rem; margin-bottom:-1rem;">
                         <div class="col-sm-4">
                             <div class="form-group row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <div class="custom-control custom-radio ">
                                         <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" value="1" onclick="chartSelection(1)" checked>
                                         <label for="customRadio1" class="custom-control-label">Last 10 Days</label>
@@ -328,11 +328,11 @@
                     <div class="row">
                         <div class="col-sm-6">
 
-                        <canvas id="energy_wind" style="min-height: 360px; height: 360px; max-height: 360px; max-width: 90%; width: 540px; margin-top: -1rem "></canvas>
+                        <canvas id="energy_wind" style="min-height: 360px; height: 360px; max-height: 360px; max-width: 97%; width: 575px; margin-top: -1rem "></canvas>
                     </div>
                     <div class="col-sm-6">
 
-                        <canvas id="energy_solar" style="min-height: 360px; height: 360px; max-height:360px; max-width: 90%; width: 540px; margin-top: -1rem "></canvas>
+                        <canvas id="energy_solar" style="min-height: 360px; height: 360px; max-height:360px; max-width: 97%; width: 575px; margin-top: -1rem "></canvas>
                     </div>
                 </div>
 
@@ -1580,7 +1580,7 @@
                                 title: {
                                     font: {
                                         weight: 'bold',
-                                        size:8,
+                                        size:10,
                                     }
                                 },
                             },
@@ -1602,6 +1602,7 @@
                                 title: {
                                     font: {
                                         weight: 'bold',
+                                        size:10,
                                      }
                                 },
                             },
@@ -1618,7 +1619,15 @@
                         datalabels: {
                             anchor: 'end',
                             align: 'top',
-                            offset: 5
+                            offset: 5,
+                            labels: {
+                                title: {
+                                    font: {
+                                        //weight: 'bold',
+                                        size: 10,
+                                    }
+                                },
+                            },
                         },
 
 
@@ -1635,6 +1644,14 @@
                         datalabels: {
                             anchor: 'end',
                             align: 'top',
+                            labels: {
+                                title: {
+                                    font: {
+                                       // weight: 'bold',
+                                        size: 10,
+                                    }
+                                },
+                            },
                         },
 
                     }
@@ -1663,7 +1680,7 @@
                             boxWidth: 10,
                             boxHeight:10,
                             font: {
-                                size: 10
+                                size: 12
                             }
                         }
                     }
@@ -2032,6 +2049,7 @@
                             title: {
                                 font: {
                                     weight: 'bold',
+                                    size:10,
                                   
                                 }
                             },
@@ -2053,6 +2071,7 @@
                                 title: {
                                     font: {
                                         weight: 'bold',
+                                        size:10,
                                     
                                     }
                                 },
@@ -2071,7 +2090,15 @@
                         datalabels: {
                             anchor: 'end',
                             align: 'top',
-                            offset: 5
+                            offset: 5,
+                            labels: {
+                                title: {
+                                    font: {
+                                        //weight: 'bold',
+                                        size: 10,
+                                    }
+                                },
+                            },
 
 
                         },
@@ -2086,7 +2113,15 @@
                         fill: false,
                          datalabels: {
                             anchor: 'end',
-                            align: 'top',
+                             align: 'top',
+                             labels: {
+                                 title: {
+                                     font: {
+                                         //weight: 'bold',
+                                         size: 10,
+                                     }
+                                 },
+                             },
 
                         },
 
@@ -2115,7 +2150,7 @@
                             boxWidth: 10,
                             boxHeight: 10,
                             font: {
-                                size: 10
+                                size: 12
                             }
                         }
 

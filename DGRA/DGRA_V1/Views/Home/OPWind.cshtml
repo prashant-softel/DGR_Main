@@ -4,7 +4,7 @@
 @model DGRA_V1.Models.DailyGenSummary
 
 @{
-    ViewData["Title"] = "Wind TML View";
+    ViewData["Title"] = "OPWind";
 }
 @{
     string windSiteList = "";
@@ -31,10 +31,8 @@
 <!-- DataTables -->
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
-<!--<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />-->
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
 <!-- dropdown search -->
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
@@ -51,13 +49,13 @@
     <section class="content">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title text-center">Wind Expected Vs Actual</h3>
+                <h3 class="card-title text-center">Wind Operational Performance</h3>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="input-group row">
-                            <label class="col-sm-3.1 col-form-label">Date Range :&nbsp;&nbsp;</label>
+                            <label class="col-sm-3 col-form-label">Date Range : </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
@@ -75,14 +73,14 @@
                         </div>
                     </div>
                     @*<div class="col-md-3">
-                            <div class="form-group">
-                                <div class="row">
-                                    <label class="col-sm-3 col-form-label text-left">SPV : </label>
-                                    <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>*@
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-3 col-form-label text-left">SPV : </label>
+                    <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
+                    </select>
+                </div>
+            </div>
+        </div>*@
 
                     <div class="col-sm-3">
                         <div class="form-group">
@@ -94,14 +92,14 @@
                     </div>
 
                     @*<div class="col-md-3">
-                            <div class="form-group">
-                                <div class="row">
-                                    <label class="col-sm-2 col-form-label text-left">Site : </label>
-                                    <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
-                                    </select>
-                                </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-left">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
+                                </select>
                             </div>
-                        </div>*@
+                        </div>
+                    </div>*@
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
                             <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
@@ -113,9 +111,9 @@
                 <hr>
                 <div class="col-sm-12">
                     <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center; height: 400px;">
-                        <h5 id="dataNotPresent" style="display: none; color: #007bff;"></h5>
+                        <h2 id="dataNotPresent" style="display: none; color: #007bff;"></h2>
                     </div>
-                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 500px;"></div>
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
                 <div class="col-sm-12">
@@ -123,7 +121,7 @@
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
                 <hr>
-                <div class="row" id="viewTableBtn" style="display: none">
+                @*<div class="row" id="viewTableBtn" style="display: none">
                     <div class="col-sm-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
                             <button type="button" class="btn btn-block btn-primary" onclick="getTableData()" style="margin-left:0rem; width: 10rem;">View Table</button>
@@ -138,8 +136,7 @@
                     </div>
                 </div>
                 <br />
-                @*<button id="viewTableBtn" type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">View Table</button>*@
-                <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>
+                <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>*@
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
         </div>
@@ -161,8 +158,6 @@
 <!-- DataTables  & Plugins -->
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
-<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -181,7 +176,7 @@
 <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
 @*<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>*@
 <script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
-<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
+
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
     $(document).ready(function () {
@@ -237,38 +232,18 @@
     function getReport() {
         var site = "";
         site_id = "";
-       /* site = $('select#site option:selected').each(function () {
+        site = $('select#site option:selected').each(function () {
             site_id += $(this).val() + ",";
         });
         site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
         if (site_id == "" || site_id == null) {
             alert("Please select site ");
             return false;
-        }*/
-        var cnt = 0;
-        $('#site option').each(function () {
-            if ($(this).is(':selected')) {
-                cnt++;
-            }
-
-        });
-        if (cnt > 0) {
-            var site = $('select#site option:selected').each(function () {
-                site_id += $(this).val() + ",";
-            });
-            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
         }
-        else {
-            $('select#site').find('option').each(function () {
-                site_id += $(this).val() + ",";
-            });
-            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        }
-        console.log("SIte List", site_id);
         document.getElementById("loader").style.display = 'flex';
-        document.getElementById("CloseViewTableBtn").style.display = 'none';
-        document.getElementById("DailyGenView").style.display = 'none';
-      //  console.log(site_id);
+        /*document.getElementById("CloseViewTableBtn").style.display = 'none';*/
+        //document.getElementById("DailyGenView").style.display = 'none';
+        console.log(site_id);
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -367,185 +342,14 @@
          /*GetWTG(false);*/
     }
 
-    function getTableData() {
-
-        let site_id = "";
-       /* var site = $('select#site option:selected').each(function () {
-            site_id += $(this).val() + ",";
-        });
-        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        if (site_id == "" || site_id == null) {
-            alert("Please select site ");
-            return false;
-        }*/
-        var cnt = 0;
-        $('#site option').each(function () {
-            if ($(this).is(':selected')) {
-                cnt++;
-            }
-
-        });
-        if (cnt > 0) {
-            var site = $('select#site option:selected').each(function () {
-                site_id += $(this).val() + ",";
-            });
-            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        }
-        else {
-            $('select#site').find('option').each(function () {
-                site_id += $(this).val() + ",";
-            });
-            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        }
-        console.log("SIte List", site_id);
-
-        document.getElementById("loader").style.display = 'flex';
-       // console.log(site_id);
-        var daterange = $('#daterange').val();
-        var arr1 = new Array();
-        arr1 = daterange.split("-");
-        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-
-
-
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("GetWindTMLData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
-            contentType: "application/json; charset=utf-8",
-            datatype: "JSON",
-
-            success: function (result, status, xhr) {
-                //console.log(result);
-                //console.log("GetWindTmlData fetched successfully.");
-                document.getElementById("loader").style.display = 'none';
-                document.getElementById("viewTableBtn").style.display = 'none';
-                document.getElementById("CloseViewTableBtn").style.display = 'flex';
-                document.getElementById("DailyGenView").style.display = 'flex';
-                //calling function of getting data for chart.
-
-                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
-                tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th  style="width: 10%;">Site</th>';
-                tbl += '<th style="width: 7%;">Date</th>';
-                tbl += '<th>WTG</th>';
-                tbl += '<th>From Time</th>';
-                tbl += '<th>To Time</th>';
-                tbl += '<th>Avg Active Power</th>';
-                tbl += '<th>Avg Wind Speed</th>';
-                tbl += '<th>Restructive WTG</th>';
-                tbl += '<th style="width: 10%;">PLC Max</th>';
-                tbl += '<th style="width: 10%;">PLC Min</th>';
-                tbl += '<th>PLC State Code</th>';
-                tbl += '<th>Status</th>';
-                tbl += '<th>Reconstructed Windspeed</th>';
-                tbl += '<th>Expected Power</th>';
-                tbl += '<th>Deviation kW</th>';
-                tbl += '<th>Loss kWh</th>';
-                tbl += '<th>Manual Breakdown </th>';
-                tbl += '<th>All Breakdown</th>';
-                tbl += '</tr></thead>';
-
-                if (result.length > 0) {
-                    for (var i = 0; i < result.length; i++) {
-                        var status = "";
-                        if (result[i].status_code === 1) {
-                            status = "Missing";
-                        }
-                        if (result[i].status_code === 0) {
-                            status = "Available";
-                        }
-                        tbl += '<tr>';
-                       tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].date + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].wtGs + '</td>';
-                        tbl += '<td  class="text-center">' + toHoursAndMinutes(result[i].from_time.totalSeconds) + '</td>';
-                        tbl += '<td class="text-center">' + toHoursAndMinutes(result[i].to_time.totalSeconds) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].avg_active_power.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].avg_wind_speed.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].restructive_WTG + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_max + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_min + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plc_state_code + '</td>';
-                       tbl += '<td class="text-center">' + status + '</td>';
-                       tbl += '<td class="text-center">' + result[i].recon_wind_speed.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].exp_power_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].deviation_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].loss_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].manual_bd + '</td>';
-                       tbl += '<td class="text-center">' + result[i].all_bd + '</td>';
-                        tbl += '</tr>';
-                    }
-                }
-                else {
-
-                    // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
-                }
-                tbl += '</table>';
-               // $("#DailyGenView").html(tbl);
-                $("#DailyGenView").html("").html(tbl);
-                $('#example1').DataTable({
-                    dom: 'Bfrtip',
-                    fixedHeader: true,
-                    responsive: true,
-                    scrollX: true,
-                    lengthChange: false,
-                    autoWidth: true,
-                    paging: true,
-                    lengthChange: false,
-                    searching: true,
-                    ordering: true,
-                    info: true,
-                    autoWidth: true,
-                    fixedColumns: {
-                        left: 3
-                    },
-                    pageLength: 50,
-                    buttons: [
-                        {
-                            extend: 'excel',
-                            title: 'Wind Expected Vs Actual',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        {
-                            extend: 'csv',
-                            title: 'Wind Expected Vs Actual',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        'colvis'
-                    ]
-                });
-                $(".dt-buttons").addClass('btn-group flex-wrap');
-                $(".dt-buttons > button").addClass('btn btn-secondary');
-                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-                $('#example1').wrap("<div class='scrolledTable'></div>");
-                //document.getElementById("wms_comparision").style.display = 'block';
-                //$('#example1').removeClass('dataTable');
-            }
-        });
-    }
-
-    function closeTableData() {
-        document.getElementById("viewTableBtn").style.display = 'flex';
-        document.getElementById("DailyGenView").style.display = 'none';
-        document.getElementById("CloseViewTableBtn").style.display = 'none';
-    }
+    //function closeTableData() {
+    //    document.getElementById("viewTableBtn").style.display = 'flex';
+    //    document.getElementById("DailyGenView").style.display = 'none';
+    //    document.getElementById("CloseViewTableBtn").style.display = 'none';
+    //}
 
     var data = [];
     function getChartData(site_id, fromDate, toDate) {
-
-        var fromToDates = getFinancialYearDates(toDate);
-        var isYearly = 0;
-        console.log("from date : " + fromToDates.fromDate + " to date : " + fromToDates.toDate);
-        if (fromDate == fromToDates.fromDate && toDate == fromToDates.toDate) {
-            isYearly = 1;
-            console.log("Yearly and monthly graph will be same.");
-        }
-
         var expected_final = 0.0;
         var lineloss_final = 0.0;
         var target_final = 0.0;
@@ -558,28 +362,28 @@
         var lossPCD_final = 0.0;
         var actual_final = 0.0;
         var loadShedding = 0.0;
-        //console.log("Inside getChartData function.");
+        console.log("Inside getChartData function.");
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&isYearly=' + isYearly,
+            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
 
             success: function (result, status, xhr) {
-                //console.log(result);
+                console.log(result);
                 //document.getElementById("loader").style.display = 'none';
                 var CloseBtnStatus = "";
                 var isMonthlyDataPresent = 0;
-                CloseBtnStatus = document.getElementById("CloseViewTableBtn").style.display;
+                //CloseBtnStatus = document.getElementById("CloseViewTableBtn").style.display;
                 //console.log("Close btn status : " + CloseBtnStatus + " type " + typeof (CloseBtnStatus));
-                if (CloseBtnStatus == "flex") {
-                    document.getElementById("viewTableBtn").style.display = 'none';
-                }
-                if (CloseBtnStatus == "none"){
-                    document.getElementById("viewTableBtn").style.display = 'flex';
-                }
+                //if (CloseBtnStatus == "flex") {
+                //    document.getElementById("viewTableBtn").style.display = 'none';
+                //}
+                //if (CloseBtnStatus == "none"){
+                //    document.getElementById("viewTableBtn").style.display = 'flex';
+                //}
                 getChartDataYearly(site_id);
-
+                
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         //console.log("Expected : ", result[i].expected_final);
@@ -589,7 +393,7 @@
                         //console.log("SMH : ",result[i].lossSMH_final);
                         //console.log("NC : ",result[i].lossNC_final);
                         //console.log("IGBD : ",result[i].lossIGBD_final);
-                       //console.log("EGBD : ",result[i].lossLULL_final);
+                        //console.log("EGBD : ",result[i].lossLULL_final);
                         //console.log("LULL : ",result[i].lossPCD_final);
                         //console.log("Actual : ", result[i].actual_final);
                         //console.log("Load Shedding : ", result[i].loadShedding);
@@ -656,7 +460,7 @@
         });
 
 
-       // console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
+        console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
         //monthlychart(data);
 
     }
@@ -674,10 +478,10 @@
         var lossPCD_final = 0.0;
         var actual_final = 0.0;
         var loadShedding = 0.0;
-        //console.log("Inside getChartDataYearly function.");
+        console.log("Inside getChartDataYearly function.");
         var data_Array1 = [];
         document.getElementById("loader").style.display = 'flex';
-        document.getElementById("viewTableBtn").style.display = 'flex';
+        //document.getElementById("viewTableBtn").style.display = 'flex';
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -695,9 +499,9 @@
         //var newFromDate = newDate.toISOString().slice(0, 10);
         //console.log("Yearly Report From date : " + newFromDate + " To date : " + toDate);
 
-       // console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
+        console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
         var fromToDates = getFinancialYearDates(toDate);
-        //console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
+        console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
 
         $.ajax({
             type: "GET",
@@ -706,22 +510,22 @@
             datatype: "JSON",
 
             success: function (result, status, xhr) {
-                //console.log(result);
+                console.log(result);
                 //document.getElementById("loader").style.display = 'none';
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
-                        //console.log("Expected : ", result[i].expected_final);
-                       // console.log("LineLoss : ", result[i].lineloss_final);
-                       /// console.log("Target : ",result[i].target_final);
-                       //console.log("USHM : ",result[i].lossUSMH_final);
-                        //console.log("SMH : ",result[i].lossSMH_final);
-                       // console.log("NC : ",result[i].lossNC_final);
-                       // console.log("IGBD : ",result[i].lossIGBD_final);
-                       // console.log("EGBD : ",result[i].lossLULL_final);
-                       // console.log("LULL : ",result[i].lossPCD_final);
-                       // console.log("Actual : ", result[i].actual_final);
-                       // console.log("Load Shedding : ", result[i].loadShedding);
+                        console.log("Expected : ", result[i].expected_final);
+                        console.log("LineLoss : ", result[i].lineloss_final);
+                        console.log("Target : ",result[i].target_final);
+                        console.log("USHM : ",result[i].lossUSMH_final);
+                        console.log("SMH : ",result[i].lossSMH_final);
+                        console.log("NC : ",result[i].lossNC_final);
+                        console.log("IGBD : ",result[i].lossIGBD_final);
+                        console.log("EGBD : ",result[i].lossLULL_final);
+                        console.log("LULL : ",result[i].lossPCD_final);
+                        console.log("Actual : ", result[i].actual_final);
+                        console.log("Load Shedding : ", result[i].loadShedding);
 
                         expected_final = result[i].expected_final;
                         lineloss_final = result[i].lineloss_final;
@@ -739,19 +543,19 @@
                         CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
 
 
-                        //console.log("-------------------------------------------");
-                       // console.log("Expected : ", expected_final);
-                        //console.log("LineLoss : ", lineloss_final);
-                        //console.log("Target : ", target_final);
-                        //console.log("USHM : ", lossUSMH_final);
-                       // console.log("SMH : ", lossSMH_final);
-                       // console.log("NC : ", lossNC_final);
-                        //console.log("IGBD : ", lossIGBD_final);
-                        //console.log("EGBD : ", lossEGBD_final);
-                       // console.log("LULL : ", lossLULL_final);
-                       // console.log("PCD : ", lossPCD_final);
-                      //  console.log("Actual : ", actual_final);
-                       // console.log("Load Shedding : ", loadShedding);
+                        console.log("-------------------------------------------");
+                        console.log("Expected : ", expected_final);
+                        console.log("LineLoss : ", lineloss_final);
+                        console.log("Target : ", target_final);
+                        console.log("USHM : ", lossUSMH_final);
+                        console.log("SMH : ", lossSMH_final);
+                        console.log("NC : ", lossNC_final);
+                        console.log("IGBD : ", lossIGBD_final);
+                        console.log("EGBD : ", lossEGBD_final);
+                        console.log("LULL : ", lossLULL_final);
+                        console.log("PCD : ", lossPCD_final);
+                        console.log("Actual : ", actual_final);
+                        console.log("Load Shedding : ", loadShedding);
                         //data = [
                         //    { x: 'Target', value: target_final.toFixed(1) },
                         //    { x: 'Expected', value: expected_final.toFixed(1) },
@@ -775,67 +579,49 @@
         });
 
 
-        //console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
+        console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
         //monthlychart(data);
 
     }
 
     function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
-        //console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
+        console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
         Plotly.purge('Waterfall');
+        let total_opExpected = total_expected - total_lineloss;
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_egbd = Number(total_egbd) + Number(loadShedding);
+
         let t_target = Number(total_target).toFixed(2);
-        let t_expected = Number(total_expected).toFixed(2);
-        let t_usmh = Number(total_usmh).toFixed(2);
-        let t_smh = Number(total_smh).toFixed(2);
-        let t_oh = Number(total_oh).toFixed(2);
-        let t_igbd = Number(total_igbd).toFixed(2);
+        let t_opExpected = Number(total_opExpected).toFixed(2);
+        let t_bd = Number(total_bd).toFixed(2);
         let t_egbd = Number(total_egbd).toFixed(2);
-        let t_lull = Number(total_lull).toFixed(2);
         let t_pcd = Number(total_pcd).toFixed(2);
-        let t_lineloss = Number(total_lineloss).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
-        let t_loadShedding = Number(loadShedding).toFixed(2);
-
-
-
-        // Percentage Value
-        //let exp_percentage = ((total_expected - total_target) / total_target) * 100;
-        //let usmh_percentage = (total_usmh / total_expected) * 100;
-        //let smh_percentage = (total_smh / total_expected) * 100;
-        //let oh_percentage = (total_oh / total_expected) * 100;
-        //let igbd_percentage = (total_igbd / total_expected) * 100;
-        //let egbd_percentage = (total_egbd / total_expected) * 100;
-        //let loadShedding_percentage = (loadShedding / total_expected) * 100;
-        //let lull_percentage = (total_lull / total_expected) * 100;
-        //let pcd_percentage = (total_pcd / total_expected) * 100;
-        //let line_percentage = (total_lineloss / total_expected) * 100;
-        //let actul_percentage = ((total_actual - total_expected) / total_expected) * 100;
+        //let t_lineloss = Number(total_lineloss).toFixed(2);
+        //let t_loadShedding = Number(loadShedding).toFixed(2);       
+        
+        
 
         let tar_percentage = ((total_expected - total_target) / total_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (total_usmh / total_expected) * 100;
-        let smh_percentage = (total_smh / total_expected) * 100;
-        let oh_percentage = (total_oh / total_expected) * 100;
-        let igbd_percentage = (total_igbd / total_expected) * 100;
+        let bd_percentage = (total_bd / total_opExpected) * 100;
+        //let loadShedding_percentage = (loadShedding / total_expected) * 100;
         let egbd_percentage = (total_egbd / total_expected) * 100;
-        let loadShedding_percentage = (loadShedding / total_expected) * 100;
-        let lull_percentage = (total_lull / total_expected) * 100;
         let pcd_percentage = (total_pcd / total_expected) * 100;
-        let line_percentage = (total_lineloss / total_expected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
         let actul_percentage = ((total_actual) / total_expected) * 100;
+
 
         //#86C466 : green. #77CAE7 : blue. #EE403D : red. #14a105 : dark-green.
         //#7dddff
         var columnColors = [
             "#86C466", // Target
             "#7dddff", // Expected
-            "#EE403D", // USMH
-            "#EE403D", // SMH
-            "#EE403D", // Other
-            "#EE403D", // IGBD
-            "#EE403D", // EGBD
+            "#EE403D", // BD
+            "#EE403D", // EGB
             "#86C466", // PCD
-            "#7dddff", // Lineloss
+            "#EE403D", // Other
             "#7dddff"  // Actual
         ];
 
@@ -848,10 +634,10 @@
             //columnColors[7] = "#EE403D";
             pcdMeasure = "absolute";
         }
-        if (Number(total_lineloss) > 0) {
-            //columnColors[8] = "#EE403D";
-            lineLossMeasure = "absolute";
-        }
+        //if (Number(total_lineloss) > 0) {
+        //    //columnColors[8] = "#EE403D";
+        //    lineLossMeasure = "absolute";
+        //}
 
         var data = [
             {
@@ -865,77 +651,57 @@
                     "relative",
                     "relative",
                     "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
                     "absolute"
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
-                    "Other",
-                    "IGBD",
-                    "EGBD",
-                    "Curtailment",
+                    "BD",
+                    "EGB",
+                    //"Curtailment",
                     "PCD",
-                    "Lineloss",
+                    "Other",
                     "Actual"
                 ],
                 textposition: "outside",
                 //textposition: "inside",
                 text: [
                     t_target,
-                    t_expected,
-                    t_usmh,
-                    t_smh,
-                    t_oh,
-                    t_igbd,
+                    t_opExpected,
+                    t_bd,
                     t_egbd,
-                    t_loadShedding,
+                    //t_loadShedding,
                     t_pcd ,
-                    t_lineloss,
+                    t_oh,
                     t_actual
                 ],
                 y: [
                     Number(total_target),
-                    Number(total_expected),
-                    Number(total_usmh),
-                    Number(total_smh),
-                    Number(total_oh),
-                    Number(total_igbd),
+                    Number(total_opExpected),
+                    Number(total_bd),
                     Number(total_egbd),
-                    Number(loadShedding),
+                    //Number(loadShedding),
                     Number(total_pcd),
-                    Number(total_lineloss),
+                    Number(total_oh),
                     Number(total_actual)
                 ],
                 hoverData: [
                     Number(total_target),
-                    Number(total_expected),
-                    Number(total_usmh),
-                    Number(total_smh),
-                    Number(total_oh),
-                    Number(total_igbd),
+                    Number(total_opExpected),
+                    Number(total_bd),
                     Number(total_egbd),
-                    Number(loadShedding),
+                    //Number(loadShedding),
                     Number(total_pcd),
-                    Number(total_lineloss),
+                    Number(total_oh),
                     Number(total_actual)
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-                    '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + total_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + total_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + total_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + total_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtailment</b><br>Value: ' + loadShedding + '<br> (' + loadShedding_percentage.toFixed(2) + '% )',
                     '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
-                    '<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
 
@@ -980,35 +746,33 @@
     }
 
     function CreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
-        //console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
+        console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
         Plotly.purge('WaterfallYearly');
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_expected = Number(total_expected) - Number(total_lineloss);
+        total_egbd = Number(total_egbd) + Number(loadShedding);
+
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
-        let t_usmh = Number(total_usmh).toFixed(2);
-        let t_smh = Number(total_smh).toFixed(2);
-        let t_oh = Number(total_oh).toFixed(2);
-        let t_igbd = Number(total_igbd).toFixed(2);
+        let t_bd = Number(total_bd).toFixed(2);
         let t_egbd = Number(total_egbd).toFixed(2);
-        let t_lull = Number(total_lull).toFixed(2);
         let t_pcd = Number(total_pcd).toFixed(2);
-        let t_lineloss = Number(total_lineloss).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
-        let t_loadShedding = Number(loadShedding).toFixed(2);
+        //let t_lull = Number(total_lull).toFixed(2);
+        //let t_loadShedding = Number(loadShedding).toFixed(2);
 
 
         // Percentage Value
         /*let exp_percentage = ((total_expected - total_target) / total_target) * 100;*/
         let tar_percentage = ((total_expected - total_target) / total_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (total_usmh / total_expected) * 100;
-        let smh_percentage = (total_smh / total_expected) * 100;
-        let oh_percentage = (total_oh / total_expected) * 100;
-        let igbd_percentage = (total_igbd / total_expected) * 100;
+        let bd_percentage = (total_bd / total_expected) * 100;
         let egbd_percentage = (total_egbd / total_expected) * 100;
-        let loadShedding_percentage = (loadShedding / total_expected) * 100;
-        let lull_percentage = (total_lull / total_expected) * 100;
+        //let loadShedding_percentage = (loadShedding / total_expected) * 100;
+        //let lull_percentage = (total_lull / total_expected) * 100;
         let pcd_percentage = (total_pcd / total_expected) * 100;
-        let line_percentage = (total_lineloss / total_expected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
         let actul_percentage = ((total_actual) / total_expected) * 100;
 
         var data = [
@@ -1023,23 +787,15 @@
                     "relative",
                     "relative",
                     "relative",
-                    "relative",
-                    "relative",
-                    "relative",
-                    "relative",
                     "absolute"
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
-                    "Other",
-                    "IGBD",
-                    "EGBD",
-                    "Curtailment",
+                    "BD",
+                    "EGB",
                     "PCD",
-                    "Lineloss",
+                    "Other",
                     "Actual"
                 ],
                 textposition: "outside",
@@ -1047,40 +803,28 @@
                 text: [
                     t_target,
                     t_expected,
-                    t_usmh,
-                    t_smh,
-                    t_oh,
-                    t_igbd,
+                    t_bd,
                     t_egbd,
-                    t_loadShedding,
                     t_pcd,
-                    t_lineloss,
+                    t_oh,
                     t_actual
                 ],
                 y: [
                     Number(total_target),
                     Number(total_expected),
-                    Number(total_usmh),
-                    Number(total_smh),
-                    Number(total_oh),
-                    Number(total_igbd),
+                    Number(total_bd),
                     Number(total_egbd),
-                    Number(loadShedding),
                     Number(total_pcd),
-                    Number(total_lineloss),
+                    Number(total_oh),
                     Number(total_actual)
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + total_usmh + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + total_smh + '<br> (' + smh_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + total_igbd + '<br> (' + igbd_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtailment</b><br>Value: ' + loadShedding + '<br> (' + loadShedding_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>EGB</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
                     '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
-                    '<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
@@ -1121,7 +865,7 @@
     }
 
     function clearRecords() {
-        //console.log("Inside clear onclick function.");
+        console.log("Inside clear onclick function.");
         var table = document.getElementById("example1");
         table.innerHTML = "";
 
@@ -1130,6 +874,143 @@
         // clear the DataTable
         dataTable.clear().draw();
     }
+
+    @* function getTableData() {
+
+        let site_id = "";
+        var site = $('select#site option:selected').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        if (site_id == "" || site_id == null) {
+            alert("Please select site ");
+            return false;
+        }
+        document.getElementById("loader").style.display = 'flex';
+        console.log(site_id);
+        var daterange = $('#daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWindTMLData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+
+            success: function (result, status, xhr) {
+                //console.log(result);
+                console.log("GetWindTmlData fetched successfully.");
+                document.getElementById("loader").style.display = 'none';
+                document.getElementById("viewTableBtn").style.display = 'none';
+                document.getElementById("CloseViewTableBtn").style.display = 'flex';
+                document.getElementById("DailyGenView").style.display = 'flex';
+                //calling function of getting data for chart.
+
+                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th  style="width: 10%;">Site</th>';
+                tbl += '<th style="width: 7%;">Date</th>';
+                tbl += '<th>WTG</th>';
+                tbl += '<th>From Time</th>';
+                tbl += '<th>To Time</th>';
+                tbl += '<th>Avg Active Power</th>';
+                tbl += '<th>Avg Wind Speed</th>';
+                tbl += '<th>Restructive WTG</th>';
+                tbl += '<th style="width: 10%;">PLC Max</th>';
+                tbl += '<th style="width: 10%;">PLC Min</th>';
+                tbl += '<th>PLC State Code</th>';
+                tbl += '<th>Status</th>';
+                tbl += '<th>Reconstructed Windspeed</th>';
+                tbl += '<th>Expected Power</th>';
+                tbl += '<th>Deviation kW</th>';
+                tbl += '<th>Loss kWh</th>';
+                tbl += '<th>Manual Breakdown </th>';
+                tbl += '<th>All Breakdown</th>';
+                tbl += '</tr></thead>';
+
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        var status = "";
+                        if (result[i].status_code === 1) {
+                            status = "Missing";
+                        }
+                        if (result[i].status_code === 0) {
+                            status = "Available";
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td  class="text-center">' + result[i].site + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].date + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].wtGs + '</td>';
+                        tbl += '<td  class="text-center">' + toHoursAndMinutes(result[i].from_time.totalSeconds) + '</td>';
+                        tbl += '<td class="text-center">' + toHoursAndMinutes(result[i].to_time.totalSeconds) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].avg_active_power.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].avg_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].restructive_WTG + '</td>';
+                        tbl += '<td class="text-center">' + result[i].plC_max + '</td>';
+                        tbl += '<td class="text-center">' + result[i].plC_min + '</td>';
+                        tbl += '<td class="text-center">' + result[i].plc_state_code + '</td>';
+                        tbl += '<td class="text-center">' + status + '</td>';
+                        tbl += '<td class="text-center">' + result[i].recon_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].exp_power_kw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].deviation_kw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].loss_kw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].manual_bd + '</td>';
+                        tbl += '<td class="text-center">' + result[i].all_bd + '</td>';
+                        tbl += '</tr>';
+                    }
+                }
+                else {
+
+                    // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+                }
+                tbl += '</table>';
+                // $("#DailyGenView").html(tbl);
+                $("#DailyGenView").html("").html(tbl);
+                $('#example1').DataTable({
+                    dom: 'Bfrtip',
+                    responsive: false,
+                    lengthChange: false,
+                    autoWidth: true,
+                    paging: true,
+                    lengthChange: false,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: true,
+                    responsive: false,
+                    pageLength: 50,
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Wind Expected Vs Actual',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Wind Expected Vs Actual',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis'
+                    ]
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $('#example1').wrap("<div class='scrolledTable'></div>");
+                //document.getElementById("wms_comparision").style.display = 'block';
+                //$('#example1').removeClass('dataTable');
+            }
+        });
+    } *@
 
 
 </script>

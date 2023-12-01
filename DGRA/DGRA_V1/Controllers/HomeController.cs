@@ -1052,5 +1052,22 @@ namespace DGRA_V1.Controllers
             TempData["notification"] = "";
             return View();
         }
+		
+		//DGR version 3.
+		
+
+		[TypeFilter(typeof(SessionValidation))]
+        public ActionResult OPWind()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+        
+        [TypeFilter(typeof(SessionValidation))]
+        public ActionResult OPSolar()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
     }
 }

@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
-<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />
+<!--<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />-->
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -70,7 +70,7 @@
                     </div>
                     <div class="col-md-1"></div>
                 </div>
-                
+
                 <hr>
                 <div id="DailyTargetKPIView" style="overflow-x: auto;" class="DailyTargetKPIView"></div>
                 <div id="loader" class="loader  center" style="display:none"></div>
@@ -90,6 +90,7 @@
 @*Data Tables*@
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -99,7 +100,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
-<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
     $(document).ready(function () {
         $('#daterange').daterangepicker(
@@ -136,7 +137,7 @@
 
         });
     }
-    
+
     function getReport() {
 
         let site_id = "";
@@ -212,7 +213,7 @@
                     dom: 'Bfrtip',
                     fixedHeader: true,
                     responsive: true,
-                    scrollX: true,
+                    //scrollX: true,
                     lengthChange: false,
                     autoWidth: false,
                     paging: true,
