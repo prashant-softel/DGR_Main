@@ -421,7 +421,7 @@
                 document.getElementById("loader").style.display = 'none';
                 document.getElementById("viewTableBtn").style.display = 'none';
                 document.getElementById("CloseViewTableBtn").style.display = 'flex';
-                document.getElementById("DailyGenView").style.display = 'flex';
+                document.getElementById("DailyGenView").style.display = 'list-item';
                 //calling function of getting data for chart.
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
@@ -481,6 +481,28 @@
 
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
+               /* for (var i = 0; i < 30; i++) {
+                    tbl += '<tr>';
+                    tbl += '<td  class="text-center">Alote</td>';
+                    tbl += '<td  class="text-center">15-05-2023.</td > ';
+                    tbl += '<td  class="text-center">WTG</td>';
+                    tbl += '<td  class="text-center">12:10</td>';
+                    tbl += '<td class="text-center">12:30</td>';
+                    tbl += '<td class="text-center">120</td>';
+                    tbl += '<td class="text-center">4.6</td>';
+                    tbl += '<td class="text-center">Res</td>';
+                    tbl += '<td class="text-center">10</td>';
+                    tbl += '<td class="text-center">8</td>';
+                    tbl += '<td class="text-center">PCD</td>';
+                    tbl += '<td class="text-center">Y</td>';
+                    tbl += '<td class="text-center">4.56</td>';
+                    tbl += '<td class="text-center">9.3</td>';
+                    tbl += '<td class="text-center">4000</td>';
+                    tbl += '<td class="text-center">5.3</td>';
+                    tbl += '<td class="text-center">32</td>';
+                    tbl += '<td class="text-center">65</td>';
+                    tbl += '</tr>';
+                }*/
                 tbl += '</table>';
                // $("#DailyGenView").html(tbl);
                 $("#DailyGenView").html("").html(tbl);
