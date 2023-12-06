@@ -5709,14 +5709,28 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
 
             return await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);*/
             bool GetFrom15Min = false;
+            bool CombineReport = false;
+            string todate1 = "";
+            string fromDate1 = "";
             if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01"))
             {
+                if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01") && Convert.ToDateTime(Convert.ToDateTime(todate).ToString("yyyy-MM-dd")) > Convert.ToDateTime("2023-10-01"))
+                {
+                    todate1 = "2023-09-30";
+                    fromDate1 = "2023-10-01";
+                    CombineReport = true;
+                }
+
+
                 GetFrom15Min = true;
             }
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
+            string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
+
             string filter = "";
             string functionName = "GetSolarPerformanceReport";
             if (!string.IsNullOrEmpty(site))
@@ -5789,8 +5803,21 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string getPower = "";
             if (GetFrom15Min)
             {
-                //For getting Expectd power form 15 minute data. Here divide by 4 
-                getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+                if (CombineReport)
+                {
+                    getPower = " SELECT t2.site,SUM(CASE WHEN date(t1.date_time) " + datefilter3 + " THEN t1.P_exp_degraded / 4  WHEN date(t1.date_time)" + datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END) AS expected_kwh FROM(SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) " + datefilter3 + " UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) " + datefilter4 + ") AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t1.site_id, t2.site";
+
+                   // getPower = " SELECT  t2.site,SUM( CASE WHEN date(t1.date_time) BETWEEN "+ datefilter3 + " THEN t1.P_exp_degraded / 4 WHEN date(t1.date_time) BETWEEN "+ datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END ) AS expected_kwh FROM (SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) BETWEEN " + datefilter3 + "  UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) BETWEEN " + datefilter4 + " AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t1.site_id, t2.site";
+
+
+                   // getPower = "  select t2.site, SUM(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter4 + " group by site_id";
+                }
+                else
+                {
+                    getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+                }
+                    //For getting Expectd power form 15 minute data. Here divide by 4 
+                  
             }
             else
             {
@@ -5886,8 +5913,17 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
         internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site)
         {
             bool GetFrom15Min = false;
+            bool CombineReport = false;
+            string todate1 = "";
+            string fromDate1 = "";
             if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01"))
             {
+                if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01") && Convert.ToDateTime(Convert.ToDateTime(todate).ToString("yyyy-MM-dd")) > Convert.ToDateTime("2023-10-01"))
+                {
+                    todate1 = "2023-09-30";
+                    fromDate1 = "2023-10-01";
+                    CombineReport = true;
+                }
                 GetFrom15Min = true;
             }
 
@@ -5905,6 +5941,8 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
+            string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
             string filter = "";
             string filter2 = "";
             if (!string.IsNullOrEmpty(site))
@@ -5980,7 +6018,21 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
             if (GetFrom15Min)
             {
                 //For 15 min data calculation.
-                getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
+                if (CombineReport)
+                {
+                    getPower = " SELECT t2.site,t2.spv,SUM(CASE WHEN date(t1.date_time) " + datefilter3 + " THEN t1.P_exp_degraded / 4  WHEN date(t1.date_time)" + datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END) AS expected_kwh FROM(SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) " + datefilter3 + " UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) " + datefilter4 + ") AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t2.spv";
+
+                    //getPower = " SELECT  t2.site,SUM( CASE WHEN date(t1.date_time) BETWEEN " + datefilter3 + " THEN t1.P_exp_degraded / 4 WHEN date(t1.date_time) BETWEEN " + datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END ) AS expected_kwh FROM (SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) BETWEEN " + datefilter3 + "  UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) BETWEEN " + datefilter4 + " AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t1.spv, t2.spv";
+
+
+                    // getPower = "  select t2.site, SUM(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter4 + " group by site_id";
+                }
+                else
+                {
+                    getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
+                }
+              
+               
             }
             else
             {
