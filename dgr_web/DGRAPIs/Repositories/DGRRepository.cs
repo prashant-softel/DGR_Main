@@ -5709,14 +5709,28 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
 
             return await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);*/
             bool GetFrom15Min = false;
+            bool CombineReport = false;
+            string todate1 = "";
+            string fromDate1 = "";
             if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01"))
             {
+                if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01") && Convert.ToDateTime(Convert.ToDateTime(todate).ToString("yyyy-MM-dd")) > Convert.ToDateTime("2023-10-01"))
+                {
+                    todate1 = "2023-09-30";
+                    fromDate1 = "2023-10-01";
+                    CombineReport = true;
+                }
+
+
                 GetFrom15Min = true;
             }
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
+            string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
+
             string filter = "";
             string functionName = "GetSolarPerformanceReport";
             if (!string.IsNullOrEmpty(site))
@@ -5789,8 +5803,21 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string getPower = "";
             if (GetFrom15Min)
             {
-                //For getting Expectd power form 15 minute data. Here divide by 4 
-                getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+                if (CombineReport)
+                {
+                    getPower = " SELECT t2.site,SUM(CASE WHEN date(t1.date_time) " + datefilter3 + " THEN t1.P_exp_degraded / 4  WHEN date(t1.date_time)" + datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END) AS expected_kwh FROM(SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) " + datefilter3 + " UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) " + datefilter4 + ") AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t1.site_id, t2.site";
+
+                   // getPower = " SELECT  t2.site,SUM( CASE WHEN date(t1.date_time) BETWEEN "+ datefilter3 + " THEN t1.P_exp_degraded / 4 WHEN date(t1.date_time) BETWEEN "+ datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END ) AS expected_kwh FROM (SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) BETWEEN " + datefilter3 + "  UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) BETWEEN " + datefilter4 + " AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t1.site_id, t2.site";
+
+
+                   // getPower = "  select t2.site, SUM(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter4 + " group by site_id";
+                }
+                else
+                {
+                    getPower = "  select t2.site, SUM(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
+                }
+                    //For getting Expectd power form 15 minute data. Here divide by 4 
+                  
             }
             else
             {
@@ -5886,8 +5913,17 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
         internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site)
         {
             bool GetFrom15Min = false;
+            bool CombineReport = false;
+            string todate1 = "";
+            string fromDate1 = "";
             if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01"))
             {
+                if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01") && Convert.ToDateTime(Convert.ToDateTime(todate).ToString("yyyy-MM-dd")) > Convert.ToDateTime("2023-10-01"))
+                {
+                    todate1 = "2023-09-30";
+                    fromDate1 = "2023-10-01";
+                    CombineReport = true;
+                }
                 GetFrom15Min = true;
             }
 
@@ -5905,6 +5941,8 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
+            string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
             string filter = "";
             string filter2 = "";
             if (!string.IsNullOrEmpty(site))
@@ -5980,7 +6018,21 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
             if (GetFrom15Min)
             {
                 //For 15 min data calculation.
-                getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
+                if (CombineReport)
+                {
+                    getPower = " SELECT t2.site,t2.spv,SUM(CASE WHEN date(t1.date_time) " + datefilter3 + " THEN t1.P_exp_degraded / 4  WHEN date(t1.date_time)" + datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END) AS expected_kwh FROM(SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) " + datefilter3 + " UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) " + datefilter4 + ") AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t2.spv";
+
+                    //getPower = " SELECT  t2.site,SUM( CASE WHEN date(t1.date_time) BETWEEN " + datefilter3 + " THEN t1.P_exp_degraded / 4 WHEN date(t1.date_time) BETWEEN " + datefilter4 + " THEN t1.P_exp_degraded / 60 ELSE 0 END ) AS expected_kwh FROM (SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_15_min_solar` WHERE date(date_time) BETWEEN " + datefilter3 + "  UNION ALL SELECT site_id, P_exp_degraded, date_time FROM `uploading_pyranometer_1_min_solar` WHERE date(date_time) BETWEEN " + datefilter4 + " AS t1 LEFT JOIN site_master_solar AS t2 ON t1.site_id = t2.site_master_solar_id GROUP BY t1.spv, t2.spv";
+
+
+                    // getPower = "  select t2.site, SUM(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter4 + " group by site_id";
+                }
+                else
+                {
+                    getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/4 as expected_kwh from `uploading_pyranometer_15_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
+                }
+              
+               
             }
             else
             {
@@ -14092,6 +14144,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     filter += " and site_id IN(" + site + ") ";
                 }
                 filter += " ORDER BY WTGs ASC, to_time ASC ;";
+                
+                
+                
+                
                 string fetchQry = "SELECT * FROM uploading_file_tmr_data WHERE " + filter;
                 _windTMLDataList = await Context.GetData<InsertWindTMLData>(fetchQry).ConfigureAwait(false);
             }
@@ -14834,10 +14890,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         // Actual vs Expected Function 
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
         {
+           
+
             bool GetFrom15Min = false;
+            bool CombineReport = false;
+            string todate1 = "";
+            string fromdate1 = "";
             if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01"))
             {
-                GetFrom15Min = true;
+                if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01") && Convert.ToDateTime(Convert.ToDateTime(toDate).ToString("yyyy-MM-dd")) > Convert.ToDateTime("2023-10-01"))
+                {
+                    todate1 = "2023-09-30";
+                    fromdate1 = "2023-10-01";
+                   CombineReport = true;
+                }
+
+               GetFrom15Min = true;
             }
             string functionName = "GetSolarExpectedReport";
 
@@ -14848,11 +14916,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             LogInfo(0, 1, 5, functionName, info, backend);
 
             string filter = "";
+            string filter1 = "";
+            string filter2 = "";
+            string filter3 = "";
             int chkfilter = 0;
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
                 chkfilter = 1;
                 filter += " where t1.date>='" + fromDate + "' and t1.date<='" + toDate + "' ";
+                if (CombineReport)
+                {
+                    filter1 += "t1.date BETWEEN '" + fromDate + "' and '" + todate1 + "'";
+                    filter2 += "t1.date BETWEEN '" + fromdate1 + "' and '" + toDate + "'";
+                    filter3 += "t1.date BETWEEN '" + fromDate  + "' and '" + toDate + "'";
+                }
             }
             if (!string.IsNullOrEmpty(site))
             {
@@ -14861,7 +14938,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     filter += " and ";
                 }
-                filter += " t1.site_id in (" + site + ") ";
+                if (CombineReport)
+                {
+                    filter3 += " and t1.site_id in (" + site + ") ";
+                }
+                else
+                {
+                    filter += " t1.site_id in (" + site + ") ";
+                }
+                   
             }
             
             string qry1 = "";
@@ -14872,22 +14957,44 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //SUM(P_exp_degraded)/60 for 1 min data and SUM(P_exp_degraded)/4 for15 min data.
                 if (GetFrom15Min)
                 {
-                    qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
-                }
+                    if (CombineReport)
+                    {
+                        qry1 = "SELECT t2.pr,t2.toplining_PR,t1.site,t1.site_id,t1.date,SUM(t1.inv_kwh_afterloss) AS inv_kwh, SUM(t1.ghi) AS ghi,SUM(t1.poa) AS poa,AVG(t1.ma) AS ma,AVG(t1.iga) AS iga,AVG(t1.ega) AS ega,SUM(t1.usmh) AS usmh,SUM(t1.smh) AS smh,SUM(t1.oh) AS oh,SUM(t1.igbdh) AS igbdh,SUM(t1.egbdh) AS egbdh,SUM(t1.load_shedding) AS load_shedding,SUM(t1.total_losses) AS total_losses,t2.gen_nos AS target, CASE WHEN  " +  filter1 + " THEN(SELECT SUM(P_exp_degraded) / 4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) WHEN  " + filter2 + " THEN(SELECT SUM(P_exp_degraded) / 60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) ELSE NULL END AS Pexpected FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t2.date=t1.date  WHERE  " + filter3 + " GROUP BY t1.site_id, t1.date";
+
+                       // qry1 = "SELECT t2.pr,t2.toplining_PR,t1.site_id,t1.date,SUM(t1.inv_kwh_afterloss) AS inv_kwh,SUM(t1.ghi) AS ghi,SUM(t1.poa) AS poa,AVG(t1.ma) AS ma,AVG(t1.iga) AS iga,AVG(t1.ega) AS ega,SUM(t1.usmh) AS usmh,SUM(t1.smh) AS smh,SUM(t1.oh) AS oh,SUM(t1.igbdh) AS igbdh,SUM(t1.egbdh) AS egbdh,SUM(t1.load_shedding) AS load_shedding,SUM(t1.total_losses) AS total_losses,t2.gen_nos AS target, CASE WHEN  " + filter1 + " THEN(SELECT SUM(P_exp_degraded) / 4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) WHEN  " + filter2 + " THEN(SELECT SUM(P_exp_degraded) / 60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) ELSE NULL END AS Pexpected FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date WHERE  " + filter3 + " GROUP BY t1.site_id, t1.date";
+
+                    
+                    }
+                    else
+                        {
+                        qry1 = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+
+                    }
+
+                 }
                 else
                 {
-                    qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                    qry1 = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
                 }
             }
             else if (prType == "toplining")
             {
                 if (GetFrom15Min)
                 {
-                    qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                    if (CombineReport)
+                    {
+                        qry1 = "SELECT  t2.pr,t2.toplining_PR,t1.site,t1.site_id,t1.date,SUM(t1.inv_kwh_afterloss) AS inv_kwh,SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, CASE WHEN  " + filter1 + " THEN(SELECT SUM(P_exp_degraded) / 4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) WHEN  " + filter2 + " THEN(SELECT SUM(P_exp_degraded) / 60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) ELSE NULL END AS Pexpected FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date WHERE  " + filter3 + " GROUP BY t1.site_id, t1.date";
+
+                        ///qry1 = "SELECT  t2.pr,t2.toplining_PR,t1.site_id,t1.date,SUM(t1.inv_kwh_afterloss) AS inv_kwh,SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, CASE WHEN t1.date BETWEEN " + filter1 + " THEN(SELECT SUM(P_exp_degraded) / 4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) WHEN t1.date BETWEEN " + filter2 + " THEN(SELECT SUM(P_exp_degraded) / 60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) ELSE NULL END AS Pexpected FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date WHERE t1.date BETWEEN " + filter + " GROUP BY t1.site_id,t1.date";
+                    }
+                    else
+                    {
+                        qry1 = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                    }
                 }
                 else
                 {
-                    qry1 = "select t2.pr, t2.toplining_PR, site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+                    qry1 = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
                 }
                 
 

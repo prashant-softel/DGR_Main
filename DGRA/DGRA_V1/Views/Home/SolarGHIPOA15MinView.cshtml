@@ -99,7 +99,7 @@
                         <!-- /.card-tools -->
                     </div>
                     <div class="col-md-12 card-body " id="chart" style="display:none">
-                        <canvas id="line-chart" style="width:100%; max-width:100%"></canvas>
+                        <canvas id="line_chart" style="width:100%; max-width:100%"></canvas>
                     </div>
 
                 </div>
@@ -438,8 +438,10 @@
     }
 
     function FifteenMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
+       
         let dataset_arr = [];
         let yaxisdata = [];
+        
         if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
 
             dataset_arr.push({ yAxisID: 'A', label: "GHI 1", data: ghi_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1 });
@@ -478,9 +480,12 @@
 
        // dataset_arr.push({ yAxisID: 'B', label: "Amb Temp", data: amp_temp_arr, pointRadius: 0.8, borderColor: "#FFCA5A", fill: false, borderWidth: 1 });
         //dataset_arr.push({ yAxisID: 'B', label: "Mod Temp", data: mod_arr_arr, pointRadius: 0.8, borderColor: "#31576D", fill: false, borderWidth: 1 });
-
-        console.log(dataset_arr);
-        new Chart(document.getElementById("line-chart"), {
+        if (window.myCharts != undefined) {
+            window.myCharts.destroy();
+        }
+           
+        window.myCharts =  new Chart(document.getElementById("line_chart"), {
+            
             type: 'line',
             data: {
                 labels: time_arr_arr,
@@ -496,9 +501,9 @@
                     intersect: true
                 },
                 responsive: true,
-                /*tooltips: {
+                tooltips: {
                     mode: 'index'
-                },*/
+                },
                 legend: {
                     display: true,
                     position: "bottom"
@@ -509,8 +514,10 @@
 
             }
         });
+        dataset_arr = [];
+        time_arr_arr = [];
     }
-
+    
 
 
 </script>

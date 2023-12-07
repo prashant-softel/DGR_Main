@@ -458,8 +458,11 @@
             yaxisdata.push({ id: 'B', type: 'linear', position: 'right' });
         }
 
-        console.log(yaxisdata);
-        new Chart(document.getElementById("line-chart"), {
+        if (window.myCharts != undefined) {
+            window.myCharts.destroy();
+        }
+
+        window.myCharts =  new Chart(document.getElementById("line-chart"), {
             type: 'line',
             data: {
                 labels: time_arr_arr,
@@ -488,6 +491,8 @@
 
             }
         });
+        dataset_arr = [];
+        time_arr_arr = [];
     }
 
 </script>

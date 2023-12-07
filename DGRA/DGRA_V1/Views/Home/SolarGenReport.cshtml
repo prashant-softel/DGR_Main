@@ -1045,175 +1045,218 @@
 
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
-
-                        const row = document.createElement("tr");
-
-                        const cell = document.createElement("td");
-                        cell.textContent = formattedDate;
-                        row.appendChild(cell);
-
-                        const cell2 = document.createElement("td");
-                        cell2.textContent = result[i].country;
-                        row.appendChild(cell2);
-
-                        const cell3 = document.createElement("td");
-                        cell3.textContent = result[i].state;
-                        row.appendChild(cell3);
-
-                        const cell4 = document.createElement("td");
-                        cell4.textContent = result[i].spv;
-                        row.appendChild(cell4);
-
-                        const cell5 = document.createElement("td");
-                        cell5.textContent = result[i].site;
-                        row.appendChild(cell5);
-
-                        const cell6 = document.createElement("td");
-                        cell6.textContent = result[i].inverter;
-                        row.appendChild(cell6);
-
-                        const cell7 = document.createElement("td");
-                        cell7.textContent = result[i].dc_capacity.toFixed(2);
-                        row.appendChild(cell7);
-
-                        const cell8 = document.createElement("td");
-                        cell8.textContent = result[i].ac_capacity.toFixed(2);
-                        row.appendChild(cell8);
-
-                        const cell39 = document.createElement("td");
-                        cell39.textContent = result[i].ghi.toFixed(2);
-                        row.appendChild(cell39);
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
+                        tbl += '<td class="text-right">' + result[i].dc_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].smh_bd.toFixed(2) + '</td>';
 
 
-                        const cell9 = document.createElement("td");
-                        cell9.textContent = result[i].poa.toFixed(2);
-                        row.appendChild(cell9);
+                        tbl += '<td class="text-right">' + result[i].oh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_bd_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh.toFixed(2) + '</td>';
 
-                        const cell10 = document.createElement("td");
-                        cell10.textContent = result[i].expected_kwh.toFixed(2);
-                        row.appendChild(cell10);
 
-                        const cell11 = document.createElement("td");
-                        cell11.textContent = result[i].inv_kwh.toFixed(2);
-                        row.appendChild(cell11);
+                        tbl += '<td class="text-right">' + result[i].smh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].oh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
+                        tbl += '</tr>';
+                       // const row = document.createElement("tr");
 
-                        const cell12 = document.createElement("td");
-                        cell12.textContent = result[i].plant_kwh.toFixed(2);
-                        row.appendChild(cell12);
+                        //const cell = document.createElement("td");
+                        //cell.textContent = formattedDate;
+                        //row.appendChild(cell);
 
-                        const cell13 = document.createElement("td");
-                        cell13.textContent = result[i].inv_pr.toFixed(2);
-                        row.appendChild(cell13);
+                       // const cell2 = document.createElement("td");
+                        //cell2.textContent = result[i].country;
+                       // row.appendChild(cell2);
 
-                        const cell14 = document.createElement("td");
-                        cell14.textContent = result[i].plant_pr.toFixed(2);
-                        row.appendChild(cell14);
+                        //const cell3 = document.createElement("td");
+                        //cell3.textContent = result[i].state;
+                        //row.appendChild(cell3);
 
-                        const cell15 = document.createElement("td");
-                        cell15.textContent = result[i].inv_plf.toFixed(2);
-                        row.appendChild(cell15);
+                        //const cell4 = document.createElement("td");
+                        //cell4.textContent = result[i].spv;
+                        //row.appendChild(cell4);
 
-                        const cell16 = document.createElement("td");
-                        cell16.textContent = result[i].plant_plf.toFixed(2);
-                        row.appendChild(cell16);
+                       // const cell5 = document.createElement("td");
+                        //cell5.textContent = result[i].site;
+                        //row.appendChild(cell5);
 
-                        const cell17 = document.createElement("td");
-                        cell17.textContent = result[i].ma_actual.toFixed(2);
-                        row.appendChild(cell17);
+                        //const cell6 = document.createElement("td");
+                        //cell6.textContent = result[i].inverter;
+                        //row.appendChild(cell6);
 
-                        //const cell18 = document.createElement("td");
+                       // const cell7 = document.createElement("td");
+                       // cell7.textContent = result[i].dc_capacity.toFixed(2);
+                        //row.appendChild(cell7);
+
+                        //const cell8 = document.createElement("td");
+                        //cell8.textContent = result[i].ac_capacity.toFixed(2);
+                        //row.appendChild(cell8);
+
+                        //const cell39 = document.createElement("td");
+                        //cell39.textContent = result[i].ghi.toFixed(2);
+                       // row.appendChild(cell39);
+
+
+                       // const cell9 = document.createElement("td");
+                        //cell9.textContent = result[i].poa.toFixed(2);
+                       // row.appendChild(cell9);
+
+                       // const cell10 = document.createElement("td");
+                        //cell10.textContent = result[i].expected_kwh.toFixed(2);
+                        //row.appendChild(cell10);
+
+                       // const cell11 = document.createElement("td");
+                        //cell11.textContent = result[i].inv_kwh.toFixed(2);
+                       //row.appendChild(cell11);
+
+                        //const cell12 = document.createElement("td");
+                        //cell12.textContent = result[i].plant_kwh.toFixed(2);
+                       // row.appendChild(cell12);
+
+                        //const cell13 = document.createElement("td");
+                        //cell13.textContent = result[i].inv_pr.toFixed(2);
+                        //row.appendChild(cell13);
+
+                       // const cell14 = document.createElement("td");
+                        //cell14.textContent = result[i].plant_pr.toFixed(2);
+                        //row.appendChild(cell14);
+
+                        //const cell15 = document.createElement("td");
+                        //cell15.textContent = result[i].inv_plf.toFixed(2);
+                       // row.appendChild(cell15);
+
+                        //const cell16 = document.createElement("td");
+                        //cell16.textContent = result[i].plant_plf.toFixed(2);
+                       // row.appendChild(cell16);
+
+                        //const cell17 = document.createElement("td");
+                       // cell17.textContent = result[i].ma_actual.toFixed(2);
+                       // row.appendChild(cell17);
+
+                        //const cell18 = document.createElement("td"); not use
                        // cell18.textContent = result[i].ma_contractual.toFixed(2);
                         //row.appendChild(cell18);
 
-                        const cell19 = document.createElement("td");
-                        cell19.textContent = result[i].iga.toFixed(2);
-                        row.appendChild(cell19);
+                        //const cell19 = document.createElement("td");
+                       // cell19.textContent = result[i].iga.toFixed(2);
+                        //row.appendChild(cell19);
 
-                        const cell20 = document.createElement("td");
-                        cell20.textContent = result[i].ega.toFixed(2);
-                        row.appendChild(cell20);
+                       // const cell20 = document.createElement("td");
+                        //cell20.textContent = result[i].ega.toFixed(2);
+                       // row.appendChild(cell20);
 
-                        const cell21 = document.createElement("td");
-                        cell21.textContent = result[i].ega_b.toFixed(2);
-                        row.appendChild(cell21);
+                       // const cell21 = document.createElement("td");
+                       // cell21.textContent = result[i].ega_b.toFixed(2);
+                        //row.appendChild(cell21);
 
-                        const cell22 = document.createElement("td");
-                        cell22.textContent = result[i].ega_c.toFixed(2);
-                        row.appendChild(cell22);
+                       // const cell22 = document.createElement("td");
+                        //cell22.textContent = result[i].ega_c.toFixed(2);
+                        //row.appendChild(cell22);
 
-                        const cell23 = document.createElement("td");
-                        cell23.textContent = result[i].prod_hrs.toFixed(2);
-                        row.appendChild(cell23);
+                        //const cell23 = document.createElement("td");
+                        //cell23.textContent = result[i].prod_hrs.toFixed(2);
+                        //row.appendChild(cell23);
 
-                        const cell24 = document.createElement("td");
-                        cell24.textContent = result[i].usmh_bs.toFixed(2);
-                        row.appendChild(cell24);
+                        //const cell24 = document.createElement("td");
+                        //cell24.textContent = result[i].usmh_bs.toFixed(2);
+                        //row.appendChild(cell24);
 
-                        const cell25 = document.createElement("td");
-                        cell25.textContent = result[i].smh_bd.toFixed(2);
-                        row.appendChild(cell25);
+                        //const cell25 = document.createElement("td");
+                        //cell25.textContent = result[i].smh_bd.toFixed(2);
+                        //row.appendChild(cell25);
 
-                        const cell26 = document.createElement("td");
-                        cell26.textContent = result[i].oh_bd.toFixed(2);
-                        row.appendChild(cell26);
+                        //const cell26 = document.createElement("td");
+                        //cell26.textContent = result[i].oh_bd.toFixed(2);
+                       // row.appendChild(cell26);
 
-                        const cell27 = document.createElement("td");
-                        cell27.textContent = result[i].igbdh_bd.toFixed(2);
-                        row.appendChild(cell27);
+                        //const cell27 = document.createElement("td");
+                       // cell27.textContent = result[i].igbdh_bd.toFixed(2);
+                       // row.appendChild(cell27);
 
-                        const cell28 = document.createElement("td");
-                        cell28.textContent = result[i].egbdh_bd.toFixed(2);
-                        row.appendChild(cell28);
+                        //const cell28 = document.createElement("td");
+                       // cell28.textContent = result[i].egbdh_bd.toFixed(2);
+                        //row.appendChild(cell28);
 
-                        const cell29 = document.createElement("td");
-                        cell29.textContent = result[i].load_shedding_bd;
-                        row.appendChild(cell29);
+                       // const cell29 = document.createElement("td");
+                       // cell29.textContent = result[i].load_shedding_bd;
+                       // row.appendChild(cell29);
 
-                        const cell30 = document.createElement("td");
-                        cell30.textContent = result[i].total_bd_hrs.toFixed(2);
-                        row.appendChild(cell30);
+                       // const cell30 = document.createElement("td");
+                        //cell30.textContent = result[i].total_bd_hrs.toFixed(2);
+                       // row.appendChild(cell30);
 
-                        const cell31 = document.createElement("td");
-                        cell31.textContent = result[i].usmh.toFixed(2);
-                        row.appendChild(cell31);
+                       // const cell31 = document.createElement("td");
+                       // cell31.textContent = result[i].usmh.toFixed(2);
+                       // row.appendChild(cell31);
 
-                        const cell32 = document.createElement("td");
-                        cell32.textContent = result[i].smh.toFixed(2);
-                        row.appendChild(cell32);
+                        //const cell32 = document.createElement("td");
+                        //cell32.textContent = result[i].smh.toFixed(2);
+                        //row.appendChild(cell32);
 
-                        const cell33 = document.createElement("td");
-                        cell33.textContent = result[i].oh.toFixed(2);
-                        row.appendChild(cell33);
+                       // const cell33 = document.createElement("td");
+                       // cell33.textContent = result[i].oh.toFixed(2);
+                       // row.appendChild(cell33);
 
-                        const cell34 = document.createElement("td");
-                        cell34.textContent = result[i].igbdh.toFixed(2);
-                        row.appendChild(cell34);
+                       // const cell34 = document.createElement("td");
+                       // cell34.textContent = result[i].igbdh.toFixed(2);
+                      //  row.appendChild(cell34);
 
-                        const cell35 = document.createElement("td");
-                        cell35.textContent = result[i].egbdh.toFixed(2);
-                        row.appendChild(cell35);
+                       // const cell35 = document.createElement("td");
+                       // cell35.textContent = result[i].egbdh.toFixed(2);
+                       // row.appendChild(cell35);
 
-                        const cell36 = document.createElement("td");
-                        cell36.textContent = result[i].load_shedding.toFixed(2);
-                        row.appendChild(cell36);
+                        //const cell36 = document.createElement("td");
+                       //cell36.textContent = result[i].load_shedding.toFixed(2);
+                        //row.appendChild(cell36);
 
-                        const cell37 = document.createElement("td");
-                        cell37.textContent = result[i].lull_hrs.toFixed(2);
-                        row.appendChild(cell37);
+                       //const cell37 = document.createElement("td");
+                        //cell37.textContent = result[i].lull_hrs.toFixed(2);
+                       // row.appendChild(cell37);
 
-                        const cell38 = document.createElement("td");
-                        cell38.textContent = result[i].total_losses.toFixed(2);
-                        row.appendChild(cell38);
+                      //  const cell38 = document.createElement("td");
+                       /// cell38.textContent = result[i].total_losses.toFixed(2);
+                      //  row.appendChild(cell38);
 
 
 
-                        table.appendChild(row);
+                        //table.appendChild(row);
 
-                        if (i == (result.length - 1)) {
-                            console.log("last obj no.:" + i);
-                            console.log("last obj :" + JSON.stringify(result[i]))
-                                ;
-                        }
+                       // if (i == (result.length - 1)) {
+                           // console.log("last obj no.:" + i);
+                           // console.log("last obj :" + JSON.stringify(result[i]))
+                            //    ;
+                       // }
 
                     }
                 }
@@ -1222,12 +1265,12 @@
 
                 }
 
-                //tbl += '</table>';
-                //$("#reportsDaily").html(tbl);
+                tbl += '</table>';
+               $("#reportsDaily").html(tbl);
 
-                const parentElement = document.getElementById("reportsDaily");
-                var tb = '</table>';
-                parentElement.innerHTML += tb; // Append the new HTML content
+              // const parentElement = document.getElementById("reportsDaily");
+               // var tbl += '</table>';
+              //  parentElement.innerHTML += tbl; // Append the new HTML content
 
 
                     $('#example1').DataTable({
@@ -1244,7 +1287,7 @@
                         info: true,
                         autoWidth: true,
                         fixedColumns: {
-                            left: 5
+                            left: 8
                         },
                         pageLength: 50,
                         "order": [[4, "asc"]],
@@ -1488,7 +1531,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 5
+                        left: 7
                     },
                     pageLength: 50,
                     "order": [[1, "asc"]],
@@ -1780,7 +1823,7 @@
                     autoWidth: true,
                     pageLength: 50,
                     fixedColumns: {
-                        left: 5
+                        left: 9
                     },
                     "order": [[5, "asc"]],
                     buttons: [
@@ -1830,7 +1873,7 @@
                     }
                 });
                 //$('#example2').removeClass('dataTable');
-                $('#example2').wrap("<div class='scrolledTable'></div>");
+                //$('#example2').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loaderM").style.display = 'none';
             }
         });
@@ -2042,7 +2085,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 5
+                        left: 8
                     },
                     pageLength: 50,
                     "order": [[5, "asc"]],
@@ -2316,7 +2359,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 5
+                        left: 8
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],
@@ -2609,7 +2652,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 5
+                        left: 7
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],
