@@ -5506,7 +5506,8 @@ namespace DGRA_V1.Areas.admin.Controllers
         public string validateAndCleanSpChar(long rowNumber, string colName, string sActionTaken)
         {
             string retValue = "";
-            List<char> charsToRemove = new List<char>() { '\'', '/', '\\', ')', '(' };
+            //List<char> charsToRemove = new List<char>() { '\'', '/', '\\', ')', '(' };
+            List<char> charsToRemove = new List<char>() { '\'', '/', '\\'};
             retValue = Filter(rowNumber, colName, sActionTaken, charsToRemove);
             return retValue;
         }
@@ -5639,7 +5640,10 @@ namespace DGRA_V1.Areas.admin.Controllers
                             addUnit.module_WP = Convert.ToInt32(dr["Module WP (Watt)"]);
                             errorFlag.Add(numericNullValidation(addUnit.module_WP, "Module WP (Watt)", rowNumber));
 
-                            addUnit.reason = Convert.ToString(dr["Remark"]);
+                            //addUnit.reason = Convert.ToString(dr["Remark"]);
+                            string remarks = Convert.ToString(dr["Remark"]);
+                            remarks = validateAndCleanSpChar(rowNumber, "Remark", remarks);
+                            addUnit.reason = remarks;
                             errorFlag.Clear();
                             if (!(skipRow))
                             {
