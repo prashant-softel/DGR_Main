@@ -47,11 +47,11 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <section class="content">
-        <div class="card">
+        <div class="card vh-100">
             <div class="card-header">
                 <h3 class="card-title text-center">Wind Operational Performance</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body d-flex flex-column">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="input-group row">
@@ -72,16 +72,6 @@
                             </div>
                         </div>
                     </div>
-                    @*<div class="col-md-3">
-            <div class="form-group">
-                <div class="row">
-                    <label class="col-sm-3 col-form-label text-left">SPV : </label>
-                    <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
-                    </select>
-                </div>
-            </div>
-        </div>*@
-
                     <div class="col-sm-3">
                         <div class="form-group">
                             <div class="row">
@@ -90,53 +80,52 @@
                             </div>
                         </div>
                     </div>
-
-                    @*<div class="col-md-3">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-left">Site : </label>
-                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple>
-                                </select>
-                            </div>
-                        </div>
-                    </div>*@
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
                             <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
-                            <!--<button type="button" class="btn btn-block btn-danger" onclick="clearRecords()" style="margin-left:-5rem; width: 5rem;">Clear</button>-->
                         </div>
                     </div>
                     <div class="col-md-1"></div>
                 </div>
-                <hr>
-                <div class="col-sm-12">
-                    <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center; height: 400px;">
-                        <h2 id="dataNotPresent" style="display: none; color: #007bff;"></h2>
-                    </div>
-                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 500px;"></div>
-                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
-                </div>
-                <div class="col-sm-12">
-                    <div id="WaterfallYearly" style="overflow-x: auto; width: 100%; height: 400px;"></div>
-                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
-                </div>
-                <hr>
-                @*<div class="row" id="viewTableBtn" style="display: none">
-                    <div class="col-sm-2">
-                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
-                            <button type="button" class="btn btn-block btn-primary" onclick="getTableData()" style="margin-left:0rem; width: 10rem;">View Table</button>
+                <hr />
+                <div class="row">
+                        <div class="col-md-9">
+                            <!-- Left Column of charts -->
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center;">
+                                        <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
+                                    </div>
+                                    <div style="position: relative;">
+                                        <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
+                                        <div id="Waterfall" style="width: 100%; z-index: 1;"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div style="position: relative;">
+                                        <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
+                                        <div id="WaterfallYearly" style="width: 100%; z-index: 1;"></div>
+                                    </div>
+                                    @*<div class="card-title text-center"> Yearly </div>
+                        <div id="WaterfallYearly" style="width: 100%;"></div>*@
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row" id="CloseViewTableBtn" style="display: none">
-                    <div class="col-sm-2">
-                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
-                            <button type="button" class="btn btn-block btn-danger" onclick="closeTableData()" style="margin-left:0rem; width: 10rem;">Close Table</button>
+
+                        <div id="commentsSection" style="display: none; margin-top: 40px" class="col-md-3">
+                            <!-- Right column of comments -->
+                            <div class="card h-100 w-100">
+                                <div class="card-header">
+                                    <h3 class="card-title text-center">Comments</h3>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Your Commments will be displayed here.</h6>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
                 </div>
-                <br />
-                <div id="DailyGenView" style="overflow-x: auto;" class="DailyGenView"></div>*@
+                
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
         </div>
@@ -371,6 +360,7 @@
 
             success: function (result, status, xhr) {
                 console.log(result);
+                document.getElementById("commentsSection").style.display = "flex";
                 //document.getElementById("loader").style.display = 'none';
                 var CloseBtnStatus = "";
                 var isMonthlyDataPresent = 0;
@@ -725,9 +715,11 @@
             }
         ];
         layout = {
-            title: {
-                text: "Monthly"
-            },
+            //title: {
+            //    text: "Monthly",
+            //    dy: 2,
+            //    y: "110",
+            //},
             xaxis: {
                 type: "category",
                 fixedrange: true
@@ -738,10 +730,33 @@
                 range: [0, Math.max(...data[0].y) * 1.1]
             },
             autosize: true,
-            showlegend: true
+            showlegend: true,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 650,
+            height: 450,
+
         };
-        Plotly.newPlot('Waterfall', data, layout);
-        //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
+        var config = {
+            displayModeBar: false,
+            displaylogo: false,
+            infolayer: false,
+        };
+
+        Plotly.newPlot('Waterfall', data, layout, config);
+        //var style = document.createElement('style');
+        //style.textContent = '.infolayer { display: none !important; }';
+        //document.head.appendChild(style);
+        //var customCSS = `.plot-container .main-svg text.title-text { y: 110; }`;
+        //var style = document.createElement('style');
+        //style.textContent = customCSS;
+        //document.head.appendChild(style);
+
+        document.getElementById("monthTitle").style.display = "block";
+        /*Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });*/
 
     }
 
@@ -749,9 +764,13 @@
         console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
         Plotly.purge('WaterfallYearly');
         let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
-        total_expected = Number(total_expected) - Number(total_lineloss);
-        total_egbd = Number(total_egbd) + Number(loadShedding);
+        total_bd = Number(total_bd).toFixed(4);
 
+        total_expected = Number(total_expected) - Number(total_lineloss);
+        total_expected = Number(total_expected).toFixed(4);
+
+        total_egbd = Number(total_egbd) + Number(loadShedding);
+        total_egbd = total_egbd.toFixed(4);
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
         let t_bd = Number(total_bd).toFixed(2);
@@ -843,9 +862,10 @@
             }
         ];
         layout = {
-            title: {
-                text: "Yearly"
-            },
+            //title: {
+            //    text: "Yearly",
+            //    margin: { t: 0, b: 0 }
+            //},
             xaxis: {
                 type: "category",
                 fixedrange: true
@@ -856,10 +876,22 @@
                 range: [0, Math.max(...data[0].y) * 1.1]
             },
             autosize: true,
-            showlegend: true
+            showlegend: true,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 650,
+            height: 450,
         };
-        Plotly.newPlot('WaterfallYearly', data, layout);
+        var config = {
+            displayModeBar: false
+        };
+        Plotly.newPlot('WaterfallYearly', data, layout, config);
         document.getElementById("loader").style.display = 'none';
+        document.getElementById("yearTitle").style.display = 'block';
+        
         //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
 
     }
@@ -874,143 +906,6 @@
         // clear the DataTable
         dataTable.clear().draw();
     }
-
-    @* function getTableData() {
-
-        let site_id = "";
-        var site = $('select#site option:selected').each(function () {
-            site_id += $(this).val() + ",";
-        });
-        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        if (site_id == "" || site_id == null) {
-            alert("Please select site ");
-            return false;
-        }
-        document.getElementById("loader").style.display = 'flex';
-        console.log(site_id);
-        var daterange = $('#daterange').val();
-        var arr1 = new Array();
-        arr1 = daterange.split("-");
-        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-
-
-
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("GetWindTMLData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
-            contentType: "application/json; charset=utf-8",
-            datatype: "JSON",
-
-            success: function (result, status, xhr) {
-                //console.log(result);
-                console.log("GetWindTmlData fetched successfully.");
-                document.getElementById("loader").style.display = 'none';
-                document.getElementById("viewTableBtn").style.display = 'none';
-                document.getElementById("CloseViewTableBtn").style.display = 'flex';
-                document.getElementById("DailyGenView").style.display = 'flex';
-                //calling function of getting data for chart.
-
-                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
-                tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th  style="width: 10%;">Site</th>';
-                tbl += '<th style="width: 7%;">Date</th>';
-                tbl += '<th>WTG</th>';
-                tbl += '<th>From Time</th>';
-                tbl += '<th>To Time</th>';
-                tbl += '<th>Avg Active Power</th>';
-                tbl += '<th>Avg Wind Speed</th>';
-                tbl += '<th>Restructive WTG</th>';
-                tbl += '<th style="width: 10%;">PLC Max</th>';
-                tbl += '<th style="width: 10%;">PLC Min</th>';
-                tbl += '<th>PLC State Code</th>';
-                tbl += '<th>Status</th>';
-                tbl += '<th>Reconstructed Windspeed</th>';
-                tbl += '<th>Expected Power</th>';
-                tbl += '<th>Deviation kW</th>';
-                tbl += '<th>Loss kWh</th>';
-                tbl += '<th>Manual Breakdown </th>';
-                tbl += '<th>All Breakdown</th>';
-                tbl += '</tr></thead>';
-
-                if (result.length > 0) {
-                    for (var i = 0; i < result.length; i++) {
-                        var status = "";
-                        if (result[i].status_code === 1) {
-                            status = "Missing";
-                        }
-                        if (result[i].status_code === 0) {
-                            status = "Available";
-                        }
-                        tbl += '<tr>';
-                        tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].date + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].wtGs + '</td>';
-                        tbl += '<td  class="text-center">' + toHoursAndMinutes(result[i].from_time.totalSeconds) + '</td>';
-                        tbl += '<td class="text-center">' + toHoursAndMinutes(result[i].to_time.totalSeconds) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].avg_active_power.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].avg_wind_speed.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].restructive_WTG + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_max + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_min + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plc_state_code + '</td>';
-                        tbl += '<td class="text-center">' + status + '</td>';
-                        tbl += '<td class="text-center">' + result[i].recon_wind_speed.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].exp_power_kw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].deviation_kw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].loss_kw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].manual_bd + '</td>';
-                        tbl += '<td class="text-center">' + result[i].all_bd + '</td>';
-                        tbl += '</tr>';
-                    }
-                }
-                else {
-
-                    // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
-                }
-                tbl += '</table>';
-                // $("#DailyGenView").html(tbl);
-                $("#DailyGenView").html("").html(tbl);
-                $('#example1').DataTable({
-                    dom: 'Bfrtip',
-                    responsive: false,
-                    lengthChange: false,
-                    autoWidth: true,
-                    paging: true,
-                    lengthChange: false,
-                    searching: true,
-                    ordering: true,
-                    info: true,
-                    autoWidth: true,
-                    responsive: false,
-                    pageLength: 50,
-                    buttons: [
-                        {
-                            extend: 'excel',
-                            title: 'Wind Expected Vs Actual',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        {
-                            extend: 'csv',
-                            title: 'Wind Expected Vs Actual',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        'colvis'
-                    ]
-                });
-                $(".dt-buttons").addClass('btn-group flex-wrap');
-                $(".dt-buttons > button").addClass('btn btn-secondary');
-                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-                $('#example1').wrap("<div class='scrolledTable'></div>");
-                //document.getElementById("wms_comparision").style.display = 'block';
-                //$('#example1').removeClass('dataTable');
-            }
-        });
-    } *@
 
 
 </script>
