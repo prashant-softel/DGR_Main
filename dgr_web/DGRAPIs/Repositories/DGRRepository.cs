@@ -34,6 +34,12 @@ namespace DGRAPIs.Repositories
         private readonly DatabaseProvider databaseProvider;
         private MYSQLDBHelper getDB;
         public int backend = 1;
+        public int daily = 1;
+        public int weekly = 2;
+        public int solar = 1;
+        public int wind = 2;
+
+
         public const string MA_Actual = "MA_Actual";
         public const string MA_Contractual = "MA_Contractual";
         public const string Internal_Grid = "Internal_Grid";
@@ -3693,28 +3699,30 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             //MAILING FUNCTIONALITY
 
             string info = ("MailSend function called from repository for "+ fname);
+
             int site_type = 0;
             if (fname.Contains("Solar"))
             {
-                site_type = 2;
+                site_type = solar;
             }
             if (fname.Contains("Wind"))
             {
-                site_type = 1;
+                site_type = wind;
             }
-            int mailSentRes = 0;            
+            int mailSentRes = 0;
             try
             {
-                int mailSent = await checkMaillog(2, site_type);
+                mailSentRes = await checkMaillog(weekly, site_type);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 string msg1 = "Exception while function call of weekly email, due to :" + e.ToString();
                 PPT_ErrorLog(msg1);
             }
 
-            //LogInfo(0, 0, 0, functionName, info, backend);
-            if (mailSentRes == 1)
+            //await LogInfo(0, 0, 0, functionName, info, backend);
+
+            if (mailSentRes == 0)
             {
                 MailSettings _settings = new MailSettings();
                 var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -3740,14 +3748,14 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 string qry = "";
                 if (fname.Contains("Solar"))
                 {
-                    //int val = await checkMaillog(2, 1);
-                    //if (val == 1)
-                    //{
-                    //    PPT_InformationLog("MailSend function : Solar Weekly Mail already sent.");
-                    //    return 1;
-                    //}
+                //int val = await checkMaillog(weekly, solar);
+                //if (val == 1)
+                //{
+                //    PPT_InformationLog("MailSend function : Solar Weekly Mail already sent.");
+                //    return 1;
+                //}
 
-                    PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains soalr " + fname);
+                PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains soalr " + fname);
                     qry = "select useremail from login where To_Weekly_Solar = 1;";
                     try
                     {
@@ -3789,14 +3797,14 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 }
                 else
                 {
-                    //int val = await checkMaillog(2, 2);
-                    //if (val == 1)
-                    //{
-                    //    PPT_InformationLog("MailSend function : Wind Weekly Mail already sent.");
-                    //    return 1;
-                    //}
-
-                    PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains wind");
+                 //int val = await checkMaillog(weekly,wind);
+                 //if (val == 1)
+                 //{
+                 //   PPT_InformationLog("MailSend function : Wind Weekly Mail already sent.");
+                 //   return 1;
+                 //}
+ 
+                 PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains wind");
                     qry = "select useremail from login where To_Weekly_Wind = 1;";
                     try
                     {
@@ -3915,7 +3923,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             {
                 return 1;
             }
-            
+
         }
         internal async Task<int> PPTCreate()
         {
@@ -11419,11 +11427,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             string set_time = MyConfig.GetValue<string>("Timer:DailyReportTime");
 
-            if (report_type == 2 && site_type == 1)
+            if (report_type == weekly && site_type == wind)
             {
                 set_time = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
             }
-            if (report_type == 2 && site_type == 2)
+            if (report_type == weekly && site_type == solar)
             {
                 set_time = MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar");
             }
@@ -11431,7 +11439,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             string checkQry = $"select * from mail_send_log where report_type={report_type} and site_type={site_type} and status=1 and set_time = '{set_time}' and DATE(timestamp) = '{DateTime.Today.ToString("yyyy-MM-dd")}' ";
 
-            DataTable dt = await Context.FetchData(checkQry).ConfigureAwait(false);
+            DataTable  dt = await Context.FetchData(checkQry).ConfigureAwait(false);
 
             if (dt.Rows.Count == 0)
             {
@@ -11474,7 +11482,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry = "";
             if (reportTitle.Contains("Solar"))
             {
-                int val = await checkMaillog(1, 1);
+                int val = await checkMaillog(daily,solar);
                 if(val == 1)
                 {
                     PPT_InformationLog("MailDailySend function : Solar Daily Mail already sent.");
@@ -11508,7 +11516,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             else
             {
-                int val = await checkMaillog(1, 2);
+                int val = await checkMaillog(daily,wind);
                 if (val == 1)
                 {
                     PPT_InformationLog("MailDailySend function : Wind Daily Mail already sent.");
