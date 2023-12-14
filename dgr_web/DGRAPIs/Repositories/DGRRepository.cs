@@ -15914,5 +15914,143 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             _HeatMapData.Add(finalData);
             return _HeatMapData;
         }
+
+        //Fetch Operational Performance Comments Monthly.
+        internal async Task<List<OPComments>> GetOPCommentsMonthly(string site, string month_no, int year, string spv_id, int siteType)
+        {
+            string functionName = "GetOPComments";
+            //site_type = 1 Solar, 2 : Wind 
+            string fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv_id, op.BD_type, op.isMonthly, op.comment, sm.site, sm.spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.site_type = {siteType} AND op.isDeleted = 1 AND op.isMonthly = 0 AND op.site = IN({site}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type;";
+            List<OPComments> _CommentsData = new List<OPComments>();
+            try
+            {
+                _CommentsData = await Context.GetData<OPComments>(fetch_qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception caught while fetching data from OPComments table due to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            
+            return _CommentsData;
+        }
+
+        //Fetch Operational Performance Comments Yearly.
+        internal async Task<List<OPComments>> GetOPCommentsYearly(string site, string month_no, int year, string spv_id, int siteType)
+        {
+            string functionName = "GetOPComments";
+            //site_type = 1 Solar, 2 : Wind 
+            string fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv_id, op.BD_type, op.isMonthly, op.comment, sm.site, sm.spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.site_type = {siteType} AND op.isDeleted = 1 AND op.isMonthly = 1 AND op.site = IN({site}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type;";
+            List<OPComments> _CommentsData = new List<OPComments>();
+            try
+            {
+                _CommentsData = await Context.GetData<OPComments>(fetch_qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception caught while fetching data from OPComments table due to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            return _CommentsData;
+        }
+        internal async Task<int> OPCommentsInsert(List<OPComments> set)
+        {
+            string functionName = "OPCommentsInsert";
+            int result = 0;
+            int val = 0;
+            if (set.Count > 0)
+            {
+                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv_id, site_id, BD_type, isDeleted, isMonthly, comment, added_by, added_at, updated_by, updated_at) VALUES ";
+                string insert_values = "";
+                //HashSet<string> site_ids = new HashSet<string>();
+                //HashSet<string> month_no = new HashSet<string>();
+                //HashSet<string> year = new HashSet<string>();
+
+                foreach (var _element in set)
+                {
+                    insert_values += $"({_element.month},{_element.month_no},{_element.year},{_element.type},{_element.spv_id},{_element.site_id},{_element.BD_type},1,{_element.isMonthly},{_element.comment},{_element.added_by},{_element.added_at},{_element.updated_by},{_element.updated_at}),";
+                    //site_ids.Add(Convert.ToString(_element.site_id));
+                    //month_no.Add(Convert.ToString(_element.month_no));
+                    //year.Add(Convert.ToString(_element.year));
+                }
+                //try
+                //{
+                //    string delQry = "DELETE ";
+                //    result = 1;
+                //}
+                //catch (Exception e)
+                //{
+                //    string msg = "Exception while deleting data from OPComments table due to, " + e.ToString();
+                //    LogError(0, 1, 7, functionName, msg, backend);
+                //    return 0;
+                //}
+                try
+                {
+                    //Insert query.
+                    val = await Context.ExecuteNonQry<int>(insertQry.Substring(0, (insertQry.Length - 1)) + ";").ConfigureAwait(false);
+
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while inserting data into OPComments into table, due to :" + e.ToString();
+                    LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
+
+            }
+            else
+            {
+                //set is empty.
+            }
+            return result;
+        }
+        internal async Task<List<OPSPV>> OPGetSPVListForEdit(string month_no, int year, int siteType)
+        {
+            string functionName = "OPGetSPVListForEdit";
+            int result = 0;
+            List<OPSPV> spvDatafromMaster = new List<OPSPV>();
+            List<OPSPV> spvDataFromOP = new List<OPSPV>();
+            List<OPSPV> finalSPVList = new List<OPSPV>();
+
+            //get data from OP table as per filter.
+            string fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE month_no IN({month_no}) AND year IN({year}) AND siteType IN({siteType});";
+            try
+            {
+                spvDataFromOP = await Context.GetData<OPSPV>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            //Get data from master table.
+            string fetchQryMaster = $"SELECT spv AS spv FROM site_master";
+            try
+            {
+                spvDatafromMaster = await Context.GetData<OPSPV>(fetchQryMaster).ConfigureAwait(false);
+                result = 2;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if(result == 2)
+            {
+                foreach (var masterSPV in spvDatafromMaster)
+                {
+                    // Check if the spv is not present in spvDataFromOP
+                    if (!spvDataFromOP.Any(opSPV => opSPV.spv == masterSPV.spv))
+                    {
+                        finalSPVList.Add(masterSPV);
+                    }
+                }
+            }
+
+            return finalSPVList;
+        }
     }
 }
