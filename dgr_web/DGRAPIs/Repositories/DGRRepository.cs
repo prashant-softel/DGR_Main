@@ -11422,10 +11422,43 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             // return res;
             return tb;
         }
+        //internal async Task<int> checkMaillog(int report_type, int site_type)
+        //{
+        //    var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        //    string set_time = MyConfig.GetValue<string>("Timer:DailyReportTime");
+
+        //    if (report_type == weekly && site_type == wind)
+        //    {
+        //        set_time = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
+        //    }
+        //    if (report_type == weekly && site_type == solar)
+        //    {
+        //        set_time = MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar");
+        //    }
+            
+
+        //    string checkQry = $"select * from mail_send_log where report_type={report_type} and site_type={site_type} and status=1 and set_time = '{set_time}' and DATE(timestamp) = '{DateTime.Today.ToString("yyyy-MM-dd")}' ";
+
+        //    DataTable  dt = await Context.FetchData(checkQry).ConfigureAwait(false);
+
+        //    if (dt.Rows.Count == 0)
+        //    {
+        //        string qry = $"insert into mail_send_log (report_type, site_type, set_time, status) values({report_type},{site_type},'{set_time}',1)";
+        //        int val = await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
+        //        return 0;
+        //    }
+        //    else
+        //    {
+        //        return 1;
+        //    }
+            
+        //}
+
         internal async Task<int> checkMaillog(int report_type, int site_type)
         {
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             string set_time = MyConfig.GetValue<string>("Timer:DailyReportTime");
+            string ConnectionString = MyConfig.GetValue<string>("ConnectionStrings:Con");
 
             if (report_type == weekly && site_type == wind)
             {
@@ -11435,11 +11468,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 set_time = MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar");
             }
-            
+
+            MYSQLDBHelper mYSQLDB = new MYSQLDBHelper(ConnectionString);
+            if (Context == null)
+            {
+                Context = mYSQLDB;
+            }
+            //GenericRepository
 
             string checkQry = $"select * from mail_send_log where report_type={report_type} and site_type={site_type} and status=1 and set_time = '{set_time}' and DATE(timestamp) = '{DateTime.Today.ToString("yyyy-MM-dd")}' ";
 
-            DataTable  dt = await Context.FetchData(checkQry).ConfigureAwait(false);
+            DataTable dt = await Context.FetchData(checkQry).ConfigureAwait(false);
 
             if (dt.Rows.Count == 0)
             {
@@ -11451,8 +11490,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 return 1;
             }
-            
+
         }
+
         internal async Task<int> MailDailySend(string data ,string reportTitle)
         { 
             
