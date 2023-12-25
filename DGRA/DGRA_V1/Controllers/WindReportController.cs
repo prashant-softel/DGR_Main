@@ -755,5 +755,35 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
 
+
+        //DGR Version 3 functions.
+        public async Task<IActionResult> OPGetSiteListForEdit(int month_no, int year, int siteType, string siteId)
+        {
+            string line = "";
+
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPGetSiteListForEdit?month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId;
+                // var url = "http://localhost:23835/api/DGR/GetSiteList?state="+ statedata + "&spvdata="+ spvdata;
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+
+        }
     }
 }

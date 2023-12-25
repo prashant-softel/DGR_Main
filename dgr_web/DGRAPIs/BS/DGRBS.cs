@@ -200,6 +200,7 @@ namespace DGRAPIs.BS
 
         //DGR V3.
         Task<List<HeatMapData>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
+        Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId);
     }
     public class DGRBS : IDGRBS
     {
@@ -2719,6 +2720,22 @@ namespace DGRAPIs.BS
                 {
                     return await repos.GetHeatMapData(site, fromDate, toDate, isAdmin, siteType);
 
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPGetSiteListForEdit(month_no, year, siteType, siteId);
                 }
             }
             catch (Exception ex)

@@ -15934,7 +15934,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             
             return _CommentsData;
         }
-
         //Fetch Operational Performance Comments Yearly.
         internal async Task<List<OPComments>> GetOPCommentsYearly(string site, string month_no, int year, string spv_id, int siteType)
         {
@@ -15954,6 +15953,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             return _CommentsData;
         }
+        //Operational Performance Comments Insert Comment function.
         internal async Task<int> OPCommentsInsert(List<OPComments> set)
         {
             string functionName = "OPCommentsInsert";
@@ -15961,7 +15961,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int val = 0;
             if (set.Count > 0)
             {
-                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv_id, site_id, BD_type, isDeleted, isMonthly, comment, added_by, added_at, updated_by, updated_at) VALUES ";
+                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, added_at, updated_by, updated_at) VALUES ";
                 string insert_values = "";
                 //HashSet<string> site_ids = new HashSet<string>();
                 //HashSet<string> month_no = new HashSet<string>();
@@ -15969,7 +15969,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 foreach (var _element in set)
                 {
-                    insert_values += $"({_element.month},{_element.month_no},{_element.year},{_element.type},{_element.spv_id},{_element.site_id},{_element.BD_type},1,{_element.isMonthly},{_element.comment},{_element.added_by},{_element.added_at},{_element.updated_by},{_element.updated_at}),";
+                    insert_values += $"({_element.month},{_element.month_no},{_element.year},{_element.type},{_element.spv},{_element.site_id},{_element.BD_type},1,{_element.isMonthly},{_element.comment},{_element.added_by},{_element.added_at},{_element.updated_by},{_element.updated_at}),";
                     //site_ids.Add(Convert.ToString(_element.site_id));
                     //month_no.Add(Convert.ToString(_element.month_no));
                     //year.Add(Convert.ToString(_element.year));
@@ -16005,7 +16005,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return result;
         }
-        internal async Task<List<OPSPV>> OPGetSPVListForEdit(string month_no, int year, int siteType)
+        //Operational Performance Comments Get SPV function.
+        internal async Task<List<OPSPV>> OPGetSPVListForEdit(string month_no, int year, int siteType, string siteId)
         {
             string functionName = "OPGetSPVListForEdit";
             int result = 0;
@@ -16027,7 +16028,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             //Get data from master table.
-            string fetchQryMaster = $"SELECT spv AS spv FROM site_master";
+            string fetchQryMaster = $"SELECT spv AS spv FROM site_master WHERE site_master_id IN(" + siteId;
             try
             {
                 spvDatafromMaster = await Context.GetData<OPSPV>(fetchQryMaster).ConfigureAwait(false);
@@ -16051,6 +16052,85 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             return finalSPVList;
+        }
+        //Operational Performance Comments Get Site function.
+        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId)
+        {
+            string functionName = "OPGetSiteListForEdit";
+            int result = 0;
+            string filter = "ORDER BY site;";
+            if (siteId != null)
+            {
+                filter = $" WHERE site_master_id IN({siteId}) ORDER BY site;";
+            }
+
+            List<OPSite> siteDatafromMaster = new List<OPSite>();
+            List<OPSite> siteDataFromOP = new List<OPSite>();
+            List<OPSite> finalSiteList = new List<OPSite>();
+
+            //get data from OP table as per filter.
+            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND year IN({year}) AND type IN({siteType});";
+            try
+            {
+                siteDataFromOP = await Context.GetData<OPSite>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            //Get data from master table.
+            string fetchQryMaster = $"SELECT site_master_id AS site_id, site FROM site_master {filter}";
+            try
+            {
+                siteDatafromMaster = await Context.GetData<OPSite>(fetchQryMaster).ConfigureAwait(false);
+                result = 2;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if(result == 2)
+            {
+                foreach (var masterSite in siteDatafromMaster)
+                {
+                    // Check if the site is not present in siteDataFromOP
+                    if (!siteDataFromOP.Any(opSite => opSite.site_id == masterSite.site_id))
+                    {
+                        finalSiteList.Add(masterSite);
+                    }
+                }
+            }
+
+            return finalSiteList;
+        }
+        //Operational Performance Comments Edit function.
+        internal async Task<int> OPCEdit(List<OPComments> set)
+        {
+            string functionName = "OPCEdit";
+
+            int result = 0;
+            string updateQry = "";
+
+            foreach(var _upData in set)
+            {
+                updateQry += $"UPDATE OPComments SET comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = '{DateTime.Now}' WHERE type = {_upData.type} AND site_id = {_upData.site_id} AND month_no = {_upData.month_no} AND isMonthly = {_upData.isMonthly} AND BD_type = '{_upData.BD_type}';";
+            }
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = $"Exception caught while updating data into OPComments table, due to : {e.ToString()}";
+                LogError(0, 1, 7, functionName, msg, backend);
+                return result;
+            }
+            return result;
         }
     }
 }

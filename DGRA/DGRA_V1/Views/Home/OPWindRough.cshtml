@@ -4,13 +4,25 @@
 
 
 
+
+
+
+
 @using Microsoft.AspNetCore.Http;
 
 
 
 
 
+
+
+
+
 @inject IHttpContextAccessor HttpContextAccessor
+
+
+
+
 
 
 
@@ -23,12 +35,24 @@
 
 
 
+
+
+
+
 @{
     ViewData["Title"] = "OPWind";
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -39,7 +63,15 @@
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -51,7 +83,15 @@
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -116,6 +156,10 @@
 
 
 
+
+
+
+
 @*<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>*@
 <script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
 <link rel="stylesheet" href="opComments.css">
@@ -143,7 +187,7 @@
                                 </span>
                             </div>
                              @*<input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">*@
-                            <input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2023-09" style="border: 1px solid #aaa" />
+                            <input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2018-05" style="border: 1px solid #aaa" />
 
                         </div>
                     </div>
@@ -172,8 +216,54 @@
                 </div>
                 <hr />
                 <div class="row">
-                    <div class="row w-100">
+                    <div class="col-md-7">
+                        <!-- Left Column of charts -->
+                        <div class="">
+                            <div>
+                                <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center;">
+                                    <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
+                                </div>
+                                <div style="position: relative;">
+                                    <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
+                                    <div id="Waterfall" style="width: 100%; z-index: 1;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="position: relative;">
+                                    <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
+                                    <div id="WaterfallYearly" style="width: 100%; z-index: 1;"></div>
+                                </div>
+                                yyyy-MM" yyyy-MM")" value="2018-05" />
+
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 col-form-label text-right"></label>
+                                    <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 col-form-label text-right"></label>
+                                    <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                                <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;"></button>
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    <hr />
+                    <div class="row">
                         <div class="col-md-7">
+
                             <!-- Left Column of charts -->
                             <div class="">
                                 <div>
@@ -181,13 +271,13 @@
                                         <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
                                     </div>
                                     <div style="position: relative;">
-                                        <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
+                                        <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;"></div>
                                         <div id="Waterfall" style="width: 100%; z-index: 1;"></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div style="position: relative;">
-                                        <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
+                                        <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;"></div>
                                         <div id="WaterfallYearly" style="width: 100%; z-index: 1;"></div>
                                     </div>
                                      @*<div class="card-title text-center"> Yearly </div>
@@ -292,25 +382,6 @@ $("#hide").css('display', 'none');
 });
 
 });
-    //For operational performance page date selection till getmonth function.
-    var currentDate = new Date();
-    var currentYearMonth = currentDate.toISOString().slice(0, 7);
-
-    // Set the max attribute dynamically
-    document.getElementById('daterang').setAttribute('max', currentYearMonth);
-
-    function getMonthRange(yearMonth) {
-        const [year, month] = yearMonth.split('-');
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0);
-
-        // Format the dates as "dd/mm/yyyy"
-        const formattedStartDate = startDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const formattedEndDate = endDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-        // Return the formatted date range
-        return `${formattedStartDate}-${formattedEndDate}`;
-    }
 
 
 window.onload = function () {
@@ -357,10 +428,7 @@ document.getElementById("loader").style.display = 'flex';
 /*document.getElementById("CloseViewTableBtn").style.display = 'none';*/
 //document.getElementById("DailyGenView").style.display = 'none';
 console.log(site_id);
-    var dval = document.getElementById("daterang");
-    var nDval = dval.value;
-    console.log("364 line : ",nDval);
-    var daterange = getMonthRange(nDval);
+var daterange = $('#daterange').val();
 var arr1 = new Array();
 arr1 = daterange.split("-");
 var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
@@ -598,10 +666,7 @@ $.ajax({
             var data_Array1 = [];
             document.getElementById("loader").style.display = 'flex';
             //document.getElementById("viewTableBtn").style.display = 'flex';
-                var dval = document.getElementById("daterang");
-                var nDval = dval.value;
-                //console.log(nDval);
-                var daterange = getMonthRange(nDval);
+            var daterange = $('#daterange').val();
             var arr1 = new Array();
             arr1 = daterange.split("-");
             var today = new Date(arr1[0]);
@@ -1093,7 +1158,7 @@ $.ajax({
             mEdit.style.display = "none";
             mDelete.style.display = "none";
 
-                var snippet = '<h5>Monthly Add division</h5> </br> <div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
 
             $("#monthlyAdd").html("").html(snippet);
             }
@@ -1108,7 +1173,7 @@ $.ajax({
             mEdit.style.display = "block";
             mDelete.style.display = "none";
 
-            var snippet = '<h5>Monthly Edit division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
 
             $("#monthlyEdit").html("").html(snippet);
             }
@@ -1146,10 +1211,8 @@ $.ajax({
             var yEdit = document.getElementById("yearlyEdit");
             var yDelete = document.getElementById("yearlyDelete");
 
-                getSiteForAdd(true);
-                var snippet = '<h5>Yearly Add division</h5></br><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
 
-                //'<h5>Yearly Add division</h5> </br> <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div> </br>  <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
             $("#yearlyAdd").html("").html(snippet);
 
             yDisplay.style.display = "none";
@@ -1163,7 +1226,7 @@ $.ajax({
             var yEdit = document.getElementById("yearlyEdit");
             var yDelete = document.getElementById("yearlyDelete");
 
-            var snippet = '<h5>Yearly Edit division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
 
             $("#yearlyEdit").html("").html(snippet);
 
@@ -1189,84 +1252,7 @@ $.ajax({
             yDelete.style.display = "block";
 
 
-    }
-
-    function monthAddBD(){
-
-    }
-    function yearAddBD() {
-
-    }
-
-    function parseDate(dateString) {
-        const [year, month] = dateString.split('-');
-
-        if (!year || !month || isNaN(year) || isNaN(month)) {
-            // Handle invalid date string
-            return null;
-        }
-
-        const date = new Date(parseInt(year), parseInt(month) - 1); // Subtracting 1 to handle zero-based index
-
-        const monthNumber = month;
-        const shortMonthName = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
-
-        return {
-            monthNumber: monthNumber,
-            shortMonthName: shortMonthName,
-            year: year
-        };
-    }
-
-
-    function getSiteForAdd(fliterVal) {
-        var site_ids = "";
-        if (fliterVal == false) {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        let state_id = "";
-        $('select#state option:selected').each(function () {
-            state_id += $(this).val() + ",";
-        });
-        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
-
-        let spv = "";
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (state_id != "" || spv != "") {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        //month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId
-
-        var dval = document.getElementById("daterang");
-        var nDval = dval.value;
-        const dateparseRes = parseDate(nDval);
-        var month_nos = dateparseRes.monthNumber;
-        console.log(month_nos);
-        var year = dateparseRes.year;
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids,
-            contentType: "application/json; charset=utf-8",
-            datatype: "html",
-            success: function (result, status, xhr) {
-                var options = "";
-                for (var k = 0; k < result.length; k++) {
-                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
-                }
-                $("#sites").multipleSelect('destroy');
-                $("#sites").html("").html(options);
-
-                $('select#sites').multipleSelect({
-                    "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
-                    filter: true
-                });
             }
-        });
-    }
             //Function for building display comments. 1 function.
             function addComment(container, siteName, commentText) {
             var strongElement = document.createElement('strong');
@@ -1310,3 +1296,37 @@ $.ajax({
             addComment(yearlyComments, 'Gurvepalli', 'Comment 2 for section 2');
 
 </script>
+
+
+
+
+
+
+@*
+     <div class="row">
+        <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+        <div>
+            <input type="text" />
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()">
+            <i class="fas fa-plus" style="font-size: 18px;"></i>
+        </div>
+    </div>
+
+     <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div>
+
+
+
+
+
+*@

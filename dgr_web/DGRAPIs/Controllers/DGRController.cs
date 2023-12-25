@@ -2801,6 +2801,24 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("OPGetSiteListForEdit")]
+        [HttpGet]
+        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, siteId);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
         #endregion
     }
 }

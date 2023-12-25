@@ -32,4 +32,9 @@ namespace DGRAPIs.Models
         public int spv_id { get; set; }
         public string spv { get; set; }
     }
+    public class OPSite
+    {
+        public int site_id { get; set; }
+        public string site { get; set; }
+    }
 }
