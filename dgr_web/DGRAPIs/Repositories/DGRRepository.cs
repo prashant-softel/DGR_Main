@@ -3199,29 +3199,53 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             return await Context.GetData<WindPerformanceReports>(strPerformanceQuery).ConfigureAwait(false);
         }*/
-        internal async Task<List<WindPerformanceReports>> GetWindPerformanceReportSiteWise(string fy, string fromDate, string todate,string site)
+        internal async Task<List<WindPerformanceReports>> GetWindPerformanceReportSiteWise(string fy, string fromDate, string todate,string site,string spv)
         {
+            // int chkfilter = 0;
+            string filtersite = "";
+            string spvsiteList = "";
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
+              
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for (int i = 0; i < spspv.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
 
-
-
-
-            /*  string qry = @" select site,
-  (select total_mw from site_master where site=t1.site)as total_mw, 
-  (select (sum(kwh)*1000000)as tarkwh from daily_target_kpi
-   where site=t1.site and (date >= '" + fromDate + "'  and date<= '" + todate + "') )as tar_kwh ,(SELECT sum(kwh)as tarkwh FROM daily_target_kpi where fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "') and site=t1.site)as tar_kwh_mu,  (sum(kwh)-(sum(kwh)*((select  replace(line_loss,'%','')as line_loss  from monthly_uploading_line_losses where fy='" + fy + "' and month=DATE_FORMAT(t1.date, '%b') and site=t1.site order by monthly_uploading_line_losses_id desc limit 1)/100))) as act_jmr_kwh,  (sum(kwh)-(sum(kwh)*((select  replace(line_loss,'%','')as line_loss  from monthly_uploading_line_losses where fy='" + fy + "' and month=DATE_FORMAT(t1.date, '%b')  and site=t1.site order by monthly_uploading_line_losses_id desc limit 1)/100)))/1000000 as act_jmr_kwh_mu, (SELECT total_tarrif FROM site_master where site=t1.site)as total_tarrif,  (select (sum(wind_speed)/count(*)) as tarwind from daily_target_kpi t2  where  site=t1.site and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_wind, (sum(wind_speed)/count(*))as act_Wind, (SELECT (sum(plf)/count(*)) FROM daily_target_kpi where site=t1.site  and fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_plf, (sum(plf)/count(*))as act_plf,  (SELECT (sum(ma)/count(*)) FROM daily_target_kpi where site=t1.site  and fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_ma, (sum(ma_actual)/count(*)) as act_ma,  (SELECT (sum(iga)/count(*)) FROM daily_target_kpi where site=t1.site  and fy= '" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_iga, (sum(iga)/count(*)) as act_iga,   (SELECT (sum(ega)/count(*)) FROM daily_target_kpi where site=t1.site  and fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_ega, (sum(ega)/count(*)) as act_ega from daily_gen_summary t1 where  (date >= '" + fromDate + "'  and date<= '" + todate + "') group by site";
-
-              //daily_gen_summary t1 where t1.approve_status=" + approve_status + " and (date >= '" + fromDate + "'  and date<= '" + todate + "') group by site";
-
-              return await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);*/
+                string masterquery = "SELECT site_master_id FROM `site_master` where " + filtersite;
+                List<WindSiteMaster> sitelist = new List<WindSiteMaster>();
+                sitelist = await Context.GetData<WindSiteMaster>(masterquery).ConfigureAwait(false);
+                for (var i = 0; i < sitelist.Count; i++)
+                {
+                    spvsiteList +="'"+sitelist[i].site_master_id + "',";
+                }
+                spvsiteList = spvsiteList.TrimEnd(',');
+                //spvsiteList = spvsiteList.Trim('"');
+            }
+            
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
-
             string filter = "";
             string tmlFilter = " DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "'";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + site + ") ";
                 //tmlFilter += " t1.site_id IN(" + site + ")";
+             
             }
+            if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
+            {
+                filter += " and t1.site_id IN(" + spvsiteList + ") ";
+                //tmlFilter += " t1.site_id IN(" + site + ")";
+
+            }
+
             string qry1 = "create or replace view temp_view as select t1.date, t1.site_id, t2.site, t3.spv,t1.kwh, t1.wind_speed, t1.plf, t1.ma, t1.iga, t1.ega" +
                 " from daily_target_kpi t1, daily_gen_summary t2, site_master t3 " +
                 "where t1.site_id = t2.site_id and t1.date = t2.date and t1.site_id = t3.site_master_id " +
@@ -3322,18 +3346,34 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
         }
 
-        internal async Task<List<WindPerformanceReports>> GetWindPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site)
+        internal async Task<List<WindPerformanceReports>> GetWindPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site,string spv)
         {
+            string filtersite = "";
+            string spvsiteList = "";
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for (int i = 0; i < spspv.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
+                string masterquery = "SELECT site_master_id FROM `site_master` where " + filtersite;
+                List<WindSiteMaster> sitelist = new List<WindSiteMaster>();
+                sitelist = await Context.GetData<WindSiteMaster>(masterquery).ConfigureAwait(false);
+                for (var i = 0; i < sitelist.Count; i++)
+                {
+                    spvsiteList += "'" + sitelist[i].site_master_id + "',";
+                }
+                spvsiteList = spvsiteList.TrimEnd(',');
+                //spvsiteList = spvsiteList.Trim('"');
+            }
 
-
-            /* string qry = @" select  t1.site,t2.spv,
- (select total_mw from site_master where site=t1.site)as total_mw, 
- (select (sum(kwh)*1000000)as tarkwh from daily_target_kpi
-  where site=t1.site and (date >= '" + fromDate + "'  and date<= '" + todate + "') )as tar_kwh ,(SELECT sum(kwh)as tarkwh FROM daily_target_kpi where fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "') and site=t1.site)as tar_kwh_mu,  (sum(kwh)-(sum(kwh)*((select  replace(line_loss,'%','')as line_loss  from monthly_uploading_line_losses where fy='" + fy + "' and month=DATE_FORMAT(t1.date, '%b') and site=t1.site order by monthly_uploading_line_losses_id desc limit 1)/100))) as act_jmr_kwh,  (sum(kwh)-(sum(kwh)*((select  replace(line_loss,'%','')as line_loss  from monthly_uploading_line_losses where fy='" + fy + "' and month=DATE_FORMAT(t1.date, '%b')  and site=t1.site order by monthly_uploading_line_losses_id desc limit 1)/100)))/1000000 as act_jmr_kwh_mu, (SELECT total_tarrif FROM site_master where site=t1.site)as total_tarrif,  (select (sum(wind_speed)/count(*))as tarwind from daily_target_kpi t2  where  site=t1.site and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_wind, (sum(wind_speed)/count(*))as act_Wind, (SELECT (sum(plf)/count(*)) FROM daily_target_kpi where site=t1.site  and fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_plf, (sum(plf)/count(*))as act_plf,  (SELECT (sum(ma)/count(*))  FROM daily_target_kpi where site=t1.site  and fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_ma, (sum(ma_actual)/count(*)) as act_ma,  (SELECT (sum(iga)/count(*)) FROM daily_target_kpi where site=t1.site  and fy= '" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_iga, (sum(iga)/count(*)) as act_iga,   (SELECT (sum(ega)/count(*)) FROM daily_target_kpi where site=t1.site  and fy='" + fy + "' and (date >= '" + fromDate + "'  and date<= '" + todate + "'))as tar_ega, (sum(ega)/count(*)) as act_ega from daily_gen_summary t1  left join site_master t2 on t1.site=t2.site where   (date >= '" + fromDate + "'  and date<= '" + todate + "') group by spv";
-
-
-
-             return await Context.GetData<WindPerformanceReports>(qry).ConfigureAwait(false);*/
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string filter = "";
             string filter2 = "";
@@ -3343,6 +3383,14 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 filter += " and t1.site_id IN(" + site + ") ";
                 filter2 += " where site_master_id IN(" + site + ") ";
                 tmlFilter += " t1.site_id IN(" + site + ")";
+            }
+            if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
+            {
+                //filter += " and t1.site_id IN(" + spvsiteList + ") ";
+                //tmlFilter += " t1.site_id IN(" + site + ")";
+                filter += " and t1.site_id IN(" + spvsiteList + ") ";
+                filter2 += " where site_master_id IN(" + spvsiteList + ") ";
+                tmlFilter += " t1.site_id IN(" + spvsiteList + ")";
             }
             string qry1 = "create or replace view temp_viewSPV as select t1.date, t1.site_id, t2.site, t3.spv,t1.kwh, t1.wind_speed, t1.plf, t1.ma, t1.iga, t1.ega" +
                 " from daily_target_kpi t1, daily_gen_summary t2, site_master t3 " +
@@ -5703,19 +5751,36 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
 
             return _yearlyGenData;
         }
-        internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySiteWise(string fy, string fromDate, string todate,string site)
+        internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySiteWise(string fy, string fromDate, string todate,string site, string spv)
         {
+            string filtersite = "";
+            string spvsiteList = "";
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
 
-            /*string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for (int i = 0; i < spspv.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
 
-            string qry = @"SELECT site,
-(SELECT ac_capacity FROM site_master_solar where site=t1.site and state=t1.state)as capacity,
-(SELECT dc_capacity FROM site_master_solar where site=t1.site and state=t1.state)as dc_capacity,(SELECT total_tarrif FROM site_master_solar where site=t1.site and state=t1.state)as total_tarrif,
-(SELECT  sum(gen_nos) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(expected_kwh)/1000000)as expected_kwh,(sum(inv_kwh)/1000000)as act_kwh,(SELECT lineloss FROM monthly_line_loss_solar where site=t1.site and fy='" + fy + "' and month=DATE_FORMAT(t1.date, '%b')  order by monthly_line_loss_solar_id desc limit 1)as lineloss,(SELECT  sum(ghi)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ghi,sum(ghi)/count(*) as act_ghi,(SELECT  sum(poa)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_poa,sum(poa)/count(*) as act_poa,(SELECT  sum(plf)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_plf,sum(plant_plf_ac)/count(*) as act_plf,(SELECT  sum(pr)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_pr,sum(plant_pr)/count(*) as act_pr,(SELECT  sum(ma)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ma,sum(ma)/count(*) as act_ma,(SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_iga,sum(iga)/count(*) as act_iga,(SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + "  and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where  " + datefilter + " group by site";
+                string masterquery = "SELECT site_master_solar_id FROM `site_master_solar` where " + filtersite;
+                List<SolarSiteMaster> sitelist = new List<SolarSiteMaster>();
+                sitelist = await Context.GetData<SolarSiteMaster>(masterquery).ConfigureAwait(false);
+                for (var i = 0; i < sitelist.Count; i++)
+                {
+                    spvsiteList += "'" + sitelist[i].site_master_solar_id + "',";
+                }
+                spvsiteList = spvsiteList.TrimEnd(',');
+                //spvsiteList = spvsiteList.Trim('"');
+            }
 
-            //and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 where t1.approve_status=" + approve_status + " and " + datefilter + " group by site";
-
-            return await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);*/
             bool GetFrom15Min = false;
             bool CombineReport = false;
             string todate1 = "";
@@ -5744,6 +5809,12 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + site + ") ";
+            }
+            if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
+            {
+                filter += " and t1.site_id IN(" + spvsiteList + ") ";
+                //tmlFilter += " t1.site_id IN(" + site + ")";
+
             }
             string qry1 = "create or replace view temp_view as select t1.date, t1.site_id, t2.site, t1.gen_nos, t1.ghi, t1.poa, t1.plf,t1.pr, t1.ma, " +
                 "t1.iga, t1.ega from daily_target_kpi_solar t1, daily_gen_summary_solar t2 where t1.date = t2.date and t1.site_id = t2.site_id " +
@@ -5918,8 +5989,35 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             return data;
 
         }
-        internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site)
+        internal async Task<List<SolarPerformanceReports1>> GetSolarPerformanceReportBySPVWise(string fy, string fromDate, string todate,string site,string spv)
         {
+            string filtersite = "";
+            string spvsiteList = "";
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for(int i = 0; i < spspv.Length; i++)
+                {
+                    if(!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
+
+                string masterquery = "SELECT site_master_solar_id FROM `site_master_solar` where " + filtersite;
+                List<SolarSiteMaster> sitelist = new List<SolarSiteMaster>();
+                sitelist = await Context.GetData<SolarSiteMaster>(masterquery).ConfigureAwait(false);
+                for (var i = 0; i < sitelist.Count; i++)
+                {
+                    spvsiteList += "'" + sitelist[i].site_master_solar_id + "',";
+                }
+                spvsiteList = spvsiteList.TrimEnd(',');
+                //spvsiteList = spvsiteList.Trim('"');
+            }
+
             bool GetFrom15Min = false;
             bool CombineReport = false;
             string todate1 = "";
@@ -5935,16 +6033,6 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                 GetFrom15Min = true;
             }
 
-            /* string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
-
-             string qry = @"SELECT t1.site,spv,
- (SELECT ac_capacity FROM site_master_solar where site=t1.site and state=t1.state)as capacity,
- (SELECT dc_capacity FROM site_master_solar where site=t1.site and state=t1.state)as dc_capacity,(SELECT total_tarrif FROM site_master_solar where site=t1.site and state=t1.state)as total_tarrif,
- (SELECT  sum(gen_nos) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh)/1000000)as act_kwh,(SELECT lineloss FROM monthly_line_loss_solar where site=t1.site and fy='" + fy + "' and month=DATE_FORMAT(t1.date, '%b') order by monthly_line_loss_solar_id desc limit 1)as lineloss,(SELECT  sum(ghi)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ghi,sum(ghi)/count(*) as act_ghi,(SELECT  sum(poa)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_poa,sum(poa)/count(*) as act_poa,(SELECT  sum(plf)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_plf,sum(plant_plf_ac)/count(*) as act_plf,(SELECT  sum(pr)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_pr,sum(plant_pr)/count(*) as act_pr,(SELECT  sum(ma)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_ma,sum(ma)/count(*) as act_ma,(SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + " and fy= '" + fy + "') as tar_iga,sum(iga)/count(*) as act_iga,(SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar where sites=t1.site and " + datefilter + "  and fy= '" + fy + "') as tar_ega,sum(ega)/count(*) as act_ega FROM daily_gen_summary_solar t1 left join site_master_solar t2 on t1.site =t2.site  where   " + datefilter + " group by spv";
-
-             //count(*) as act_ega FROM daily_gen_summary_solar t1 left join site_master_solar t2 on t1.site =t2.site  where t1.approve_status=" + approve_status + " and " + datefilter + " group by spv";
-
-             return await Context.GetData<SolarPerformanceReports1>(qry).ConfigureAwait(false);*/
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
@@ -5957,6 +6045,12 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             {
                 filter += " and t1.site_id IN(" + site + ") ";
                 filter2 += " where site_master_solar_id	 IN(" + site + ") ";
+            }
+            if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
+            {
+                filter += " and t1.site_id IN(" + spvsiteList + ") ";
+                filter2 += " where site_master_solar_id	 IN(" + spvsiteList + ") ";
+
             }
             string qry1 = "create or replace view temp_viewSPV as select t1.date, t1.site_id, t2.site, t3.spv,t1.gen_nos, t1.ghi, t1.poa, t1.plf,t1.pr, t1.ma, t1.iga, t1.ega" +
                 " from daily_target_kpi_solar t1, daily_gen_summary_solar t2, site_master_solar t3" +
@@ -10351,13 +10445,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             bool dailyRecordFound = false;
             bool monthlyRecordFound = false;
-
+            string spv = "";
 
             List<WindPerformanceReports> yearlypr,monthlypr,lastdaypr = new List<WindPerformanceReports>();
-            yearlypr = await GetWindPerformanceReportSiteWise(fy, yfromDate, ytodate, site);
+            yearlypr = await GetWindPerformanceReportSiteWise(fy, yfromDate, ytodate, site,spv);
             // List<WindPerformanceReports> data1 = new List<WindPerformanceReports>();
-            monthlypr = await GetWindPerformanceReportSiteWise(fy, mfromDate, mtodate, site);
-            lastdaypr = await GetWindPerformanceReportSiteWise(fy, lastDay, lastDay, site);
+            monthlypr = await GetWindPerformanceReportSiteWise(fy, mfromDate, mtodate, site, spv);
+            lastdaypr = await GetWindPerformanceReportSiteWise(fy, lastDay, lastDay, site, spv);
 
             string qry = "SELECT SUM(kwh/1000000) as tar_kwh, site FROM `daily_target_kpi` where date >= '" + yfromDate + "' and date <='" + (lastYear.AddYears(1).ToString("yyyy")) + "-04-01' group by site_id;";
             List<WindPerformanceReports> tarData = new List<WindPerformanceReports>();
@@ -10904,12 +10998,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double avg_act_plf_mn = 0;
             bool dailyRecordFound = false;
             bool monthlyRecordFound = false;
-
+            string spv = "";
 
             List<SolarPerformanceReports1> yearlypr, monthlypr, lastdaypr = new List<SolarPerformanceReports1>();
             try
             {
-                yearlypr = await GetSolarPerformanceReportBySiteWise(fy, yfromDate, ytodate, site);
+                yearlypr = await GetSolarPerformanceReportBySiteWise(fy, yfromDate, ytodate, site, spv);
                 //PPT_InformationLog("EmailSolarReport function received data from GetSolarPerformanceReportBySiteWise in yearlypr list");
 
             }
@@ -10920,7 +11014,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             try
             {
-                monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site);
+                monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site, spv);
                 //PPT_InformationLog("EmailSolarReport function received data from GetSolarPerformanceReportBySiteWise in monthlypr list");
 
             }
@@ -10931,7 +11025,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             try
             {
-                lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, lastDay, site);
+                lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, lastDay, site, spv);
                 //PPT_InformationLog("EmailSolarReport function received data from GetSolarPerformanceReportBySiteWise in lastdaypr list");
 
             }
@@ -10940,9 +11034,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string msg = e.Message;
                 //PPT_ErrorLog("EmailSolarReport function received Exception while receivind data from function GetSolarPerformanceReportBySiteWise in lastdaypr list " + msg);
             }
-            yearlypr = await GetSolarPerformanceReportBySiteWise(fy, yfromDate, ytodate, site);
-            monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site);
-            lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, lastDay, site);
+            yearlypr = await GetSolarPerformanceReportBySiteWise(fy, yfromDate, ytodate, site, spv);
+            monthlypr = await GetSolarPerformanceReportBySiteWise(fy, mfromDate, mtodate, site, spv);
+            lastdaypr = await GetSolarPerformanceReportBySiteWise(fy, lastDay, lastDay, site, spv);
 
             string qry = "SELECT sum(gen_nos) as tar_kwh, sites as site FROM `daily_target_kpi_solar` where date >= '" + yfromDate + "' and date <='" + (lastYear.AddYears(1).ToString("yyyy")) + "-04-01' group by site_id;";
             List<SolarPerformanceReports1> tarData = new List<SolarPerformanceReports1>();

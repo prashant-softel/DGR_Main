@@ -486,13 +486,13 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetWindPRReportSPVWise(string fy, string fromDate, string toDate,string sitelist)
+        public async Task<IActionResult> GetWindPRReportSPVWise(string fy, string fromDate, string toDate,string sitelist,string spv)
         {
 
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportBySPVWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportBySPVWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist +"&spv="+ spv;
                 //var url = "http://localhost:23835/api/DGR/GetWindDailyBreakdownReport?fromDate=" + fromDate + "&toDate=" + toDate + "&country=" +country+ "&state=" +state+ "&spv=" +spv+ "&site=" +site+ "&wtg=" +wtg+"";
                 WebRequest request = WebRequest.Create(url);
 
@@ -513,13 +513,13 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetWindPRReportSiteWise(string fy, string fromDate, string toDate,string sitelist)
+        public async Task<IActionResult> GetWindPRReportSiteWise(string fy, string fromDate, string toDate,string sitelist,string spv)
         {
 
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist+"&spv="+spv;
                 //var url = "http://localhost:23835/api/DGR/GetWindDailyBreakdownReport?fromDate=" + fromDate + "&toDate=" + toDate + "&country=" +country+ "&state=" +state+ "&spv=" +spv+ "&site=" +site+ "&wtg=" +wtg+"";
                 WebRequest request = WebRequest.Create(url);
 

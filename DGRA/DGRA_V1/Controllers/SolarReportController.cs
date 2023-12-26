@@ -293,12 +293,12 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
 
-        public async Task<IActionResult> GetSolarPRReportSPVWise(string fy, string fromDate, string toDate,string sitelist)
+        public async Task<IActionResult> GetSolarPRReportSPVWise(string fy, string fromDate, string toDate,string sitelist,string spv)
         {
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarPerformanceReportBySPVWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarPerformanceReportBySPVWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist+"&spv="+spv;
                 WebRequest request = WebRequest.Create(url);
 
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
@@ -318,12 +318,12 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
 
-        public async Task<IActionResult> GetSolarPRReportSiteWise(string fy, string fromDate, string toDate,string sitelist)
+        public async Task<IActionResult> GetSolarPRReportSiteWise(string fy, string fromDate, string toDate,string sitelist,string spv)
         {
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarPerformanceReportBySiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarPerformanceReportBySiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ sitelist+"&spv="+ spv;
                 WebRequest request = WebRequest.Create(url);
 
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())

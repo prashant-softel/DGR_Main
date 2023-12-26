@@ -108,13 +108,31 @@
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-8" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-sm-1 text-left">
-                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="margin-left:-2rem; width: 5rem;">Search</button>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-7 text-center"></div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-9" id="site" name="site[]" multiple>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="margin-left: 2rem; width: 5rem;">Search</button>
+                    </div>
+                   
                     <!--<div class="col-sm-2">
                         <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="width: 5rem;">Search</button>
                     </div>
@@ -166,8 +184,10 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <script src="~/Content/theme/dist/js/comman.js"></script>
 <script type="text/javascript">
+     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -179,30 +199,65 @@
     });
 
     window.onload = function () {
-        //getYear();
+        GetSPV();
     }
     var today = new Date();
     fyear = getFinancialYear(today);
     var Fy = fyear;
-
-
-   @* function getYear() {
+     function GetSPV() {
+        let state = "";
+        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
         $.ajax({
             type: "GET",
-            url: "/SolarReport/GetFinancialYear",
+            url: '@Url.Action("GetSPVList", "SolarReport")' + '?state=' + state + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
-            data: '{"countryname":"' + selcountry + '"}',
             datatype: "html",
             success: function (result, status, xhr) {
                 var options = "";
-                options += '<option value="">Select Financial Year</option>';
-                for (var i = 0; i < result.length; i++) {
-                    options += '<option value="' + result[i].financial_year + '">' + result[i].financial_year + '</option>';
+                for (var j = 0; j < result.length; j++) {
+                    options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
                 }
-                $("#fy").html(options);
+                $("#spv").multipleSelect('destroy');
+                $("#spv").html(options);
+                $('select#spv').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select SPV(s)",
+                    filter:true
+                });
             }
         });
-    }*@
+        GetSite();
+    }
+
+    function GetSite() {
+        let state = "";
+        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+
+        let spv = "";
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSiteList", "SolarReport")' + '?state=' + state + '&spv=' + spv + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_master_solar_id + '">' + result[k].site + '</option>';
+                }
+                $("#site").multipleSelect('destroy');
+                $("#site").html(options);
+                $('select#site').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Site(s)",
+                    filter:true
+                });
+            }
+        });
+    }
+
 
     function GetPRReport() {
         var ReportType = $("input[name='reportType']:checked").val();
@@ -217,6 +272,20 @@
     // Daily Gen Report SPV WIse
     function GetSolarPRReportSPVWise() {
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -229,7 +298,7 @@
             type: "GET",
 
             //url: "/SolarReport/GetSolarPRReportINVWise?fy=" + fyear + " &fromDate=" + fromDate + "&toDate=" + toDate,
-            url: '@Url.Action("GetSolarPRReportSPVWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site_ids,
+            url: '@Url.Action("GetSolarPRReportSPVWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site+ '&spv='+spv,
             contentType: "application/json; charset=utf-8",
 
             datatype: "JSON",
@@ -1034,6 +1103,20 @@
     // Daily Gen Report Site WIse
     function GetSolarPRReportSiteWise() {
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -1045,7 +1128,7 @@
         $.ajax({
             type: "GET",
            // url: "/WindReport/GetWindPRReportSiteWise?fy=" + fyear + " &fromDate=" + fromDate + "&toDate=" + toDate,
-            url: '@Url.Action("GetSolarPRReportSiteWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site_ids,
+            url: '@Url.Action("GetSolarPRReportSiteWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site+'&spv='+spv,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
             success: function (result, status, xhr) {
