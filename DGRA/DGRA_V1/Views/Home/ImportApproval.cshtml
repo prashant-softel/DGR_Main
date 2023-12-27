@@ -435,7 +435,7 @@
                 tbl += '<th>Action</th>';
                 tbl += '</tr></thead>';
                 tbl += '<tbody>';
-             
+
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].import_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
@@ -504,7 +504,7 @@
                 }
                 else {
                     $("input.checkAllW").attr("disabled", true);
-                   
+
                     //tbl += '<tr><th colspan="7" style="text-align:center">Data Not Available <th></tr>';
                 }
                 tbl += '</tbody>';
@@ -575,9 +575,9 @@
 
                 }
                 select--;
-            }       
+            }
     }
-   
+
 
     // SOlar Import Report
     function getSolarReport() {
@@ -650,7 +650,7 @@
                         tbl += '<td>' + formattedDate1 + '</td>';
                         tbl += '<td>' + result[i].import_by_name + '</td>';
                         tbl += '<td>' + status + '</td>';
-                        
+
                         var approval_name = "";
                         var verified_date = "";
                         var verified_name = "";
@@ -677,8 +677,8 @@
                         else {
                             verified_name = "";
                         }
-                        
-                       
+
+
                         /*var rejected_name = "";
                         if (result[i].rejected_by == 0) {
                             rejected_name = "";
@@ -777,6 +777,8 @@
     //   Approved Data
     function DataApproved(actionType) {
         var values = '';
+        var isSeven = 0;
+
         //console.log("you clicked approved or reject")
         var a = document.getElementById("loader");
         console.log(a);
@@ -791,65 +793,77 @@
                 values = values + "," + $(this).attr('data-id');
             }
         });
+        console.log("values string : " + values);
         if (values == "") {
             alert("Please select data");
             a.style.display = "none";
             return false;
-        }
-        var approved_by ="@HttpContextAccessor.HttpContext.Session.GetString("userid")";
-        var approved_by_name = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
-
-        var uri = "";
-        var importType = $('select#importType option:selected').val();
-
-        if (importType == 1 && actionType == 1) {
-            var Approvestatus = 1;
-            uri= '@Url.Action("DataApproved", "WindView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
-
-        }
-        if (importType == 1 && actionType == 2) {
-            var Rejectstatus = 2;
-            uri= '@Url.Action("DataReject", "WindView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
-
-        }
-        if (importType == 2 && actionType == 1) {
-            var Approvestatus = 1;
-            uri= '@Url.Action("DataApproved", "SolarView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
-
-        }
-        if (importType == 2 && actionType == 2) {
-            var Rejectstatus = 2;
-            uri= '@Url.Action("DataReject", "SolarView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
-
-        }
-        $(".btn-success").attr("disabled", true);
-        $(".btn-danger").attr("disabled", true);
-        $.ajax({
-            type: "POST",
-            url: uri,
-            contentType: "application/json; charset=utf-8",
-            success: function (result, status, xhr) {
-                if (result > 0) {
-                    if (actionType == 1) {
-                        var a = document.getElementById("loader");
-                        a.style.display = "none";
-                        alert("Data Approved Successfully !");
-                    }
-                    if (actionType == 2) {
-                        var a = document.getElementById("loader");
-                        a.style.display = "none";
-                        alert("Data Rejected Successfully !");
-                    }
-
-                    location.reload();
-                }
-                else {
-                    alert("Faild Please try again !");
-                }
-                $(".btn-success").attr("disabled", false);
-                $(".btn-danger").attr("disabled", false);
+        } else {
+            var valArr = values.split(",");
+            console.log("Array after split : ", valArr);
+            if (valArr.length > 7) {
+                alert("Please Approve atmost 7 files.");
+                isSeven = 1;
+                document.getElementById("loader").style.display = 'none';
             }
-        });
+        }
+
+        if (isSeven == 0) {
+            var approved_by ="@HttpContextAccessor.HttpContext.Session.GetString("userid")";
+            var approved_by_name = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
+
+            var uri = "";
+            var importType = $('select#importType option:selected').val();
+
+            if (importType == 1 && actionType == 1) {
+                var Approvestatus = 1;
+                uri= '@Url.Action("DataApproved", "WindView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
+
+            }
+            if (importType == 1 && actionType == 2) {
+                var Rejectstatus = 2;
+                uri= '@Url.Action("DataReject", "WindView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
+
+            }
+            if (importType == 2 && actionType == 1) {
+                var Approvestatus = 1;
+                uri= '@Url.Action("DataApproved", "SolarView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
+
+            }
+            if (importType == 2 && actionType == 2) {
+                var Rejectstatus = 2;
+                uri= '@Url.Action("DataReject", "SolarView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
+
+            }
+            $(".btn-success").attr("disabled", true);
+            $(".btn-danger").attr("disabled", true);
+            $.ajax({
+                type: "POST",
+                url: uri,
+                contentType: "application/json; charset=utf-8",
+                success: function (result, status, xhr) {
+                    if (result > 0) {
+                        if (actionType == 1) {
+                            var a = document.getElementById("loader");
+                            a.style.display = "none";
+                            alert("Data Approved Successfully !");
+                        }
+                        if (actionType == 2) {
+                            var a = document.getElementById("loader");
+                            a.style.display = "none";
+                            alert("Data Rejected Successfully !");
+                        }
+
+                        location.reload();
+                    }
+                    else {
+                        alert("Faild Please try again !");
+                    }
+                    $(".btn-success").attr("disabled", false);
+                    $(".btn-danger").attr("disabled", false);
+                }
+            });
+        }
     }
     function ViewImportFile() {
 
@@ -1307,7 +1321,7 @@
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].amb_temp.toFixed(2) + '</td>';
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].mod_temp.toFixed(2) + '</td>';
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].weather_type + '</td>';
-                       
+
                         tbl2 += '</tr>';
                         // console.log(j);
                     }
