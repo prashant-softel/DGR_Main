@@ -101,7 +101,7 @@ namespace DGRAPIs.Models
     }
     public class SolarOpertionalHead
     {
-
+        public float site_count { get; set; }
         public float spv_count { get; set; }
         public double capacity { get; set; }
 

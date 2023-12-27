@@ -540,13 +540,13 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetOperationHeadData(string site)
+        public async Task<IActionResult> GetOperationHeadData(string site,string spv)
         {
 
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetOperationHeadData?site="+ site + "";
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetOperationHeadData?site="+ site + "&spv="+spv;
                 
                 WebRequest request = WebRequest.Create(url);
 
@@ -567,13 +567,13 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetWeeklyOperation(string fy, string fromDate, string toDate, string site)
+        public async Task<IActionResult> GetWeeklyOperation(string fy, string fromDate, string toDate, string site,string spv)
         {
 
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site+ "&spv="+spv;
                 
                 //old 
                // var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise_2?fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site + "";
@@ -598,13 +598,13 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
 
-        public async Task<IActionResult> GetMontlyOperation(string fy, string fromDate, string toDate, string site)
+        public async Task<IActionResult> GetMontlyOperation(string fy, string fromDate, string toDate, string site,string spv)
         {
 
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site+"&spv="+spv;
                 ///old api 
                 //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise_2?fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site + "";
                 //var url = "http://localhost:23835/api/DGR/GetWindDailyBreakdownReport?fromDate=" + fromDate + "&toDate=" + toDate + "&country=" +country+ "&state=" +state+ "&spv=" +spv+ "&site=" +site+ "&wtg=" +wtg+"";
@@ -627,13 +627,13 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetYearlyOperation(string fy, string fromDate, string toDate, string site)
+        public async Task<IActionResult> GetYearlyOperation(string fy, string fromDate, string toDate, string site,string spv)
         {
 
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ site+ "&spv="+spv;
                 //old 
                // var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceReportSiteWise_2?fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site + "";
                 //var url = "http://localhost:23835/api/DGR/GetWindDailyBreakdownReport?fromDate=" + fromDate + "&toDate=" + toDate + "&country=" +country+ "&state=" +state+ "&spv=" +spv+ "&site=" +site+ "&wtg=" +wtg+"";
@@ -681,13 +681,13 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
-        public async Task<IActionResult> GetWindMajorBreakdown(string fromDate, string toDate,string siteList)
+        public async Task<IActionResult> GetWindMajorBreakdown(string fromDate, string toDate,string siteList,string spv)
         {
 
             string line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindMajorBreakdown?fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ siteList;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindMajorBreakdown?fromDate=" + fromDate + "&toDate=" + toDate + "&site="+ siteList+"&spv="+spv;
                 WebRequest request = WebRequest.Create(url);
 
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())

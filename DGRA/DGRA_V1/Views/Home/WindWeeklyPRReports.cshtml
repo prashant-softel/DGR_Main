@@ -429,10 +429,23 @@
         var dateForFy = new Date(toDate);
         var fy = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
 
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWeeklyOperation", "WindReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids,
+            url: '@Url.Action("GetWeeklyOperation", "WindReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site+ '&spv='+spv,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -777,9 +790,23 @@
         var dateForFy = new Date(toDate);
         var fy = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetMontlyOperation", "WindReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids,
+            url: '@Url.Action("GetMontlyOperation", "WindReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site+'&spv='+spv,
             //url: "/WindReport/GetMontlyOperation?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
@@ -1091,10 +1118,24 @@
         var FyDate1 = FyDate.startdate;
         const fydateArr = FyDate1.split("-");
         var fromDate = `${fydateArr[2]}-${fydateArr[1]}-${fydateArr[0]}`;
-       var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetYearlyOperation", "WindReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids,
+            url: '@Url.Action("GetYearlyOperation", "WindReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site+'&spv='+spv,
             //url: "/WindReport/GetMontlyOperation?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
@@ -1590,15 +1631,24 @@
     function OperationalTable(Diff_Mus, revenue) {
         var wind_side = "@Html.Raw(windSiteList.TrimEnd(','))";
         const site_array = wind_side.split(",");
-        //var daterange = $('#daterange').val();
-       // var arr1 = new Array();
-        //arr1 = daterange.split("-");
-        //var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('DD-MMM-YYYY');
-        //var toDate = moment(arr1[1], 'DD/MM/YYYY').format('DD-MMM-YYYY');
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
          $.ajax({
             type: "GET",
            // url: "/WindReport/GetSPVList?state=" + val,
-             url: '@Url.Action("GetOperationHeadData", "WindReport")' + '?site=' + wind_side,
+             url: '@Url.Action("GetOperationHeadData", "WindReport")' + '?site=' + wind_side+'&spv='+spv,
             contentType: "application/json; charset=utf-8",
             //data: '{"state":"' + val + '"}',
              datatype: "html",
@@ -1613,7 +1663,7 @@
                  sec2 += '<table class="table table-bordered table-striped">';
                  sec2 += '<thead class="tbl-head"><tr>';
                  sec2 += '<th colspan="2"></th></tr><thead>';
-                 sec2 += '<tr><td>Portfolio</td><td style="text-align: right;">' + site_array.length + '</td></tr>';
+                 sec2 += '<tr><td>Portfolio</td><td style="text-align: right;">' + result[0].site_count + '</td></tr>';
                  sec2 += '<tr><td>SPVs</td><td style="text-align: right;">' + result[0].spv_count + '</td></tr>';
                  sec2 += '<tr><td>Capacity (in MW)</td><td style="text-align: right;">' + result[0].capacity.toFixed(0) + '</td></tr>';
                  sec2 += '</table>';
@@ -3970,12 +4020,26 @@
 
 function GetWindMajorBreakdown() {
 
-        var daterange = $('#daterange').val();
-        const dateArr = daterange.split("/");
-        var seldate = new Date(dateArr[2], dateArr[1] - 1, dateArr[0]);
-        var fromDate = GetWeeklyDays(seldate);
-        var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-        var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+    var daterange = $('#daterange').val();
+    const dateArr = daterange.split("/");
+    var seldate = new Date(dateArr[2], dateArr[1] - 1, dateArr[0]);
+    var fromDate = GetWeeklyDays(seldate);
+    var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+    var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+    let site = "";
+    let spv = "";
+    $('select#site option:selected').each(function () {
+        site += $(this).val() + ",";
+    });
+    site = site != "" ? site.slice(0, -1) : site;
+
+    $('select#spv option:selected').each(function () {
+        spv += $(this).val() + ",";
+    });
+    spv = spv != "" ? spv.slice(0, -1) : spv;
+    if (userRole == "User" && site == "") {
+        site = site_ids;
+    }
         var leble = [];
     var revenue_arr = [];
     var WTG_count = 0;
@@ -3983,14 +4047,14 @@ function GetWindMajorBreakdown() {
     var hours = 0;
     var minutes = 0;
     var seconds = 0;
-    var site;
+    //var site;
     var date1;
     var errorDesc;
     var bdType;
 
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWindMajorBreakdown", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&siteList=' + site_ids,
+            url: '@Url.Action("GetWindMajorBreakdown", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&siteList=' + site+'&spv='+spv,
             contentType: "application/json; charset=utf-8",
 
             datatype: "JSON",

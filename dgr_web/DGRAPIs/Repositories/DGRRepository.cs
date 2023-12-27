@@ -3016,17 +3016,50 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             data[0].revenue = newdata1[0].revenue;
             return data ;// await Context.GetData<WindPerformanceReports>(strPerformanceQuery).ConfigureAwait(false);
         }
-		 internal async Task<List<SolarUploadingFileBreakDown>> GetSolarMajorBreakdownData(string fromDate, string toDate, string site)
+		 internal async Task<List<SolarUploadingFileBreakDown>> GetSolarMajorBreakdownData(string fromDate, string toDate, string site,string spv)
         {
+            string filtersite = "";
+            string spvsiteList = "";
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
+
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for (int i = 0; i < spspv.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
+
+                string masterquery = "SELECT site_master_solar_id FROM `site_master_solar` where " + filtersite;
+                List<SolarSiteMaster> sitelist = new List<SolarSiteMaster>();
+                sitelist = await Context.GetData<SolarSiteMaster>(masterquery).ConfigureAwait(false);
+                for (var i = 0; i < sitelist.Count; i++)
+                {
+                    spvsiteList += "'" + sitelist[i].site_master_solar_id + "',";
+                }
+                spvsiteList = spvsiteList.TrimEnd(',');
+                //spvsiteList = spvsiteList.Trim('"');
+            }
             string filter = "";
             string filter2 = "";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += "AND t1.site_id in (" + site + ")";
-                filter2 += "site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + toDate + "'";
+                filter2 += " site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + toDate + "'";
+            }
+            if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
+            {
+                filter += "AND t1.site_id in (" + spvsiteList + ")";
+                filter2 += " site_id in (" + spvsiteList + ") and date >= '" + fromDate + "' and date <= '" + toDate + "'";
+
             }
             filter += " AND t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'"; /*group by site_id,bd_type*/
-            filter2 = " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+            filter2 += " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
 
             string qry = "SELECT t1.date, t1.site ,t1.bd_type_id, t1.bd_type , t1.bd_remarks ,t1.icr , t1.inv, (HOUR(t1.total_bd) + MINUTE(t1.total_bd) / 60 + SECOND(t1.total_bd) / 3600) as total_bd  FROM uploading_file_breakdown_solar t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and  t1.bd_type_id in (1,2) AND t1.total_bd > '00:30:00'and (((t1.inv='Nil'and t1.smb='Nil' and t1.strings='Nil')) OR ((t1.smb='Nil' and t1.strings='Nil')))" + filter;
@@ -8121,27 +8154,63 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return _importSolarP15Data;
 
         }
-        public async Task<List<WindOpertionalHead>> GetOperationHeadData(string site)
+        public async Task<List<WindOpertionalHead>> GetOperationHeadData(string site,string spv)
         {
             string filter = "";
+            string filtersite = "";
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
+
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for (int i = 0; i < spspv.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
+                filter += " where " + filtersite;
+            }
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " where site_master_id IN(" + site + ")";
             }
-                string query = "SELECT COUNT(spv) as spv_count, SUM(total_mw) as capacity FROM `site_master`" +filter ;
+                string query = "SELECT COUNT(site) as site_count, COUNT(spv) as spv_count, SUM(total_mw) as capacity FROM `site_master`" +filter ;
             List<WindOpertionalHead> _operationalData = new List<WindOpertionalHead>();
             _operationalData = await Context.GetData<WindOpertionalHead>(query).ConfigureAwait(false);
             return _operationalData;
 
         }
-        public async Task<List<SolarOpertionalHead>> GetSolarOperationHeadData(string site)
+        public async Task<List<SolarOpertionalHead>> GetSolarOperationHeadData(string site,string spv)
         {
+            string filtersite = "";
+            string spvsiteList = "";
             string filter = "";
-            if (!string.IsNullOrEmpty(site))
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
+
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for (int i = 0; i < spspv.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
+
+                filter += " where (" + filtersite + ")";
+            }
+            if (!string.IsNullOrEmpty(site) && string.IsNullOrEmpty(spv))
             {
                 filter += " where site_master_solar_id IN(" + site + ")";
             }
-            string query = "SELECT COUNT(spv) as spv_count, SUM(ac_capacity) as capacity FROM `site_master_solar` "+filter;
+            string query = "SELECT COUNT(Site) as site_count,COUNT(spv) as spv_count, SUM(ac_capacity) as capacity FROM `site_master_solar` " + filter;
             List<SolarOpertionalHead> _operationalData = new List<SolarOpertionalHead>();
             _operationalData = await Context.GetData<SolarOpertionalHead>(query).ConfigureAwait(false);
             return _operationalData;
@@ -8192,24 +8261,57 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
 
         }
-        internal async Task<List<WindUploadingFileBreakDown>> GetWindMajorBreakdown(string fromDate, string toDate,string site)
+        internal async Task<List<WindUploadingFileBreakDown>> GetWindMajorBreakdown(string fromDate, string toDate,string site,string spv)
         {
             //string qry = "Select * from uploading_file_breakdown";
-          
+            string filtersite = "";
+            string spvsiteList = "";
+            if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
+            {
+
+                string[] spspv = spv.Split(",");
+                filtersite += "  spv in (";
+                string spvs = "";
+                for (int i = 0; i < spspv.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(spspv[i].ToString()))
+                    {
+                        spvs += "'" + spspv[i].ToString() + "',";
+                    }
+                }
+                filtersite += spvs.TrimEnd(',') + ")";
+
+                string masterquery = "SELECT site_master_id FROM `site_master` where " + filtersite;
+                List<WindSiteMaster> sitelist = new List<WindSiteMaster>();
+                sitelist = await Context.GetData<WindSiteMaster>(masterquery).ConfigureAwait(false);
+                for (var i = 0; i < sitelist.Count; i++)
+                {
+                    spvsiteList += "'" + sitelist[i].site_master_id + "',";
+                }
+                spvsiteList = spvsiteList.TrimEnd(',');
+                //spvsiteList = spvsiteList.Trim('"');
+            }
+
             string filter = "";
             string filter2 = "";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += "AND t1.site_id in (" + site + ")";
-                filter2 += "t1.site_id in (" + site + ") and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
+                filter2 += " site_id in (" + site + ")";// and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
+            }
+            if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
+            {
+                //filter += " and t1.site_id IN(" + spvsiteList + ") ";
+                filter += "AND t1.site_id in (" + spvsiteList + ")";
+                filter2 += " site_id in (" + spvsiteList + ")";// and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
             }
             filter += " AND t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'"; /*group by site_id,bd_type*/
-            filter2 = " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+            filter2 += " AND date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
 
             string qry = "SELECT t1.date,t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg ,(HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop_num  FROM uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.bd_type_id in (1,2) AND t1.total_stop > '04:00:00'" + filter ;
 
-            string qry2 = "SELECT date, site_name,bd_type_id, bd_type ,error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT t1.date, t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg , (HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop from uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.total_stop > '01:00:00' AND NOT t1.bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date, site_name; ";
+            string qry2 = "SELECT date,site_id, site_name,bd_type_id, bd_type ,error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT t1.date,t1.site_id, t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg , (HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop from uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.total_stop > '01:00:00' AND NOT t1.bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date, site_name; ";
 
             List<WindUploadingFileBreakDown> _bdData = new List<WindUploadingFileBreakDown>();
              _bdData = await Context.GetData<WindUploadingFileBreakDown>(qry).ConfigureAwait(false);
@@ -10751,7 +10853,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
            //return tb;
             List<WindUploadingFileBreakDown> data2 = new List<WindUploadingFileBreakDown>();
 
-                data2 = await GetWindMajorBreakdown(lastDay, lastDay, site);
+                data2 = await GetWindMajorBreakdown(lastDay, lastDay, site,spv);
                
                 tb += "<br>";
                 tb += "<h3><b>Major Breakdown dated " + ltodate.ToString("dd-MMM-yyyy") + "</b></h3>";
@@ -11439,7 +11541,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             try
             {
                 //ta2 = await GetSolarMajorBreakdownData(fromDate, fromDate, site);
-                data2 = await GetSolarMajorBreakdownData(lastDay,lastDay, site);
+                data2 = await GetSolarMajorBreakdownData(lastDay,lastDay, site,spv);
 
                 PPT_InformationLog("EmailSolarReport function received data from GetSolarMajorBreakdownData function in data2 list");
             }catch (Exception e)
