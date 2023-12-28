@@ -55,6 +55,13 @@ namespace DGRAPIs.Models
         public double averageWindSpeed { get; set; }
     }
 
+    public class TargetSubQry
+    {
+        public int site_id { get; set; }
+        public dynamic date { get; set; }
+        public double kwh { get; set; }
+    }
+
     public class GetWindTMLGraphData
     {
         public string all_bd { get; set; }

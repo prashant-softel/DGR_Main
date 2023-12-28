@@ -14485,10 +14485,24 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             _tmlDataList.Clear();
 
             //Target :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
-            string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            string fetchTargetQryOld = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            string fetchTargetQry = "SELECT site_id, date, kwh FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            string AvailableDateSiteTMD = $"SELECT site_id, DATE(Time_stamp) AS date FROM uploading_file_tmr_data WHERE site_id IN({site}) AND DATE(Time_stamp) >= '{fromDate}' AND DATE(Time_stamp) <= '{toDate}' GROUP BY site_id, DATE(Time_stamp);";
+            List<TargetSubQry> _targetData = new List<TargetSubQry>();
+            List<TargetSubQry> _availableDateSiteTMD = new List<TargetSubQry>();
+
             try
             {
-                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchTargetQry).ConfigureAwait(false);
+                _availableDateSiteTMD = await Context.GetData<TargetSubQry>(AvailableDateSiteTMD).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while Fetching site and date data from uploading_file_tmr_data, due to : " + e.ToString();
+                LogError(0, 2, 5, functionName, msg, backend);
+            }
+            try
+            {
+                _targetData = await Context.GetData<TargetSubQry>(fetchTargetQry).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -14497,14 +14511,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 LogError(0, 2, 5, functionName, msg, backend);
 
             }
-            if (_tmlDataList.Count > 0)
+            if (_targetData.Count > 0)
             {
                 try
                 {
-                    foreach (var unit in _tmlDataList)
+                    double sumKwh = 0.0;
+                    foreach (var unit in _targetData)
                     {
-                        target_sum = unit.target_sum;
+                        //target_sum = unit.target_sum;
+                        foreach (var inUnit in _availableDateSiteTMD)
+                        {
+                            if (inUnit.date == unit.date && inUnit.site_id == unit.site_id)
+                            {
+                                sumKwh += unit.kwh;
+                            }
+                        }
                     }
+                    target_sum = sumKwh;
                 }
                 catch (Exception e)
                 {
@@ -14937,9 +14960,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         // Actual vs Expected Function 
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
-        {
-           
-
+        {     
             bool GetFrom15Min = false;
             bool CombineReport = false;
             string todate1 = "";
