@@ -70,24 +70,34 @@
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<!-- Bootstrap CSS -->
+@*<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">*@
+
+<!-- Bootstrap JS and Popper.js (required for some Bootstrap components) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
 <style>
     table th {
         padding: 0.5rem !important;
         font-size: 15px !important;
     }
+
     table td {
         padding: 0.2rem !important;
         font-size: 15px !important;
     }
+
     .dataTables_filter {
-        margin-top: -2.6% !important; 
+        margin-top: -2.6% !important;
     }
+
     select {
         width: 50%;
         height: 36px;
     }
-    .modal{
-        position : fixed !important;
+
+    .modal {
+        position: fixed !important;
     }
 </style>
 <!-- Content Wrapper. Contains page content -->
@@ -197,27 +207,40 @@
                         </div>
                     </div>
                     <div class="col-md-2"></div>
-                    <div class="col-md-2"><button type="button" class="btn btn-block btn-primary" onclick="getReport()" style=" width:5rem " >Search</button></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-block btn-primary" onclick="getReport()" style=" width:5rem ">Search</button></div>
                     <div class="col-md-5"></div>
                 </div>
                 <br>
                 @if (@HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
                 {
-                   
-            <div class="row" id="approvebtn" style="display:none">
-                <div class="col-md-2"><button type="button" id="btndsable" class="btn btn-block btn-success" onclick="DataApproved(1)">Approved</button></div>
-                <div class="col-md-2"><button type="button" class="btn btn-block btn-danger" onclick="DataApproved(2)">Reject</button></div>
-                <!--<div class="col-md-2"><button type="button" class="btn btn-block btn-info" onclick="ExportToExcel()">Export Selected Data</button></div>-->
-                <div class="col-md-2"></div>
-            </div>
-	    <div id="loader" class="loader " style="display:none; margin-left:50%; "></div>
+
+                    <div class="row" id="approvebtn" style="display:none">
+                        <div class="col-md-2"><button type="button" id="btndsable" class="btn btn-block btn-success" onclick="DataApproved(1)">Approved</button></div>
+                        <div class="col-md-2"><button type="button" class="btn btn-block btn-danger" onclick="DataApproved(2)">Reject</button></div>
+                        <!--<div class="col-md-2"><button type="button" class="btn btn-block btn-info" onclick="ExportToExcel()">Export Selected Data</button></div>-->
+                        <div class="col-md-2"></div>
+                    </div>
+                    <div id="loader" class="loader " style="display:none; margin-left:50%; "></div>
                 }
                 <hr>
                 <div id="LogData"></div>
-                
+
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
 
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <img src="..." class="rounded me-2" alt="...">
+                        <strong class="me-auto">Import Approval</strong>
+                        @*<small>11 mins ago</small>*@
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Select Atmost 7 sites.
+                    </div>
+                </div>
+            </div>
 
 
         </div>
@@ -435,31 +458,36 @@
                 tbl += '<th>Action</th>';
                 tbl += '</tr></thead>';
                 tbl += '<tbody>';
-             
+
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].import_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         var formattedDate1 = moment(result[i].data_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         var status = "";
                         var isDisable = "";
+                        var cbClass = "";
                         if (result[i].is_approved == 0) {
                             status = "Awaiting for Approval";
                             isDisable = "";
+                            cbClass = "form-check-input";
                         }
                         if (result[i].is_approved == 0 && result[i].imported_by == @HttpContextAccessor.HttpContext.Session.GetString("userid")) {
                             status = "Awaiting for Approval";
                             isDisable = "disabled";
+                            cbClass = "";
                         }
                         if (result[i].is_approved == 1) {
                             status = "Approved";
                             isDisable = "disabled";
+                            cbClass = "";
                         }
                         if (result[i].is_approved == 2) {
                             status = "Rejected";
                             isDisable = "disabled";
+                            cbClass = "";
                         }
                         tbl += '<tr>';
-                        tbl += '<td><input type="checkbox" name="chk" class="form-check-input" id="checkapproveid_' + result[i].import_batch_id + '" data-id=' + result[i].import_batch_id + ' style="margin-left:0.5rem;    margin-top: -6px;" ' + isDisable + '></td>';
+                        tbl += '<td><input type="checkbox" name="chk" class="' + cbClass + '" id="checkapproveid_' + result[i].import_batch_id + '" data-id=' + result[i].import_batch_id + ' style="margin-left:0.5rem;    margin-top: -6px;" ' + isDisable + ' onclick="handleCheckboxClick(this)"></td>';
                         tbl += '<td>' + result[i].site_name + '</td>';
                         tbl += '<td>' + formattedDate + '</td>';
                         tbl += '<td>' + formattedDate1 + '</td>';
@@ -504,7 +532,7 @@
                 }
                 else {
                     $("input.checkAllW").attr("disabled", true);
-                   
+
                     //tbl += '<tr><th colspan="7" style="text-align:center">Data Not Available <th></tr>';
                 }
                 tbl += '</tbody>';
@@ -575,9 +603,9 @@
 
                 }
                 select--;
-            }       
+            }
     }
-   
+
 
     // SOlar Import Report
     function getSolarReport() {
@@ -627,30 +655,35 @@
                         var formattedDate1 = moment(result[i].data_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         var status = "";
                         var isDisable = "";
+                        var cbClass = "";
                         if (result[i].is_approved == 0) {
                             status = "Awaiting for Approval";
                             isDisable = "";
+                            cbClass = "form-check-input";
                         }
                         if (result[i].is_approved == 0 && result[i].imported_by == @HttpContextAccessor.HttpContext.Session.GetString("userid")) {
                             status = "Awaiting for Approval";
                             isDisable = "disabled";
+                            cbClass = "";
                         }
                         if (result[i].is_approved == 1) {
                             status = "Approved";
                             isDisable = "disabled";
+                            cbClass = "";
                         }
                         if (result[i].is_approved == 2) {
                             status = "Rejected";
                             isDisable = "disabled";
+                            cbClass = "";
                         }
                         tbl += '<tr>';
-                        tbl += '<td><input type="checkbox" class="form-check-input" name="chks" id="checkapproveid_' + result[i].import_batch_id + '" data-id=' + result[i].import_batch_id + ' style ="margin-left:0.5rem;    margin-top: -6px;" ' + isDisable + '></td>';
+                        tbl += '<td><input type="checkbox" class="' + cbClass + '" name="chks" id="checkapproveid_' + result[i].import_batch_id + '" data-id=' + result[i].import_batch_id + ' style ="margin-left:0.5rem;    margin-top: -6px;" ' + isDisable + ' onclick="handleCheckboxClick(this)"></td>';
                         tbl += '<td>' + result[i].site_name + '</td>';
                         tbl += '<td>' + formattedDate + '</td>';
                         tbl += '<td>' + formattedDate1 + '</td>';
                         tbl += '<td>' + result[i].import_by_name + '</td>';
                         tbl += '<td>' + status + '</td>';
-                        
+
                         var approval_name = "";
                         var verified_date = "";
                         var verified_name = "";
@@ -677,8 +710,8 @@
                         else {
                             verified_name = "";
                         }
-                        
-                       
+
+
                         /*var rejected_name = "";
                         if (result[i].rejected_by == 0) {
                             rejected_name = "";
@@ -777,6 +810,8 @@
     //   Approved Data
     function DataApproved(actionType) {
         var values = '';
+        var isSeven = 0;
+
         //console.log("you clicked approved or reject")
         var a = document.getElementById("loader");
         console.log(a);
@@ -791,65 +826,77 @@
                 values = values + "," + $(this).attr('data-id');
             }
         });
+        console.log("values string : " + values);
         if (values == "") {
             alert("Please select data");
             a.style.display = "none";
             return false;
-        }
-        var approved_by ="@HttpContextAccessor.HttpContext.Session.GetString("userid")";
-        var approved_by_name = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
-
-        var uri = "";
-        var importType = $('select#importType option:selected').val();
-
-        if (importType == 1 && actionType == 1) {
-            var Approvestatus = 1;
-            uri= '@Url.Action("DataApproved", "WindView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
-
-        }
-        if (importType == 1 && actionType == 2) {
-            var Rejectstatus = 2;
-            uri= '@Url.Action("DataReject", "WindView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
-
-        }
-        if (importType == 2 && actionType == 1) {
-            var Approvestatus = 1;
-            uri= '@Url.Action("DataApproved", "SolarView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
-
-        }
-        if (importType == 2 && actionType == 2) {
-            var Rejectstatus = 2;
-            uri= '@Url.Action("DataReject", "SolarView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
-
-        }
-        $(".btn-success").attr("disabled", true);
-        $(".btn-danger").attr("disabled", true);
-        $.ajax({
-            type: "POST",
-            url: uri,
-            contentType: "application/json; charset=utf-8",
-            success: function (result, status, xhr) {
-                if (result > 0) {
-                    if (actionType == 1) {
-                        var a = document.getElementById("loader");
-                        a.style.display = "none";
-                        alert("Data Approved Successfully !");
-                    }
-                    if (actionType == 2) {
-                        var a = document.getElementById("loader");
-                        a.style.display = "none";
-                        alert("Data Rejected Successfully !");
-                    }
-
-                    location.reload();
-                }
-                else {
-                    alert("Faild Please try again !");
-                }
-                $(".btn-success").attr("disabled", false);
-                $(".btn-danger").attr("disabled", false);
+        } else {
+            var valArr = values.split(",");
+            console.log("Array after split : ", valArr);
+            if (valArr.length > 7) {
+                alert("Please Approve atmost 7 files.");
+                isSeven = 1;
+                document.getElementById("loader").style.display = 'none';
             }
-        });
+        }
+
+        if (isSeven == 0) {
+            var approved_by ="@HttpContextAccessor.HttpContext.Session.GetString("userid")";
+            var approved_by_name = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
+
+            var uri = "";
+            var importType = $('select#importType option:selected').val();
+
+            if (importType == 1 && actionType == 1) {
+                var Approvestatus = 1;
+                uri= '@Url.Action("DataApproved", "WindView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
+
+            }
+            if (importType == 1 && actionType == 2) {
+                var Rejectstatus = 2;
+                uri= '@Url.Action("DataReject", "WindView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
+
+            }
+            if (importType == 2 && actionType == 1) {
+                var Approvestatus = 1;
+                uri= '@Url.Action("DataApproved", "SolarView")' + '?data=' + values + '&approvedBy=' + approved_by + '&approvedByName=' + approved_by_name + '&status=' + Approvestatus + '&actionType=' + actionType
+
+            }
+            if (importType == 2 && actionType == 2) {
+                var Rejectstatus = 2;
+                uri= '@Url.Action("DataReject", "SolarView")' + '?data=' + values + '&rejectedBy=' + approved_by + '&rejectByName=' + approved_by_name + '&status=' + Rejectstatus + '&actionType=' + actionType
+
+            }
+            $(".btn-success").attr("disabled", true);
+            $(".btn-danger").attr("disabled", true);
+            $.ajax({
+                type: "POST",
+                url: uri,
+                contentType: "application/json; charset=utf-8",
+                success: function (result, status, xhr) {
+                    if (result > 0) {
+                        if (actionType == 1) {
+                            var a = document.getElementById("loader");
+                            a.style.display = "none";
+                            alert("Data Approved Successfully !");
+                        }
+                        if (actionType == 2) {
+                            var a = document.getElementById("loader");
+                            a.style.display = "none";
+                            alert("Data Rejected Successfully !");
+                        }
+
+                        location.reload();
+                    }
+                    else {
+                        alert("Faild Please try again !");
+                    }
+                    $(".btn-success").attr("disabled", false);
+                    $(".btn-danger").attr("disabled", false);
+                }
+            });
+        }
     }
     function ViewImportFile() {
 
@@ -1307,7 +1354,7 @@
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].amb_temp.toFixed(2) + '</td>';
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].mod_temp.toFixed(2) + '</td>';
                         tbl2 += '<td style="font-size: 12px;text-align: center;">' + result1[j].weather_type + '</td>';
-                       
+
                         tbl2 += '</tr>';
                         // console.log(j);
                     }
@@ -1400,5 +1447,62 @@
             }
         });
         console.log(values);
+    }
+
+
+    var checkedIds = [];
+
+    // Attach an event listener to all checkboxes with class 'form-check-input'
+    function handleCheckboxClick(checkbox) {
+        var dataId = checkbox.getAttribute('data-id');
+
+        // If the checkbox is checked, add its data-id to the array
+        if (checkbox.checked) {
+            checkedIds.push(dataId);
+        } else {
+            // If the checkbox is unchecked, remove its data-id from the array
+            var index = checkedIds.indexOf(dataId);
+            if (index !== -1) {
+                checkedIds.splice(index, 1);
+            }
+        }
+
+        // Display the current state of the array (for testing purposes)
+        console.log('Checked IDs:', checkedIds);
+
+        // Check if the array count is more than 7
+        if (checkedIds.length === 7) {
+            // Disable all other checkboxes
+            document.querySelectorAll('.form-check-input:not(:checked)').forEach(function (disabledCheckbox) {
+                disabledCheckbox.disabled = true;
+            });
+        } else if (checkedIds.length > 7) {
+            // If it's greater than 7, disable all checkboxes and show the toast
+            document.querySelectorAll('.form-check-input').forEach(function (disabledCheckbox) {
+                disabledCheckbox.disabled = true;
+            });
+            showToast("You can select at most 7 sites.", true);
+        } else {
+            // Enable all checkboxes
+            document.querySelectorAll('.form-check-input').forEach(function (enabledCheckbox) {
+                enabledCheckbox.disabled = false;
+            });
+
+            // Hide the toast if it was shown
+            showToast("", false);
+        }
+    }
+
+    function showToast(message, showToast) {
+        const toastLiveExample = document.getElementById('liveToast');
+        const toastBootstrap = new bootstrap.Toast(toastLiveExample);
+
+        if (showToast) {
+            toastBootstrap.show();
+        } else {
+            toastBootstrap.hide();
+        }
+
+        console.log('Toast:', message);
     }
 </script>

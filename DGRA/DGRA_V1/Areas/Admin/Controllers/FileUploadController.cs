@@ -299,7 +299,16 @@ namespace DGRA_V1.Areas.admin.Controllers
                         {
                             foreach (String path in filePaths)
                             {
-                                System.IO.File.Delete(path);
+                                if (System.IO.File.Exists(path))
+                                {
+                                    System.IO.File.Delete(path);
+                                }
+                                else
+                                {
+                                    string msg = "Didn't find file at path:  " + path;
+                                    //ErrorLog(msg);
+                                    LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
+                                }
                             }
                         }
                     }

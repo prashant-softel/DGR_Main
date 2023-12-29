@@ -7259,6 +7259,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string site = "";
             int site_id = 0;
             string date = "";
+            List<CheckUpdateManualBd> _dateSite = new List<CheckUpdateManualBd>();
 
             foreach (var unit in _importedData)
             {
@@ -7267,6 +7268,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     site = unit.site;
                     site_id = unit.site_id;
                     date = unit.date.ToString("yyyy-MM-dd");
+                }
+                bool recordExists = _dateSite.Any(x => x.site == unit.site && x.site_id == unit.site_id && x.date == unit.date.ToString("yyyy-MM-dd"));
+
+                if (!recordExists)
+                {
+                    _dateSite.Add(new CheckUpdateManualBd
+                    {
+                        site_id = unit.site_id,
+                        site = unit.site,
+                        date = unit.date.ToString("yyyy-MM-dd"),
+                    });
                 }
                 values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "'," + unit.ega_b + ", " + unit.ega_c + ",'" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','"+ unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','"+ unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id+"'),";
 
@@ -7343,47 +7355,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if(finalResult == 5)
             {
-                string checkTMLDataQry = "SELECT * FROM uploading_file_tmr_data WHERE site_id IN(" + site_id + ") AND Date(Time_stamp) = '" + date +"' GROUP BY Date(Time_stamp), site_id;" ;
-                List<InsertWindTMLData> _DataTML = new List<InsertWindTMLData>();
-                try
+                //function call for check and update Manual breakdowns.
+                int updateres = await CheckAndUpdateManualBd(_dateSite);
+                if (updateres == 1)
                 {
-                    _DataTML = await Context.GetData<InsertWindTMLData>(checkTMLDataQry).ConfigureAwait(false);
-                    finalResult = 6;
-                }
-                catch(Exception e)
+                    finalResult = 7;
+                }else if(updateres == 0)
                 {
-                    string msg = "Exception while fetching record from uploading_file_tmr_data table, due to : " + e.ToString();
+                    string msg = "Error while updating manual bd " + _dateSite;
                     approval_ErrorLog(msg);
-                    return 0;
                 }
-                if(finalResult == 6)
-                {
-                    try
-                    {
-                        if(_DataTML.Count > 0)
-                        {
-                            if(_DataTML[0].site_id > 0)
-                            {
-                                int result = await UpdateManualBdForTMLData(date, site_id, 9);
-                                if (result == 2)
-                                {
-                                    finalResult = 7;
-                                }
-                                else
-                                {
-                                    finalResult = 0;
-                                }
-                            }
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        string msg = "Exception during UpdateManualBD function call, due to : " + e.ToString();
-                        approval_ErrorLog(msg);
-                        return 0;
-                    }
-                }
-
             }
             approval_InformationLog("At the end of function finalResult : " + finalResult);
             return finalResult;
@@ -14485,10 +14466,24 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             _tmlDataList.Clear();
 
             //Target :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
-            string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            string fetchTargetQryOld = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            string fetchTargetQry = "SELECT site_id, date, kwh FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            string AvailableDateSiteTMD = $"SELECT site_id, DATE(Time_stamp) AS date FROM uploading_file_tmr_data WHERE site_id IN({site}) AND DATE(Time_stamp) >= '{fromDate}' AND DATE(Time_stamp) <= '{toDate}' GROUP BY site_id, DATE(Time_stamp);";
+            List<TargetSubQry> _targetData = new List<TargetSubQry>();
+            List<TargetSubQry> _availableDateSiteTMD = new List<TargetSubQry>();
+
             try
             {
-                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchTargetQry).ConfigureAwait(false);
+                _availableDateSiteTMD = await Context.GetData<TargetSubQry>(AvailableDateSiteTMD).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while Fetching site and date data from uploading_file_tmr_data, due to : " + e.ToString();
+                LogError(0, 2, 5, functionName, msg, backend);
+            }
+            try
+            {
+                _targetData = await Context.GetData<TargetSubQry>(fetchTargetQry).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -14497,14 +14492,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 LogError(0, 2, 5, functionName, msg, backend);
 
             }
-            if (_tmlDataList.Count > 0)
+            if (_targetData.Count > 0)
             {
                 try
                 {
-                    foreach (var unit in _tmlDataList)
+                    double sumKwh = 0.0;
+                    foreach (var unit in _targetData)
                     {
-                        target_sum = unit.target_sum;
+                        //target_sum = unit.target_sum;
+                        foreach (var inUnit in _availableDateSiteTMD)
+                        {
+                            if (inUnit.date == unit.date && inUnit.site_id == unit.site_id)
+                            {
+                                sumKwh += unit.kwh;
+                            }
+                        }
                     }
+                    target_sum = sumKwh;
                 }
                 catch (Exception e)
                 {
@@ -14937,9 +14941,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
         // Actual vs Expected Function 
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
-        {
-           
-
+        {     
             bool GetFrom15Min = false;
             bool CombineReport = false;
             string todate1 = "";
@@ -16157,6 +16159,55 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\TML_Log.txt", "*Info*:" + Message + "\r\n");
+        }
+
+        //function for checking and updating manualbreakdowns.
+        internal async Task<int> CheckAndUpdateManualBd(List<CheckUpdateManualBd> _dateSite)
+        {
+            int result = 0;
+            int finalResult = 0;
+            foreach(var unit in _dateSite)
+            {
+                string checkTMLDataQry = "SELECT * FROM uploading_file_tmr_data WHERE site_id IN(" + unit.site_id + ") AND Date(Time_stamp) = '" + unit.date + "' GROUP BY Date(Time_stamp), site_id;";
+                List<InsertWindTMLData> _DataTML = new List<InsertWindTMLData>();
+                try
+                {
+                    _DataTML = await Context.GetData<InsertWindTMLData>(checkTMLDataQry).ConfigureAwait(false);
+                    if (_DataTML.Count > 0)
+                    {
+                        unit.isTmlData = 1;
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching record from uploading_file_tmr_data table, due to : " + e.ToString();
+                    approval_ErrorLog(msg);
+                    return 0;
+                }
+                if (unit.isTmlData == 1)
+                {
+                    try
+                    {    
+                        int inResult = await UpdateManualBdForTMLData(unit.date, unit.site_id, 9);
+                        if (inResult == 2)
+                        {
+                            unit.dataUpdated = 1;
+                        }
+                        else
+                        {
+                            unit.dataUpdated = 0;
+                        }
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception during UpdateManualBD function call, due to : " + e.ToString();
+                        approval_ErrorLog(msg);
+                        return 0;
+                    }
+                }
+            }            
+            return result;
         }
     }
 }
