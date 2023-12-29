@@ -58,8 +58,17 @@ namespace DGRAPIs.Models
     public class TargetSubQry
     {
         public int site_id { get; set; }
+        public string site { get; set; }
         public dynamic date { get; set; }
         public double kwh { get; set; }
+    }
+    public class CheckUpdateManualBd
+    {
+        public int site_id { get; set; }
+        public string site { get; set; }
+        public string date { get; set; }
+        public int isTmlData { get; set; }
+        public int dataUpdated { get; set; }
     }
 
     public class GetWindTMLGraphData

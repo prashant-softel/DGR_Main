@@ -108,6 +108,7 @@
             tbl += '<th>SPV</th>';
             tbl += '<th>State</th>';
             tbl += '<th>Model</th>';
+            tbl += '<th>DOC</th>';
             tbl += '<th>Capacity<br>(MW)</th>';
             tbl += '<th>WTG</th>';
             tbl += '<th>Total_MW</th>';
@@ -122,7 +123,7 @@
             tbl += '</tr></thead>';
             if (result.length > 0) {
                 for (var i = 0; i < result.length; i++) {
-
+                    var formattedDate = moment(result[i].doc, 'YYYY/MM/DD').format('DD-MM-YYYY');
 
                     tbl += '<tr>';
                     tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -130,6 +131,7 @@
                     tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                     tbl += '<td class="text-left">' + result[i].state + '</td>';
                     tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].model + '</td>';
+                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
                     tbl += '<td class="text-right">' + result[i].capacity_mw.toFixed(2) + '</td>';
                     tbl += '<td class="text-right">' + result[i].wtg + '</td>';
                     tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
