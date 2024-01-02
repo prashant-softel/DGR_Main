@@ -2782,6 +2782,24 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Route("BulkMapBdToTML")]
+        [HttpGet]
+        public async Task<IActionResult> BulkMapBdToTML(string fromDate, string toDate)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.BulkMapBdToTML(fromDate, toDate);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.ToString());
+                }
+            }
+        }
 
 
         #endregion

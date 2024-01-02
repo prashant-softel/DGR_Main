@@ -192,6 +192,7 @@ namespace DGRAPIs.BS
 
         Task<int> LogError(int userId, int import_type, int module, string api_name, string Message, int is_frontend);
         Task<int> LogInfo(int userId, int import_type, int module, string api_name, string Message, int is_frontend);
+        Task<List<CheckUpdateManualBd>> BulkMapBdToTML(string fromDate, string toDate);
 
         //Task<List<SolarDailyGenReports3>> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr);
         //Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType);
@@ -2703,6 +2704,21 @@ namespace DGRAPIs.BS
                 throw;
             }
 
+        }
+
+        public async Task<List<CheckUpdateManualBd>> BulkMapBdToTML(string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.BulkMapBdToTML(fromDate, toDate);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
