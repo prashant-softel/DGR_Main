@@ -16,5 +16,9 @@
         public dynamic EGA { get; set; }
         public dynamic PR { get; set; }
         public dynamic PLF { get; set; }
+        public dynamic P50 { get; set; }
+        public dynamic P75 { get; set; }
+        public dynamic P90 { get; set; }
+
     }
 }

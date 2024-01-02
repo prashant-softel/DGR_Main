@@ -232,6 +232,9 @@
                 tbl += '<th>EGA (%)</th>';
                 tbl += '<th>PR (%)</th>';
                 tbl += '<th>PLF (%)</th>';
+                tbl += '<th>P50 </th>';
+                tbl += '<th>P75 </th>';
+                tbl += '<th>P90 </th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -248,6 +251,9 @@
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].pr.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].p50.toFixed(2)+'</td>';
+                        tbl += '<td class="text-right">' + result[i].p75.toFixed(2)+ '</td>';
+                        tbl += '<td class="text-right">' + result[i].p90.toFixed(2)+ '</td>';
                         tbl += '</tr>';
                     }
                 }

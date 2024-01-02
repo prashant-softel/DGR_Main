@@ -3131,6 +3131,13 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["PLF (%)"]), "PLF (%)");
                         errorFlag.Add((addUnit.PLF > 100 || addUnit.PLF < 0) ? true : false);
 
+                        addUnit.P50 = Convert.ToDouble((dr[11] is DBNull) || string.IsNullOrEmpty((string)dr[11]) ? 0 : dr[11]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P50, "P50", rowNumber));
+                        addUnit.P75 = Convert.ToDouble((dr[12] is DBNull) || string.IsNullOrEmpty((string)dr[12]) ? 0 : dr[12]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P75, "P75", rowNumber));
+                        addUnit.P90 = Convert.ToDouble((dr[13] is DBNull) || string.IsNullOrEmpty((string)dr[13]) ? 0 : dr[13]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P90, "P90", rowNumber));
+
                         errorFlag.Add(uniqueRecordCheckSolarPerMonthYear_KPI(addUnit, addSet, rowNumber));
 
                         foreach (bool item in errorFlag)
@@ -3237,6 +3244,16 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add((addUnit.ega > 100 || addUnit.ega < 0) ? true : false);
                         addUnit.plf = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["PLF%"]), "PLF%");
                         errorFlag.Add((addUnit.ega > 100 || addUnit.plf < 0) ? true : false);
+
+                        addUnit.P50 = string.IsNullOrEmpty((string)dr["P50"]) ? 0 : Convert.ToDouble(dr["P50"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P50, "P50", rowNumber));
+                        addUnit.P75 = string.IsNullOrEmpty((string)dr["P75"]) ? 0 : Convert.ToDouble(dr["P75"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P75, "P75", rowNumber));
+                        addUnit.P90 = string.IsNullOrEmpty((string)dr["P90"]) ? 0 : Convert.ToDouble(dr["P90"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P90, "P90", rowNumber));
+
+                       
+
                         errorFlag.Add(MonthList.Contains(addUnit.month) ? false : true);
                         foreach (bool item in errorFlag)
                         {
@@ -3567,7 +3584,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add((addUnit.PR > 100 || addUnit.PR < 0) ? true : false);
                         addUnit.PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["PLF (%)"]), "PLF (%)");
                         errorFlag.Add((addUnit.PLF > 100 || addUnit.PLF < 0) ? true : false);
-
                         addUnit.Toplining_kWh = Convert.ToDouble((dr[11] is DBNull) ? 0 : dr[11]);
                         errorFlag.Add(negativeNullValidation(addUnit.Toplining_kWh, "Toplining kWh (in MU)", rowNumber));
 
@@ -3611,6 +3627,16 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.Inv_PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Inv PLF (%)"]), "Inv PLF (%)");
                         errorFlag.Add((addUnit.Inv_PLF > 100 || addUnit.Inv_PLF < 0) ? true : false);
+
+                        addUnit.P50 = Convert.ToDouble((dr[23] is DBNull) ? 0 : dr[23]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P50, "P50", rowNumber));
+
+                        addUnit.P75 = Convert.ToDouble((dr[24] is DBNull) ? 0 : dr[24]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P75, "P75", rowNumber));
+
+                        addUnit.P90 = Convert.ToDouble((dr[25] is DBNull) ? 0 : dr[25]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P90, "P90", rowNumber));
+            
 
                         foreach (bool item in errorFlag)
                         {
@@ -3716,6 +3742,15 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add((addUnit.EGA > 100 || addUnit.EGA < 0) ? true : false);
                         addUnit.PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["PLF%"]), "PLF%");
                         errorFlag.Add((addUnit.PLF > 100 || addUnit.PLF < 0) ? true : false);
+
+                        addUnit.P50 = string.IsNullOrEmpty((string)dr["P50"]) ? 0 : Convert.ToDouble(dr["P50"]);
+                        errorFlag.Add(numericNullValidation(addUnit.P50, "P50", rowNumber));
+                        addUnit.P75 = string.IsNullOrEmpty((string)dr["P75"]) ? 0 : Convert.ToDouble(dr["P75"]);
+                        errorFlag.Add(numericNullValidation(addUnit.P75, "P75", rowNumber));
+                        addUnit.P90 = string.IsNullOrEmpty((string)dr["P90"]) ? 0 : Convert.ToDouble(dr["P90"]);
+                        errorFlag.Add(numericNullValidation(addUnit.P90, "P90", rowNumber));
+
+                      
                         foreach (bool item in errorFlag)
                         {
                             if (item)

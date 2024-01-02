@@ -4036,12 +4036,12 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             //check for existing records with date and site reference to delete existing records before inserting fresh data
             string delqry = "delete from daily_target_kpi where";
-            string qry = "insert into daily_target_kpi (fy, date, site, site_id, wind_speed, kwh, ma, iga, ega, plf) values ";
+            string qry = "insert into daily_target_kpi (fy, date, site, site_id, wind_speed, kwh, ma, iga, ega, plf,p_50,p_75,p_90) values ";
             string values = "";
 
             foreach (var unit in set)
             {
-                values += "('" + unit.FY + "','" + unit.Date + "','" + unit.Site + "','" + unit.site_id + "','" + unit.WindSpeed + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PLF + "'),";
+                values += "('" + unit.FY + "','" + unit.Date + "','" + unit.Site + "','" + unit.site_id + "','" + unit.WindSpeed + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PLF + "','" + unit.P50 + "','" + unit.P75 + "', '" +unit.P90+ "'),";
 
                 delqry += " site_id = " + unit.site_id + " and date = '" + unit.Date + "' and fy = '" + unit.FY + "' or";
             }
@@ -4059,8 +4059,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             tableData = await Context.GetData<WindMonthlyTargetKPI>(fetchQry).ConfigureAwait(false);
             WindMonthlyTargetKPI existingRecord = new WindMonthlyTargetKPI();
             int val = 0;
-            string qry = "insert into monthly_target_kpi (fy, month, month_no, year, site,site_id, wind_speed, kwh, ma, iga, ega, plf) values";
-            string updateQry = "INSERT INTO monthly_target_kpi(monthly_target_kpi_id, wind_speed, kwh, ma, iga, ega, plf) VALUES";
+            string qry = "insert into monthly_target_kpi (fy, month, month_no, year, site,site_id, wind_speed, kwh, ma, iga, ega, plf, p_50, p_75, p_90) values";
+            string updateQry = "INSERT INTO monthly_target_kpi(monthly_target_kpi_id, wind_speed, kwh, ma, iga, ega, plf, p_50, p_75, p_90) VALUES";
             string insertValues = "";
             string updateValues = "";
             foreach (var unit in set)
@@ -4068,16 +4068,16 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 existingRecord = tableData.Find(tSite => tSite.site_id.Equals(unit.site_id) && tSite.year.Equals(unit.year) && tSite.month_no.Equals(unit.month_no));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.fy + "','" + unit.month + "','" + unit.month_no + "','" + unit.year + "','" + unit.site + "','" + unit.site_id + "','" + unit.windSpeed + "','" + unit.kwh + "','" + unit.ma + "','" + unit.iga + "','" + unit.ega + "','" + unit.plf + "'),";
+                    insertValues += "('" + unit.fy + "','" + unit.month + "','" + unit.month_no + "','" + unit.year + "','" + unit.site + "','" + unit.site_id + "','" + unit.windSpeed + "','" + unit.kwh + "','" + unit.ma + "','" + unit.iga + "','" + unit.ega + "','" + unit.plf + "','" + unit.P50 + "','"+ unit.P75 +"','" +unit.P90+ "'),";
                 }
                 else
                 {
                     //delqry += " (site_id = " + unit.site_id + " and year = " + unit.year + " and month = '" + unit.month + "') or";
-                    updateValues += "(" + existingRecord.monthly_target_kpi_id + ",'" + unit.windSpeed + "','" + unit.kwh + "','" + unit.ma + "','" + unit.iga + "','" + unit.ega + "','" + unit.plf + "'),";
+                    updateValues += "(" + existingRecord.monthly_target_kpi_id + ",'" + unit.windSpeed + "','" + unit.kwh + "','" + unit.ma + "','" + unit.iga + "','" + unit.ega + "','" + unit.plf + "','"+unit.P50+"','"+unit.P75+"','"+unit.P90+"'),";
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_target_kpi_id = VALUES(monthly_target_kpi_id), wind_speed = VALUES(wind_speed), kwh = VALUES(kwh), ma = VALUES(ma), iga = VALUES(iga), ega = VALUES(ega), plf = VALUES(plf);";
+            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_target_kpi_id = VALUES(monthly_target_kpi_id), wind_speed = VALUES(wind_speed), kwh = VALUES(kwh), ma = VALUES(ma), iga = VALUES(iga), ega = VALUES(ega), plf = VALUES(plf), p_50 =  VALUES(p_50), p_75 =  VALUES(p_75), p_90 =  VALUES(p_90);";
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
@@ -4190,12 +4190,12 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
         {
             //check for existing records with date and site reference to delete existing records before inserting fresh data
             string delQry = "delete from daily_target_kpi_solar where";
-            string qry = "insert into daily_target_kpi_solar (fy, date, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf, Toplining_kWh, Toplining_MA, Toplining_IGA, Toplining_EGA, Toplining_PR, Toplining_PLF, Plant_kWh, Plant_PR, Plant_PLF, Inv_kWh, Inv_PR, Inv_PLF) values ";
+            string qry = "insert into daily_target_kpi_solar (fy, date, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf, Toplining_kWh, Toplining_MA, Toplining_IGA, Toplining_EGA, Toplining_PR, Toplining_PLF, Plant_kWh, Plant_PR, Plant_PLF, Inv_kWh, Inv_PR, Inv_PLF,p_50,p_75,p_90) values ";
             string insertValues = "";
 
             foreach (var unit in set)
             {
-                insertValues += "('" + unit.FY + "','" + unit.Date + "','" + unit.Sites + "','" + unit.site_id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + unit.Toplining_EGA + "','" + unit.Toplining_PR + "','" + unit.Toplining_PLF + "','" + unit.Plant_kWh + "','" + unit.Plant_PR + "','" + unit.Plant_PLF + "','" + unit.Inv_kWh + "','" + unit.Inv_PR + "','" + unit.Inv_PLF + "'),";
+                insertValues += "('" + unit.FY + "','" + unit.Date + "','" + unit.Sites + "','" + unit.site_id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + unit.Toplining_EGA + "','" + unit.Toplining_PR + "','" + unit.Toplining_PLF + "','" + unit.Plant_kWh + "','" + unit.Plant_PR + "','" + unit.Plant_PLF + "','" + unit.Inv_kWh + "','" + unit.Inv_PR + "','" + unit.Inv_PLF + "','" + unit.P50 + "','" + unit.P75 + "','" + unit.P90 + "'),";
 
                 delQry += " sites= '" + unit.Sites + "' and date = '" + unit.Date + "' and fy = '" + unit.FY + "' or";
             }
@@ -4211,8 +4211,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             tableData = await Context.GetData<SolarMonthlyTargetKPI>(fetchQry).ConfigureAwait(false);
             SolarMonthlyTargetKPI existingRecord = new SolarMonthlyTargetKPI();
             int val = 0;
-            string updateQry = "insert into monthly_target_kpi_solar (monthly_target_kpi_solar_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf) values";
-            string qry = "insert into monthly_target_kpi_solar (fy, month, month_no, year, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf) values";
+            string updateQry = "insert into monthly_target_kpi_solar (monthly_target_kpi_solar_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf, p_50,p_75,p_90) values";
+            string qry = "insert into monthly_target_kpi_solar (fy, month, month_no, year, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf,p_50, p_75, p_90) values";
             string insertValues = "";
             string updateValues = "";
             foreach (var unit in set)
@@ -4220,15 +4220,15 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 existingRecord = tableData.Find(tSite => (tSite.Site_Id == unit.Site_Id && tSite.year == unit.year && tSite.month_no == unit.month_no));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.FY + "','" + unit.Month + "','" + unit.month_no + "','" + unit.year + "','" + unit.Sites + "','" + unit.Site_Id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "'),";
+                    insertValues += "('" + unit.FY + "','" + unit.Month + "','" + unit.month_no + "','" + unit.year + "','" + unit.Sites + "','" + unit.Site_Id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.P50 + "','" + unit.P75 + "','" + unit.P90 + "'),";
                 }
                 else
                 {
-                    updateValues += "(" + existingRecord.monthly_target_kpi_solar_id + ",'" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "'),";
+                    updateValues += "(" + existingRecord.monthly_target_kpi_solar_id + ",'" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.P50 + "','" + unit.P75 + "','" + unit.P90 + "'),";
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_target_kpi_solar_id = VALUES(monthly_target_kpi_solar_id), ghi = VALUES(ghi), poa = VALUES(poa), gen_nos = VALUES(gen_nos), ma = VALUES(ma), iga = VALUES(iga), ega = VALUES(ega), pr = VALUES(pr), plf = VALUES(plf);";
+            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_target_kpi_solar_id = VALUES(monthly_target_kpi_solar_id), ghi = VALUES(ghi), poa = VALUES(poa), gen_nos = VALUES(gen_nos), ma = VALUES(ma), iga = VALUES(iga), ega = VALUES(ega), pr = VALUES(pr), plf = VALUES(plf), p_50 = VALUES(p_50), p_75 = VALUES(p_75), p_90 = VALUES(p_90);";
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
@@ -6325,14 +6325,14 @@ FROM daily_bd_loss_solar where   " + datefilter;
         {
             if (String.IsNullOrEmpty(site)) return new List<WindDailyTargetKPI>();
             string filter = " where site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
-            string qry = @"SELECT fy,date,site,wind_speed as WindSpeed,kwh,ma,iga,ega,plf FROM daily_target_kpi" + filter;
+            string qry = @"SELECT fy,date,site,wind_speed as WindSpeed,kwh,ma,iga,ega,plf,p_50 as P50,p_75 as P75,p_90 as P90 FROM daily_target_kpi" + filter;
             return await Context.GetData<WindDailyTargetKPI>(qry).ConfigureAwait(false);
 
         }
         internal async Task<List<SolarDailyTargetKPI>> GetSolarDailyTargetKPI(string fromDate, string todate, string site)
         {
             string filter = " site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
-            string qry = @"SELECT fy, date, sites, ghi, poa, gen_nos as kWh,ma,iga,ega,pr,plf FROM daily_target_kpi_solar where " + filter;
+            string qry = @"SELECT fy, date, sites, ghi, poa, gen_nos as kWh,ma,iga,ega,pr,plf ,p_50 as P50,p_75 as P75,p_90 as P90 FROM daily_target_kpi_solar where " + filter;
             return await Context.GetData<SolarDailyTargetKPI>(qry).ConfigureAwait(false);
 
         }
@@ -6377,7 +6377,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
 
             }
 
-            string qry = @"SELECT fy,month,site,wind_speed as WindSpeed,kwh,ma,iga,ega,plf FROM monthly_target_kpi" + filter;
+            string qry = @"SELECT fy,month,site,wind_speed as WindSpeed,kwh,ma,iga,ega,plf,p_50 as P50,p_75 as P75,p_90 as P90 FROM monthly_target_kpi" + filter;
 
             return await Context.GetData<WindMonthlyTargetKPI>(qry).ConfigureAwait(false);
 
@@ -6493,7 +6493,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 }
 
             }
-            string qry = @"SELECT  fy, month, sites, ghi, poa, gen_nos as kWh, ma, iga, ega, pr, plf FROM monthly_target_kpi_solar " + filter;
+            string qry = @"SELECT  fy, month, sites, ghi, poa, gen_nos as kWh, ma, iga, ega, pr, plf,p_50 as P50,p_75 as P75,p_90 as P90 FROM monthly_target_kpi_solar " + filter;
             return await Context.GetData<SolarMonthlyTargetKPI>(qry).ConfigureAwait(false);
         }
         internal async Task<int> InsertWindLocationMaster(List<WindLocationMaster> set)
