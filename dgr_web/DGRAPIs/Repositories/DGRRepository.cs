@@ -16209,5 +16209,51 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }            
             return result;
         }
+        
+        //Function for bulk updating BDs of TML records.
+        internal async Task<List<CheckUpdateManualBd>> BulkMapBdToTML(string fromDate, string toDate)
+        {
+            int result = 0;
+            List<CheckUpdateManualBd> _site_ids = new List<CheckUpdateManualBd>();
+            List<CheckUpdateManualBd> _dateSite = new List<CheckUpdateManualBd>();
+
+            //Fetch and create the site_date list.
+            string fetchSiteIds = "Select site_master_id AS site_id FROM site_master ";
+            _site_ids = await Context.GetData<CheckUpdateManualBd>(fetchSiteIds).ConfigureAwait(false);
+            if (_site_ids.Count > 0)
+            {
+                DateTime startDate = DateTime.Parse(fromDate);
+                DateTime endDate = DateTime.Parse(toDate);
+
+                for (DateTime currentDate = startDate; currentDate <= endDate; currentDate = currentDate.AddDays(1))
+                {
+                    foreach (var siteId in _site_ids)
+                    {
+                        _dateSite.Add(new CheckUpdateManualBd
+                        {
+                            date = currentDate.ToString("yyyy-MM-dd"),
+                            site_id = siteId.site_id,
+                        });
+                    }
+                }
+            }
+
+            //After Site date list is created. Call the check and map bd function.
+            if (_dateSite.Count > 0)
+            {
+                int updateres = await CheckAndUpdateManualBd(_dateSite);
+                if (updateres == 1)
+                {
+                    result = 7;
+                }
+                else if (updateres == 0)
+                {
+                    string msg = "Error while updating manual bd " + _dateSite;
+                    approval_ErrorLog(msg);
+                }
+            }
+
+            return _dateSite;
+        }
     }
 }
