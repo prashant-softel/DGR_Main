@@ -2521,7 +2521,7 @@
                // console.log(result);
                 //var tbl = '<div class="text-center"><h5>' + reporthead+'</h5></div>';
 
-                var tbl = '<table id="example4"  class="table table-bordered table-striped" style="width:150%">';
+                var tbl = '<table id="example8"  class="table table-bordered table-striped" style="width:150%">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th rowspan="2">Site</th><th  rowspan="2">Capacity <br>(MW)</th>';
                 tbl += '<th colspan="5" class="text-center">Gen nos. (MUs)</th><th>(±)Revenue</th>';
@@ -2656,10 +2656,10 @@
                             act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
-                            ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
+                            ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
                         }
                         if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
+                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
                         }
 
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
@@ -2684,7 +2684,7 @@
                         if (gain_act == 0 || gain_tar == 0) {
                             gain_var = 0;
                         } else {
-                            gain_var = (gain_act.toFixed(2) - gain_tar.toFixed(2));
+                            gain_var = (gain_act - gain_tar);
                         }
                         let pasitive;
                         let negative;
@@ -2875,26 +2875,26 @@
                         avg_act_TCpr = total_capActTCPr / total_capacity;
                     }
                     if (total_tar_kwh != 0) {
-                        avg_jmr_var = (((total_act_kwh.toFixed(2) - total_tar_kwh.toFixed(2)) / total_tar_kwh.toFixed(2)) * 100)
+                        avg_jmr_var = (((total_act_kwh - total_tar_kwh) / total_tar_kwh) * 100)
                     }
                     if (total_expected_kwh != 0) {
-                        avg_e_var = (((total_act_kwh.toFixed(2) - total_expected_kwh.toFixed(2)) / total_expected_kwh.toFixed(2)) * 100);
+                        avg_e_var = (((total_act_kwh - total_expected_kwh) / total_expected_kwh) * 100);
                     }
                     if (avg_tar_ghi != 0) {
-                        avg_ghi_var = (((avg_act_ghi.toFixed(2) - avg_tar_ghi.toFixed(2)) / avg_tar_ghi.toFixed(2)) * 100);
+                        avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
                     }
                     if (avg_tar_poa != 0) {
-                        avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
+                        avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
                     }
 
-                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
+                    avg_TCpr_var = (avg_act_TCpr - avg_tar_TCpr);
 
-                    avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
-                    avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
-                    avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
-                    avg_ma_var = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
-                    avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
-                    avg_ega_var = (avg_act_ega.toFixed(2) - avg_tar_ega.toFixed(2));
+                    avg_pr_var = (avg_act_pr - avg_tar_pr);
+                    avg_gain_var = (avg_act_gain - avg_tar_gain);
+                    avg_plf_var = (avg_act_plf - avg_tar_plf);
+                    avg_ma_var = (avg_act_ma - avg_tar_ma);
+                    avg_iga_var = (avg_act_iga - avg_tar_iga);
+                    avg_ega_var = (avg_act_ega - avg_tar_ega);
 
                     tbl += '<tfoot><tr>';
                     tbl += '<th rowspan="1" colspan="1" style="width: 10%; font-weight: bold;">Grand Total</th>';
@@ -2944,9 +2944,12 @@
                 tbl += '</table>';
                 $("#reportsDailySPV").html("").html(tbl);
                 $.fn.DataTable.ext.pager.numbers_length = 6;
-                $('#example3').DataTable({
+                $('#example8').DataTable({
+                  
                     dom: 'Bfrtip',
-                    responsive: false,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -2955,8 +2958,9 @@
                     ordering: true,
                     info: true,
                     autoWidth: true,
-                    responsive: false,
-                    pageLength: 50,
+                    fixedColumns: {
+                        left: 2
+                    },
                     //columnDefs: [
                     //    {
                     //        targets: 1,
@@ -3332,7 +3336,7 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                $(".dataTables_filter> label >input").addClass('form-control form-control-sm  ');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 //$('#example1').removeClass('dataTable');
                 $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
@@ -3779,10 +3783,10 @@
                             act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
-                            ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
+                            ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
                         }
                         if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
+                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
                         }
 
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
@@ -4010,26 +4014,26 @@
                         avg_act_TCpr = total_capActTCPr / total_capacity;
                     }
                     if (total_tar_kwh != 0) {
-                        avg_jmr_var = (((total_act_kwh.toFixed(2) - total_tar_kwh.toFixed(2)) / total_tar_kwh.toFixed(2)) * 100)
+                        avg_jmr_var = (((total_act_kwh - total_tar_kwh) / total_tar_kwh) * 100)
                     }
                     if (total_expected_kwh != 0) {
-                        avg_e_var = (((total_act_kwh.toFixed(2) - total_expected_kwh.toFixed(2)) / total_expected_kwh.toFixed(2)) * 100);
+                        avg_e_var = (((total_act_kwh - total_expected_kwh) / total_expected_kwh) * 100);
                     }
                     if (avg_tar_ghi != 0) {
-                        avg_ghi_var = (((avg_act_ghi.toFixed(2) - avg_tar_ghi.toFixed(2)) / avg_tar_ghi.toFixed(2)) * 100);
+                        avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
                     }
                     if (avg_tar_poa != 0) {
-                        avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
+                        avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
                     }
 
-                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
+                    avg_TCpr_var = (avg_act_TCpr- avg_tar_TCpr);
 
-                    avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
-                    avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
-                    avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
-                    avg_ma_var = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
-                    avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
-                    avg_ega_var = (avg_act_ega.toFixed(2) - avg_tar_ega.toFixed(2));
+                    avg_pr_var = (avg_act_pr - avg_tar_pr);
+                    avg_gain_var = (avg_act_gain - avg_tar_gain);
+                    avg_plf_var = (avg_act_plf - avg_tar_plf);
+                    avg_ma_var = (avg_act_ma - avg_tar_ma);
+                    avg_iga_var = (avg_act_iga - avg_tar_iga);
+                    avg_ega_var = (avg_act_ega - avg_tar_ega);
 
                     tbl += '<tfoot><tr>';
                     tbl += '<th rowspan="1" colspan="1" style="width: 10%; font-weight: bold;">Grand Total</th>';
