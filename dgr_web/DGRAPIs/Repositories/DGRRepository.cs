@@ -6191,7 +6191,8 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
                 LogError(0, 1, 5, functionName, msg, backend);
             }
 
-            string getTempCorrPr = "SELECT t2.site, t2.spv, t1.site_id, (SUM(t1.jmrTempPR) * 100) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t2.spv;";
+           // string getTempCorrPr = "SELECT t2.site, t2.spv, t1.site_id, (SUM(t1.jmrTempPR) * 100) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t2.spv;"
+            string getTempCorrPr = "SELECT t2.site, t2.spv, t1.site_id, (SUM(t1.jmrTempPR)) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t2.spv;";
 
             List<SolarPerformanceReports1> dataTempCorrPr = new List<SolarPerformanceReports1>();
             try
@@ -6249,7 +6250,8 @@ and " + datefilter + " and fy='" + fy + "') as tar_kwh,(sum(inv_kwh_afterloss)/1
                 {
                     if (_dataelement.spv == _tempdataelement.spv)
                     {
-                        _dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
+                        //_dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
+                        _dataelement.temp_corrected_pr = ((_dataelement.act_kwh * 1000000) / _tempdataelement.temp_corrected_pr)*100;
                     }
                 }
             }

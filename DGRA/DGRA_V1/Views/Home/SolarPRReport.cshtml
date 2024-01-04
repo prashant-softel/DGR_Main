@@ -108,31 +108,13 @@
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right col-sm-8" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
-                                <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="col-sm-1 text-left">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="margin-left:-2rem; width: 5rem;">Search</button>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                <select class="form-control  col-sm-9" id="site" name="site[]" multiple>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="margin-left: 2rem; width: 5rem;">Search</button>
-                    </div>
-                   
+                    <div class="col-sm-7 text-center"></div>
                     <!--<div class="col-sm-2">
                         <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="width: 5rem;">Search</button>
                     </div>
@@ -184,10 +166,8 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>
-<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <script src="~/Content/theme/dist/js/comman.js"></script>
 <script type="text/javascript">
-     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -199,65 +179,30 @@
     });
 
     window.onload = function () {
-        GetSPV();
+        //getYear();
     }
     var today = new Date();
     fyear = getFinancialYear(today);
     var Fy = fyear;
-     function GetSPV() {
-        let state = "";
-        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+
+
+   @* function getYear() {
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetSPVList", "SolarReport")' + '?state=' + state + '&sitelist=' + site_ids,
+            url: "/SolarReport/GetFinancialYear",
             contentType: "application/json; charset=utf-8",
+            data: '{"countryname":"' + selcountry + '"}',
             datatype: "html",
             success: function (result, status, xhr) {
                 var options = "";
-                for (var j = 0; j < result.length; j++) {
-                    options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
+                options += '<option value="">Select Financial Year</option>';
+                for (var i = 0; i < result.length; i++) {
+                    options += '<option value="' + result[i].financial_year + '">' + result[i].financial_year + '</option>';
                 }
-                $("#spv").multipleSelect('destroy');
-                $("#spv").html(options);
-                $('select#spv').multipleSelect({
-                    "minimumCountSelected": 2,
-                    "placeholder": "Select SPV(s)",
-                    filter:true
-                });
+                $("#fy").html(options);
             }
         });
-        GetSite();
-    }
-
-    function GetSite() {
-        let state = "";
-        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
-
-        let spv = "";
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("GetSiteList", "SolarReport")' + '?state=' + state + '&spv=' + spv + '&sitelist=' + site_ids,
-            contentType: "application/json; charset=utf-8",
-            datatype: "html",
-            success: function (result, status, xhr) {
-                var options = "";
-                for (var k = 0; k < result.length; k++) {
-                    options += '<option value="' + result[k].site_master_solar_id + '">' + result[k].site + '</option>';
-                }
-                $("#site").multipleSelect('destroy');
-                $("#site").html(options);
-                $('select#site').multipleSelect({
-                    "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
-                    filter:true
-                });
-            }
-        });
-    }
-
+    }*@
 
     function GetPRReport() {
         var ReportType = $("input[name='reportType']:checked").val();
@@ -272,20 +217,6 @@
     // Daily Gen Report SPV WIse
     function GetSolarPRReportSPVWise() {
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
-        let site = "";
-        let spv = "";
-        $('select#site option:selected').each(function () {
-            site += $(this).val() + ",";
-        });
-        site = site != "" ? site.slice(0, -1) : site;
-
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (userRole == "User" && site == "") {
-            site = site_ids;
-        }
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -298,7 +229,7 @@
             type: "GET",
 
             //url: "/SolarReport/GetSolarPRReportINVWise?fy=" + fyear + " &fromDate=" + fromDate + "&toDate=" + toDate,
-            url: '@Url.Action("GetSolarPRReportSPVWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site+ '&spv='+spv,
+            url: '@Url.Action("GetSolarPRReportSPVWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
 
             datatype: "JSON",
@@ -423,9 +354,9 @@
 
                         let TCPr_var = 0;
 
-                        minr = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) * result[i].total_tarrif.toFixed(2));
+                        minr = ((result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif);
                         if (result[i].tar_kwh != 0) {
-                            t_var = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) / result[i].tar_kwh.toFixed(2)) * 100;
+                            t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0) {
                             e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
@@ -450,36 +381,36 @@
                             act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
-                            ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
+                            ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
                         }
                         if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
+                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
                         }
 
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
 
-                        pr_var = (act_prval.toFixed(2) - result[i].tar_pr.toFixed(2)) ;
-                        plf_var = (result[i].act_plf.toFixed(2) - result[i].tar_plf.toFixed(2));
-                        ma_var = (result[i].act_ma.toFixed(2) - result[i].tar_ma.toFixed(2));
-                        iga_var = (result[i].act_iga.toFixed(2) - result[i].tar_iga.toFixed(2));
-                        ega_var = (result[i].act_ega.toFixed(2) - result[i].tar_ega.toFixed(2));
+                        pr_var = (act_prval - result[i].tar_pr) ;
+                        plf_var = (result[i].act_plf - result[i].tar_plf);
+                        ma_var = (result[i].act_ma - result[i].tar_ma);
+                        iga_var = (result[i].act_iga - result[i].tar_iga);
+                        ega_var = (result[i].act_ega - result[i].tar_ega);
 
 
                         console.log(result[i].pr_expected_kwh, result[i].act_kwh, act_prval);
                         if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
                             gain_tar = 0;
                         } else {
-                            gain_tar = (result[i].tar_poa.toFixed(2) / result[i].tar_ghi.toFixed(2)) * 100;
+                            gain_tar = (result[i].tar_poa / result[i].tar_ghi) * 100;
                         }
                         if (result[i].act_poa == 0 || result[i].act_ghi == 0) {
                             gain_act = 0;
                         } else {
-                            gain_act = (result[i].act_poa.toFixed(2) / result[i].act_ghi.toFixed(2)) * 100;
+                            gain_act = (result[i].act_poa / result[i].act_ghi) * 100;
                         }
                         if (gain_act == 0 || gain_tar == 0) {
                             gain_var = 0;
                         } else {
-                            gain_var = (gain_act.toFixed(2) - gain_tar.toFixed(2));
+                            gain_var = (gain_act - gain_tar);
                         }
 
 
@@ -627,26 +558,26 @@
                     }
 
                     if (total_tar_kwh != 0) {
-                        avg_t_var = (((total_act_kwh.toFixed(2) - total_tar_kwh.toFixed(2)) / total_tar_kwh.toFixed(2)) * 100);
+                        avg_t_var = (((total_act_kwh - total_tar_kwh) / total_tar_kwh) * 100);
                     }
                     if (total_expected_kwh != 0) {
-                        avg_e_var = (((total_act_kwh.toFixed(2) - total_expected_kwh.toFixed(2)) / total_expected_kwh.toFixed(2)) * 100);
+                        avg_e_var = (((total_act_kwh - total_expected_kwh) / total_expected_kwh) * 100);
                     }
                     if (avg_tar_ghi != 0) {
-                        avg_ghi_var = (((avg_act_ghi.toFixed(2) - avg_tar_ghi.toFixed(2)) / avg_tar_ghi.toFixed(2)) * 100);
+                        avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
                     }
                     if (avg_tar_poa != 0) {
-                        avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
+                        avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
                     }
 
-                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
+                    avg_TCpr_var = (avg_act_TCpr - avg_tar_TCpr);
 
-                    avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
-                    avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
-                    avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
-                    avg_ma_var = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
-                    avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
-                    avg_ega_var = (avg_act_ega.toFixed(2) - avg_tar_ega.toFixed(2));
+                    avg_pr_var = (avg_act_pr - avg_tar_pr);
+                    avg_gain_var = (avg_act_gain - avg_tar_gain);
+                    avg_plf_var = (avg_act_plf - avg_tar_plf);
+                    avg_ma_var = (avg_act_ma - avg_tar_ma);
+                    avg_iga_var = (avg_act_iga - avg_tar_iga);
+                    avg_ega_var = (avg_act_ega - avg_tar_ega);
 
                     tbl += '<tfoot><tr>';
                     tbl += '<th rowspan="1"  style="width: 10%; font-weight: bold;">Grand Total</th>';
@@ -1103,20 +1034,6 @@
     // Daily Gen Report Site WIse
     function GetSolarPRReportSiteWise() {
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
-        let site = "";
-        let spv = "";
-        $('select#site option:selected').each(function () {
-            site += $(this).val() + ",";
-        });
-        site = site != "" ? site.slice(0, -1) : site;
-
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (userRole == "User" && site == "") {
-            site = site_ids;
-        }
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -1128,7 +1045,7 @@
         $.ajax({
             type: "GET",
            // url: "/WindReport/GetWindPRReportSiteWise?fy=" + fyear + " &fromDate=" + fromDate + "&toDate=" + toDate,
-            url: '@Url.Action("GetSolarPRReportSiteWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site+'&spv='+spv,
+            url: '@Url.Action("GetSolarPRReportSiteWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
             success: function (result, status, xhr) {
@@ -1275,10 +1192,10 @@
                             act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
-                            ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
+                            ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
                         }
                         if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
+                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
                         }
 
                         pr_var = (act_prval - result[i].tar_pr);
@@ -1455,19 +1372,19 @@
                     }
 
                     if (total_tar_kwh != 0) {
-                        avg_t_var = (((total_act_kwh.toFixed(2) - total_tar_kwh.toFixed(2)) / total_tar_kwh.toFixed(2)) * 100);
+                        avg_t_var = (((total_act_kwh - total_tar_kwh) / total_tar_kwh) * 100);
                     }
                     if (total_expected_kwh != 0) {
-                        avg_e_var = (((total_act_kwh.toFixed(2) - total_expected_kwh.toFixed(2)) / total_expected_kwh.toFixed(2)) * 100);
+                        avg_e_var = (((total_act_kwh - total_expected_kwh) / total_expected_kwh) * 100);
                     }
                     if (avg_tar_ghi != 0) {
-                        avg_ghi_var = (((avg_act_ghi.toFixed(2) - avg_tar_ghi.toFixed(2)) / avg_tar_ghi.toFixed(2)) * 100);
+                        avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
                     }
                     if (avg_tar_poa != 0) {
-                        avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
+                        avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
                     }
                     if (avg_tar_poa != 0) {
-                        avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
+                        avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
                     }
 
                     avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
@@ -1477,7 +1394,7 @@
                     avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
                     avg_ega_var = (avg_act_ega.toFixed(2) - avg_tar_ega.toFixed(2));
 
-                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
+                    avg_TCpr_var = (avg_act_TCpr - avg_tar_TCpr);
 
 
                     tbl += '<tfoot><tr>';
