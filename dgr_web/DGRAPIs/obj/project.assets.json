@@ -7213,11 +7213,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "G:\\solarproject\\03102023-1\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectUniqueName": "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "projectName": "DGRAPIs",
-      "projectPath": "G:\\solarproject\\03102023-1\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectPath": "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "packagesPath": "C:\\Users\\sujit\\.nuget\\packages\\",
-      "outputPath": "G:\\solarproject\\03102023-1\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
+      "outputPath": "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\sujit\\AppData\\Roaming\\NuGet\\NuGet.Config",
