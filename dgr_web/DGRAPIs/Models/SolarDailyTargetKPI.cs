@@ -32,6 +32,5 @@ namespace DGRAPIs.Models
         public dynamic Inv_PR { get; set; }
         public dynamic Inv_PLF { get; set; }
 
-
-    }
+     }
 }

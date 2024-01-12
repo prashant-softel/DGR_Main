@@ -7,8 +7,8 @@ namespace DGRAPIs.Models
 {
     public class SolarSiteMaster
     {
-        public int site_master_solar_id { get; set; }
-        public string country { get; set; }
+            public int site_master_solar_id { get; set; }
+            public string country { get; set; }
        
             public string site { get; set; }
  			public dynamic doc { get; set; }

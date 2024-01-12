@@ -224,8 +224,10 @@
                 }
                 <hr>
                 <div id="LogData"></div>
+
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
+
             <div class="toast-container position-fixed bottom-0 end-0 p-3">
                 <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                     <div class="toast-header">
@@ -302,6 +304,7 @@
                 }
             });
     });
+
     window.onload = function () {
       @* var state = "";
         var spv = "";
@@ -580,7 +583,9 @@
         });
 
     }
+
     let select = 0;
+
     function selectAll() {
         var ele = document.getElementsByName('chk');
         if (select == 0) {
@@ -1469,19 +1474,14 @@
         if (checkedIds.length === 7) {
             // Disable all other checkboxes
             document.querySelectorAll('.form-check-input:not(:checked)').forEach(function (disabledCheckbox) {
-             //   disabledCheckbox.disabled = true;
+                disabledCheckbox.disabled = true;
             });
         } else if (checkedIds.length > 7) {
-            alert("Maximum number of sites you can select is 7");
-
             // If it's greater than 7, disable all checkboxes and show the toast
             document.querySelectorAll('.form-check-input').forEach(function (disabledCheckbox) {
-
-               //disabledCheckbox.disabled = true;
+                disabledCheckbox.disabled = true;
             });
-          //  alert("Maximum number of sites you can select is 7");
             showToast("You can select at most 7 sites.", true);
-                      
         } else {
             // Enable all checkboxes
             document.querySelectorAll('.form-check-input').forEach(function (enabledCheckbox) {
@@ -1502,6 +1502,7 @@
         } else {
             toastBootstrap.hide();
         }
+
         console.log('Toast:', message);
     }
 </script>
