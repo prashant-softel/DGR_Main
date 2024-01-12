@@ -146,7 +146,7 @@
                 <hr>
 
                 <div class="col-sm-12">
-                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
+                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px; align-items: center; justify-content: center; display: flex; color:blue"></div>
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
                 <br>
@@ -497,7 +497,12 @@
                     monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
 
             }
-            else {
+                else {
+                    var division = document.getElementById("Waterfall");
+                    division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+                    division.style.display = "flex";
+                    document.getElementById("Waterfall").style.display = "flex";
+                   
             }
             tbl += '</table>';
             $("#exp_vs_actual").html("").html(tbl);
