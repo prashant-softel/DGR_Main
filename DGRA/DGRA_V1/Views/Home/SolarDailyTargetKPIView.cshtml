@@ -30,11 +30,18 @@
 <!-- DataTables -->
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
 <!--<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />-->
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
 <!-- Content Wrapper. Contains page content -->
+<style>
+    table.dataTable tbody tr > .dtfc-fixed-left, table.dataTable tbody tr > .dtfc-fixed-right {
+        z-index: 1;
+        background-color: white  !important;
+    }
+    </style>
 <div class="content-wrapper">
     <section class="content">
         <div class="card">
@@ -91,6 +98,7 @@
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
 <script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -168,37 +176,66 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th>FY</th>';
-                tbl += '<th>Date</th>';
-                tbl += '<th style="width:15%">Site</th>';
-                tbl += '<th style="width:10%">GHI (kWh/m<sup>2</sup>)</th>';
-                tbl += '<th style="width:10%">POA (kWh/m<sup>2</sup>)</th>';
-                tbl += '<th style="width:10%">kWh (in MU)</th>';
-                tbl += '<th>MA (%)</th>';
-                tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
-                tbl += '<th>PR (%)</th>';
-                tbl += '<th>PLF (%)</th>';
-            tbl += '</tr></thead>';
+                tbl += '<th style="white-space: nowrap;">FY</th>';
+                tbl += '<th style="white-space: nowrap;">Date</th>';
+                tbl += '<th style="white-space: nowrap;">Site</th>';
+                tbl += '<th style="white-space: nowrap;">GHI (kWh/m<sup>2</sup>)</th > ';
+                tbl += '<th style="white-space: nowrap;">POA (kWh/m<sup>2</sup>)</th>';
+                tbl += '<th style="white-space: nowrap;">kWh (in MU) </th>';
+                tbl += '<th style="white-space: nowrap;">MA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">IGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">EGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">PLF (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_kWh (in MU)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining _MA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_IGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_EGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_PLF (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Plant_kWh (in MU)</th>';
+                tbl += '<th style="white-space: nowrap;">Plant_PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Plant_PLF (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Inv_kWh (in MU)</th>';
+                tbl += '<th style="white-space: nowrap;">Inv_PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Inv_PLF(%)</th>';
+                tbl += '</tr></thead>';
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
 
+                        if (result[i].kWh == '') {
+                            result[i].kWh = 0;
+                        }
                         //var tempDate = new Date(result[i].date);
                         //var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + result[i].fy + '</td>';
-                        tbl += '<td class="text-left">' + formattedDate + '</td>';
-                        tbl += '<td class="text-left">' + result[i].sites + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2)+ '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].fy + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].sites + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + result[i].ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right"style="text-wrap: nowrap;">' + result[i].poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].kWh && result[i].kWh != null ? result[i].kWh.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].ma && result[i].ma != null ? result[i].ma.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].iga && result[i].iga != null ? result[i].iga.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].ega && result[i].ega != null ? result[i].ega.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].pr && result[i].pr != null ? result[i].pr.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plf && result[i].plf != null ? result[i].plf.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Toplining_kWh && result[i].Toplining_kWh != null ? result[i].Toplining_kWh.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Toplining_MA && result[i].Toplining_MA != null ? result[i].Toplining_MA.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Toplining_IGA && result[i].Toplining_IGA != null ? result[i].Toplining_IGA.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Toplining_EGA && result[i].Toplining_EGA != null ? result[i].Toplining_EGA.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Toplining_PR && result[i].Toplining_PR != null ? result[i].Toplining_PR.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Toplining_PLF && result[i].Toplining_PLF != null ? result[i].Toplining_PLF.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Plant_kWh && result[i].Plant_kWh != null ? result[i].Plant_kWh.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Plant_PR && result[i].Plant_PR != null ? result[i].Plant_PR.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Plant_PLF && result[i].Plant_PLF != null ? result[i].Plant_PLF.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Inv_kWh && result[i].Inv_kWh != null ? result[i].Inv_kWh.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Inv_PR && result[i].Inv_PR != null ? result[i].Inv_PR.toFixed(2) : '0') + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].Inv_PLF && result[i].Inv_PLF != null ? result[i].Inv_PLF.toFixed(2) : '0') + '</td>';
+
+
                         tbl += '</tr>';
                     }
                 }
@@ -212,17 +249,19 @@
                     dom: 'Bfrtip',
                     fixedHeader: true,
                     responsive: true,
-                    //scrollX: true,
+                    scrollX: true,
                     lengthChange: false,
-                    autoWidth: false,
+                    autoWidth: true,
                     paging: true,
                     lengthChange: false,
                     searching: true,
                     ordering: true,
                     info: true,
-                    autoWidth: false,
-                    responsive: false,
+                    autoWidth: true,
                     pageLength: 50,
+                    fixedColumns: {
+                        left: 3
+                    },
                     buttons: [
                         {
                             extend: 'excel',
@@ -252,7 +291,7 @@
                     }
                 });
                 document.getElementById("loader").style.display = 'none';
-                $('#example1').removeClass('dataTable');
+               // $('#example1').removeClass('dataTable');
             }
         });
     }

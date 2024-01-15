@@ -1474,14 +1474,15 @@
         if (checkedIds.length === 7) {
             // Disable all other checkboxes
             document.querySelectorAll('.form-check-input:not(:checked)').forEach(function (disabledCheckbox) {
-                disabledCheckbox.disabled = true;
+             //   disabledCheckbox.disabled = true;
             });
         } else if (checkedIds.length > 7) {
             // If it's greater than 7, disable all checkboxes and show the toast
-            document.querySelectorAll('.form-check-input').forEach(function (disabledCheckbox) {
-                disabledCheckbox.disabled = true;
+            document.querySelectorAll('.form-check-input:not(:checked)').forEach(function (disabledCheckbox) {
+               disabledCheckbox.disabled = true;
             });
-            showToast("You can select at most 7 sites.", true);
+            alert("You can select at most 7 sites.");
+           // showToast("You can select at most 7 sites.", true);      
         } else {
             // Enable all checkboxes
             document.querySelectorAll('.form-check-input').forEach(function (enabledCheckbox) {

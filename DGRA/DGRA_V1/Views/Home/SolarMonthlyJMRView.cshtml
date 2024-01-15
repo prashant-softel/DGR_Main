@@ -209,28 +209,28 @@
             datatype: "JSON",
             success: function (result, status, xhr) {
                 console.log(result);
-                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline" style="width:200%">';
+                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline" style="width:180%">';
                 tbl += '<thead  class="tbl-head"><tr>';
                 tbl += '<th style="width: 4%;">FY</th>';
-                tbl += '<th style="width: 6%;">Site</th>';
-                tbl += '<th>Plant Selection</th>';
-                tbl += '<th>Controller (kWh/INV)</th>';
-                tbl += '<th>Scheduled Units (kWh)</th>';
-                tbl += '<th>Export kWh</th>';
-                tbl += '<th>Import kWh</th>';
-                tbl += '<th>Net Export kWh</th>';
-                tbl += '<th>Export kVAh</th>';
-                tbl += '<th>Import kVAh</th>';
-                tbl += '<th>Export kVArh lag</th>';
-                tbl += '<th>Import kVArh lag</th>';
-                tbl += '<th>Export kVArh lead</th>';
-                tbl += '<th>Import kVArh lead</th>';
-                tbl += '<th>JMR Date</th>';
                 tbl += '<th>JMR Month</th>';
-                tbl += '<th>JMR Year</th>';
+                tbl += '<th style="width: 6%;">Site</th>';
+                tbl += '<th>Plant Section</th>';
+                tbl += '<th>Controller <br>(kWh/INV)</th>';
+                tbl += '<th>Scheduled Units <br>(kWh)</th>';
+                tbl += '<th>Export <br>(kWh)</th>';
+                tbl += '<th>Import <br>(kWh)</th>';
+                tbl += '<th>Net Export <br>(kWh)</th>';
+                tbl += '<th>Export <br>(kVAh)</th>';
+                tbl += '<th>Import <br>(kVAh)</th>';
+                tbl += '<th>Export <br>(kVArh lag)</th>';
+                tbl += '<th>Import <br>(kVArh lag)</th>';
+                tbl += '<th>Export <br>(kVArh lead)</th>';
+                tbl += '<th>Import <br>(kVArh lead)</th>';
+                tbl += '<th>JMR Date</th>';
+                /*tbl += '<th>JMR Year</th>'*/;
                 tbl += '<th>Line Loss</th>';
-                tbl += '<th>Line Loss (%)</th>';
-                tbl += '<th>kVARh (%)</th>';
+                tbl += '<th>Line Loss <br>(%)</th>';
+                tbl += '<th>kVARh <br>(%)</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -240,6 +240,7 @@
                        // var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + result[i].fy + '</td>';
+                        tbl += '<td class="text-left">' + result[i].jmR_Month + '</td>';
                         tbl += '<td class="text-left">' + result[i].site + '</td>';
                         tbl += '<td class="text-left">' + result[i].plant_Section + '</td>';
                         tbl += '<td class="text-right">' + result[i].controller_KWH_INV.toFixed(2) + '</td>';
@@ -254,8 +255,8 @@
                         tbl += '<td  class="text-right">' + result[i].export_kVArh_lead.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].import_kVArh_lead.toFixed(2) + '</td>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
-                        tbl += '<td class="text-left">' + result[i].jmR_Month + '</td>';
-                        tbl += '<td class="text-left">' + result[i].jmR_Year + '</td>';
+                       
+                        /*tbl += '<td class="text-left">' + result[i].jmR_Year + '</td>';*/
                         tbl += '<td  class="text-right">' + result[i].lineLoss.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].line_Loss_percentage + '</td>';
                         tbl += '<td  class="text-right">' + result[i].rkvH_percentage + '</td>';
@@ -264,7 +265,7 @@
                 }
                 else {
 
-                    tbl += '<tr><th colspan="20" style="text-align:center">Data Not Available <th></tr>';
+                    tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
                 tbl += '</table>';
                 $("#MontlyJMRView").html(tbl);
@@ -282,7 +283,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 3
+                        left: 4
                     },
                     pageLength: 50,
                     buttons: [

@@ -191,4 +191,12 @@ namespace DGRAPIs.Models
         public double targer_kwh { get; set; }
         
     }
+    public class SolarDailyInvCount
+    {
+        public string site { get; set; }
+        public Int64 inv_count { get; set; }
+
+
+
+    }
 }
