@@ -144,6 +144,7 @@ namespace DGRAPIs.BS
         Task<int> InsertSolarSiteMaster(List<SolarSiteMaster> set);
 
         Task<int> PPTCreate();
+        Task<int> dgrUploadingReminder();
         Task<int> PPTCreate_Solar();
         Task<int> MailSend(string fname);
 
@@ -950,6 +951,22 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.PPTCreate();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> dgrUploadingReminder()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.dgrUploadingReminder();
 
                 }
             }

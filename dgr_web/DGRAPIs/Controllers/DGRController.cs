@@ -2750,6 +2750,23 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Route("dgrUploadingReminder")]
+        [HttpGet]
+        public async Task<IActionResult> dgrUploadingReminder()
+        {
+            try
+            {
+                var data = await _dgrBs.dgrUploadingReminder();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         [Route("PPTCreate_Solar")]
         [HttpGet]
         public async Task<IActionResult> PPTCreate_Solar()
