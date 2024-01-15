@@ -209,11 +209,46 @@
 
                                     <!-- Monthly Section -->
                                      @*<div class="rectangle" style="position: absolute; top: 10px; left: 10px; width: 80px; height: 30px; background-color: #fff; border: 1px solid #ccc; text-align: center; line-height: 30px;">
-                                            Monthly
-                                        </div>*@
+            Monthly
+        </div>*@
                                     <div class="container" style="flex: 1; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
                                         <div class="scrollable-container" id="monthlyComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor:default;"></div>
-                                        <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Add Division</h4></div>
+                                        <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                            @*Scrollable division*@
+
+                                            @*Entire content division with BDtype site and reason.*@
+                                            <div class="addCommentMonthly" id="addCommentMonthly">
+                                                <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect" value="" style="height: 40px; margin-left: 10px;"></select>
+                                                </div>
+                                                <div id="siteContainer">
+                                                    <div class="row">
+                                                        <div class="col-sm-7">
+                                                            <div class="form-group">
+                                                                <div class="row" style="position: relative; width: 100%;">
+                                                                    <label class="col-sm-2 col-form-label text-right">Site :</label>
+                                                                    <select class="form-control col-sm-6" value="" id="sitesM" style="height: 40px;"></select>
+                                                                    <input id="ACM_commentInput" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <div id="ACM_addBD" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
+                                                        <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                                                        <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
+                                                    </div>
+                                                    <div id="ACM_addSite" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite('siteContainer')">
+                                                        <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                                                        <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
+
+                                        </div>
                                         <div class="scrollable-container" id="monthlyEdit" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Edit Division</h4></div>
                                         <div class="scrollable-container" id="monthlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Delete Division</h4></div>
                                         <div class="comment-buttons" id="monthCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
@@ -237,8 +272,8 @@
 
                                     <!-- Yearly Section -->
                                      @*<div class="rectangle" style="position: absolute; top: 10px; left: 10px; width: 80px; height: 30px; background-color: #fff; border: 1px solid #ccc; text-align: center; line-height: 30px;">
-                                            Yearly
-                                        </div>*@
+            Yearly
+        </div>*@
                                     <div class="container" style="flex: 1; overflow-y: auto; margin-top: 20px; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
                                         <div class="scrollable-container" id="yearlyComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; "></div>
                                         <div class="scrollable-container" id="yearlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h5>Yearly Add division</h5></div>
@@ -273,6 +308,7 @@
 
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
+    var mainSiteRes = [];
 $(document).ready(function () {
 $('#daterange').daterangepicker(
 {
@@ -311,7 +347,7 @@ $("#hide").css('display', 'none');
         // Return the formatted date range
         return `${formattedStartDate}-${formattedEndDate}`;
     }
-
+    var bdArray = [{ "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }];
 
 window.onload = function () {
 var state = "";
@@ -365,7 +401,6 @@ var arr1 = new Array();
 arr1 = daterange.split("-");
 var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
 var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-
 
 getChartData(site_id, fromDate, toDate);
 //setTimeout(() => {
@@ -441,7 +476,7 @@ $.ajax({
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
-            var options = "";
+                var options = "";
             for (var k = 0; k < result.length; k++) {
             options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
             }
@@ -1093,9 +1128,21 @@ $.ajax({
             mEdit.style.display = "none";
             mDelete.style.display = "none";
 
-                var snippet = '<h5>Monthly Add division</h5> </br> <div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+                getSiteForMonthAdd(true);
+                var bdOptions = '<option value="" disabled selected>Select BD type.</option>';
+                for (var k = 0; k < bdArray.length; k++) {
+                    bdOptions += '<option value="' + bdArray[k].value + '">' + bdArray[k].name + '</option>';
+                }
+                var BDMainTem = "#ACM_breakdownSelect";
+                $(BDMainTem).html("").html(bdOptions);
+                /*var snippet = '<h5>Monthly Add division</h5> </br> <div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" style="height: 40px; margin-left: 10px;"><option value="" disabled selected>Select BD type.</option><option value="egb">EGB</option><option value="bd">BD</option><option value="other">Other</option></select></div><div id="siteContainer"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></div><div class="d-flex justify-content-end"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span></div></div></div><br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';*/
 
-            $("#monthlyAdd").html("").html(snippet);
+                //var snippet = '<h5>Monthly Add division</h5> </br> <div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div><div class="d-flex justify-content-end"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span></div></div></div> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+
+
+                //<div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity= 0.90" onmouseout="this.style.opacity=0.90" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
+
+            //$("#monthlyAdd").html("").html(snippet);
             }
             function monthEdit() {
             var mDisplay = document.getElementById("monthlyComments");
@@ -1146,8 +1193,8 @@ $.ajax({
             var yEdit = document.getElementById("yearlyEdit");
             var yDelete = document.getElementById("yearlyDelete");
 
-                getSiteForAdd(true);
-                var snippet = '<h5>Yearly Add division</h5></br><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+                getSiteForYearAdd(true);
+                var snippet = '<h5>Yearly Add division</h5></br><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity= 0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
 
                 //'<h5>Yearly Add division</h5> </br> <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div> </br>  <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
             $("#yearlyAdd").html("").html(snippet);
@@ -1190,8 +1237,62 @@ $.ajax({
 
 
     }
+    var BDCounter = 1;
+    function monthAddBD() {
+        if (bdArray.length > 1) {
+            var siteBdCounter = "'siteContainer" + BDCounter + "'";
+            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="ACM_breakdownSelect' + BDCounter + '" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="siteContainer' + BDCounter + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="sitesM" style="height: 40px;"></select><input id="ACM_commentInput" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + siteBdCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
 
-    function monthAddBD(){
+            var bdContainer = document.getElementById('addCommentMonthly');
+
+            // Insert the new content at the end of siteContainer
+            bdContainer.insertAdjacentHTML('beforeend', newBDContent);
+
+            if (BDCounter == 1) {
+                var dropId = 'ACM_breakdownSelect';
+                var selectedValue = document.getElementById(dropId).value;
+                console.log('Selected BD Value:', selectedValue);
+                // Find the index of the element with site_id equal to
+                var indexToRemove = bdArray.findIndex(function (bd) {
+                    return bd.value === Number(selectedValue);
+                });
+
+                // If the element is found, remove it using splice
+                if (indexToRemove !== -1) {
+                    bdArray.splice(indexToRemove, 1);
+                }
+
+                var optionss = "";
+                for (var k = 0; k < bdArray.length; k++) {
+                    optionss += '<option value="' + bdArray[k].value + '">' + bdArray[k].name + '</option>';
+                }
+                var bdSelectTem = "#ACM_breakdownSelect" + BDCounter;
+                $(bdSelectTem).html("").html(optionss);
+            }
+            else {
+                var dropId = 'ACM_breakdownSelect' + (BDCounter -1);
+                var selectedValue = document.getElementById(dropId).value;
+                console.log('Selected BD Value:', selectedValue);
+                // Find the index of the element with site_id equal to
+                var indexToRemove = bdArray.findIndex(function (bd) {
+                    return bd.value === Number(selectedValue);
+                });
+
+                // If the element is found, remove it using splice
+                if (indexToRemove !== -1) {
+                    bdArray.splice(indexToRemove, 1);
+                }
+
+                var optionss = "";
+                for (var k = 0; k < bdArray.length; k++) {
+                    optionss += '<option value="' + bdArray[k].value + '">' + bdArray[k].name + '</option>';
+                }
+                var bdSelectTem = "#ACM_breakdownSelect" + BDCounter;
+                $(bdSelectTem).html("").html(optionss);
+            }
+
+            BDCounter++;
+        }
 
     }
     function yearAddBD() {
@@ -1218,8 +1319,58 @@ $.ajax({
         };
     }
 
+    function getSiteForMonthAdd(fliterVal) {
+        var site_ids = "";
+        if (fliterVal == false) {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        let state_id = "";
+        $('select#state option:selected').each(function () {
+            state_id += $(this).val() + ",";
+        });
+        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
 
-    function getSiteForAdd(fliterVal) {
+        let spv = "";
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (state_id != "" || spv != "") {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        //month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId
+
+        var dval = document.getElementById("daterang");
+        var nDval = dval.value;
+        const dateparseRes = parseDate(nDval);
+        var month_nos = dateparseRes.monthNumber;
+        console.log(month_nos);
+        var year = dateparseRes.year;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                console.log(result);
+                mainSiteRes = [...result];
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_id + '">' + result[k].site + '</option>';
+                }
+                //$("#sitesM").multipleSelect('destroy');
+                $("#sitesM").html("").html(options);
+
+                //$('select#sitesM').multipleSelect({
+                //    "minimumCountSelected": 2,
+                //    "placeholder": "Select Site(s)",
+                //    filter: true
+                //});
+            }
+        });
+    }
+
+    function getSiteForYearAdd(fliterVal) {
         var site_ids = "";
         if (fliterVal == false) {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -1267,6 +1418,71 @@ $.ajax({
             }
         });
     }
+
+    var siteCounter = 1; // Initialize a counter for unique identifiers
+
+    // Function to add a new set of site dropdown and input fields
+    function addSite(containerDestination) {
+        //dafault container siteContainer
+        console.log(mainSiteRes.length);
+        if (mainSiteRes.length > 1) {
+            var Newcontent = '<div class="row"> <div class="col-sm-7" > <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="sitesM' + siteCounter + '" style="height: 40px;"></select> <input id="ACM_commentInput' + siteCounter + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div > </div >';
+
+            var siteContainer = document.getElementById(containerDestination);
+
+            // Insert the new content at the end of siteContainer
+            siteContainer.insertAdjacentHTML('beforeend', Newcontent);
+
+            if (siteCounter == 1) {
+                var dropId = 'sitesM';
+                var selectedValue = document.getElementById(dropId).value;
+                console.log('Selected Value:', selectedValue);
+                // Find the index of the element with site_id equal to
+                var indexToRemove = mainSiteRes.findIndex(function (site) {
+                    return site.site_id === Number(selectedValue);
+                });
+
+                // If the element is found, remove it using splice
+                if (indexToRemove !== -1) {
+                    mainSiteRes.splice(indexToRemove, 1);
+                }
+
+                var optionss = "";
+                for (var k = 0; k < mainSiteRes.length; k++) {
+                    optionss += '<option value="' + mainSiteRes[k].site_id + '">' + mainSiteRes[k].site + '</option>';
+                }
+                var siteSelectTem = "#sitesM" + siteCounter;
+                $(siteSelectTem).html("").html(optionss);
+            } else {
+                var dropId = 'sitesM' + (siteCounter - 1);
+                var selectedValue = document.getElementById(dropId).value;
+                console.log('Selected Value:', selectedValue);
+                // Find the index of the element with site_id equal to
+                var indexToRemove = mainSiteRes.findIndex(function (site) {
+                    return site.site_id === Number(selectedValue);
+                });
+
+                // If the element is found, remove it using splice
+                if (indexToRemove !== -1) {
+                    mainSiteRes.splice(indexToRemove, 1);
+                }
+
+                var optionss = "";
+                for (var k = 0; k < mainSiteRes.length; k++) {
+                    optionss += '<option value="' + mainSiteRes[k].site_id + '">' + mainSiteRes[k].site + '</option>';
+                }
+                var siteSelectTem = "#sitesM" + siteCounter;
+                $(siteSelectTem).html("").html(optionss);
+            }
+
+            siteCounter++;
+        }
+        else {
+            showToast('No sites to Add', 5000, 'monthlyAdd');
+        }
+
+    }
+
             //Function for building display comments. 1 function.
             function addComment(container, siteName, commentText) {
             var strongElement = document.createElement('strong');
@@ -1307,6 +1523,43 @@ $.ajax({
             addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
             addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
             addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Gurvepalli', 'Comment 2 for section 2');
+    addComment(yearlyComments, 'Gurvepalli', 'Comment 2 for section 2');
 
+    function showToast(message, duration, division) {
+        // Create the toast element with inline styles
+        var toast = document.createElement('div');
+        toast.innerHTML = message + '<span onclick="closeToastByClick()" style="cursor: pointer; position: absolute; top: 0; right: 0; padding: 5px;">&times;</span>';
+        toast.style.position = 'absolute';
+        toast.style.top = '30%';
+        toast.style.right = '40%';
+        toast.style.backgroundColor = '#ee403d';
+        toast.style.color = '#ffffff';
+        toast.style.padding = '15px';
+        toast.style.borderRadius = '5px';
+        toast.style.display = 'none';
+        toast.id = "toast";
+
+        // Append the toast to the maindiv
+        document.getElementById(division).appendChild(toast);
+
+        // Show the toast
+        toast.style.display = 'block';
+
+        // Set a timeout to hide the toast after the specified duration
+        setTimeout(function () {
+            closeToast(toast);
+        }, duration);
+    }
+
+    function closeToast(toast) {
+        // Hide and remove the toast
+        toast.style.display = 'none';
+        toast.parentNode.removeChild(toast);
+    }
+
+    function closeToastByClick() {
+        var toast = document.getElementById("toast");
+        toast.style.display = "none";
+        toast.parentNode.removeChild(toast);
+    }
 </script>

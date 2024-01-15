@@ -8,6 +8,12 @@
 
 
 
+
+
+
+
+
+
 @using Microsoft.AspNetCore.Http;
 
 
@@ -18,7 +24,19 @@
 
 
 
+
+
+
+
+
+
 @inject IHttpContextAccessor HttpContextAccessor
+
+
+
+
+
+
 
 
 
@@ -39,6 +57,12 @@
 
 
 
+
+
+
+
+
+
 @{
     ViewData["Title"] = "OPWind";
 
@@ -48,7 +72,19 @@
 
 
 
+
+
+
+
+
+
 }
+
+
+
+
+
+
 
 
 
@@ -67,7 +103,19 @@
 
 
 
+
+
+
+
+
+
 }
+
+
+
+
+
+
 
 
 
@@ -87,7 +135,19 @@
 
 
 
+
+
+
+
+
+
 }
+
+
+
+
+
+
 
 
 
@@ -151,6 +211,12 @@
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>
 <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
+
+
+
+
+
+
 
 
 
@@ -1302,28 +1368,189 @@ $.ajax({
 
 
 
+
+
+
+
+
+
 @*
-     <div class="row">
-        <div class="col-sm-3">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-right">Site : </label>
-                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+             <div class="row">
+                <div class="col-sm-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                        <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                                    </div>
+                                </div>
+                            </div>
+                <div>
+                    <input type="text" />
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()">
+                    <i class="fas fa-plus" style="font-size: 18px;"></i>
+                </div>
+            </div>
+
+             <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div>
+         -------------
+
+
+
+     <div class="d-flex justify-content-end">
+        <select class="form-control col-sm-3" style="height: 40px; margin-left: 10px;">
+            <option value="" disabled selected>Select BD type.</option>
+            <option value="egb">EGB</option>
+            <option value="bd">BD</option>
+            <option value="other">Other</option>
+        </select>
+    </div>
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="form-group">
+                <div class="row" style="position: relative; width: 100%;">
+                    <label class="col-sm-2 col-form-label text-right">Site :</label>
+                    <select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select>
+                    <input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
+            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+            <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
+        </div>
+        <div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()">
+            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+            <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
+        </div>
+    </div>
+    <br>
+    <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
+
+
+             <div class="row">
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <div class="row" style="position: relative; width: 100%;">
+                        <label class="col-sm-2 col-form-label text-right">Site :</label>
+                        <select class="form-control col-sm-3" style="height: 40px;"></select>
+                        <select class="form-control col-sm-3" style="height: 40px; margin-left: 10px;">
+                            <option value="" disabled selected>Select BD type.</option>
+                            <option value="egb">EGB</option>
+                            <option value="bd">BD</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 420px;" />
+                        <div class="d-flex justify-content-end" style="margin-left: 10px;">
+                            <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
+                                <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
+                            </div>
+                            <div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()">
+                                <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
                             </div>
                         </div>
                     </div>
-        <div>
-            <input type="text" />
+                </div>
+            </div>
         </div>
-    </div>
-    <br/>
-    <div class="row">
-        <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()">
-            <i class="fas fa-plus" style="font-size: 18px;"></i>
-        </div>
-    </div>
+        <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
 
-     <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div>
+
+
+
+
+
+*@
+
+
+
+
+@*
+         dummy code functionality.
+         <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Dynamic Dropdowns and Inputs</title>
+      <style>
+        .dropdown-set {
+          margin-bottom: 10px;
+        }
+
+        #output {
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+
+      <div id="dropdownContainer">
+        <!-- Initial Set -->
+        <div class="dropdown-set">
+          <label for="dropdown1">Site:</label>
+          <select id="dropdown1" name="sites[]">
+            <option value="274">Devgarh</option>
+            <option value="222">Dangri</option>
+            <option value="234">Badnawar</option>
+            <option value="255">Gurvepalli</option>
+          </select>
+          <input type="text" name="remarks[]" placeholder="Remark">
+        </div>
+      </div>
+
+      <button onclick="addDropdownSet()">Add Set</button>
+      <button onclick="saveData()">Save</button>
+
+      <div id="output"></div>
+
+      <script>
+        function addDropdownSet() {
+          // Clone the last dropdown set
+          var lastDropdownSet = document.querySelector('.dropdown-set:last-child');
+          var newDropdownSet = lastDropdownSet.cloneNode(true);
+
+          // Update the IDs of the new set
+          var dropdownCount = document.querySelectorAll('.dropdown-set').length + 1;
+          newDropdownSet.querySelector('label').textContent = 'Site:';
+          newDropdownSet.querySelector('select').id = 'dropdown' + dropdownCount;
+          newDropdownSet.querySelector('input').placeholder = 'Remark';
+
+
+          // Append the new set to the container
+          document.getElementById('dropdownContainer').appendChild(newDropdownSet);
+        }
+
+        function saveData() {
+          var dropdownSets = document.querySelectorAll('.dropdown-set');
+          var data = [];
+
+          dropdownSets.forEach(function(set) {
+            var siteSelect = set.querySelector('select');
+            var remarkInput = set.querySelector('input');
+
+            var siteValue = siteSelect.value;
+            var remarkValue = remarkInput.value;
+
+            data.push({ site: siteValue, remark: remarkValue });
+          });
+
+          // Display the collected data below the buttons
+          var outputDiv = document.getElementById('output');
+          outputDiv.innerHTML = '<h2>Collected Data:</h2>';
+          data.forEach(function(entry, index) {
+            outputDiv.innerHTML += '<p>Set ' + (index + 1) + ': Site ' + entry.site + ', Remark ' + entry.remark + '</p>';
+          });
+        }
+      </script>
+
+    </body>
+    </html>
 
 
 
