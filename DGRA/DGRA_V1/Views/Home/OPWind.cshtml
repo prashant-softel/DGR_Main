@@ -219,7 +219,7 @@
                                             @*Entire content division with BDtype site and reason.*@
                                             <div class="addCommentMonthly" id="addCommentMonthly">
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
-                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect" onchange="ACM_bd_change()" value="" style="height: 40px; margin-left: 10px;"></select>
+                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
                                                 </div>
                                                 <div id="siteContainer">
                                                     <div class="row">
@@ -1133,7 +1133,7 @@ $.ajax({
             "commentInput": "ACM_commentInput",
 
             "siteArray": [],
-            "totalSiteCount": 0, //will be updated at the time of adding the BD set.
+            "totalSiteCount": 0, //will be updated at the time of sites are fetched.
             "siteCount": 1, //Will increment as we add the sites in this BD set.
         }
     ];
@@ -1167,17 +1167,29 @@ $.ajax({
     }
 
     //ACM change in bdDD
-    function ACM_bd_change() {
-        var dropId = 'ACM_breakdownSelect';
+    function ACM_bd_change(BDSet) {
+        elementTemp = ACM_info[BDSet];
+        var dropId = elementTemp.bdSelectDD;
         var selectedValue = document.getElementById(dropId).value;
-
+        getSiteForMonthAdd(true, selectedValue, elementTemp.siteSelectDD, BDSet)
     }
     //ACM add BREAKDOWN.
-    var BDCounter = 1;
     function monthAddBD() {
-        if (bdArray.length > 1) {
+        if (ACM_info[0].bdArray.length > 1) {
+            var BDCounter = ACM_info[0].bdSetCount;
+            var newElementBDSet = {
+                "mainDiv": "addCommentMonthly" + BDCounter,
+                "bdSelectDD": "ACM_breakdownSelect" + BDCounter,
+                "siteMainDiv": "siteContainer" + BDCounter,
+                "siteSelectDD": "sitesM" + BDCounter,
+                "commentInput": "ACM_commentInput" + BDCounter,
+
+                "siteArray": [],
+                "totalSiteCount": 0, //will be updated at the time of sites are fetched.
+                "siteCount": 1, //Will increment as we add the sites in this BD set.
+            }
             var siteBdCounter = "'siteContainer" + BDCounter + "'";
-            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="ACM_breakdownSelect' + BDCounter + '" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="siteContainer' + BDCounter + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="sitesM" style="height: 40px;"></select><input id="ACM_commentInput" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + siteBdCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
+            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="ACM_breakdownSelect' + BDCounter + '" onchange="ACM_bd_change(' + BDCounter + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="siteContainer' + BDCounter + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="sitesM" style="height: 40px;"></select><input id="ACM_commentInput" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + siteBdCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
 
             var bdContainer = document.getElementById('addCommentMonthly');
 
@@ -1227,13 +1239,15 @@ $.ajax({
                 $(bdSelectTem).html("").html(optionss);
             }
 
-            BDCounter++;
+            ACM_info[0].bdSetCount++;
+        } else {
+            showToast('No BDs to Add', 5000, 'monthlyAdd');
         }
 
     }
 
     //Get remaining sites for the first BD set site dropdown.
-    function getSiteForMonthAdd(fliterVal, bdType) {
+    function getSiteForMonthAdd(fliterVal, bdType, siteDiv, BDSetCount) {
         var site_ids = "";
         if (fliterVal == false) {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -1269,11 +1283,15 @@ $.ajax({
                 var options = "";
                 console.log(result);
                 mainSiteRes = [...result];
+                ACM_info[BDSetCount].siteArray = [...result];
+                ACM_info[BDSetCount].siteCount = result.length;
+                //after this the current BD selection Drop down should be disabled.
                 for (var k = 0; k < result.length; k++) {
                     options += '<option value="' + result[k].site_id + '">' + result[k].site + '</option>';
                 }
                 //$("#sitesM").multipleSelect('destroy');
-                $("#sitesM").html("").html(options);
+                var DestTemp = "#" + siteDiv;
+                $(DestTemp).html("").html(options);
 
                 //$('select#sitesM').multipleSelect({
                 //    "minimumCountSelected": 2,
