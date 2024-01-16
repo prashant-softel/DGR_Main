@@ -16054,7 +16054,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return finalSPVList;
         }
         //Operational Performance Comments Get Site function.
-        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId)
+        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId, string bdType)
         {
             string functionName = "OPGetSiteListForEdit";
             int result = 0;
@@ -16069,7 +16069,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<OPSite> finalSiteList = new List<OPSite>();
 
             //get data from OP table as per filter.
-            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND year IN({year}) AND type IN({siteType});";
+            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND BD_type = '{bdType}' AND year IN({year}) AND type IN({siteType});";
             try
             {
                 siteDataFromOP = await Context.GetData<OPSite>(fetchQry).ConfigureAwait(false);

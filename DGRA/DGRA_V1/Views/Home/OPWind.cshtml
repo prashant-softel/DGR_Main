@@ -219,7 +219,7 @@
                                             @*Entire content division with BDtype site and reason.*@
                                             <div class="addCommentMonthly" id="addCommentMonthly">
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
-                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect" value="" style="height: 40px; margin-left: 10px;"></select>
+                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect" onchange="ACM_bd_change()" value="" style="height: 40px; margin-left: 10px;"></select>
                                                 </div>
                                                 <div id="siteContainer">
                                                     <div class="row">
@@ -1116,9 +1116,29 @@ $.ajax({
             mAdd.style.display = "none";
             mEdit.style.display = "none";
             mDelete.style.display = "none";
-            }
-            function monthAdd() {
-            var mDisplay = document.getElementById("monthlyComments");
+    }
+
+    // ALL for ADD COMMENTS.
+    //ADD Main function 
+    var ACM_info = [
+        {
+            "bdSetCount": 1,
+            "bdArray": [{ "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+        },
+        {
+            "mainDiv": "addCommentMonthly",
+            "bdSelectDD": "ACM_breakdownSelect",
+            "siteMainDiv": "siteContainer",
+            "siteSelectDD": "sitesM",
+            "commentInput": "ACM_commentInput",
+
+            "siteArray": [],
+            "totalSiteCount": 0, //will be updated at the time of adding the BD set.
+            "siteCount": 1, //Will increment as we add the sites in this BD set.
+        }
+    ];
+    function monthAdd() {
+        var mDisplay = document.getElementById("monthlyComments");
             var mAdd = document.getElementById("monthlyAdd");
             var mEdit = document.getElementById("monthlyEdit");
             var mDelete = document.getElementById("monthlyDelete");
@@ -1128,13 +1148,14 @@ $.ajax({
             mEdit.style.display = "none";
             mDelete.style.display = "none";
 
-                getSiteForMonthAdd(true);
-                var bdOptions = '<option value="" disabled selected>Select BD type.</option>';
-                for (var k = 0; k < bdArray.length; k++) {
-                    bdOptions += '<option value="' + bdArray[k].value + '">' + bdArray[k].name + '</option>';
-                }
-                var BDMainTem = "#ACM_breakdownSelect";
-                $(BDMainTem).html("").html(bdOptions);
+        var bdOptions = '';
+        var temBDArray = [...ACM_info[0].bdArray];
+        for (var k = 0; k < temBDArray.length; k++) {
+            bdOptions += '<option value="' + temBDArray[k].value + '">' + temBDArray[k].name + '</option>';
+        }
+        var BDMainTem = "#ACM_breakdownSelect";
+        $(BDMainTem).html("").html(bdOptions);
+
                 /*var snippet = '<h5>Monthly Add division</h5> </br> <div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" style="height: 40px; margin-left: 10px;"><option value="" disabled selected>Select BD type.</option><option value="egb">EGB</option><option value="bd">BD</option><option value="other">Other</option></select></div><div id="siteContainer"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></div><div class="d-flex justify-content-end"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span></div></div></div><br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';*/
 
                 //var snippet = '<h5>Monthly Add division</h5> </br> <div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div><div class="d-flex justify-content-end"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span></div></div></div> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
@@ -1143,100 +1164,15 @@ $.ajax({
                 //<div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity= 0.90" onmouseout="this.style.opacity=0.90" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
 
             //$("#monthlyAdd").html("").html(snippet);
-            }
-            function monthEdit() {
-            var mDisplay = document.getElementById("monthlyComments");
-            var mAdd = document.getElementById("monthlyAdd");
-            var mEdit = document.getElementById("monthlyEdit");
-            var mDelete = document.getElementById("monthlyDelete");
+    }
 
-            mDisplay.style.display = "none";
-            mAdd.style.display = "none";
-            mEdit.style.display = "block";
-            mDelete.style.display = "none";
-
-            var snippet = '<h5>Monthly Edit division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
-
-            $("#monthlyEdit").html("").html(snippet);
-            }
-            function monthDelete() {
-            var mDisplay = document.getElementById("monthlyComments");
-            var mAdd = document.getElementById("monthlyAdd");
-            var mEdit = document.getElementById("monthlyEdit");
-            var mDelete = document.getElementById("monthlyDelete");
-
-            mDisplay.style.display = "none";
-            mAdd.style.display = "none";
-            mEdit.style.display = "none";
-            mDelete.style.display = "block";
-
-            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
-
-            $("#monthlyDelete").html("").html(snippet);
-
-            }
-
-            function yearDisplay() {
-            var yDisplay = document.getElementById("yearlyComments");
-            var yAdd = document.getElementById("yearlyAdd");
-            var yEdit = document.getElementById("yearlyEdit");
-            var yDelete = document.getElementById("yearlyDelete");
-
-            yDisplay.style.display = "block";
-            yAdd.style.display = "none";
-            yEdit.style.display = "none";
-            yDelete.style.display = "none";
-            }
-            function yearAdd() {
-            var yDisplay = document.getElementById("yearlyComments");
-            var yAdd = document.getElementById("yearlyAdd");
-            var yEdit = document.getElementById("yearlyEdit");
-            var yDelete = document.getElementById("yearlyDelete");
-
-                getSiteForYearAdd(true);
-                var snippet = '<h5>Yearly Add division</h5></br><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity= 0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-
-                //'<h5>Yearly Add division</h5> </br> <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div> </br>  <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-            $("#yearlyAdd").html("").html(snippet);
-
-            yDisplay.style.display = "none";
-            yAdd.style.display = "block";
-            yEdit.style.display = "none";
-            yDelete.style.display = "none";
-            }
-            function yearEdit() {
-            var yDisplay = document.getElementById("yearlyComments");
-            var yAdd = document.getElementById("yearlyAdd");
-            var yEdit = document.getElementById("yearlyEdit");
-            var yDelete = document.getElementById("yearlyDelete");
-
-            var snippet = '<h5>Yearly Edit division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-
-            $("#yearlyEdit").html("").html(snippet);
-
-            yDisplay.style.display = "none";
-            yAdd.style.display = "none";
-            yEdit.style.display = "block";
-            yDelete.style.display = "none";
-
-            }
-            function yearDelete() {
-            var yDisplay = document.getElementById("yearlyComments");
-            var yAdd = document.getElementById("yearlyAdd");
-            var yEdit = document.getElementById("yearlyEdit");
-            var yDelete = document.getElementById("yearlyDelete");
-
-            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-
-            $("#yearlyDelete").html("").html(snippet);
-
-            yDisplay.style.display = "none";
-            yAdd.style.display = "none";
-            yEdit.style.display = "none";
-            yDelete.style.display = "block";
-
+    //ACM change in bdDD
+    function ACM_bd_change() {
+        var dropId = 'ACM_breakdownSelect';
+        var selectedValue = document.getElementById(dropId).value;
 
     }
+    //ACM add BREAKDOWN.
     var BDCounter = 1;
     function monthAddBD() {
         if (bdArray.length > 1) {
@@ -1253,39 +1189,39 @@ $.ajax({
                 var selectedValue = document.getElementById(dropId).value;
                 console.log('Selected BD Value:', selectedValue);
                 // Find the index of the element with site_id equal to
-                var indexToRemove = bdArray.findIndex(function (bd) {
+                var indexToRemove = ACM_info[0].bdArray.findIndex(function (bd) {
                     return bd.value === Number(selectedValue);
                 });
 
                 // If the element is found, remove it using splice
                 if (indexToRemove !== -1) {
-                    bdArray.splice(indexToRemove, 1);
+                    ACM_info[0].bdArray.splice(indexToRemove, 1);
                 }
 
                 var optionss = "";
-                for (var k = 0; k < bdArray.length; k++) {
-                    optionss += '<option value="' + bdArray[k].value + '">' + bdArray[k].name + '</option>';
+                for (var k = 0; k < ACM_info[0].bdArray.length; k++) {
+                    optionss += '<option value="' + ACM_info[0].bdArray[k].value + '">' + ACM_info[0].bdArray[k].name + '</option>';
                 }
                 var bdSelectTem = "#ACM_breakdownSelect" + BDCounter;
                 $(bdSelectTem).html("").html(optionss);
             }
             else {
-                var dropId = 'ACM_breakdownSelect' + (BDCounter -1);
+                var dropId = 'ACM_breakdownSelect' + (BDCounter - 1);
                 var selectedValue = document.getElementById(dropId).value;
                 console.log('Selected BD Value:', selectedValue);
                 // Find the index of the element with site_id equal to
-                var indexToRemove = bdArray.findIndex(function (bd) {
+                var indexToRemove = ACM_info[0].bdArray.findIndex(function (bd) {
                     return bd.value === Number(selectedValue);
                 });
 
                 // If the element is found, remove it using splice
                 if (indexToRemove !== -1) {
-                    bdArray.splice(indexToRemove, 1);
+                    ACM_info[0].bdArray.splice(indexToRemove, 1);
                 }
 
                 var optionss = "";
-                for (var k = 0; k < bdArray.length; k++) {
-                    optionss += '<option value="' + bdArray[k].value + '">' + bdArray[k].name + '</option>';
+                for (var k = 0; k < ACM_info[0].bdArray.length; k++) {
+                    optionss += '<option value="' + ACM_info[0].bdArray[k].value + '">' + ACM_info[0].bdArray[k].name + '</option>';
                 }
                 var bdSelectTem = "#ACM_breakdownSelect" + BDCounter;
                 $(bdSelectTem).html("").html(optionss);
@@ -1295,31 +1231,9 @@ $.ajax({
         }
 
     }
-    function yearAddBD() {
 
-    }
-
-    function parseDate(dateString) {
-        const [year, month] = dateString.split('-');
-
-        if (!year || !month || isNaN(year) || isNaN(month)) {
-            // Handle invalid date string
-            return null;
-        }
-
-        const date = new Date(parseInt(year), parseInt(month) - 1); // Subtracting 1 to handle zero-based index
-
-        const monthNumber = month;
-        const shortMonthName = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
-
-        return {
-            monthNumber: monthNumber,
-            shortMonthName: shortMonthName,
-            year: year
-        };
-    }
-
-    function getSiteForMonthAdd(fliterVal) {
+    //Get remaining sites for the first BD set site dropdown.
+    function getSiteForMonthAdd(fliterVal, bdType) {
         var site_ids = "";
         if (fliterVal == false) {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -1348,7 +1262,7 @@ $.ajax({
         var year = dateparseRes.year;
         $.ajax({
             type: "POST",
-            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids,
+            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids + '&bdType=' + bdType,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -1370,58 +1284,8 @@ $.ajax({
         });
     }
 
-    function getSiteForYearAdd(fliterVal) {
-        var site_ids = "";
-        if (fliterVal == false) {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        let state_id = "";
-        $('select#state option:selected').each(function () {
-            state_id += $(this).val() + ",";
-        });
-        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
-
-        let spv = "";
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (state_id != "" || spv != "") {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        //month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId
-
-        var dval = document.getElementById("daterang");
-        var nDval = dval.value;
-        const dateparseRes = parseDate(nDval);
-        var month_nos = dateparseRes.monthNumber;
-        console.log(month_nos);
-        var year = dateparseRes.year;
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids,
-            contentType: "application/json; charset=utf-8",
-            datatype: "html",
-            success: function (result, status, xhr) {
-                var options = "";
-                for (var k = 0; k < result.length; k++) {
-                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
-                }
-                $("#sites").multipleSelect('destroy');
-                $("#sites").html("").html(options);
-
-                $('select#sites').multipleSelect({
-                    "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
-                    filter: true
-                });
-            }
-        });
-    }
-
-    var siteCounter = 1; // Initialize a counter for unique identifiers
-
     // Function to add a new set of site dropdown and input fields
+    var siteCounter = 1; // Initialize a counter for unique identifiers
     function addSite(containerDestination) {
         //dafault container siteContainer
         console.log(mainSiteRes.length);
@@ -1482,6 +1346,175 @@ $.ajax({
         }
 
     }
+
+    function monthEdit() {
+            var mDisplay = document.getElementById("monthlyComments");
+            var mAdd = document.getElementById("monthlyAdd");
+            var mEdit = document.getElementById("monthlyEdit");
+            var mDelete = document.getElementById("monthlyDelete");
+
+            mDisplay.style.display = "none";
+            mAdd.style.display = "none";
+            mEdit.style.display = "block";
+            mDelete.style.display = "none";
+
+            var snippet = '<h5>Monthly Edit division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+
+            $("#monthlyEdit").html("").html(snippet);
+            }
+    function monthDelete() {
+            var mDisplay = document.getElementById("monthlyComments");
+            var mAdd = document.getElementById("monthlyAdd");
+            var mEdit = document.getElementById("monthlyEdit");
+            var mDelete = document.getElementById("monthlyDelete");
+
+            mDisplay.style.display = "none";
+            mAdd.style.display = "none";
+            mEdit.style.display = "none";
+            mDelete.style.display = "block";
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+
+            $("#monthlyDelete").html("").html(snippet);
+
+            }
+
+
+    function yearDisplay() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+            yDisplay.style.display = "block";
+            yAdd.style.display = "none";
+            yEdit.style.display = "none";
+            yDelete.style.display = "none";
+            }
+    function yearAdd() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+                getSiteForYearAdd(true);
+                var snippet = '<h5>Yearly Add division</h5></br><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity= 0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+
+                //'<h5>Yearly Add division</h5> </br> <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div> </br>  <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+            $("#yearlyAdd").html("").html(snippet);
+
+            yDisplay.style.display = "none";
+            yAdd.style.display = "block";
+            yEdit.style.display = "none";
+            yDelete.style.display = "none";
+            }
+    function yearEdit() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+            var snippet = '<h5>Yearly Edit division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+
+            $("#yearlyEdit").html("").html(snippet);
+
+            yDisplay.style.display = "none";
+            yAdd.style.display = "none";
+            yEdit.style.display = "block";
+            yDelete.style.display = "none";
+
+            }
+    function yearDelete() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+
+            $("#yearlyDelete").html("").html(snippet);
+
+            yDisplay.style.display = "none";
+            yAdd.style.display = "none";
+            yEdit.style.display = "none";
+            yDelete.style.display = "block";
+
+
+    }
+    function yearAddBD() {
+
+    }
+
+    function parseDate(dateString) {
+        const [year, month] = dateString.split('-');
+
+        if (!year || !month || isNaN(year) || isNaN(month)) {
+            // Handle invalid date string
+            return null;
+        }
+
+        const date = new Date(parseInt(year), parseInt(month) - 1); // Subtracting 1 to handle zero-based index
+
+        const monthNumber = month;
+        const shortMonthName = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
+
+        return {
+            monthNumber: monthNumber,
+            shortMonthName: shortMonthName,
+            year: year
+        };
+    }
+
+
+    function getSiteForYearAdd(fliterVal) {
+        var site_ids = "";
+        if (fliterVal == false) {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        let state_id = "";
+        $('select#state option:selected').each(function () {
+            state_id += $(this).val() + ",";
+        });
+        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
+
+        let spv = "";
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (state_id != "" || spv != "") {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        //month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId
+
+        var dval = document.getElementById("daterang");
+        var nDval = dval.value;
+        const dateparseRes = parseDate(nDval);
+        var month_nos = dateparseRes.monthNumber;
+        console.log(month_nos);
+        var year = dateparseRes.year;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
+                }
+                $("#sites").multipleSelect('destroy');
+                $("#sites").html("").html(options);
+
+                $('select#sites').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Site(s)",
+                    filter: true
+                });
+            }
+        });
+    }
+
 
             //Function for building display comments. 1 function.
             function addComment(container, siteName, commentText) {

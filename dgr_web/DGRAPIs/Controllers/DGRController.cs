@@ -2803,12 +2803,12 @@ namespace DGRAPIs.Controllers
 
         [Route("OPGetSiteListForEdit")]
         [HttpGet]
-        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId)
+        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId, string bdType)
         {
             {
                 try
                 {
-                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, siteId);
+                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, siteId, bdType);
                     return Ok(data);
 
                 }
