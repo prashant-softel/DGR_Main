@@ -217,36 +217,36 @@
                                             @*Scrollable division*@
 
                                             @*Entire content division with BDtype site and reason.*@
-                                            <div class="addCommentMonthly" id="addCommentMonthly">
+                                            <div class="addCommentMonthly" id="ACM">
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
-                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
+                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
                                                 </div>
-                                                <div id="siteContainer">
+                                                <div id="ACM_siteContainer1">
                                                     <div class="row">
                                                         <div class="col-sm-7">
                                                             <div class="form-group">
                                                                 <div class="row" style="position: relative; width: 100%;">
                                                                     <label class="col-sm-2 col-form-label text-right">Site :</label>
-                                                                    <select class="form-control col-sm-6" value="" id="sitesM" style="height: 40px;"></select>
-                                                                    <input id="ACM_commentInput" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
+                                                                    <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select>
+                                                                    <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex justify-content-end">
-                                                    <div id="ACM_addBD" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
+                                                    <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
                                                         <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
                                                         <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
                                                     </div>
-                                                    <div id="ACM_addSite" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite('siteContainer')">
+                                                    <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)">
                                                         <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
                                                         <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <br>
-                                            <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
+                                            <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="ACMSaveData()">Save</button>
 
                                         </div>
                                         <div class="scrollable-container" id="monthlyEdit" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Edit Division</h4></div>
@@ -1123,14 +1123,14 @@ $.ajax({
     var ACM_info = [
         {
             "bdSetCount": 1,
-            "bdArray": [{ "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
         },
         {
-            "mainDiv": "addCommentMonthly",
-            "bdSelectDD": "ACM_breakdownSelect",
-            "siteMainDiv": "siteContainer",
-            "siteSelectDD": "sitesM",
-            "commentInput": "ACM_commentInput",
+            "mainDiv": "ACM",
+            "bdSelectDD": "ACM_breakdownSelect1",
+            "siteMainDiv": "ACM_siteContainer1",
+            "siteSelectDD": "ACM_sitesM1",
+            "commentInput": "ACM_commentInput1",
 
             "siteArray": [],
             "totalSiteCount": 0, //will be updated at the time of sites are fetched.
@@ -1153,7 +1153,7 @@ $.ajax({
         for (var k = 0; k < temBDArray.length; k++) {
             bdOptions += '<option value="' + temBDArray[k].value + '">' + temBDArray[k].name + '</option>';
         }
-        var BDMainTem = "#ACM_breakdownSelect";
+        var BDMainTem = "#ACM_breakdownSelect1";
         $(BDMainTem).html("").html(bdOptions);
 
                 /*var snippet = '<h5>Monthly Add division</h5> </br> <div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" style="height: 40px; margin-left: 10px;"><option value="" disabled selected>Select BD type.</option><option value="egb">EGB</option><option value="bd">BD</option><option value="other">Other</option></select></div><div id="siteContainer"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></div><div class="d-flex justify-content-end"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span></div></div></div><br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';*/
@@ -1175,71 +1175,87 @@ $.ajax({
     }
     //ACM add BREAKDOWN.
     function monthAddBD() {
-        if (ACM_info[0].bdArray.length > 1) {
+        console.log("ACM_info array before inserting BD set.");
+        console.log(ACM_info);
+        if (ACM_info[0].bdArray.length > 2) {
+            ACM_info[0].bdSetCount++;
             var BDCounter = ACM_info[0].bdSetCount;
             var newElementBDSet = {
-                "mainDiv": "addCommentMonthly" + BDCounter,
+                "mainDiv": "ACM",
                 "bdSelectDD": "ACM_breakdownSelect" + BDCounter,
-                "siteMainDiv": "siteContainer" + BDCounter,
-                "siteSelectDD": "sitesM" + BDCounter,
+                "siteMainDiv": "ACM_siteContainer" + BDCounter,
+                "siteSelectDD": "ACM_sitesM" + BDCounter,
                 "commentInput": "ACM_commentInput" + BDCounter,
 
                 "siteArray": [],
                 "totalSiteCount": 0, //will be updated at the time of sites are fetched.
                 "siteCount": 1, //Will increment as we add the sites in this BD set.
             }
-            var siteBdCounter = "'siteContainer" + BDCounter + "'";
-            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="ACM_breakdownSelect' + BDCounter + '" onchange="ACM_bd_change(' + BDCounter + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="siteContainer' + BDCounter + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="sitesM" style="height: 40px;"></select><input id="ACM_commentInput" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + siteBdCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
+            ACM_info.push(newElementBDSet);
+            var thisEle = ACM_info[BDCounter];
+            /*var siteBdCounter = "'" + thisEle.siteMainDiv + "'";*/
+            var idSite = thisEle.siteSelectDD + "_" + thisEle.siteCount;
+            var idInput = thisEle.commentInput + "_" + thisEle.siteCount;
+            console.log("Created Site and input ids : " + idSite + " and " + idInput);
 
-            var bdContainer = document.getElementById('addCommentMonthly');
+            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACM_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select><input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
+
+            var bdContainer = document.getElementById('ACM');
 
             // Insert the new content at the end of siteContainer
             bdContainer.insertAdjacentHTML('beforeend', newBDContent);
 
-            if (BDCounter == 1) {
-                var dropId = 'ACM_breakdownSelect';
-                var selectedValue = document.getElementById(dropId).value;
-                console.log('Selected BD Value:', selectedValue);
-                // Find the index of the element with site_id equal to
-                var indexToRemove = ACM_info[0].bdArray.findIndex(function (bd) {
-                    return bd.value === Number(selectedValue);
-                });
+            //remove the bd type selected in previous set dropdown.
+            var prevEle = ACM_info[BDCounter - 1];
+            var dropId = prevEle.bdSelectDD; //'ACM_breakdownSelect1';
+            var selectedValue = document.getElementById(dropId).value;
+            console.log('Selected BD Value:', selectedValue);
+            // Find the index of the element with site_id equal to
+            var indexToRemove = ACM_info[0].bdArray.findIndex(function (bd) {
+                return bd.value === Number(selectedValue);
+            });
 
-                // If the element is found, remove it using splice
-                if (indexToRemove !== -1) {
-                    ACM_info[0].bdArray.splice(indexToRemove, 1);
-                }
-
-                var optionss = "";
-                for (var k = 0; k < ACM_info[0].bdArray.length; k++) {
-                    optionss += '<option value="' + ACM_info[0].bdArray[k].value + '">' + ACM_info[0].bdArray[k].name + '</option>';
-                }
-                var bdSelectTem = "#ACM_breakdownSelect" + BDCounter;
-                $(bdSelectTem).html("").html(optionss);
-            }
-            else {
-                var dropId = 'ACM_breakdownSelect' + (BDCounter - 1);
-                var selectedValue = document.getElementById(dropId).value;
-                console.log('Selected BD Value:', selectedValue);
-                // Find the index of the element with site_id equal to
-                var indexToRemove = ACM_info[0].bdArray.findIndex(function (bd) {
-                    return bd.value === Number(selectedValue);
-                });
-
-                // If the element is found, remove it using splice
-                if (indexToRemove !== -1) {
-                    ACM_info[0].bdArray.splice(indexToRemove, 1);
-                }
-
-                var optionss = "";
-                for (var k = 0; k < ACM_info[0].bdArray.length; k++) {
-                    optionss += '<option value="' + ACM_info[0].bdArray[k].value + '">' + ACM_info[0].bdArray[k].name + '</option>';
-                }
-                var bdSelectTem = "#ACM_breakdownSelect" + BDCounter;
-                $(bdSelectTem).html("").html(optionss);
+            // If the element is found, remove it using splice
+            if (indexToRemove !== -1) {
+                ACM_info[0].bdArray.splice(indexToRemove, 1);
             }
 
-            ACM_info[0].bdSetCount++;
+            var optionss = "";
+            for (var k = 0; k < ACM_info[0].bdArray.length; k++) {
+                optionss += '<option value="' + ACM_info[0].bdArray[k].value + '">' + ACM_info[0].bdArray[k].name + '</option>';
+            }
+            var bdSelectTem = "#" + thisEle.bdSelectDD //"#ACM_breakdownSelect" + BDCounter;
+            $(bdSelectTem).html("").html(optionss);
+
+
+            //ACM_info[0].bdSetCount++;
+            console.log("ACM_info array after inserting BD set.");
+            console.log(ACM_info);
+
+            //if (BDCounter == 1) {
+                
+            //}
+            //else {
+            //    var dropId = 'ACM_breakdownSelect' + (BDCounter - 1);
+            //    var selectedValue = document.getElementById(dropId).value;
+            //    console.log('Selected BD Value:', selectedValue);
+            //    // Find the index of the element with site_id equal to
+            //    var indexToRemove = ACM_info[0].bdArray.findIndex(function (bd) {
+            //        return bd.value === Number(selectedValue);
+            //    });
+
+            //    // If the element is found, remove it using splice
+            //    if (indexToRemove !== -1) {
+            //        ACM_info[0].bdArray.splice(indexToRemove, 1);
+            //    }
+
+            //    var optionss = "";
+            //    for (var k = 0; k < ACM_info[0].bdArray.length; k++) {
+            //        optionss += '<option value="' + ACM_info[0].bdArray[k].value + '">' + ACM_info[0].bdArray[k].name + '</option>';
+            //    }
+            //    var bdSelectTem = "#ACM_breakdownSelect" + BDCounter;
+            //    $(bdSelectTem).html("").html(optionss);
+            //}
         } else {
             showToast('No BDs to Add', 5000, 'monthlyAdd');
         }
@@ -1248,6 +1264,7 @@ $.ajax({
 
     //Get remaining sites for the first BD set site dropdown.
     function getSiteForMonthAdd(fliterVal, bdType, siteDiv, BDSetCount) {
+        //console.log("Inside getsiteforAddComments siteDiv: " + siteDiv + " BDSetCount : " + BDSetCount);
         var site_ids = "";
         if (fliterVal == false) {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -1274,6 +1291,7 @@ $.ajax({
         var month_nos = dateparseRes.monthNumber;
         console.log(month_nos);
         var year = dateparseRes.year;
+        var ele = ACM_info[BDSetCount];
         $.ajax({
             type: "POST",
             url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids + '&bdType=' + bdType,
@@ -1282,15 +1300,16 @@ $.ajax({
             success: function (result, status, xhr) {
                 var options = "";
                 console.log(result);
-                mainSiteRes = [...result];
-                ACM_info[BDSetCount].siteArray = [...result];
-                ACM_info[BDSetCount].siteCount = result.length;
+                //mainSiteRes = [...result];
+                ele.siteArray = [...result];
+                ele.totalSiteCount = result.length;
                 //after this the current BD selection Drop down should be disabled.
                 for (var k = 0; k < result.length; k++) {
                     options += '<option value="' + result[k].site_id + '">' + result[k].site + '</option>';
                 }
                 //$("#sitesM").multipleSelect('destroy');
-                var DestTemp = "#" + siteDiv;
+                var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
+                //console.log("destination dropdoen name : " + DestTemp);
                 $(DestTemp).html("").html(options);
 
                 //$('select#sitesM').multipleSelect({
@@ -1303,66 +1322,107 @@ $.ajax({
     }
 
     // Function to add a new set of site dropdown and input fields
-    var siteCounter = 1; // Initialize a counter for unique identifiers
-    function addSite(containerDestination) {
-        //dafault container siteContainer
-        console.log(mainSiteRes.length);
-        if (mainSiteRes.length > 1) {
-            var Newcontent = '<div class="row"> <div class="col-sm-7" > <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="sitesM' + siteCounter + '" style="height: 40px;"></select> <input id="ACM_commentInput' + siteCounter + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div > </div >';
+    //var siteCounter = 1; // Initialize a counter for unique identifiers
+    function addSite(BDCount) {
+        // dafault container siteContainer
+        // current bd container element from ACM_info
+        //console.log(mainSiteRes.length);
+        var thisElement = ACM_info[BDCount];
+        console.log("ACM_info array before inserting site set.");
+        console.log(ACM_info);
 
+        if (thisElement.siteArray.length > 1) {
+            thisElement.siteCount++;
+            var idSite = thisElement.siteSelectDD + "_" + thisElement.siteCount;
+            var idInput = thisElement.commentInput + "_" + thisElement.siteCount;
+            console.log("Created Site and input ids : " + idSite + " and " + idInput );
+
+            var Newcontent = '<div class="row"> <div class="col-sm-7" > <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select> <input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div > </div >';
+            //'ACM_siteContainer1'
+            var containerDestination = thisElement.siteMainDiv;
             var siteContainer = document.getElementById(containerDestination);
 
             // Insert the new content at the end of siteContainer
             siteContainer.insertAdjacentHTML('beforeend', Newcontent);
 
-            if (siteCounter == 1) {
-                var dropId = 'sitesM';
-                var selectedValue = document.getElementById(dropId).value;
+            if (thisElement.siteCount > 1) {
+                //get prevoious dropdown id
+                var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
+                console.log("previous site DD Id" + previous_siteDD);
+                var selectedValue = document.getElementById(previous_siteDD).value;
                 console.log('Selected Value:', selectedValue);
                 // Find the index of the element with site_id equal to
-                var indexToRemove = mainSiteRes.findIndex(function (site) {
+                var indexToRemove = thisElement.siteArray.findIndex(function (site) {
                     return site.site_id === Number(selectedValue);
                 });
 
                 // If the element is found, remove it using splice
                 if (indexToRemove !== -1) {
-                    mainSiteRes.splice(indexToRemove, 1);
+                    thisElement.siteArray.splice(indexToRemove, 1);
                 }
 
                 var optionss = "";
-                for (var k = 0; k < mainSiteRes.length; k++) {
-                    optionss += '<option value="' + mainSiteRes[k].site_id + '">' + mainSiteRes[k].site + '</option>';
+                for (var k = 0; k < thisElement.siteArray.length; k++) {
+                    optionss += '<option value="' + thisElement.siteArray[k].site_id + '">' + thisElement.siteArray[k].site + '</option>';
                 }
-                var siteSelectTem = "#sitesM" + siteCounter;
-                $(siteSelectTem).html("").html(optionss);
-            } else {
-                var dropId = 'sitesM' + (siteCounter - 1);
-                var selectedValue = document.getElementById(dropId).value;
-                console.log('Selected Value:', selectedValue);
-                // Find the index of the element with site_id equal to
-                var indexToRemove = mainSiteRes.findIndex(function (site) {
-                    return site.site_id === Number(selectedValue);
-                });
-
-                // If the element is found, remove it using splice
-                if (indexToRemove !== -1) {
-                    mainSiteRes.splice(indexToRemove, 1);
-                }
-
-                var optionss = "";
-                for (var k = 0; k < mainSiteRes.length; k++) {
-                    optionss += '<option value="' + mainSiteRes[k].site_id + '">' + mainSiteRes[k].site + '</option>';
-                }
-                var siteSelectTem = "#sitesM" + siteCounter;
+                var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
                 $(siteSelectTem).html("").html(optionss);
             }
+            console.log("ACM_info array after inserting site set.");
+            console.log(ACM_info);
+            //if (siteCounter == 1) {
+                
+            //} else {
+            //    var dropId = 'ACM_sitesM' + (siteCounter - 1);
+            //    var selectedValue = document.getElementById(dropId).value;
+            //    console.log('Selected Value:', selectedValue);
+            //    // Find the index of the element with site_id equal to
+            //    var indexToRemove = mainSiteRes.findIndex(function (site) {
+            //        return site.site_id === Number(selectedValue);
+            //    });
 
-            siteCounter++;
+            //    // If the element is found, remove it using splice
+            //    if (indexToRemove !== -1) {
+            //        mainSiteRes.splice(indexToRemove, 1);
+            //    }
+
+            //    var optionss = "";
+            //    for (var k = 0; k < mainSiteRes.length; k++) {
+            //        optionss += '<option value="' + mainSiteRes[k].site_id + '">' + mainSiteRes[k].site + '</option>';
+            //    }
+            //    var siteSelectTem = "#ACM_sitesM" + siteCounter;
+            //    $(siteSelectTem).html("").html(optionss);
+            //}
+
+            //siteCounter++;
         }
         else {
             showToast('No sites to Add', 5000, 'monthlyAdd');
         }
 
+    }
+
+    //function to get the data from all input boxes and select boxes.
+    function ACMSaveData() {
+        console.log("ACM_info after clicking save button :");
+        console.log(ACM_info);
+        var ACMFinalData = [];
+
+        var bdSetCount = ACM_info[0].bdSetCount;
+        for (var k = 1; k <= bdSetCount; k++) {
+            var BDelement = ACM_info[k];
+            var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+            for (var j = 1; j <= BDelement.siteCount; j++) {
+                var eachData = {
+                    "BDType": bdType,
+                    "site_id": document.getElementById((BDelement.siteSelectDD + "_" + j)).value,
+                    "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                }
+                ACMFinalData.push(eachData);
+            }
+        }
+        console.log("data after extracting : ");
+        console.log(ACMFinalData);
     }
 
     function monthEdit() {
