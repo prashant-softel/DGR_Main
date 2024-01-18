@@ -5299,7 +5299,7 @@ where   t2.state=t1.state  and t3.inverter=t1.location_name  " + filter + " grou
             string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,t2.country,t1.state,
 t2.spv,t1.site,location_name as Inverter, (t3.dc_capacity)as dc_capacity,
 (t3.ac_capacity)as ac_capacity,
-(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh,
+(sum(ghi))as ghi,(sum(poa))as poa,sum(expected_kwh)as expected_kwh,
 sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,(sum(inv_pr)/count(inv_pr)) as inv_pr,
 (sum(plant_pr)/count(plant_pr)) as plant_pr,
 sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf,
@@ -7364,6 +7364,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> SetApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
             int finalResult = 0;
+            string functionName = "SetApprovalFlagForImportBatches";
             approval_InformationLog("Inside SetApprovalFlagForImportBatches wind function : ");
             string qry = "select t1.*,t2.site,t2.country,t2.state,t3.feeder from uploading_file_generation as t1 left join site_master as t2 on t2.site_master_id=t1.site_id left join location_master as t3 on t3.site_master_id=t1.site_id and t3.status =1  where import_batch_id IN(" + dataId + ")";
 
@@ -7487,30 +7488,36 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if(finalResult == 6)
                 {
-                    try
+                    if(_DataTML.Count > 0)
                     {
-                        if(_DataTML.Count > 0)
+                        if(_DataTML[0].site_id > 0)
                         {
-                            if(_DataTML[0].site_id > 0)
+                            int result = await UpdateManualBdForTMLData(date, site_id, 9);
+                            if (result == 2)
                             {
-                                int result = await UpdateManualBdForTMLData(date, site_id, 9);
-                                if (result == 2)
-                                {
-                                    finalResult = 7;
-                                }
-                                else
-                                {
-                                    finalResult = 0;
-                                }
+                                finalResult = 7;
+                            }
+                            else
+                            {
+                                finalResult = 0;
                             }
                         }
                     }
-                    catch(Exception e)
-                    {
-                        string msg = "Exception during UpdateManualBD function call, due to : " + e.ToString();
-                        approval_ErrorLog(msg);
-                        return 0;
-                    }
+                }
+
+            }
+            if (finalResult != 0 || finalResult > 0)
+            {
+                int returnRes = 0;
+                try
+                {
+                    returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status, 1);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception in executing UploadStatusOperations function, due to : " + e.ToString();
+                    await LogError(0, 1, 5, functionName, msg, backend);
+                    return 0;
                 }
 
             }
@@ -7703,8 +7710,21 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             approval_InformationLog("At the end of function finaResult : " + finalResult);
             info = " SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
-            LogInfo(0, 1, 5, functionName, info, backend);
-
+            await LogInfo(0, 1, 5, functionName, info, backend);
+            if(finalResult !=0 || finalResult > 0)
+            {
+                int returnRes = 0;
+                try
+                {
+                    returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status, 2);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception in executing UploadStatusOperations function, due to : " + e.ToString();
+                    await LogError(0, 1, 5, functionName, msg, backend);
+                    return 0;
+                }
+            }
             return finalResult;
         }
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
@@ -15197,6 +15217,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                    
             }
             
+            
             string qry1 = "";
             if (prType == "AOP")
             {
@@ -16276,7 +16297,58 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
         }
+	 //Changes
+        
+          internal async Task<List<SolarUploadingFileGeneration2>>GetSolarGenerationData(string import_batch_id)
+        {
+            string qry = "select * from uploading_file_generation_solar where  import_batch_id IN( " + import_batch_id + ")";
+            List<SolarUploadingFileGeneration2> solarupfile = new List<SolarUploadingFileGeneration2>();
+ 
+            solarupfile =await Context.GetData<SolarUploadingFileGeneration2>(qry).ConfigureAwait(false);
+            return solarupfile;
+        }
+          internal async Task<List<SolarUploadingFileBreakDown1a>>GetSolarBreakDownData(string import_batch_id)
+        {
+            string qry = "select * from uploading_file_breakdown_solar  where  import_batch_id IN( " + import_batch_id + ")";
+            List<SolarUploadingFileBreakDown1a> solarbreakreport = new List<SolarUploadingFileBreakDown1a>();
+            solarbreakreport = await Context.GetData<SolarUploadingFileBreakDown1a>(qry).ConfigureAwait(false);
+            return solarbreakreport;
+        }
 
+        internal async Task<List<SolarUploadingPyranoMeter1Min_1a>>GetSolarPyranoMeter1minData(string import_batch_id)
+        {
+
+            //string qry = "select* from uploading_pyranometer_1_min_solar  where  import_batch_id IN( " + import_batch_id + ")";
+            string qry = "SELECT py.*, s.site FROM `uploading_pyranometer_1_min_solar` as py join `site_master_solar` as s on s.site_master_solar_id = py.site_id where py.import_batch_id IN( " + import_batch_id + ")";
+            List<SolarUploadingPyranoMeter1Min_1a> solarupfilemin1 = new List<SolarUploadingPyranoMeter1Min_1a>();
+            solarupfilemin1 = await Context.GetData<SolarUploadingPyranoMeter1Min_1a>(qry).ConfigureAwait(false);
+            return solarupfilemin1;   
+        }
+
+        internal async Task<List<SolarUploadingPyranoMeter15Min_1>>GetSolarPyranoMeter15minData(string import_batch_id)
+        {
+            //string qry = "select * from uploading_pyranometer_15_min_solar where   import_batch_id IN( " + import_batch_id + ")";
+            string qry = "SELECT py.*, s.site FROM `uploading_pyranometer_15_min_solar` as py join `site_master_solar` as s on s.site_master_solar_id = py.site_id where py.import_batch_id IN( " + import_batch_id + ")";
+            List<SolarUploadingPyranoMeter15Min_1> solarupfilemin15 = new List<SolarUploadingPyranoMeter15Min_1>();
+            solarupfilemin15 = await Context.GetData<SolarUploadingPyranoMeter15Min_1>(qry).ConfigureAwait(false);
+            return solarupfilemin15;
+        }
+         internal async Task<List<WindUploadingFilegeneration1a>>GetWindGenerationData(string import_batch_id)
+        {
+            string qry = "select * from uploading_file_generation where  import_batch_id IN( " + import_batch_id + ")";
+          //  string qry= "SELECT py.*,s.site FROM `uploading_pyranometer_1_min_solar` as py join `site_master_solar` as s on s.site_master_solar_id = py.site_id where py.import_batch_id ="+ import_batch_id+"";
+            List<WindUploadingFilegeneration1a> windup = new List<WindUploadingFilegeneration1a>();
+            windup = await Context.GetData<WindUploadingFilegeneration1a>(qry).ConfigureAwait(false);
+            return windup;
+        }
+        internal async Task<List<WindUploadingFileBreakDown1a>>GetWindBreakdownData(string import_batch_id)
+        {
+            string qry = "select * from uploading_file_breakdown where  import_batch_id IN( " + import_batch_id + ")";
+            List<WindUploadingFileBreakDown1a> solarupfilewind = new List<WindUploadingFileBreakDown1a>();
+
+            solarupfilewind= await Context.GetData<WindUploadingFileBreakDown1a>(qry).ConfigureAwait(false);
+            return solarupfilewind;
+        }
         public void GetFinancialAndCurrentYear(string fromDate, out int financialYear, out int currentYear)
         {
             DateTime date = DateTime.Parse(fromDate);
@@ -16357,6 +16429,302 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\TML_Log.txt", "*Info*:" + Message + "\r\n");
+        }
+        //DGR VERSION 3 FUNCTIONS
+        
+        internal async Task<int> Upload_StatusOperation(string dataId, int approvedBy, string approvedByName, int status, int SolarOrWind)
+        {
+            //SolarOrWind = 2 Solar, 1= Wind;
+            int finalResult = 0;
+            string functionName = "Upload_StatusOperation";
+            if (SolarOrWind == 2)
+            {
+                List<ImportBatchesForUploadStatus> _importBatchesData = new List<ImportBatchesForUploadStatus>();
+                string fetchImportBatchesQry = "SELECT import_batch_id, import_type, site_id, import_date, data_date, imported_by, approved_by, is_approved FROM import_batches WHERE import_batch_id IN(" + dataId + ");";
+                string UpdateInsertQryStart = "INSERT INTO upload_status (type, site_id, import_date, data_date, approved_by, uploaded_by, import_batch_id, automation, approve_count) VALUES ";
+                string insertValues = "";
+                string updateValues = "";
+                string finalUpdateInsertQuery = "";
+
+                try
+                {
+                    _importBatchesData = await Context.GetData<ImportBatchesForUploadStatus>(fetchImportBatchesQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+                if (finalResult == 1)
+                {
+                    foreach(var unit in _importBatchesData)
+                    {
+                        string importDateCon = Convert.ToDateTime(unit.import_date).ToString("yyyy-MM-dd");
+                        insertValues = "(" + unit.import_type + ", " + unit.site_id + ", '" + importDateCon + "', '" + unit.data_date + "', " + unit.approved_by + ", " + unit.imported_by + ", " + unit.import_batch_id + ", 1, 1)";
+                        updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', approved_by = " + unit.approved_by +", uploaded_by = " + unit.imported_by + ", import_batch_id = " + unit.import_batch_id + ", automation = 1, approve_count = approve_count + 1;";
+                        finalUpdateInsertQuery += UpdateInsertQryStart + insertValues + updateValues;
+                    }
+
+                    try
+                    {
+                        int insertResult = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                        await LogError(0, 1, 7, functionName, msg, backend);
+                        finalResult = 0;
+                        return finalResult;
+                    }
+                }
+            }
+            else if (SolarOrWind == 1)
+            {
+                List<ImportBatchesForUploadStatus> _importBatchesData = new List<ImportBatchesForUploadStatus>();
+                string fetchImportBatchesQry = "SELECT import_batch_id, import_type, site_id, import_date, data_date, imported_by, approved_by, is_approved FROM import_batches WHERE import_batch_id IN(" + dataId + ");";
+                string UpdateInsertQryStart = "INSERT INTO upload_status (type, site_id, import_date, data_date, approved_by, uploaded_by, import_batch_id, automation, approve_count) VALUES ";
+                string insertValues = "";
+                string updateValues = "";
+                string finalUpdateInsertQuery = "";
+
+                try
+                {
+                    _importBatchesData = await Context.GetData<ImportBatchesForUploadStatus>(fetchImportBatchesQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+                if (finalResult == 1)
+                {
+                    foreach (var unit in _importBatchesData)
+                    {
+                        string importDateCon = Convert.ToDateTime(unit.import_date).ToString("yyyy-MM-dd");
+                        insertValues = "(" + unit.import_type + ", " + unit.site_id + ", '" + importDateCon + "', '" + unit.data_date + "', " + unit.approved_by + ", " + unit.imported_by + ", " + unit.import_batch_id + ", 1, 1)";
+                        updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', approved_by = " + unit.approved_by + ", uploaded_by = " + unit.imported_by + ", import_batch_id = " + unit.import_batch_id + ", automation = 1, approve_count = approve_count + 1;";
+                        finalUpdateInsertQuery += UpdateInsertQryStart + insertValues + updateValues;
+                    }
+
+                    try
+                    {
+                        int insertResult = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                        await LogError(0, 1, 7, functionName, msg, backend);
+                        finalResult = 0;
+                        return finalResult;
+                    }
+                }
+            }
+            return finalResult;
+        }
+        //Fetch Heat Map data from upload_status table.
+        internal async Task<List<Dictionary<string, object>>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+
+            List<DateTime> allDates = new List<DateTime>();
+            for (DateTime date = Convert.ToDateTime(fromDate); date <= Convert.ToDateTime(toDate); date = date.AddDays(1))
+             allDates.Add(date);
+            List<String> allDates1 = new List<String>();
+            for (DateTime date = Convert.ToDateTime(fromDate); date <= Convert.ToDateTime(toDate); date = date.AddDays(1))
+            {
+                string tempDate = Convert.ToString(Convert.ToDateTime(date).ToString("yyyy-MM-dd"));
+                allDates1.Add(tempDate);
+            }
+
+
+            var resultMap = new Dictionary<string, List<Dictionary<string, object>>>();
+            //upload_status has 2 as solar site, 
+
+            if (siteType == 1)
+            {
+                List<HeatMapData2> _HeatMapData = new List<HeatMapData2>();
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.TML_uploaded,t1.expected_TML,t1.actual_TML,t1.wtg_count FROM upload_status as t1 join site_master as t2 on t2.site_master_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+
+                try
+                {
+                    _HeatMapData = await Context.GetData<HeatMapData2>(qry).ConfigureAwait(false);
+                  
+                    foreach (HeatMapData2 heatmap in _HeatMapData)
+                    {
+                        string siteName = heatmap.site;
+                        if (!resultMap.ContainsKey(siteName))
+                        {
+                            resultMap[siteName] = new List<Dictionary<string, object>>();
+                        }
+                        string date = heatmap.data_date.ToString("yyyy-MM-dd");
+                        int approveCount = heatmap.approve_count;
+                        int automation = heatmap.automation;
+                        int tml_uploaded = heatmap.TML_uploaded;
+                        int expected_tml = heatmap.expected_TML;
+                        int actual_tml = heatmap.actual_TML;
+                        int total_wtg_count = heatmap.wtg_count;
+                        
+                        IDictionary<string, object> dictionary = new Dictionary<string, object>();
+                        dictionary.Add(new KeyValuePair<string, object>("date", date));
+                        dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
+                        dictionary.Add(new KeyValuePair<string, object>("uploded_tml", tml_uploaded));
+                        dictionary.Add(new KeyValuePair<string, object>("expected_tml", expected_tml));
+                        dictionary.Add(new KeyValuePair<string, object>("actual_tml", actual_tml));
+                        dictionary.Add(new KeyValuePair<string, object>("wtg_count", total_wtg_count));
+                        /* Dictionary<string, object> dataEntry = new Dictionary<string, object>
+                        {
+                            { date, approveCount }
+                        };
+                        resultMap[siteName].Add(dataEntry);*/
+                        resultMap[siteName].Add((Dictionary<string, object>)dictionary);
+                    }
+                    //Convert resultMap to the desired format
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                }
+            }
+            else
+            {
+                List<HeatMapData1> _HeatMapData = new List<HeatMapData1>();
+                //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.approve_count FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '"+ toDate + "' and t1.site_id in ("+site+") and type = '"+ siteType + "' GROUP BY t1.site_id, t1.data_date";
+
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+
+                try
+                {
+                    _HeatMapData = await Context.GetData<HeatMapData1>(qry).ConfigureAwait(false);
+
+                    /* foreach (HeatMapData1 heatmap in _HeatMapData)
+                    {
+                        string siteName = heatmap.site;
+                        if (!resultMap.ContainsKey(siteName))
+                        {
+                            resultMap[siteName] = new List<Dictionary<string, object>>();
+                        }
+                        string date = heatmap.data_date.ToString("yyyy-MM-dd");
+                        int approveCount = heatmap.approve_count;
+                    
+                        Dictionary<string, object> dataEntry = new Dictionary<string, object>
+                        {
+                            { date, approveCount }
+                        };
+                        resultMap[siteName].Add(dataEntry);
+                    }*/
+
+
+                    List<HeatMapData1> resultListNew = new List<HeatMapData1>();
+
+                    foreach (var dateStr in allDates1)
+                    {
+                        var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
+
+                        if (entry != null)
+                        {
+                            // Date present in heatmapData, add the entry as is
+                            resultListNew.Add(entry);
+                        }
+                        else
+                        {
+                            // Date not present, create a new entry with default values
+                            HeatMapData1 newEntry = new HeatMapData1
+                            {
+                                data_date = dateStr,
+                                site = "Alote",
+                                site_id = 3,
+                                pyranometer15min = -1,
+                                pyranometer1min = -1,
+                                automation = -1
+                            };
+                            resultListNew.Add(newEntry);
+                        }
+                    }
+                    //int haresh = 1;
+                    foreach (var dateStr in allDates1)
+                    {
+                        foreach (HeatMapData1 heatmap in _HeatMapData)
+                    //foreach (var heatmap in resultListNew)
+                    {
+                        Boolean matchvalue = false;
+                            //foreach (var element in allDates1)
+                            //{
+                           
+
+                            string siteName = heatmap.site;
+                            if (!resultMap.ContainsKey(siteName))
+                            {
+                                resultMap[siteName] = new List<Dictionary<string, object>>();
+                            }
+                            var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
+                            string date = heatmap.data_date.ToString("yyyy-MM-dd");
+                            int approveCount = 0;
+                            int automation = 0;
+                            int pyrano15min =0;
+                            int pyrano1min =0;
+                            IDictionary<string, object> dictionary = new Dictionary<string, object>();
+                            //if (date == element && heatmap.selected == 0)
+                            //{
+                            if (entry != null)
+                            {
+
+                                approveCount = heatmap.approve_count;
+                                 automation = heatmap.automation;
+                                pyrano15min = heatmap.pyranometer15min;
+                                 pyrano1min = heatmap.pyranometer1min;
+
+                                dictionary.Add(new KeyValuePair<string, object>("date", date));
+                                dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
+                                dictionary.Add(new KeyValuePair<string, object>("pyranometer15min", pyrano15min));
+                                dictionary.Add(new KeyValuePair<string, object>("pyranometer1min", pyrano1min));
+                              
+                            }
+                            else
+                            {
+                                
+                                    approveCount = -1;
+                                    automation = -1;
+                                    pyrano15min = -1;
+                                    pyrano1min = -1;
+                                    //IDictionary<string, object> dictionary = new Dictionary<string, object>();
+                                    dictionary.Add(new KeyValuePair<string, object>("date", dateStr));
+                                    dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
+                                    dictionary.Add(new KeyValuePair<string, object>("pyranometer15min", pyrano15min));
+                                    dictionary.Add(new KeyValuePair<string, object>("pyranometer1min", pyrano1min));
+                             }
+                                
+                            //}
+                           
+                            /* Dictionary<string, object> dataEntry = new Dictionary<string, object>
+                            {
+                                { date, approveCount }
+                            };
+                            resultMap[siteName].Add(dataEntry);*/
+                            resultMap[siteName].Add((Dictionary<string, object>)dictionary);
+                        }
+                    }
+
+                   
+                    //Convert resultMap to the desired format
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                }
+            }
+            var resultList = resultMap.Select(kvp => new Dictionary<string, object>
+            {
+                { "site", kvp.Key },
+                { "data", kvp.Value }
+            }).ToList();
+            return resultList;
         }
     }
 }

@@ -192,10 +192,22 @@ namespace DGRAPIs.BS
 
         Task<int> LogError(int userId, int import_type, int module, string api_name, string Message, int is_frontend);
         Task<int> LogInfo(int userId, int import_type, int module, string api_name, string Message, int is_frontend);
+        //changes
+        
+        Task<List<SolarUploadingFileGeneration2>> GetSolarGenerationData(string import_batch_id);
+        Task<List<SolarUploadingFileBreakDown1a>> GetSolarBreakDownData( string import_batch_id);
+
+        Task<List<SolarUploadingPyranoMeter15Min_1>> GetSolarPyranoMeter15minData(string import_batch_id);
+        Task<List<SolarUploadingPyranoMeter1Min_1a>> GetSolarPyranoMeter1minData(string import_batch_id);
+        Task<List<WindUploadingFileBreakDown1a>> GetWindBreakdownData(string import_batch_id);
+        Task<List<WindUploadingFilegeneration1a>> GetWindGenerationData(string import_batch_id);
+
+
 
         //Task<List<SolarDailyGenReports3>> GetActualVSExpected(string fromDate, string toDate, string spv, string site, string pr);
         //Task<List<SolarDailyGenReports3>> GetActualVSExpectedYearly(string fromDate, string toDate, string spv, string site, string prType);
         //Task<WindOpertionalHead> GetOperationHeadData(string site);
+        Task<List<Dictionary<string, object>>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
     }
     public class DGRBS : IDGRBS
     {
@@ -2702,6 +2714,87 @@ namespace DGRAPIs.BS
             {
                 throw;
             }
+
+        }
+        //CHANGES 
+        
+        public async Task<List<SolarUploadingFileGeneration2>>GetSolarGenerationData(string import_batch_id)
+        {
+            try
+            {
+                using var repos = new DGRRepository(getDB);
+                return await repos.GetSolarGenerationData(import_batch_id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<SolarUploadingFileBreakDown1a>>GetSolarBreakDownData( string import_batch_id)
+        {
+            try
+            {
+                using var repos = new DGRRepository(getDB);
+                return await repos.GetSolarBreakDownData(import_batch_id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<SolarUploadingPyranoMeter15Min_1>>GetSolarPyranoMeter15minData(string import_batch_id)
+        {
+            try
+            {
+                using var repos = new DGRRepository(getDB);
+                return await repos.GetSolarPyranoMeter15minData( import_batch_id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SolarUploadingPyranoMeter1Min_1a>>GetSolarPyranoMeter1minData( string import_batch_id)
+        {
+            try
+            {
+                using var repos = new DGRRepository(getDB);
+                return await  repos.GetSolarPyranoMeter1minData(import_batch_id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+		 //DGR version 3
+        public async Task<List<Dictionary<string, object>>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetHeatMapData(site, fromDate, toDate, isAdmin, siteType);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<WindUploadingFileBreakDown1a>>GetWindBreakdownData(string import_batch_id)
+        {
+            using var repos = new DGRRepository(getDB);
+            return await repos.GetWindBreakdownData(import_batch_id);
+        }
+
+        public async Task<List<WindUploadingFilegeneration1a>>GetWindGenerationData(string import_batch_id)
+        {
+            using var repos = new DGRRepository(getDB);
+            return await repos.GetWindGenerationData(import_batch_id);
 
         }
     }

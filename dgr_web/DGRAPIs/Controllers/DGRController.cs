@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace DGRAPIs.Controllers
 {
@@ -2782,8 +2785,246 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+	    //DGR Version 3.
+        //GetWindTMLGraphData
+        [Route("GetHeatMapData")]
+        [HttpGet]
+        public async Task<IActionResult> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+            try
+            {
+                var data = await _dgrBs.GetHeatMapData(site, fromDate, toDate, isAdmin, siteType);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
 
+                return BadRequest(ex.Message);
+            }
+        }
 
         #endregion
+        [Route("DownloadExcelsolar")]
+        [HttpGet]
+        public async Task<IActionResult> DownloadExcelsolar(string importid)
+        {
+             var result = await GetSolarBreakDownData(importid);
+            var data = await GetSolarGenerationData(importid);
+            var result1 = await GetSolarPyranoMeter15minData(importid);
+            var result2 = await GetSolarPyranoMeter1minData(importid);
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+               
+                wb.AddWorksheet(result, "uploading_file_generation_solar");
+                wb.AddWorksheet(data, "SolarUploadingFileBreakDown1");
+                wb.AddWorksheet(result1, "uploading_pyranometer_15solar");
+                wb.AddWorksheet(result2, "uploading_pyranometer_1solar");
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    wb.SaveAs(ms);
+                    return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Solar_Imported.xlsx");
+                }
+            }
+        }
+        [Route("DownloadExcelWind")]
+        [HttpGet]
+        public async Task<IActionResult> DownloadExcelWind(string importid)
+        {
+            var data = await GetWindBreakdownData(importid);
+            var data1 = await GetWindGenerationData(importid);
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.AddWorksheet(data1, "uploading_file_generation");
+                wb.AddWorksheet(data, "WindUploadingFileBreakDown");
+               
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    wb.SaveAs(ms);
+                    return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Wind_Imported.xlsx");
+                }
+            }
+        }
+
+        private async Task<DataTable>GetSolarBreakDownData(string ImportId)
+        {
+            var li = await _dgrBs.GetSolarBreakDownData( ImportId);
+            var dt = new DataTable();
+            dt.TableName = "SolarUploadingFileBreakDown1";
+            dt.Columns.Add("date", typeof(object));
+            dt.Columns.Add("site", typeof(string));
+            dt.Columns.Add(" ext_int_bd", typeof(string)); dt.Columns.Add("igbd", typeof(string)); dt.Columns.Add("icr", typeof(string));
+            dt.Columns.Add("inv", typeof(string)); dt.Columns.Add("smb", typeof(string)); dt.Columns.Add("strings", typeof(string));
+            dt.Columns.Add("from_bd", typeof(object)); dt.Columns.Add("to_bd", typeof(object)); dt.Columns.Add("total_bd", typeof(object));
+            dt.Columns.Add("bd_remarks", typeof(string));
+            dt.Columns.Add("bd_type", typeof(string));
+            dt.Columns.Add("bd_type_id", typeof(int));
+            dt.Columns.Add("action_taken", typeof(string));
+            dt.Columns.Add("approve_status", typeof(int));
+            dt.Columns.Add("created_on", typeof(object));
+            
+            if (li.Count > 0)
+            {
+                li.ForEach(item =>
+                {
+                    dt.Rows.Add(item.date, item.site, item.ext_int_bd, item.igbd, item.icr,
+                        item.inv, item.smb, item.strings, item.from_bd, item.to_bd, item.total_bd, item.bd_remarks, item.bd_type, item.bd_type_id, item.action_taken, item.approve_status, item.created_on);
+                });
+            }
+            return dt;
+        }
+        private async Task<DataTable>GetSolarGenerationData(string ImportId)
+        {
+            DataTable dt = new DataTable();
+            dt.TableName = "uploading_file_generation_solar";
+            dt.Columns.Add("site", typeof(string)); dt.Columns.Add(" date", typeof(object)); dt.Columns.Add("inverter", typeof(string));
+            dt.Columns.Add("ghi", typeof(double));
+            dt.Columns.Add("poa", typeof(double)); dt.Columns.Add("expected_kwh", typeof(double)); dt.Columns.Add("inv_act", typeof(double));
+            dt.Columns.Add("inv_act_afterloss", typeof(double)); dt.Columns.Add(" plant_act", typeof(double));
+            dt.Columns.Add("plant_act_afterloss", typeof(double)); dt.Columns.Add("inv_pr", typeof(double));
+            dt.Columns.Add("plant_pr", typeof(double)); dt.Columns.Add("ma", typeof(double));
+            dt.Columns.Add("iga", typeof(double)); dt.Columns.Add("ega", typeof(double));
+            dt.Columns.Add(" ega_b", typeof(double)); dt.Columns.Add("ega_c", typeof(double));
+            dt.Columns.Add("inv_plf_ac", typeof(double)); dt.Columns.Add("inv_plf_afterloss", typeof(double));
+            dt.Columns.Add(" inv_plf_dc", typeof(double)); dt.Columns.Add("plant_plf_ac", typeof(double));
+            dt.Columns.Add(" plant_plf_afterloss", typeof(double)); dt.Columns.Add("plant_plf_dc", typeof(double));
+            dt.Columns.Add("pi", typeof(object)); dt.Columns.Add("prod_hrs", typeof(double));
+            dt.Columns.Add("lull_hrs_bd", typeof(double)); dt.Columns.Add("usmh_bd", typeof(double));
+            dt.Columns.Add("smh_bd", typeof(double)); dt.Columns.Add(" oh_bd", typeof(double));
+            dt.Columns.Add("load_shedding_bd", typeof(double)); dt.Columns.Add(" total_bd_hrs", typeof(double));
+            dt.Columns.Add("usmh", typeof(double)); dt.Columns.Add("smh", typeof(double));
+            dt.Columns.Add("oh", typeof(double)); dt.Columns.Add("igbdh", typeof(double));
+            dt.Columns.Add("egbdh", typeof(double)); dt.Columns.Add("load_shedding", typeof(double));
+            dt.Columns.Add("total_losses", typeof(double));
+            var li = await _dgrBs.GetSolarGenerationData((ImportId));
+            if (li.Count > 0)
+            {
+                li.ForEach(item =>
+                {
+                    dt.Rows.Add(item.site, item.date, item.inverter, item.ghi, item.poa, item.expected_kwh, item.inv_act,
+       item.inv_act_afterloss, item.plant_act, item.plant_act_afterloss, item.inv_pr, item.plant_pr, item.ma, item.iga, item.ega,
+       item.ega_b, item.ega_c,
+          item.inv_plf_ac, item.inv_plf_afterloss, item.inv_plf_dc, item.plant_plf_ac,
+          item.plant_plf_afterloss, item.plant_plf_dc, item.pi, item.prod_hrs, item.lull_hrs_bd,
+          item.usmh_bd, item.smh_bd, item.oh_bd, item.load_shedding_bd, item.total_bd_hrs, item.usmh, item.smh, item.oh, item.igbdh,
+          item.egbdh, item.load_shedding, item.total_losses);
+                });
+            }
+            return dt;
+        }
+        private async Task<DataTable>GetSolarPyranoMeter15minData(string ImportId)
+        {
+            
+            var li = await _dgrBs.GetSolarPyranoMeter15minData(ImportId);
+            //uploading_pyranometer_15_min_solar
+            DataTable dt = new DataTable();
+            dt.TableName = "uploading_pyranometer_15_min_solar";
+            dt.Columns.Add("date_time", typeof(object));
+            dt.Columns.Add("site", typeof(string));
+            dt.Columns.Add("ghi_1", typeof(object)); dt.Columns.Add("ghi_2", typeof(object));
+            dt.Columns.Add("poa_1", typeof(object)); dt.Columns.Add("poa_2", typeof(object)); dt.Columns.Add("poa_3", typeof(object));
+            dt.Columns.Add("poa_4", typeof(object)); dt.Columns.Add("poa_5", typeof(object)); dt.Columns.Add("poa_6", typeof(object));
+            dt.Columns.Add("poa_7", typeof(object)); dt.Columns.Add("avg_ghi", typeof(object)); dt.Columns.Add("avg_poa", typeof(object));
+            dt.Columns.Add("amb_temp", typeof(object)); dt.Columns.Add("mod_temp", typeof(object));
+            if (li.Count > 0)
+            {
+                li.ForEach(item =>
+                {
+                    dt.Rows.Add(item.date_time,item.site,item.ghi_1, item.ghi_2, item.poa_1, item.poa_2, item.poa_3, item.poa_4, item.poa_5, item.poa_6, item.poa_7,
+        item.avg_ghi,
+        item.avg_poa,
+        item.amb_temp,
+        item.mod_temp);
+                });
+            }
+            return dt;
+        }
+
+        private async Task<DataTable> GetSolarPyranoMeter1minData(string ImportId)
+        {
+
+             var li = await _dgrBs. GetSolarPyranoMeter1minData(ImportId);
+            DataTable dt = new DataTable();
+            dt.TableName = "uploading_pyranometer_1_min_solar";
+            dt.Columns.Add("date_time", typeof(object));
+            dt.Columns.Add("site",typeof(string));
+            dt.Columns.Add("ghi_1", typeof(double)); dt.Columns.Add("ghi_2", typeof(double));
+            dt.Columns.Add("poa_1", typeof(double)); dt.Columns.Add("poa_2", typeof(double)); dt.Columns.Add("poa_3", typeof(double));
+            dt.Columns.Add("poa_4", typeof(double)); dt.Columns.Add("poa_5", typeof(double)); dt.Columns.Add("poa_6", typeof(double));
+            dt.Columns.Add("poa_7", typeof(double)); dt.Columns.Add("avg_ghi", typeof(double)); dt.Columns.Add("avg_poa", typeof(double));
+            dt.Columns.Add("amb_temp", typeof(double)); dt.Columns.Add("mod_temp", typeof(double)); dt.Columns.Add("", typeof(double));
+            if (li.Count > 0)
+            {
+                li.ForEach(item =>
+                {
+                    dt.Rows.Add(item.date_time,item.site,item.ghi_1, item.ghi_2,
+                   item.poa_1, item.poa_2, item.poa_3,
+                   item.poa_4, item.poa_5, item.poa_6,
+                   item.poa_7, item.avg_ghi, item.avg_poa,
+                   item.amb_temp, item.mod_temp);
+                });
+            }
+            return dt;
+        }
+        private async Task<DataTable>GetWindBreakdownData(string ImportId)
+        {
+            DataTable dt = new DataTable();
+            dt.TableName = "WindUploadingFileBreakDown1a";
+            dt.Columns.Add("site_name", typeof(string)); dt.Columns.Add("date", typeof(object));
+            dt.Columns.Add("wtg", typeof(string)); dt.Columns.Add("bd_type", typeof(string));
+            dt.Columns.Add("stop_from", typeof(object)); dt.Columns.Add("stop_to", typeof(object));
+            dt.Columns.Add("total_stop", typeof(object)); dt.Columns.Add("error_description", typeof(string));
+            dt.Columns.Add("action_taken", typeof(string)); dt.Columns.Add("approve_status", typeof(int));
+            var li = await _dgrBs.GetWindBreakdownData(ImportId);
+            if (li.Count > 0)
+            {
+                li.ForEach(item =>
+                {
+                    dt.Rows.Add(item.site_name, item.date, item.wtg, item.bd_type,
+                        item.stop_from, item.stop_to, item.total_stop, item.error_description,
+                        item.action_taken, item.approve_status);
+                });
+            }
+            return dt;
+        }
+        //Exportuploading_file_generation(int site_id, int import_batch_id)
+        private async Task<DataTable>GetWindGenerationData(string ImportId)
+        {
+            DataTable dt = new DataTable();
+            dt.TableName = "uploading_file_generation";
+            dt.Columns.Add("site_name", typeof(string));
+            dt.Columns.Add("date", typeof(object)); dt.Columns.Add("wtg", typeof(string));
+            dt.Columns.Add("wind_speed", typeof(double));
+            dt.Columns.Add("grid_hrs", typeof(double)); dt.Columns.Add("operatig_hrs", typeof(double)); dt.Columns.Add("lull_hrs", typeof(double));
+            dt.Columns.Add("kwh", typeof(double)); dt.Columns.Add("kwh_afterlineloss", typeof(double)); dt.Columns.Add("capacity_kw", typeof(double));
+            dt.Columns.Add("kwh_afterloss", typeof(double)); dt.Columns.Add("ma_contractual", typeof(double));
+            dt.Columns.Add("ma_actual", typeof(double)); dt.Columns.Add("iga", typeof(double)); dt.Columns.Add("ega", typeof(double));
+            dt.Columns.Add("ega_b", typeof(double)); dt.Columns.Add("ega_c", typeof(double));
+            dt.Columns.Add("plf", typeof(double)); dt.Columns.Add("plf_afterlineloss", typeof(double));
+            dt.Columns.Add("unschedule_hrs", typeof(object)); dt.Columns.Add("unschedule_num", typeof(double));
+            dt.Columns.Add("schedule_hrs", typeof(object)); dt.Columns.Add("schedule_num", typeof(double));
+            dt.Columns.Add("others", typeof(object)); dt.Columns.Add("others_num", typeof(double)); dt.Columns.Add("igbdh", typeof(object));
+            dt.Columns.Add("igbdh_num", typeof(double)); dt.Columns.Add("egbdh", typeof(object));
+            dt.Columns.Add("egbdh_num", typeof(double)); dt.Columns.Add("load_shedding", typeof(object));
+            dt.Columns.Add("load_shedding_num", typeof(double)); dt.Columns.Add("spv_name", typeof(string));
+            dt.Columns.Add("last_modified_on", typeof(object));
+            var li = await _dgrBs.GetWindGenerationData( ImportId);
+            if (li.Count > 0)
+            {
+                li.ForEach(item => {
+                    dt.Rows.Add(item.site_name, item.date, item.wtg, item.wind_speed, item.grid_hrs,
+                      item.operating_hrs, item.lull_hrs,
+                      item.kwh, item.kwh_afterlineloss,
+                      item.capacity_kw, item.kwh_afterloss, item.ma_contractual, item.ma_actual,
+                      item.iga,
+                       item.ega, item.ega_b, item.ega_c, item.plf, item.plf_afterlineloss,
+                       item.unschedule_hrs, item.unschedule_num, item.schedule_hrs, item.schedule_num,
+                       item.others,
+                       item.others_num, item.igbdh, item.igbdh_num,
+                      item.egbdh, item.egbdh_num, item.load_shedding, item.load_shedding_num,
+                      item.spv_name, item.last_modified_on);
+                });
+            }
+            return dt;
+        }
     }
 }
