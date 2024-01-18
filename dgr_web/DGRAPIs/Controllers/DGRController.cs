@@ -2819,6 +2819,26 @@ namespace DGRAPIs.Controllers
                 }
             }
         }
+
+        [Route("OPCommentsInsert")]
+        [HttpGet]
+        public async Task<IActionResult> OPCommentsInsert(List<OPComments> set)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPCommentsInsert(set);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
         #endregion
+
     }
 }

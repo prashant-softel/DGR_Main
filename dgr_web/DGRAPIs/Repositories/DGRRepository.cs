@@ -15959,9 +15959,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string functionName = "OPCommentsInsert";
             int result = 0;
             int val = 0;
+            Hashtable SPV_siteHash = new Hashtable();
+            try
+            {
+                SPV_siteHash = await SiteId_SPVHashTableWind();
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while gettign spvHashtable, due to: " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+                return 0;
+            }
             if (set.Count > 0)
             {
-                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, added_at, updated_by, updated_at) VALUES ";
+                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by) VALUES ";
                 string insert_values = "";
                 //HashSet<string> site_ids = new HashSet<string>();
                 //HashSet<string> month_no = new HashSet<string>();
@@ -15969,7 +15980,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 foreach (var _element in set)
                 {
-                    insert_values += $"({_element.month},{_element.month_no},{_element.year},{_element.type},{_element.spv},{_element.site_id},{_element.BD_type},1,{_element.isMonthly},{_element.comment},{_element.added_by},{_element.added_at},{_element.updated_by},{_element.updated_at}),";
+                    string spvTemp = SPV_siteHash[_element.site_id].ToString();
+                    insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.BD_type}, 1, {_element.isMonthly}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
                     //site_ids.Add(Convert.ToString(_element.site_id));
                     //month_no.Add(Convert.ToString(_element.month_no));
                     //year.Add(Convert.ToString(_element.year));
@@ -16131,6 +16143,34 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 return result;
             }
             return result;
+        }
+
+        internal async Task<Hashtable> SiteId_SPVHashTableWind()
+        {
+            string functionName = "SiteId_SPVHashTableWind";
+            Hashtable spvSite = new Hashtable();
+            List<SPVSiteWind> spvSiteData = new List<SPVSiteWind>();
+
+            string query = "Select site_master_id, site, site_id, site, spv FROM site_master;";
+            try
+            {
+                spvSiteData = await Context.GetData<SPVSiteWind>(query).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching site Spv data from database, due to : " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if(spvSiteData.Count > 1)
+            {
+                foreach(var element in spvSiteData)
+                {
+                    spvSite.Add(element.site_master_id, element.spv);
+                }                
+            }
+
+            return spvSite;
+
         }
     }
 }

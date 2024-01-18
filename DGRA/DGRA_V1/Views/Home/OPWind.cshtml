@@ -309,6 +309,20 @@
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
     var mainSiteRes = [];
+    const monthNumberToName = {
+        1: 'January',
+        2: 'February',
+        3: 'March',
+        4: 'April',
+        5: 'May',
+        6: 'June',
+        7: 'July',
+        8: 'August',
+        9: 'September',
+        10: 'October',
+        11: 'November',
+        12: 'December'
+    };
 $(document).ready(function () {
 $('#daterange').daterangepicker(
 {
@@ -1119,7 +1133,7 @@ $.ajax({
     }
 
     // ALL for ADD COMMENTS.
-    //ADD Main function 
+    //ADD Main function
     var ACM_info = [
         {
             "bdSetCount": 1,
@@ -1233,7 +1247,7 @@ $.ajax({
             console.log(ACM_info);
 
             //if (BDCounter == 1) {
-                
+
             //}
             //else {
             //    var dropId = 'ACM_breakdownSelect' + (BDCounter - 1);
@@ -1371,7 +1385,7 @@ $.ajax({
             console.log("ACM_info array after inserting site set.");
             console.log(ACM_info);
             //if (siteCounter == 1) {
-                
+
             //} else {
             //    var dropId = 'ACM_sitesM' + (siteCounter - 1);
             //    var selectedValue = document.getElementById(dropId).value;
@@ -1412,17 +1426,77 @@ $.ajax({
         for (var k = 1; k <= bdSetCount; k++) {
             var BDelement = ACM_info[k];
             var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+
+            var userName =  "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
+            var role =  "@HttpContextAccessor.HttpContext.Session.GetString("role")";
+            var dval = document.getElementById("daterang");
+            var YearMonth = dval.value;
+            var temp = YearMonth.split("-");
+            var year1 = Number(temp[0]);
+            var month_no = Number(temp[1]);
+            var month = monthNumberToName[month_no];
+            var type = 2; //1=solar, 2= wind;
+            var isDeleted = 1;
+            var isMonthly = 0;
+            var addedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+            var updatedBy = 0;
+            console.log("User name : " + userName + "role : " + role + " user id: " + addedBy);
+
+
             for (var j = 1; j <= BDelement.siteCount; j++) {
                 var eachData = {
-                    "BDType": bdType,
-                    "site_id": document.getElementById((BDelement.siteSelectDD + "_" + j)).value,
+                    //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
+                    "month": month,
+                    "month_no": month_no,
+                    "year": year1,
+                    "type": type,
+                    "site_id": Number(document.getElementById((BDelement.siteSelectDD + "_" + j)).value),
+                    "BDType": Number(bdType),
+                    "isDeleted": isDeleted,
+                    "isMonthly": isMonthly,
                     "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                    "added_by": addedBy,
+                    "updated_by": updatedBy,
+                    //get spv from hashtable on api side.
                 }
                 ACMFinalData.push(eachData);
             }
         }
         console.log("data after extracting : ");
         console.log(ACMFinalData);
+        console.log("Data after Stringify.");
+        console.log(JSON.stringify(ACMFinalData));
+        //var json = JsonConvert.SerializeObject(ACMFinalData);
+        //var data = new StringContent(json, Encoding.UTF8, "application/json");
+        //console.log("data after stringContent : ");
+        //console.log(data);
+        //'@Url.Action("OPACM", "WindReport")',
+        @*$.ajax({
+            type: "POST",
+            url: ' @_idapperRepo.GetAppSettingValue("API_URL")' + '/api/DGR/OPCommentsInsert',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",  // Fixed typo in dataType
+            data: JSON.stringify(ACMFinalData),  // Send ACMFinalData as JSON string
+            success: function (result, status, xhr) {
+                var options = "";
+                console.log(result);
+            }
+        });*@
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("OPCommentsInsert", "DGR")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(ACMFinalData),
+            success: function (result, status, xhr) {
+                var options = "";
+                console.log(result);
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", error);
+            }
+        });
+
     }
 
     function monthEdit() {

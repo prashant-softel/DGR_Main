@@ -11,4 +11,10 @@ namespace DGRAPIs.Models
         public string spv { get; set; }
        
     }
+    public class SPVSiteWind
+    {
+        public int site_master_id {get; set;}
+        public int spv { get; set; }
+        public string site { get; set; }
+    }
 }

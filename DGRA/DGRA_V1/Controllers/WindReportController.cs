@@ -17,6 +17,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using System.Threading;
 
 namespace DGRA_V1.Controllers
 {
@@ -785,5 +787,129 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
 
         }
+
+        //public async Task<IActionResult> OPACM([FromBody] List<dynamic> acmDataList)
+        //{
+        //    string line = "";
+
+        //    try
+        //    {
+
+        //        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/InsertWindTMLData?type=3";
+        //        using (var client = new HttpClient())
+        //        {
+        //            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+        //            var response = await client.PostAsync(url, acmDataList);
+        //            string returnResponse = response.Content.ReadAsStringAsync().Result;
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //            }
+        //        }
+
+        //        //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPCommentsInsert";
+        //        //// var url = "http://localhost:23835/api/DGR/GetSiteList?state="+ statedata + "&spvdata="+ spvdata;
+        //        //WebRequest request = WebRequest.Create(url);
+
+        //        //using (WebResponse response = (HttpWebResponse)request.GetResponse())
+        //        //{
+
+        //        //    Stream receiveStream = response.GetResponseStream();
+        //        //    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+        //        //    {
+        //        //        line = readStream.ReadToEnd().Trim();
+        //        //    }
+
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["notification"] = "Data Not Presents !";
+        //    }
+        //    return Content(line, "application/json");
+
+        //}
+
+        //public async Task<IActionResult> OPACM([FromBody] List<dynamic> acmDataList)
+        //{
+        //    string line = "";
+        //    try
+        //    {
+        //        var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPCommentsInsert";
+
+        //        using (var client = new HttpClient())
+        //        {
+        //            client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+
+        //            // Convert acmDataList to JSON
+        //            var jsonContent = new StringContent(JsonConvert.SerializeObject(acmDataList), Encoding.UTF8, "application/json");
+
+        //            // Make the POST request
+        //            //var response = await client.PostAsync(url, jsonContent).ConfigureAwait(false);
+        //            //string returnResponse = await response.Content.ReadAsStringAsync();
+        //            //if (response.IsSuccessStatusCode)
+        //            //{
+        //            //    // Handle success if needed
+        //            //}
+        //            WebRequest request = WebRequest.Create(url, jsonContent);
+
+        //            using (WebResponse response = (HttpWebResponse)request.GetResponse())
+        //            {
+
+        //                Stream receiveStream = response.GetResponseStream();
+        //                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+        //                {
+        //                    line = readStream.ReadToEnd().Trim();
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["notification"] = "Data Not Present!";
+        //    }
+        //    return Content(line, "application/json");
+        //}
+        [HttpPost]
+        public async Task<IActionResult> OPACM([FromBody] dynamic acmDataList)
+        {
+            string line = "";
+
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPCommentsInsert";
+
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    List<OPComments> data1 = new List<OPComments>();
+                    data1 = JsonConvert.DeserializeObject<List<dynamic>>(acmDataList);
+                    // Convert acmDataList to JSON
+                    var json = JsonConvert.SerializeObject(acmDataList);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    //var jsonContent = new StringContent(JsonConvert.SerializeObject(acmDataList), Encoding.UTF8, "application/json");
+
+                    // Make the POST request using HttpClient
+                    var response = await client.PostAsync(url, data);
+
+                    // Check if the request was successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content
+                        line = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["notification"] = "Error making API request";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Present!";
+            }
+
+            return Content(line, "application/json");
+        }
+
     }
 }
