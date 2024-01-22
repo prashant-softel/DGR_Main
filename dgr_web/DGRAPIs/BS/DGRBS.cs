@@ -142,12 +142,9 @@ namespace DGRAPIs.BS
         
         Task<int> InsertSolarLocationMaster(List<SolarLocationMaster> set);
         Task<int> InsertSolarSiteMaster(List<SolarSiteMaster> set);
-
         Task<int> PPTCreate();
         Task<int> PPTCreate_Solar();
         Task<int> MailSend(string fname);
-
-
         Task<int> UpdateWindDailyGenSummaryApproveStatus(List<DailyGenSummary> dailyGenSummary);
         Task<int> UpdateWindDailyBreakdownApproveStatus(List<WindDailyBreakdownReport> windDailyBreakdownReport);
         Task<int> DeleteWindDailyGenSummaryApproveStatus(List<DailyGenSummary> dailyGenSummary);
@@ -200,8 +197,11 @@ namespace DGRAPIs.BS
 
         //DGR V3.
         Task<List<HeatMapData>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
-        Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId, string bdType);
+        Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes);
         Task<int> OPCommentsInsert(List<OPComments> set);
+        Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay);
+            //Tanvi's Change 1 function
+        Task<int> dgrUploadingReminder();
     }
     public class DGRBS : IDGRBS
     {
@@ -2730,13 +2730,13 @@ namespace DGRAPIs.BS
 
         }
 
-        public async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId, string bdType)
+        public async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.OPGetSiteListForEdit(month_no, year, siteType, siteId, bdType);
+                    return await repos.OPGetSiteListForEdit(month_no, year, siteType, bdTypes);
                 }
             }
             catch (Exception ex)
@@ -2761,6 +2761,37 @@ namespace DGRAPIs.BS
                 throw;
             }
 
+        }
+
+        public async Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetOPCommentsMonthly(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //Tanvi's Changes 1 function.
+        public async Task<int> dgrUploadingReminder()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.dgrUploadingReminder();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

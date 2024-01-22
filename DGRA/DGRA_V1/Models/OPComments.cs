@@ -9,20 +9,20 @@ namespace DGRA_V1.Models
     {
         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
         public int opc_id { get; set; }
-        public dynamic month { get; set; }
-        public dynamic month_no { get; set; }
-        public dynamic year { get; set; }
-        public dynamic type { get; set; }
-        public dynamic spv { get; set; }
-        public dynamic site_id { get; set; }
-        public dynamic BDType { get; set; }
-        public dynamic isDeleted { get; set; }
-        public dynamic isMonthly { get; set; }
-        public dynamic comment { get; set; }
-        public dynamic added_by { get;set; }
-        public dynamic added_at { get;set; }
-        public dynamic updated_by { get;set; }
-        public dynamic updated_at { get;set; }
+        public string month { get; set; }
+        public int month_no { get; set; }
+        public int year { get; set; }
+        public int type { get; set; }
+        public string spv { get; set; }
+        public int site_id { get; set; }
+        public int BDType { get; set; }
+        public int isDeleted { get; set; }
+        public int isMonthly { get; set; }
+        public string comment { get; set; }
+        public int added_by { get;set; }
+        public int added_at { get;set; }
+        public int updated_by { get;set; }
+        public int updated_at { get;set; }
 
     }
 }

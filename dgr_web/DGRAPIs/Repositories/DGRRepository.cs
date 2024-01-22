@@ -3870,7 +3870,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             try
             {
-                var res = await MailService.SendEmailAsync(request, _settings);
+                var res = await MailService.SendEmailAsync(request, _settings,0);
                 PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail SendEmailAsync function completed");
                 info = "Weekly Mail SendEmailAsync function completed";
                 //await LogInfo(0, 0, 0, functionName, info, backend);
@@ -7187,6 +7187,93 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     approval_ErrorLog(msg);
                     return 0;
                 }
+
+                MailSettings _settings = new MailSettings();
+                var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+                //_settings.Mail = "kasrsanket@gmail.com";
+                //_settings.DisplayName = "Sanket Kar";
+                _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+                //_settings.Password = "lozirdytywjlvcxd";
+                _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+                //_settings.Host = "smtp.gmail.com";
+                _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+                //_settings.Port = 587;
+                _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+                
+
+                string Msg = "Weekly PR Report Generated";
+                // private MailServiceBS mailService;
+                List<string> AddToWind = new List<string>();
+                List<string> AddCcWind = new List<string>();
+
+                //List<string> AddCc = new List<string>();
+                MailRequest request = new MailRequest();
+
+                try
+                {
+                    string query1 = $"select site_id as id , site as name , STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date, useremail from import_batches left join site_master on\r\n site_master.site_master_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
+
+                    List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
+
+                    if (status == 1)
+                    {
+                        foreach (var sites in sitelist)
+                        {
+           
+
+                            string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id} ;";
+                            try
+                            {
+                               
+                               
+                                AddToWind.Add(sites.useremail);
+
+                                List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
+                                foreach (var item in data3)
+                                {
+                                    AddCcWind.Add(item.useremail);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.ToString();
+                            }
+
+                            string dataDate = sites.data_date.ToString("dd-MM-yyyy");
+
+
+                            string tb = "<p style='text-align: left;'>Dear User,<br>";
+                            tb += $"DGR Data Successfully uploaded for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                            //AddToWind = new List<string>();
+                            //AddToWind.Add("tanvi@softeltech.in");
+                            request.ToEmail = AddToWind;
+                            request.CcEmail = AddCcWind;
+                            request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Successful";
+                            request.Body = tb;
+
+                            try
+                            {
+                                var res2 = await MailService.SendEmailAsync(request, _settings,1);
+                                //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.Message;
+                                PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+
+                            }
+                        }
+
+                    }
+                }
+                catch
+                {
+
+                }
             }
             else
             {
@@ -7287,6 +7374,92 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int updateRes = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
                     finalResult = 2;
+
+                    try
+                    {
+
+                        MailSettings _settings = new MailSettings();
+                        var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                        _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+                        //_settings.Mail = "kasrsanket@gmail.com";
+                        //_settings.DisplayName = "Sanket Kar";
+                        _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+                        //_settings.Password = "lozirdytywjlvcxd";
+                        _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+                        //_settings.Host = "smtp.gmail.com";
+                        _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+                        //_settings.Port = 587;
+                        _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+
+
+                        string Msg = "Weekly PR Report Generated";
+                        // private MailServiceBS mailService;
+                        List<string> AddTo = new List<string>();
+                        List<string> AddCc = new List<string>();
+
+                        //List<string> AddCc = new List<string>();
+                        MailRequest request = new MailRequest();
+
+                        string query1 = $"select site_id as id , site as name , STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date,  useremail from import_batches left join site_master on\r\n site_master.site_master_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
+
+                        List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
+
+                        if (finalResult > 0)
+                        {
+                            foreach (var sites in sitelist)
+                            {
+                  
+                                string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id} ;";
+
+                                try
+                                {
+                                    AddTo.Add(sites.useremail);
+
+                                    List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
+                                    foreach (var item in data3)
+                                    {
+                                        AddCc.Add(item.useremail);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = e.ToString();
+                                }
+
+                                string dataDate = sites.data_date.ToString("dd-MM-yyyy");
+
+
+                                string tb = "<p style='text-align: left;'>Dear User,<br>";
+                                tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                                //AddTo = new List<string>();
+                                //AddTo.Add("tanvi@softeltech.in");
+                                request.ToEmail = AddTo;
+                                request.CcEmail = AddCc;
+                                request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Rejected";
+                                request.Body = tb;
+
+                                try
+                                {
+                                    var res2 = await MailService.SendEmailAsync(request, _settings,1);
+                                    //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = e.Message;
+                                    PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+
+                                }
+                            }
+
+                        }
+                    }
+                    catch
+                    {
+
+                    }
                 }
                 catch (Exception e)
                 {
@@ -7467,6 +7640,91 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     return 0;
                 }
             }
+
+            MailSettings _settings = new MailSettings();
+            var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+            //_settings.Mail = "kasrsanket@gmail.com";
+            //_settings.DisplayName = "Sanket Kar";
+            _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+            //_settings.Password = "lozirdytywjlvcxd";
+            _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+            //_settings.Host = "smtp.gmail.com";
+            _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+            //_settings.Port = 587;
+            _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+
+
+            string Msg = "Weekly PR Report Generated";
+            // private MailServiceBS mailService;
+            List<string> AddTo = new List<string>();
+            List<string> AddCc = new List<string>();
+
+            //List<string> AddCc = new List<string>();
+            MailRequest request = new MailRequest();
+
+            try
+            {
+                string query1 = $"select site_id as id , site as name , STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date, useremail from import_batches left join site_master_solar on\r\n site_master_solar.site_master_solar_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
+
+                List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
+
+                if (finalResult > 0)
+                {
+                    foreach (var sites in sitelist)
+                    {                      
+
+                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id} ;";
+                        try
+                        {
+                           
+                            AddTo.Add(sites.useremail);
+                           
+                            List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
+                            foreach (var item in data3)
+                            {
+                                AddCc.Add(item.useremail);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = e.ToString();
+                        }
+
+                        string dataDate = sites.data_date.ToString("dd-MM-yyyy");
+
+
+                        string tb = "<p style='text-align: left;'>Dear User,<br>";
+                        tb += $"DGR Data Successfully uploaded for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                        //AddTo = new List<string>();
+                        //AddTo.Add("tanvi@softeltech.in");
+                        request.ToEmail = AddTo;
+                        request.CcEmail = AddCc;
+                        request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Successful";
+                        request.Body = tb;
+
+                        try
+                        {
+                            var res2 = await MailService.SendEmailAsync(request, _settings,1);
+                            //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = e.Message;
+                            PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+
+                        }
+                    }
+
+                }
+            }
+            catch
+            {
+
+            }
             return finalResult;
         }
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
@@ -7493,6 +7751,92 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int updateRes = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
                     finalResult = 2;
+
+                    try
+                    {
+
+                        MailSettings _settings = new MailSettings();
+                        var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                        _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+                        //_settings.Mail = "kasrsanket@gmail.com";
+                        //_settings.DisplayName = "Sanket Kar";
+                        _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+                        //_settings.Password = "lozirdytywjlvcxd";
+                        _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+                        //_settings.Host = "smtp.gmail.com";
+                        _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+                        //_settings.Port = 587;
+                        _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+
+
+                        string Msg = "Weekly PR Report Generated";
+                        // private MailServiceBS mailService;
+                        List<string> AddTo = new List<string>();
+                        List<string> AddCc = new List<string>();
+
+                        //List<string> AddCc = new List<string>();
+                        MailRequest request = new MailRequest();
+
+                        string query1 = $"select site_id as id , site as name ,STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date, useremail from import_batches left join site_master_solar on\r\n site_master_solar.site_master_solar_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
+
+                        List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
+
+                        if (finalResult > 0)
+                        {
+                            foreach (var sites in sitelist)
+                            {
+
+                                string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id} ;";
+
+                                try
+                                {
+                                    AddTo.Add(sites.useremail);
+
+                                    List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
+                                    foreach (var item in data3)
+                                    {
+                                        AddCc.Add(item.useremail);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = e.ToString();
+                                }
+
+                                string dataDate = sites.data_date.ToString("dd-MM-yyyy");
+
+
+                                string tb = "<p style='text-align: left;'>Dear User,<br>";
+                                tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                                //AddTo = new List<string>();
+                                //AddTo.Add("tanvi@softeltech.in");
+                                request.ToEmail = AddTo;
+                                request.CcEmail = AddCc;
+                                request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Rejected";
+                                request.Body = tb;
+
+                                try
+                                {
+                                    var res2 = await MailService.SendEmailAsync(request, _settings,1);
+                                    //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = e.Message;
+                                    PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+
+                                }
+                            }
+
+                        }
+                    }
+                    catch
+                    {
+
+                    }
                 }
                 catch (Exception e)
                 {
@@ -11457,7 +11801,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
  
 
-                var res = await MailService.SendEmailAsync(request, _settings);
+                var res = await MailService.SendEmailAsync(request, _settings, 0);
                 PPT_InformationLog("Send Email Async function called from repository");
 
                 //await LogInfo(0, 0, 3, functionName, "Send Email Async function called from repository", backend);
@@ -15916,12 +16260,41 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //Fetch Operational Performance Comments Monthly.
-        internal async Task<List<OPComments>> GetOPCommentsMonthly(string site, string month_no, int year, string spv_id, int siteType)
+        internal async Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay)
         {
             string functionName = "GetOPComments";
             //site_type = 1 Solar, 2 : Wind 
-            string fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv_id, op.BD_type, op.isMonthly, op.comment, sm.site, sm.spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.site_type = {siteType} AND op.isDeleted = 1 AND op.isMonthly = 0 AND op.site = IN({site}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type;";
+            //isSPV : 0 = SPV, 1= Site.
+            //isDisplay: 0 = display, 1: Edit
+
+            string fetch_qry = "";
+            if(isSPV == 1)
+            {
+                //Site wise.
+                if (isDisplay == 1)
+                {
+                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                }
+                else if (isDisplay == 0)
+                {
+                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                }
+            }
+            else if(isSPV == 0)
+            {
+                //SPV wise.
+                if (isDisplay == 1)
+                {
+                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                }
+                else if (isDisplay == 0)
+                {
+                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                }
+            }
+
             List<OPComments> _CommentsData = new List<OPComments>();
+
             try
             {
                 _CommentsData = await Context.GetData<OPComments>(fetch_qry).ConfigureAwait(false);
@@ -15970,7 +16343,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 LogError(0, 1, 7, functionName, msg, backend);
                 return 0;
             }
-            if (set.Count > 0)
+            if (set.Count > 0 && SPV_siteHash.Count > 0)
             {
                 string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by) VALUES ";
                 string insert_values = "";
@@ -15981,7 +16354,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 foreach (var _element in set)
                 {
                     string spvTemp = SPV_siteHash[_element.site_id].ToString();
-                    insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.BD_type}, 1, {_element.isMonthly}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                    insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.BD_Type}, 1, {_element.isMonthly}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
                     //site_ids.Add(Convert.ToString(_element.site_id));
                     //month_no.Add(Convert.ToString(_element.month_no));
                     //year.Add(Convert.ToString(_element.year));
@@ -16000,8 +16373,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 try
                 {
                     //Insert query.
-                    val = await Context.ExecuteNonQry<int>(insertQry.Substring(0, (insertQry.Length - 1)) + ";").ConfigureAwait(false);
-
+                    string finalInsertQry = insertQry + insert_values;
+                    val = await Context.ExecuteNonQry<int>(finalInsertQry.Substring(0, (finalInsertQry.Length - 1)) + ";").ConfigureAwait(false);
+                    result = val;
                 }
                 catch(Exception e)
                 {
@@ -16066,22 +16440,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return finalSPVList;
         }
         //Operational Performance Comments Get Site function.
-        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId, string bdType)
+        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes)
         {
             string functionName = "OPGetSiteListForEdit";
             int result = 0;
             string filter = "ORDER BY site;";
-            if (siteId != null)
-            {
-                filter = $" WHERE site_master_id IN({siteId}) ORDER BY site;";
-            }
+            //if (siteId != null)
+            //{
+            //    filter = $" WHERE site_master_id IN({siteId}) ORDER BY site;";
+            //}
 
             List<OPSite> siteDatafromMaster = new List<OPSite>();
             List<OPSite> siteDataFromOP = new List<OPSite>();
             List<OPSite> finalSiteList = new List<OPSite>();
 
             //get data from OP table as per filter.
-            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND BD_type = '{bdType}' AND year IN({year}) AND type IN({siteType});";
+            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND BD_type = '{bdTypes}' AND year IN({year}) AND type IN({siteType});";
             try
             {
                 siteDataFromOP = await Context.GetData<OPSite>(fetchQry).ConfigureAwait(false);
@@ -16094,7 +16468,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             //Get data from master table.
-            string fetchQryMaster = $"SELECT site_master_id AS site_id, site FROM site_master {filter}";
+            string fetchQryMaster = $"SELECT site_master_id AS site_id, site FROM site_master;"; //{filter}
             try
             {
                 siteDatafromMaster = await Context.GetData<OPSite>(fetchQryMaster).ConfigureAwait(false);
@@ -16129,7 +16503,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach(var _upData in set)
             {
-                updateQry += $"UPDATE OPComments SET comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = '{DateTime.Now}' WHERE type = {_upData.type} AND site_id = {_upData.site_id} AND month_no = {_upData.month_no} AND isMonthly = {_upData.isMonthly} AND BD_type = '{_upData.BD_type}';";
+                updateQry += $"UPDATE OPComments SET comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = '{DateTime.Now}' WHERE type = {_upData.type} AND site_id = {_upData.site_id} AND month_no = {_upData.month_no} AND isMonthly = {_upData.isMonthly} AND BD_type = '{_upData.BD_Type}';";
             }
             try
             {
@@ -16151,7 +16525,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             Hashtable spvSite = new Hashtable();
             List<SPVSiteWind> spvSiteData = new List<SPVSiteWind>();
 
-            string query = "Select site_master_id, site, site_id, site, spv FROM site_master;";
+            string query = "Select site_master_id, site, spv FROM site_master;";
             try
             {
                 spvSiteData = await Context.GetData<SPVSiteWind>(query).ConfigureAwait(false);
@@ -16171,6 +16545,143 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             return spvSite;
 
+        }
+		
+		// Tanvi's Changes.
+		internal async Task<int> dgrUploadingReminder()
+        {
+
+            PPT_InformationLog("From DGR Repository : dgrUploadingReminder : " + DateTime.Now);
+            //MAILING FUNCTIONALITY
+
+            string info = ("dgrUploadingReminder function called from repository ");
+            string functionName = "dgrUploadingReminder";
+            //await LogInfo(0, 0, 0, functionName, info, backend);
+
+            MailSettings _settings = new MailSettings();
+            var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+            //_settings.Mail = "kasrsanket@gmail.com";
+            //_settings.DisplayName = "Sanket Kar";
+            _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+            //_settings.Password = "lozirdytywjlvcxd";
+            _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+            //_settings.Host = "smtp.gmail.com";
+            _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+            //_settings.Port = 587;
+            _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+            string Msg = "Weekly PR Report Generated";
+            // private MailServiceBS mailService;
+            List<string> AddToWind = new List<string>();
+            List<string> AddToSolar = new List<string>();
+
+            //List<string> AddCc = new List<string>();
+            MailRequest request = new MailRequest();
+
+            DateTime dt = DateTime.Now;
+            string today = dt.ToString("yyyy-MM-dd");
+            //string today = "2023-11-12";
+
+
+            string tb = "<p style='text-align: left;'>Dear User,<br>";
+            tb += $"This is a remainder email that DGR data is not uploaded for {dt.ToString("dd-MMM-yyyy")} .<p>";
+
+            string windSiteQry = $"SELECT site_master_id as id,site as name FROM site_master as wind left join import_batches  on import_batches.site_id = wind.site_master_id and import_file_type = 1 and date(data_date) = '{today}' and import_type = 1 where site_id is null; ";
+
+            List<SiteList> sitelist = await Context.GetData<SiteList>(windSiteQry).ConfigureAwait(false);
+
+            foreach (var site in sitelist)
+            {
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 1 and identity = {site.id} ;";
+                try
+                {
+                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data2)
+                    {
+                        AddToWind.Add(item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside dgrUploadingReminder function : Exception Caught while fetching and adding To emails : Due to : " + msg);
+                }
+
+                AddToWind = new List<string>();
+                AddToWind.Add("tanvi@softeltech.in");
+                request.ToEmail = AddToWind;
+                //request.CcEmail = AddCc;
+                request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                request.Body = tb;
+
+                try
+                {
+                    var res = await MailService.SendEmailAsync(request, _settings,0);
+                    PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+                    info = "Dgr Reminder SendEmailAsync function completed";
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    PPT_ErrorLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+                    info = "Dgr Reminder SendEmailAsync function failed exception :" + e.Message;
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+            }
+
+            string solarSiteQry = $"SELECT site_id,site_master_solar_id as id,site as name FROM site_master_solar as solar left join import_batches on import_batches.site_id = solar.site_master_solar_id and import_file_type = 1 and date(data_date) = '{today}' and import_type = 2 where site_id is null; ";
+
+            List<SiteList> solarSitelist = await Context.GetData<SiteList>(solarSiteQry).ConfigureAwait(false);
+
+            foreach (var site in solarSitelist)
+            {
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id} ;";
+                try
+                {
+                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data2)
+                    {
+                        AddToSolar.Add(item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside dgrUploadingReminder function : Exception Caught while fetching and adding To emails : Due to : " + msg);
+                }
+
+               AddToSolar = new List<string>();
+               AddToSolar.Add("tanvi@softeltech.in");
+                request.ToEmail = AddToSolar;
+                //request.CcEmail = AddCc;
+                request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                request.Body = tb;
+
+                try
+                {
+                    var res = await MailService.SendEmailAsync(request, _settings,0);
+                    PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+                    info = "Dgr Reminder SendEmailAsync function completed";
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    PPT_ErrorLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+                    info = "Dgr Reminder SendEmailAsync function failed exception :" + e.Message;
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+            }
+            return 1;
         }
     }
 }

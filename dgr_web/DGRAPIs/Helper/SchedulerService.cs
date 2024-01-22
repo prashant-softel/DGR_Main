@@ -227,6 +227,47 @@ namespace DGRAPIs.Helper
                             }
                         }
                     }
+        //Tanvi's Changes
+                    string firstDgrReminderTime = MyConfig.GetValue<string>("Timer:firstDgrReminderTime");
+                    string secondDgrReminderTime = MyConfig.GetValue<string>("Timer:secondDgrReminderTime");
+
+
+                    if (DateTime.Now.ToString("HH:mm") == firstDgrReminderTime || DateTime.Now.ToString("HH:mm") == secondDgrReminderTime)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
+                    {
+                        PPT_InformationLog("From Scheduler Service : For dgr reminder : Inside if where DgrReminderTime =" + firstDgrReminderTime);
+
+                        firstDgrReminderFunction();
+
+                        async Task<int> firstDgrReminderFunction()
+                        {
+                            PPT_InformationLog("From Scheduler Service : For dgr reminder : firstDgrReminderFunction Called from scheduler");
+                            string hostName = MyConfig.GetValue<string>("Timer:hostName");
+
+                            bool reminderSuccess = false;
+                            try
+                            {
+                                string apiUrlWind = hostName + "/api/DGR/dgrUploadingReminder";
+                                PPT_InformationLog("From Scheduler Service : For dgr reminder : API URL " + apiUrlWind);
+                                CallAPI(apiUrlWind);
+                                reminderSuccess = true;
+                                PPT_InformationLog("From Scheduler Service : For dgr reminder : Inside try reminderSuccess Send Flag : " + reminderSuccess);
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.Message;
+                                PPT_ErrorLog("From Scheduler Service : For dgr reminder : Inside catch reminder mail failed" + msg + " Flag : " + reminderSuccess);
+                            }
+                            if (reminderSuccess)
+                            {
+                                PPT_InformationLog("From Scheduler Service : For dgr reminder : Mail Sent" + msg);
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

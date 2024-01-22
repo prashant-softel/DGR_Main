@@ -2803,12 +2803,12 @@ namespace DGRAPIs.Controllers
 
         [Route("OPGetSiteListForEdit")]
         [HttpGet]
-        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, string siteId, string bdType)
+        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes)
         {
             {
                 try
                 {
-                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, siteId, bdType);
+                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, bdTypes);
                     return Ok(data);
 
                 }
@@ -2821,7 +2821,7 @@ namespace DGRAPIs.Controllers
         }
 
         [Route("OPCommentsInsert")]
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> OPCommentsInsert(List<OPComments> set)
         {
             {
@@ -2836,6 +2836,43 @@ namespace DGRAPIs.Controllers
 
                     return BadRequest(ex.Message);
                 }
+            }
+        }
+        //Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType)
+        [Route("GetOPCommentsMonthly")]
+        [HttpGet]
+        public async Task<IActionResult> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetOPCommentsMonthly(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        //Tanvi's Changes Hereafter. 1 function.
+        [Route("dgrUploadingReminder")]
+        [HttpGet]
+        public async Task<IActionResult> dgrUploadingReminder()
+        {
+            try
+            {
+                var data = await _dgrBs.dgrUploadingReminder();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
             }
         }
         #endregion
