@@ -16273,7 +16273,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //Site wise.
                 if (isDisplay == 1)
                 {
-                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
                 }
                 else if (isDisplay == 0)
                 {
@@ -16494,7 +16494,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return finalSiteList;
         }
         //Operational Performance Comments Edit function.
-        internal async Task<int> OPCEdit(List<OPComments> set)
+        internal async Task<int> OPCommentsEdit(List<OPComments> set)
         {
             string functionName = "OPCEdit";
 

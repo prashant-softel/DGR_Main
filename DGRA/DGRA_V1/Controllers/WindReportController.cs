@@ -855,5 +855,43 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> OPECM([FromBody] List<OPComments> ECMFinalData)
+        {
+            string line = "";
+            //string ty = typeof(ACMFinalData).ToString();
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPCommentsEdit";
+
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    // Convert acmDataList to JSON
+                    var json = JsonConvert.SerializeObject(ECMFinalData);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Make the POST request using HttpClient
+                    var response = await client.PostAsync(url, data);
+                    // Check if the request was successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content
+                        line = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["notification"] = "Error making API request";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Present!";
+            }
+
+            return Content(line, "application/json");
+        }
+
     }
 }

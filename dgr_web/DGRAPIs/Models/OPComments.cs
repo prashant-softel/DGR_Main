@@ -40,7 +40,9 @@ namespace DGRAPIs.Models
         public int BD_Type { get; set; }
         public int isDeleted { get; set; }
         public int isMonthly { get; set; }
+        public int isSPV { get; set; }
         public string comment { get; set; }
+        public string updated_comment { get; set; }
         public int added_by { get; set; }
         public int added_at { get; set; }
         public int updated_by { get; set; }

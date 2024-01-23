@@ -2858,6 +2858,25 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("OPCommentsEdit")]
+        [HttpPost]
+        public async Task<IActionResult> OPCommentsEdit(List<OPComments> set)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPCommentsEdit(set);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
         //Tanvi's Changes Hereafter. 1 function.
         [Route("dgrUploadingReminder")]
         [HttpGet]

@@ -216,13 +216,15 @@
                                             <div id="ECM">
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ECM_BDSelect" onchange="EMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
-                                                        <option value="0" disabled>Select BD Type</option>
+                                                        <option value="0">Select BD Type</option>
                                                         <option value="1">EGB</option>
                                                         <option value="2">BD</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
-                                                <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
+                                                <div id="ECM_content">
+
+                                                </div>
                                             </div>
                                         </div>
                                             <div class="scrollable-container" id="monthlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Delete Division</h4></div>
@@ -1587,6 +1589,7 @@
     }
 
     //ECM Edit functionality.
+    var ECM_data = [];
     function monthEdit() {
             var mDisplay = document.getElementById("monthlyComments");
             var mAdd = document.getElementById("monthlyAdd");
@@ -1598,6 +1601,7 @@
             mEdit.style.display = "block";
             mDelete.style.display = "none";
     }
+    //Get data after changing the Option from BD dropdown.
     function EMCOnchange() {
         var BD_dropdown = document.getElementById("ECM_BDSelect");
         var BD_value = BD_dropdown.value;
@@ -1614,18 +1618,110 @@
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
+                ECM_data = [];
+                ECM_data = [...result];
                 console.log("Display Edit Result : ");
-                console.log(result);
+                console.log(ECM_data);
+                var destContainer = document.getElementById("ECM_content");
+                destContainer.innerHTML = "";
+
+                ECM_data.forEach((elem, index) => createUI(elem, destContainer, index));
+                var saveButton = document.createElement('button');
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border - radius: 5px; ";
+                saveButton.onclick = ECMSaveButton;
+                saveButton.textContent = "Save";
+                destContainer.appendChild(saveButton);
             }
         });
-        //if (isSPV == 1) {
-        //    //Site wise.
-        //    console.log("ECM Site wise");
-        //} else if (isSPV == 0) {
-        //    //SPV wise.
-        //    console.log("ECM SPV wise");
-        //}
+    }
+    //Function for creating the UI for the Edit.
+    function createUI(element, Destcontainer, index) {
+        var commentContainer = document.createElement('div');
+        commentContainer.className = 'comment-container';
 
+        var siteLabel = document.createElement('label');
+        siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.textContent = element.site;
+        siteLabel.id = "ECMLabel" + index;
+        element.label_id = "ECMLabel" + index;
+
+        var commentInput = document.createElement('input');
+        commentInput.className = 'comment-input';
+        commentInput.type = 'text';
+        commentInput.style = "margin-left: 10px; width: 370px; height: 35px; border: 1px solid #ccc; vertical-align: top;";
+        commentInput.value = element.comment;
+        commentInput.id = "ECMInput_" + index;
+        element.input_id = "ECMInput_" + index;
+
+        commentContainer.appendChild(siteLabel);
+        commentContainer.appendChild(commentInput);
+
+        Destcontainer.appendChild(commentContainer);
+    }
+
+    function ECMSaveButton() {
+        console.log("Edit save button just after save : ");
+        console.log(ECM_data);
+        var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+        var anyChanges = [];
+        var ECMFinalData = []
+        for (var k = 0; k < ECM_data.length; k++) {
+            //var tempId = "ECMInput_" + k;
+            var temEle = document.getElementById(ECM_data[k].input_id);
+            var updatedComment = temEle.value;
+            if (ECM_data[k].comment == updatedComment) {
+                anyChanges.push(0); // No change in comment
+            } else {
+                ECM_data[k].updated_by = updatedBy;
+                ECM_data[k].updated_comment = updatedComment;
+                ECM_data[k].isMonthly = 0; //0 for monthly 1 for yearly.
+                ECM_data[k].isDeleted = 1; //1 active 0 for deleted.
+                anyChanges.push(1); // Change in comment.
+                ECMFinalData.push(ECM_data[k]);
+            }
+            ECM_data[k].isSPV = isSPV;
+        }
+        console.log("Edited after updating button : ");
+        console.log(ECMFinalData);
+        console.log(anyChanges);
+        if (anyChanges.includes(1)) {
+            console.log("Calling the API for changes.");
+            //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPECM", "WindReport")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(ECMFinalData),
+                success: function (result, status, xhr) {
+                    console.log("result after adding : ");
+                    console.log(result);
+                    if (Number(result) > 0) {
+
+                        ClearACM();
+                        var mDisplay = document.getElementById("monthlyComments");
+                        var mAdd = document.getElementById("monthlyAdd");
+                        var mEdit = document.getElementById("monthlyEdit");
+                        var mDelete = document.getElementById("monthlyDelete");
+
+                        mDisplay.style.display = "block";
+                        mAdd.style.display = "none";
+                        mEdit.style.display = "none";
+                        mDelete.style.display = "none";
+
+                        showToast("Comments Added.", 5000, "monthlyComments");
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        } else {
+            // No changes, call toast function
+            console.log("No changes in comments. Calling the toast function.");
+            showToast("", 7000, "ECM");
+        }
     }
 
     function monthDelete() {
