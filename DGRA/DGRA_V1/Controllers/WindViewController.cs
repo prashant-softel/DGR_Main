@@ -385,5 +385,59 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
+        //changes
+        public IActionResult DownloadExcelWind(string importId)
+        {
+            try
+            {
+                var apiUrl = _idapperRepo.GetAppSettingValue("API_URL");
+                var url = $"{apiUrl}/api/DGR/DownloadExcelWind?importId={importId}";
+
+                // Create an HttpWebRequest
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+                // Get the response from the server
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    // Check the status code to ensure a successful response
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        // Read the response stream (assuming it's a binary file)
+                        using (Stream responseStream = response.GetResponseStream())
+                        {
+                            // Read the stream into a byte array
+                            using (MemoryStream memoryStream = new MemoryStream())
+                            {
+                                responseStream.CopyTo(memoryStream);
+                                byte[] excelData = memoryStream.ToArray();
+
+                                // Check if data is present
+                                if (excelData == null || excelData.Length == 0)
+                                {
+                                    TempData["notification"] = "Data Not Present!";
+                                    return Content("Data Not Present!", "text/plain");
+                                }
+
+                                // Set the Content-Disposition header for file download
+                                Response.Headers.Add("Content-Disposition", "attachment; filename=Wind_Import.xlsx");
+
+                                // Return the Excel data as a file "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Wind_Import.xlsx");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        TempData["notification"] = $"Unexpected response status: {response.StatusCode}";
+                        return Content($"Unexpected response status: {response.StatusCode}", "text/plain");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "An error occurred while exporting data!";
+                return Content(ex.Message, "text/plain");
+            }
+        }
     }
 }

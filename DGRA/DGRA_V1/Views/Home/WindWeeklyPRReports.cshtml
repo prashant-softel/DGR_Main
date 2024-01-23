@@ -243,9 +243,12 @@
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/libs/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/dist/pptxgen.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 
     <script type="text/javascript">
+    var exceldata1;
+    var exceldata2;
         var fyear = "";
         var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
         $(document).ready(function () {
@@ -2455,6 +2458,180 @@
     }*/
 
     // Mothly Report WTG Wise
+    function ExportToExcelSPVWise() {
+
+        console.log(exceldata1)
+        result = exceldata1;
+
+        var columns = [
+            "SPV", "Capacity", "JMR Energy (in MU) Tar", "JMR Energy (in MU) Exp", "JMR Energy (in MU) Act", "JMR Energy (in MU) T.var(%)", "JMR Energy (in MU) E.var(%)", "Revenue (MINR)", " Wind Speed (m/s) Tar", "Wind Speed (m/s) Act ", "Wind Speed (m/s) Var (%)", "PLF (%) Tar",
+            "PLF (%) Act ", "PLF (%) Var (%) ", "MA Actual (%) Tar", "MA Actual (%) Act ", "MA Actual (%) Var (%) ", "IGA (%) Tar", "IGA (%) Act ", "IGA (%) Var (%) ", "EGA (%) Tar", "EGA (%) Act ", "EGA (%) Var (%) "
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var leble = [];
+        var revenue_arr = [];
+            var Energy_Dataset = [];
+            var Wind_Dataset = [];
+            var actual_energy = [];
+            var target_energy = [];
+            var pas_energy_var = [];
+            var neg_energy_var = [];
+
+            var actual_wind = [];
+            var target_wind = [];
+            var pas_wind_var = [];
+            var neg_wind_var = [];
+            var Levels = [];
+            let total_capacity = 0;
+            let total_capTarMu = 0;
+            let total_tar_kwh_mu = 0;
+            let total_act_jmr_kwh_mu = 0;
+            let avg_jmr_var = 0;
+            let total_revenue = 0;
+            let total_capTarWind = 0;
+            let total_tar_wind = 0;
+            let total_act_wind = 0;
+            let avg_wind_var = 0;
+            let total_capTarPlf = 0;
+            let total_exp_power = 0;
+            let total_tar_plf = 0;
+            let total_act_plf = 0;
+            let avg_plf_var = 0;
+            let total_capTarMa = 0;
+            let total_tar_ma = 0;
+            let total_act_ma = 0;
+            let avg_ma_var = 0;
+            let total_capTarIga = 0;
+            let total_tar_iga = 0;
+            let total_act_iga = 0;
+            let avg_iga_var = 0;
+            let total_capTarEga = 0;
+            let total_tar_ega = 0;
+            let total_act_ega = 0;
+            let avg_ega_var = 0;
+            let total_capActWind = 0;
+            let total_capActPlf = 0;
+            let total_capActMa = 0;
+            let total_capActIga = 0;
+            let total_capActEga = 0;
+
+           
+                leble.push(result[i].spv);
+                let revenue = 0;
+                let jmr_var = 0;
+                let e_var = 0;
+                let wind_var = 0;
+                let plf_var = 0;
+                let ma_act_var = 0;
+                let iga_var = 0;
+                let ega_var = 0;
+                let tar_mu = 0;
+                tar_mu = result[i].tar_kwh_mu / 1000000;
+                //tar_mu = result[i].tar_kwh_mu / 1000000;
+                //revenue = ((result[i].act_jmr_kwh_mu - tar_mu) * result[i].total_tarrif);
+                revenue = ((result[i].act_jmr_kwh_mu - tar_mu) * result[i].total_tarrif);
+                if (result[i].act_jmr_kwh_mu != 0 || result[i].tar_kwh_mu != 0) {
+                    jmr_var = ((result[i].act_jmr_kwh_mu - tar_mu) / tar_mu) * 100;
+                }
+                if (result[i].act_Wind != 0 || result[i].tar_wind != 0) {
+                    wind_var = ((result[i].act_Wind.toFixed(2) - result[i].tar_wind.toFixed(2)) / result[i].tar_wind.toFixed(2)) * 100;
+                }
+                if (result[i].exp_power != 0) {
+                    // e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                    e_var = ((result[i].act_jmr_kwh_mu - (result[i].exp_power / 6) / 1000000) / ((result[i].exp_power / 6) / 1000000)) * 100;
+                    //if (result[i].site == "Maragutti") {
+                    //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
+                    //    //    console.log(temp_e_var);
+                    //}
+                }
+
+                plf_var = (result[i].act_plf - result[i].tar_plf);
+                ma_act_var = (result[i].act_ma - result[i].tar_ma);
+                iga_var = (result[i].act_iga - result[i].tar_iga);
+                ega_var = (result[i].act_ega - result[i].tar_ega);
+
+
+                revenue_arr.push(revenue.toFixed(1));
+                total_capacity += result[i].total_mw;
+                total_tar_kwh_mu += (result[i].tar_kwh_mu / 1000000);
+                total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
+                //total_exp_power += result[i].exp_power / 1000000;
+                total_exp_power += (result[i].exp_power / 6) / 1000000;
+                total_revenue += revenue;
+                total_tar_wind += result[i].tar_wind;
+                total_act_wind += result[i].act_Wind;
+                total_tar_plf += result[i].tar_plf;
+                total_act_plf += result[i].act_plf;
+                total_tar_ma += result[i].tar_ma;
+                total_act_ma += result[i].act_ma;
+                total_tar_iga += result[i].tar_iga;
+                total_act_iga += result[i].act_iga;
+                total_tar_ega += result[i].tar_ega;
+                total_act_ega += result[i].act_ega;
+                total_capTarMu += result[i].tar_kwh_mu * result[i].total_mw;
+                total_capTarWind += result[i].tar_wind * result[i].total_mw;
+                total_capTarPlf += result[i].tar_plf * result[i].total_mw;
+                total_capTarMa += result[i].tar_ma * result[i].total_mw;
+                total_capTarIga += result[i].tar_iga * result[i].total_mw;
+                total_capTarEga += result[i].tar_ega * result[i].total_mw;
+                total_capActWind += result[i].act_Wind * result[i].total_mw;
+                total_capActPlf += result[i].act_plf * result[i].total_mw;
+                total_capActMa += result[i].act_ma * result[i].total_mw;
+                total_capActIga += result[i].act_iga * result[i].total_mw;
+                total_capActEga += result[i].act_ega * result[i].total_mw;
+
+                row.push(result[i].spv);
+                row.push(result[i].total_mw);
+                row.push((result[i].tar_kwh_mu / 1000000));
+                row.push((result[i].exp_power / 6) / 1000000);
+                row.push(result[i].act_jmr_kwh_mu);
+                row.push(jmr_var);
+                row.push(e_var);
+                row.push(revenue);
+                row.push(result[i].tar_wind);
+                row.push(result[i].act_Wind);
+                row.push(wind_var);
+                row.push(result[i].tar_plf);
+                row.push(result[i].act_plf);
+                row.push(plf_var);
+                row.push(result[i].tar_ma);
+                row.push(result[i].act_ma);
+                row.push(ma_act_var);
+                row.push(result[i].tar_iga);
+                row.push(result[i].act_iga);
+                row.push(iga_var);
+                row.push(result[i].tar_ega);
+                row.push(result[i].act_ega);
+                row.push(ega_var);
+                rows.push(row);
+
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Wind PerformanceRep SPVWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind PerformanceRep SPVWise.xlsx");
+
+    }
+
     function GetPerformanceBySPV() {
 
         var daterange = $('#daterange').val();
@@ -2527,6 +2704,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata1 = result;
                     console.log("Datatable");
 			let total_capacity = 0;
                     let total_capTarMu = 0;
@@ -2987,7 +3165,88 @@
                                     return title;
                                 }
                             }
-                        }
+                        },
+                            {
+                                text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                                className: 'btn ml-1   ',
+
+                                action: function () {
+                                    ExportToExcelSPVWise();
+                                },
+                                format: {
+                                    header: function (data, columnIdx) {
+                                        if (columnIdx == 1) {
+                                            return 'Capacity (MW)';
+                                        }
+                                        else if (columnIdx == 2) {
+                                            return 'JMR Energy (in MU)  Tar';
+                                        }
+                                        else if (columnIdx == 3) {
+                                            return 'JMR Energy (in MU)  Exp';
+                                        }
+                                        else if (columnIdx == 4) {
+                                            return 'JMR Energy (in MU)  Act';
+                                        }
+                                        else if (columnIdx == 5) {
+                                            return 'JMR Energy (in MU)  T.Var (%)';
+                                        }
+                                        else if (columnIdx == 6) {
+                                            return 'JMR Energy (in MU)  E.Var (%)';
+                                        }
+                                        else if (columnIdx == 7) {
+                                            return 'Revenue (MINR) ';
+                                        }
+                                        else if (columnIdx == 8) {
+                                            return 'Wind Speed (m/s)  Tar';
+                                        }
+                                        else if (columnIdx == 9) {
+                                            return 'Wind Speed (m/s)  Act ';
+                                        }
+                                        else if (columnIdx == 10) {
+                                            return 'Wind Speed (m/s)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 11) {
+                                            return 'PLF (%)  Tar';
+                                        }
+                                        else if (columnIdx == 12) {
+                                            return 'PLF (%)  Act ';
+                                        }
+                                        else if (columnIdx == 13) {
+                                            return 'PLF (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 14) {
+                                            return 'MA Actual (%)  Tar';
+                                        }
+                                        else if (columnIdx == 15) {
+                                            return 'MA Actual (%)  Act ';
+                                        }
+                                        else if (columnIdx == 16) {
+                                            return 'MA Actual (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 17) {
+                                            return 'IGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 18) {
+                                            return 'IGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 19) {
+                                            return 'IGA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 20) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 22) {
+                                            return 'EGA (%)  Var (%) ';
+                                        }
+                                        else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            },
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
@@ -3151,6 +3410,208 @@
     }
     //------------------------------------
     // Mothly Report SIte Wise
+
+        function ExportToExcelSiteWise() {
+
+            console.log(exceldata2)
+            result = exceldata2;
+
+            var columns = [
+                "SPV", "Capacity", "JMR Energy (in MU) Tar", "JMR Energy (in MU) Exp", "JMR Energy (in MU) Act", "JMR Energy (in MU) T.var(%)", "JMR Energy (in MU) E.var(%)", "Revenue (MINR)", " Wind Speed (m/s) Tar", "Wind Speed (m/s) Act ", "Wind Speed (m/s) Var (%)", "PLF (%) Tar",
+                "PLF (%) Act ", "PLF (%) Var (%) ", "MA Actual (%) Tar", "MA Actual (%) Act ", "MA Actual (%) Var (%) ", "IGA (%) Tar", "IGA (%) Act ", "IGA (%) Var (%) ", "EGA (%) Tar", "EGA (%) Act ", "EGA (%) Var (%) "
+            ];
+
+            var rows = [];
+
+            for (var i = 0; i < result.length; i++) {
+                var row = [];
+            var Energy_Dataset = [];
+            var Wind_Dataset = [];
+            var actual_energy = [];
+            var target_energy = [];
+            var pas_energy_var = [];
+            var neg_energy_var = [];
+
+            var actual_wind = [];
+            var target_wind = [];
+            var pas_wind_var = [];
+            var neg_wind_var = [];
+            var Levels = [];
+                 let total_capacity = 0;
+                    let total_capTarMu = 0;
+                    let total_tar_kwh_mu = 0;
+                    let total_act_jmr_kwh_mu = 0;
+                    let avg_jmr_var = 0;
+                    let total_revenue = 0;
+                    let total_capTarWind = 0;
+                    let total_exp_power = 0;
+                    let total_tar_wind = 0;
+                    let total_act_wind = 0;
+                    let avg_wind_var = 0;
+                    let total_capTarPlf = 0;
+                    let total_tar_plf = 0;
+                    let total_act_plf = 0;
+                    let avg_plf_var = 0;
+                    let total_capTarMa = 0;
+                    let total_tar_ma = 0;
+                    let total_act_ma = 0;
+                    let avg_ma_var = 0;
+                    let total_capTarIga = 0;
+                    let total_tar_iga = 0;
+                    let total_act_iga = 0;
+                    let avg_iga_var = 0;
+                    let total_capTarEga = 0;
+                    let total_tar_ega = 0;
+                    let total_act_ega = 0;
+                    let avg_ega_var = 0;
+                    let total_capActWind = 0;
+                    let total_capActPlf = 0;
+                    let total_capActMa = 0;
+                    let total_capActIga = 0;
+                    let total_capActEga = 0;
+
+                 
+                        let revenue = 0;
+                        let jmr_var = 0;
+                        let e_var = 0;
+                        let wind_var = 0;
+                        let plf_var = 0;
+                        let ma_act_var = 0;
+                        let iga_var = 0;
+                        let ega_var = 0;
+                        let tar_mu = 0;
+                        tar_mu = result[i].tar_kwh_mu / 1000000;
+                        revenue = ((result[i].act_jmr_kwh_mu - tar_mu) * result[i].total_tarrif);
+                        if (result[i].act_jmr_kwh_mu != 0 || result[i].tar_kwh_mu != 0) {
+                            jmr_var = ((result[i].act_jmr_kwh_mu - tar_mu) / tar_mu) * 100;
+                        }
+                        if (result[i].act_Wind != 0 || result[i].tar_wind != 0) {
+                            wind_var = ((result[i].act_Wind.toFixed(2) - result[i].tar_wind.toFixed(2)) / result[i].tar_wind.toFixed(2)) * 100;
+                        }
+                        if (result[i].exp_power != 0) {
+                           // e_var = ((result[i].act_jmr_kwh_mu - result[i].exp_power / 1000000) / (result[i].exp_power / 1000000)) * 100;
+                            e_var = ((result[i].act_jmr_kwh_mu - (result[i].exp_power / 6) / 1000000) / ((result[i].exp_power / 6) / 1000000)) * 100;
+                            //if (result[i].site == "Maragutti") {
+                            //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
+                            //    //    console.log(temp_e_var);
+                            //}
+                        }
+                       
+                         plf_var = (result[i].act_plf - result[i].tar_plf);
+                         ma_act_var = (result[i].act_ma - result[i].tar_ma);
+                         iga_var = (result[i].act_iga - result[i].tar_iga);
+                         ega_var = (result[i].act_ega - result[i].tar_ega);
+                       
+                        let pasitive;
+                        let negative;
+                        let g_pasitive;
+                        let g_negative;
+                        if (jmr_var < 0) {
+                            negative = jmr_var;
+                            g_negative = jmr_var.toFixed(1);
+                        }
+                        else {
+                            pasitive = jmr_var;
+                            g_pasitive = jmr_var.toFixed(1);
+                        }
+                        let w_pasitive;
+                        let w_negative;
+                        let gw_pasitive;
+                        let gw_negative;
+                        if (wind_var < 0) {
+                            w_negative = wind_var;
+                            gw_negative = wind_var.toFixed(1);
+                        }
+                        else {
+                            w_pasitive = wind_var;
+                            gw_pasitive = wind_var.toFixed(1);
+                        }
+
+                        target_energy.push((result[i].tar_kwh_mu/1000000).toFixed(1));
+                        actual_energy.push(result[i].act_jmr_kwh_mu.toFixed(1));
+                        pas_energy_var.push(g_pasitive);
+                        neg_energy_var.push(g_negative);
+                        Levels.push(result[i].site);
+
+                        target_wind.push(result[i].tar_wind.toFixed(1));
+                        actual_wind.push(result[i].act_Wind.toFixed(1));
+                        pas_wind_var.push(gw_pasitive);
+                        neg_wind_var.push(gw_negative);
+                        total_capacity += result[i].total_mw;
+                        total_tar_kwh_mu += (result[i].tar_kwh_mu / 1000000);
+                        //total_exp_power += result[i].exp_power / 1000000;
+                        total_exp_power += (result[i].exp_power / 6) / 1000000;
+                        total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
+                        total_revenue += revenue;
+                        total_tar_wind += result[i].tar_wind;
+                        total_act_wind += result[i].act_Wind;
+                        total_tar_plf += result[i].tar_plf;
+                        total_act_plf += result[i].act_plf;
+                        total_tar_ma += result[i].tar_ma;
+                        total_act_ma += result[i].act_ma;
+                        total_tar_iga += result[i].tar_iga;
+                        total_act_iga += result[i].act_iga
+                        total_tar_ega += result[i].tar_ega;
+                        total_act_ega += result[i].act_ega;
+                        total_capTarMu += result[i].tar_kwh_mu * result[i].total_mw;
+                        total_capTarWind += result[i].tar_wind * result[i].total_mw;
+                        total_capTarPlf += result[i].tar_plf * result[i].total_mw;
+                        total_capTarMa += result[i].tar_ma * result[i].total_mw;
+                        total_capTarIga += result[i].tar_iga * result[i].total_mw;
+                        total_capTarEga += result[i].tar_ega * result[i].total_mw;
+                        total_capActWind += result[i].act_Wind * result[i].total_mw;
+                        total_capActPlf += result[i].act_plf * result[i].total_mw;
+                        total_capActMa += result[i].act_ma * result[i].total_mw;
+                        total_capActIga += result[i].act_iga * result[i].total_mw;
+                        total_capActEga += result[i].act_ega * result[i].total_mw;
+
+                    row.push(result[i].site);
+                    row.push(result[i].total_mw);
+                    row.push((result[i].tar_kwh_mu / 1000000));
+                    row.push((result[i].exp_power / 6) / 1000000);
+                    row.push(result[i].act_jmr_kwh_mu);
+                    row.push(jmr_var);
+                    row.push(e_var);
+                    row.push(revenue);
+                    row.push(result[i].tar_wind);
+                    row.push(result[i].act_Wind);
+                    row.push(wind_var);
+                    row.push(result[i].tar_plf);
+                    row.push(result[i].act_plf);
+                    row.push(plf_var);
+                    row.push(result[i].tar_ma);
+                    row.push(result[i].act_ma);
+                    row.push(ma_act_var);
+                    row.push(result[i].tar_iga);
+                    row.push(result[i].act_iga);
+                    row.push(iga_var);
+                    row.push(result[i].tar_ega);
+                    row.push(result[i].act_ega);
+                    row.push(ega_var);
+                    rows.push(row);
+
+
+
+
+                }
+
+                var data = [columns].concat(rows);
+
+                var ws = XLSX.utils.aoa_to_sheet(data);
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Wind PerformanceRep SiteWise");
+                var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+                function s2ab(s) {
+                    var buf = new ArrayBuffer(s.length);
+                    var view = new Uint8Array(buf);
+                    for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                    return buf;
+                }
+
+                saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind PerformanceRep SiteWise.xlsx");
+
+            }
     function GetPerformanceBySite() {
 
         var daterange = $('#daterange').val();
@@ -3231,6 +3692,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata2= result;
                     //let target_energy = [];
                     //let actual_energy = [];
                     //let pas_energy_var = [];
@@ -3734,7 +4196,88 @@
                                     return title;
                                 }
                             }
-                        }
+                        },
+                          {
+    text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+    className: 'btn ml-1   ',
+
+    action: function () {
+       ExportToExcelSiteWise();
+    },
+     format: {
+            header: function (data, columnIdx) {
+                if (columnIdx == 1) {
+                    return 'Capacity (MW)';
+                }
+                else if (columnIdx == 2) {
+                    return 'JMR Energy (in MU)  Tar';
+                }
+                else if (columnIdx == 3) {
+                    return 'JMR Energy (in MU)  Exp';
+                }
+                else if (columnIdx == 4) {
+                    return 'JMR Energy (in MU)  Act';
+                }
+                else if (columnIdx == 5) {
+                    return 'JMR Energy (in MU)  T.Var (%)';
+                }
+                else if (columnIdx == 6) {
+                    return 'JMR Energy (in MU)  E.Var (%)';
+                }
+                else if (columnIdx == 7) {
+                    return 'Revenue (MINR) ';
+                }
+                else if (columnIdx == 8) {
+                    return 'Wind Speed (m/s)  Tar';
+                }
+                else if (columnIdx == 9) {
+                    return 'Wind Speed (m/s)  Act ';
+                }
+                else if (columnIdx == 10) {
+                    return 'Wind Speed (m/s)  Var (%) ';
+                }
+                else if (columnIdx == 11) {
+                    return 'PLF (%)  Tar';
+                }
+                else if (columnIdx == 12) {
+                    return 'PLF (%)  Act ';
+                }
+                else if (columnIdx == 13) {
+                    return 'PLF (%)  Var (%) ';
+                }
+                else if (columnIdx == 14) {
+                    return 'MA Actual (%)  Tar';
+                }
+                else if (columnIdx == 15) {
+                    return 'MA Actual (%)  Act ';
+                }
+                else if (columnIdx == 16) {
+                    return 'MA Actual (%)  Var (%) ';
+                }
+                else if (columnIdx == 17) {
+                    return 'IGA (%)  Tar';
+                }
+                else if (columnIdx == 18) {
+                    return 'IGA (%)  Act ';
+                }
+                else if (columnIdx == 19) {
+                    return 'IGA (%)  Var (%) ';
+                }
+                else if (columnIdx == 20) {
+                    return 'EGA (%)  Tar';
+                }
+                else if (columnIdx == 21) {
+                    return 'EGA (%)  Act ';
+                }
+                else if (columnIdx == 22) {
+                    return 'EGA (%)  Var (%) ';
+                }
+                else {
+                    return data;
+                }
+            }
+        }
+},
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');

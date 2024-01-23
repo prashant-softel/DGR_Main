@@ -141,10 +141,11 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 
 <script type="text/javascript">
-
+    var exceldata;
     window.onload = function () {
         var options = "";
         options += '<option value = "Jan">January</option ><option value="Feb">February</option>';
@@ -201,6 +202,53 @@
 
         });
     }
+
+    function exportToExcel() {
+
+        console.log(exceldata)
+        result = exceldata;
+
+        var columns = [
+            "FY", "Month", "Site",  "Wind Speed (m/s)", "kWh","MA (%)","IGA (%)", "EGA (%)","PLF (%)","P50","P75","P90"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            row.push(result[i].fy);
+            row.push(result[i].month);
+            row.push(result[i].site);
+            row.push(result[i].windSpeed);
+            row.push(result[i].kwh);
+            row.push(result[i].ma);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].plf);
+            row.push(result[i].p50);
+            row.push(result[i].p75);
+            row.push(result[i].p90);
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Wind Monthly Target KPI View");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind Monthly Target KPI View.xlsx");
+
+    }
+
     function getReport() {
         let year = "";
         $('select#fy option:selected').each(function () {
@@ -259,6 +307,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
                         tbl += '<tr>';
                         tbl += '<td class="text-left">' + result[i].fy + '</td>';
@@ -270,9 +319,9 @@
                         tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].p50.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].p75.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].p90.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].p50 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].p75 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].p90 || 0).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -314,8 +363,16 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');

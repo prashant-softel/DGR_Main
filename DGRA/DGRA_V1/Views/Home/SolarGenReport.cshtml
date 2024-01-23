@@ -420,8 +420,15 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
+    var exceldata1;
+    var exceldata2;
+    var exceldata3;
+    var exceldata4;
+    var exceldata5;
+    var exceldata6;
  var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
  var solarUserAccess ="@Html.Raw(solarSiteList.TrimEnd(','))";
     $(document).ready(function () {
@@ -1039,6 +1046,7 @@
 
 
                 if (result.length > 0) {
+                     exceldata1 = result;
                     console.log("Datatable");
 
                     const table = document.getElementById("example1");
@@ -1306,7 +1314,15 @@
                                     columns: ':visible'
                                 }
                             },
-                            'colvis'
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                DailyexportToExcelGenReportInverterWise();
+                            }
+                        },
                         ],
                         initComplete: function () {
                             this.api().columns().header().to$().each(function () {
@@ -1451,7 +1467,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
-
+                     exceldata2 = result;
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         let totalFinal = result[i].total_losses + result[i].tracker_losses;
@@ -1550,7 +1566,15 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                DailyexportToExcelGenReportSiteWise();
+                            }
+                        },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
@@ -1734,6 +1758,7 @@
                 tbl += '</tr></thead>';
                 console.log(result.length);
                 if (result.length > 0) {
+                    exceldata3 = result;
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
@@ -1841,7 +1866,15 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                MonthlyexportToExcelGenReportInverterWise();
+                            }
+                        },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
@@ -2002,6 +2035,7 @@
                 tbl += '</tr></thead>';
                 console.log(result.length);
                 if (result.length > 0) {
+                    exceldata4 = result;
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
                         cnt++;
@@ -2105,7 +2139,15 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                MonthlyexportToExcelGenReportSiteWise();
+                            }
+                        },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
@@ -2278,7 +2320,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
-
+                    exceldata5 = result;
                     for (var i = 0; i < result.length; i++) {
                        // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
@@ -2378,7 +2420,15 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                YearlyexportToExcelGenReportInverterWise();
+                            }
+                        },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
@@ -2531,6 +2581,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                     exceldata6 = result;
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
                         // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
@@ -2671,7 +2722,15 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                YearlyexportToExcelGenReportSiteWise();
+                            }
+                        },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
@@ -2707,6 +2766,504 @@
                 document.getElementById("loaderY").style.display = 'none';
             }
         });
+
+    }
+    function  DailyexportToExcelGenReportInverterWise(){
+
+        console.log(exceldata1)
+        result = exceldata1;
+
+        var columns = [
+            "Date", "Country", "State", "SPV", "Site", "Inverter", "DC_Capacity", "AC_Capacity", "GHI", "POA",
+            "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
+            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "EGA_B (%)", "EGA_C (%)","Gen_Hrs",
+            "USMH", "SMH","OH",  "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
+            "IGBD_Loss", "EGBD_Loss", "LS_Loss","LULL_Loss", "Total_Losses"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(formattedDate);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].inverter);
+            row.push(result[i].dc_capacity);
+            row.push(result[i].ac_capacity);
+            row.push(result[i].ghi);
+            row.push(result[i].poa);
+            row.push(result[i].expected_kwh);
+            row.push(result[i].inv_kwh);
+            row.push(result[i].plant_kwh);
+            row.push(result[i].inv_pr);
+            row.push(result[i].plant_pr);
+            row.push(result[i].inv_plf);
+            row.push(result[i].plant_plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].iga);    
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            row.push(result[i].prod_hrs);
+            row.push(result[i].usmh_bs);
+            row.push(result[i].smh_bd);
+            row.push(result[i].oh_bd);
+            row.push(result[i].igbdh_bd);
+            row.push(result[i].egbdh_bd);
+            row.push(result[i].load_shedding_bd);
+            row.push(result[i].total_bd_hrs);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(result[i].lull_hrs);
+            row.push(result[i].total_losses);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SolarDailyGenRep InverterWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarDailyGenRep InverterWise.xlsx");
+
+    }
+
+
+    function DailyexportToExcelGenReportSiteWise() {
+
+        console.log(exceldata2)
+        result = exceldata2;
+
+        var columns = [
+            "Date", "Site", "Country", "State", "SPV", "DC_Capacity", "AC_Capacity", "GHI", "POA",
+            "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
+            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "EGA_B (%)", "EGA_C (%)", "Gen_Hrs","Lull_Hrs",
+            "USMH", "SMH", "OH", "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
+            "IGBD_Loss", "EGBD_Loss", "LS_Loss", "LULL_Loss", "Tracker_Loss", "Total_Loss"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            let totalFinal = result[i].total_losses + result[i].tracker_losses;
+            row.push(formattedDate);
+             row.push(result[i].site)
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].dc_capacity);
+            row.push(result[i].ac_capacity);
+            row.push(result[i].ghi);
+            row.push(result[i].poa);
+            row.push(result[i].expected_kwh);
+            row.push(result[i].inv_kwh);
+            row.push(result[i].plant_kwh);
+            row.push(result[i].inv_pr);
+            row.push(result[i].plant_pr);
+            row.push(result[i].inv_plf);
+            row.push(result[i].plant_plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            row.push(result[i].prod_hrs);
+            row.push(result[i].lull_hrs_bd);
+            row.push(result[i].usmh_bs);
+            row.push(result[i].smh_bd);
+            row.push(result[i].oh_bd);
+            row.push(result[i].igbdh_bd);
+            row.push(result[i].egbdh_bd);
+            row.push(result[i].load_shedding_bd);
+            row.push(result[i].total_bd_hrs);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(result[i].lull_hrs);
+            row.push(result[i].tracker_losses);
+            row.push(totalFinal);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SolarDailyGenRep SiteWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarDailyGenRep SiteWise.xlsx");
+
+    }
+
+
+    function MonthlyexportToExcelGenReportInverterWise() {
+
+        console.log(exceldata3)
+        result = exceldata3;
+
+        var columns = [
+            "FY","Month", "Country", "State", "SPV", "Site", "Inverter", "DC_Capacity", "AC_Capacity", "GHI", "POA",
+            "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
+            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "EGA_B (%)", "EGA_C (%)", "Gen_Hrs","Lull_Hrs",
+            "USMH", "SMH", "OH", "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
+            "IGBD_Loss", "EGBD_Loss", "LS_Loss", "LULL_Loss", "Total_Loss"
+        ];
+
+        var rows = [];
+        var year = $('select#fyM option:selected').val();
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(year);
+            row.push(result[i].month);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].inverter);
+            row.push(result[i].dc_capacity);
+            row.push(result[i].ac_capacity);
+            row.push(result[i].ghi);
+            row.push(result[i].poa);
+            row.push(result[i].expected_kwh);
+            row.push(result[i].inv_kwh);
+            row.push(result[i].plant_kwh);
+            row.push(result[i].inv_pr);
+            row.push(result[i].plant_pr);
+            row.push(result[i].inv_plf);
+            row.push(result[i].plant_plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            row.push(result[i].prod_hrs);
+            row.push(result[i].lull_hrs_bd);
+            row.push(result[i].usmh_bs);
+            row.push(result[i].smh_bd);
+            row.push(result[i].oh_bd);
+            row.push(result[i].igbdh_bd);
+            row.push(result[i].egbdh_bd);
+            row.push(result[i].load_shedding_bd);
+            row.push(result[i].total_bd_hrs);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(result[i].lull_hrs);
+            row.push (result[i].total_losses);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SolarMonthlyGenRep InverterWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarMonthlyGenRep InverterWise.xlsx");
+
+    }
+
+    function MonthlyexportToExcelGenReportSiteWise() {
+        var fyyear = $('select#fyM option:selected').val();
+        console.log(exceldata4)
+        result = exceldata4;
+
+        var columns = [
+            "FY", "Month", "Country", "State", "SPV", "Site","DC_Capacity", "AC_Capacity", "GHI", "POA",
+            "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
+            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "EGA_B (%)", "EGA_C (%)", "Gen_Hrs", "Lull_Hrs",
+            "USMH", "SMH", "OH", "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
+            "IGBD_Loss", "EGBD_Loss", "LS_Loss", "LULL_Loss", "Tracker_Loss", "Total_Loss"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            let totalFinal = result[i].total_losses + result[i].tracker_losses;
+            row.push(fyyear);
+            row.push(result[i].month);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].dc_capacity);
+            row.push(result[i].ac_capacity);
+            row.push(result[i].ghi);
+            row.push(result[i].poa);
+            row.push(result[i].expected_kwh);
+            row.push(result[i].inv_kwh);
+            row.push(result[i].plant_kwh);
+            row.push(result[i].inv_pr);
+            row.push(result[i].plant_pr);
+            row.push(result[i].inv_plf);
+            row.push(result[i].plant_plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            row.push(result[i].prod_hrs);
+            row.push(result[i].lull_hrs_bd);
+            row.push(result[i].usmh_bs);
+            row.push(result[i].smh_bd);
+            row.push(result[i].oh_bd);
+            row.push(result[i].igbdh_bd);
+            row.push(result[i].egbdh_bd);
+            row.push(result[i].load_shedding_bd);
+            row.push(result[i].total_bd_hrs);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(result[i].lull_hrs);
+            row.push(result[i].tracker_losses);
+            row.push(result[i].total_losses);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SolarDailyGenRep SiteWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarMonthlyGenRep SiteWise.xlsx");
+
+    }
+
+    function YearlyexportToExcelGenReportInverterWise() {
+        var fyyear = $('select#fyM option:selected').val();
+        console.log(exceldata5)
+        result = exceldata5;
+
+        var columns = [
+            "FY", "Country", "State", "SPV", "Site", "Inverter", "DC_Capacity", "AC_Capacity", "GHI", "POA",
+            "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
+            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "EGA_B (%)", "EGA_C (%)", "Gen_Hrs", "Lull_Hrs",
+            "USMH", "SMH", "OH", "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
+            "IGBD_Loss", "EGBD_Loss", "LS_Loss", "LULL_Loss", "Total_Loss"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(fyyear);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].inverter);
+            row.push(result[i].dc_capacity);
+            row.push(result[i].ac_capacity);
+            row.push(result[i].ghi);
+            row.push(result[i].poa);
+            row.push(result[i].expected_kwh);
+            row.push(result[i].inv_kwh);
+            row.push(result[i].plant_kwh);
+            row.push(result[i].inv_pr);
+            row.push(result[i].plant_pr);
+            row.push(result[i].inv_plf);
+            row.push(result[i].plant_plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            row.push(result[i].prod_hrs);
+            row.push(result[i].lull_hrs_bd);
+            row.push(result[i].usmh_bs);
+            row.push(result[i].smh_bd);
+            row.push(result[i].oh_bd);
+            row.push(result[i].igbdh_bd);
+            row.push(result[i].egbdh_bd);
+            row.push(result[i].load_shedding_bd);
+            row.push(result[i].total_bd_hrs);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(result[i].lull_hrs);
+            row.push(result[i].total_losses);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SolarYearlyGenRep InverterWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarYearlyGenRep InverterWise.xlsx");
+
+    }
+
+    function YearlyexportToExcelGenReportSiteWise() {
+        var fyyear = $('select#fyM option:selected').val();
+        console.log(exceldata6)
+        result = exceldata6;
+
+        var columns = [
+            "FY", "Country", "State", "SPV","Site", "DC_Capacity", "AC_Capacity", "GHI", "POA",
+            "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
+            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "EGA_B (%)", "EGA_C (%)", "Gen_Hrs", "Lull_Hrs",
+            "USMH", "SMH", "OH", "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
+            "IGBD_Loss", "EGBD_Loss", "LS_Loss", "LULL_Loss", "Tracker_Loss", "Total_Loss"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            let totalFinal = result[i].total_losses + result[i].tracker_losses;
+            row.push(fyyear);
+            row.push(result[i].month);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].dc_capacity);
+            row.push(result[i].ac_capacity);
+            row.push(result[i].ghi);
+            row.push(result[i].poa);
+            row.push(result[i].expected_kwh);
+            row.push(result[i].inv_kwh);
+            row.push(result[i].plant_kwh);
+            row.push(result[i].inv_pr);
+            row.push(result[i].plant_pr);
+            row.push(result[i].inv_plf);
+            row.push(result[i].plant_plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            row.push(result[i].prod_hrs);
+            row.push(result[i].lull_hrs_bd);
+            row.push(result[i].usmh_bs);
+            row.push(result[i].smh_bd);
+            row.push(result[i].oh_bd);
+            row.push(result[i].igbdh_bd);
+            row.push(result[i].egbdh_bd);
+            row.push(result[i].load_shedding_bd);
+            row.push(result[i].total_bd_hrs);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(result[i].lull_hrs);
+            row.push(result[i].tracker_losses);
+            row.push(result[i].total_losses);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SolarYearlyGenRep SiteWise");
+            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarYearlyGenRep SiteWise.xlsx");
 
     }
 

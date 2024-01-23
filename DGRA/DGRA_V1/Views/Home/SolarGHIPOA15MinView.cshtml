@@ -138,8 +138,10 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
        // dummychart();
         $('#daterange').daterangepicker(
@@ -192,6 +194,71 @@
             }
 
         });
+    }
+
+    function exportToExcel() {
+
+        console.log(exceldata)
+        result = exceldata;
+
+        var columns = [
+            "Date Time", "Site", "GHI 1", "GHI 2", "POA 1", "POA 2", "POA 3", "POA 4", "POA 5", "POA 6", "POA 7", "AVG GHI", "AVG POA", "Amb Temp", "Mod Temp", "Weather Type"
+        ];
+
+        var rows = [];
+
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            let weather = "";
+            if (result[i].weather_type == null) {
+                weather = "-";
+            }
+            else {
+                weather = result[i].weather_type;
+            }
+            //var tempDate = new Date(result[i].date);
+            //var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
+            var formattedDate = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm:ss');
+            var formattedDate1 = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm');
+            var formattedtime = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('HH:mm');
+           
+            row.push(formattedDate);
+            row.push(result[i].site);
+            row.push(result[i].ghi_1);
+            row.push(result[i].ghi_2);
+            row.push(result[i].poa_1);
+            row.push(result[i].poa_2);
+            row.push(result[i].poa_3);
+            row.push(result[i].poa_4);
+            row.push(result[i].poa_5);
+            row.push(result[i].poa_6);
+            row.push(result[i].poa_7);
+            row.push(result[i].avg_ghi);
+            row.push(result[i].avg_poa);
+            row.push(result[i].amb_temp);
+            row.push(result[i].mod_temp);
+            row.push(weather);
+            rows.push(row);
+             
+  }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar GHI & POA 15 Minute");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar GHI & POA 15 Minute.xlsx");
+
     }
 
     function getReport() {
@@ -266,6 +333,7 @@
                 let ampTempZeroArr = [];
                 let modZeroArr = [];
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
                         let weather = "";
                         if (result[i].weather_type == null) {
@@ -418,8 +486,16 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');

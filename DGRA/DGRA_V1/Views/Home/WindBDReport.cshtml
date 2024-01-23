@@ -181,9 +181,11 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/dist/js/comman.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 
 <script type="text/javascript">
+    var exceldata;
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     var windUserAccess = "@Html.Raw(windUserSiteList.TrimEnd(','))";
 
@@ -356,6 +358,49 @@
     }
 
 
+    function exportToExcel() {
+      
+        result = exceldata;
+        var columns = [
+            "Date", "Country", "State", "SPV", "Site", "WTG", "BD_Type", "Start_From", "Stop_To", "Total_Stop", "Reason of Breakdown", "Action Taken"
+        ];
+
+        var rows = [];
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(formattedDate);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].wtg);
+            row.push(result[i].bd_type);
+            row.push(toHoursAndMinutes(result[i].stop_from.totalSeconds));
+            row.push(toHoursAndMinutes(result[i].stop_to.totalSeconds));
+            row.push(toHoursAndMinutes(result[i].total_stop.totalSeconds));
+            row.push(result[i].error_description);
+            row.push(result[i].action_taken);
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Wind Breakdown Reports");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind Breakdown Reports.xlsx");
+     
+    }
 
 
 
@@ -429,6 +474,7 @@
                 tbl += '</tr></thead>';
                 console.log(result.length);
                 if (result.length > 0) {
+                    exceldata = result;
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
@@ -488,8 +534,17 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                     /* "buttons": [
                          'copy', 'excel', 'csv', 'colvis'
                      ]*/

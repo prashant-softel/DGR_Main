@@ -119,14 +119,31 @@
                                             <i class="far fa-calendar-alt"></i>
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
+                                    <input type="text" class="form-control float-right col-sm-8" id="daterange" name="daterange">
                                 </div>
                             </div>
-
-                            <div class="col-sm-2">
-                                <button type="button" class="btn btn-block btn-primary" onclick="GetOperationWKPR();" style="margin-left:-2rem; width: 5rem;">Search</button>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                        <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-sm-6"></div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                        <select class="form-control  col-sm-9" id="site" name="site[]" multiple>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-block btn-primary" onclick="GetOperationWKPR();" style="margin-left:2rem; width: 5rem;">Search</button>
+                            </div>
+                           <!-- <div class="col-sm-6"></div>-->
 
                         </div>
                         <br>
@@ -256,6 +273,7 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 
 <script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <script src="~/Content/theme/dist/js/comman.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
@@ -267,8 +285,12 @@
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/libs/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/dist/pptxgen.min.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 <script type="text/javascript">
+     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var exceldata1;
+    var exceldata2;
     var fyear ="";
     $(document).ready(function () {
         $('#daterange').daterangepicker(
@@ -279,6 +301,7 @@
                     format: 'DD/MM/YYYY',
                 }
             });
+        GetSPV();
 
     });
 
@@ -301,6 +324,60 @@
 
             //$('#daterange').data('daterangepicker').setEndDate(dateSplit[1]);
         }
+    }
+
+     function GetSPV() {
+        let state = "";
+        var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSPVList", "SolarReport")' + '?state=' + state + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var j = 0; j < result.length; j++) {
+                    options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
+                }
+                $("#spv").multipleSelect('destroy');
+                $("#spv").html(options);
+                $('select#spv').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select SPV(s)",
+                    filter:true
+                });
+            }
+        });
+        GetSite();
+    }
+
+    function GetSite() {
+        let state = "";
+        var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+
+        let spv = "";
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSiteList", "SolarReport")' + '?state=' + state + '&spv=' + spv + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_master_solar_id + '">' + result[k].site + '</option>';
+                }
+                $("#site").multipleSelect('destroy');
+                $("#site").html(options);
+                $('select#site').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Site(s)",
+                    filter:true
+                });
+            }
+        });
     }
     var actual_mu = [];
     var target_mu = [];
@@ -412,10 +489,23 @@
         var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
         var fy = fyear;//$('select#fy option:selected').val();
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
 
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetWeeklyOperation", "SolarReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids + '&cnt=1',
+            url: '@Url.Action("GetWeeklyOperation", "SolarReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site + '&spv=' + spv+'&cnt=1',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -719,9 +809,23 @@
         var dateForFy = new Date(toDate);
         var fy = getFinancialYear(dateForFy);//$('select#fy option:selected').val();
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetMontlyOperation", "SolarReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids + '&cnt=2',
+            url: '@Url.Action("GetMontlyOperation", "SolarReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids + '&spv='+spv+'&cnt=2',
             //url: "/WindReport/GetMontlyOperation?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
@@ -989,7 +1093,7 @@
         var total_capacity_yr = 0;
         var total_tarriff_yr = 0;
        // var fy = fyear;//$('select#fy option:selected').val();
-       
+
         var daterange = $('#daterange').val();
         const dateArr = daterange.split("/");
         var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
@@ -1000,9 +1104,23 @@
         const fydateArr = FyDate1.split("-");
         var fromDate = `${fydateArr[2]}-${fydateArr[1]}-${fydateArr[0]}`;
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetYearlyOperation", "SolarReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids + '&cnt=3',
+            url: '@Url.Action("GetYearlyOperation", "SolarReport")' + '?fy=' + fy + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids + '&spv='+spv+'&cnt=3',
             //url: "/WindReport/GetMontlyOperation?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site=" + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
@@ -1537,15 +1655,30 @@
     function OperationalTable(Diff_Mus, revenue) {
         var wind_side = "@Html.Raw(windSiteList.TrimEnd(','))";
         const site_array = wind_side.split(",");
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = wind_side;
+        }
         var daterange = $('#daterange').val();
         const dateArr = daterange.split("/");
         var seldate = new Date(dateArr[2], dateArr[1] - 1, dateArr[0]);
         var fromDate = GetWeeklyDays(seldate);
         var toDate = `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+
          $.ajax({
             type: "GET",
            // url: "/WindReport/GetSPVList?state=" + val,
-             url: '@Url.Action("GetOperationHeadData", "SolarReport")' + '?site=' + wind_side,
+             url: '@Url.Action("GetOperationHeadData", "SolarReport")' + '?site=' + wind_side+'&spv='+spv,
             contentType: "application/json; charset=utf-8",
             //data: '{"state":"' + val + '"}',
              datatype: "html",
@@ -1560,7 +1693,7 @@
                  sec2 += '<table class="table table-bordered table-striped">';
                  sec2 += '<thead class="tbl-head"><tr>';
                  sec2 += '<th colspan="2"></th></tr><thead>';
-                 sec2 += '<tr><td>Portfolio</td><td style="text-align: right;">' + site_array.length + '</td></tr>';
+                 sec2 += '<tr><td>Portfolio</td><td style="text-align: right;">' + result[0].site_count + '</td></tr>';
                  sec2 += '<tr><td>SPVs</td><td style="text-align: right;">' + result[0].spv_count + '</td></tr>';
                  sec2 += '<tr><td>Capacity (in MW)</td><td style="text-align: right;">' + result[0].capacity.toFixed(0) + '</td></tr>';
                  sec2 += '</table>';
@@ -2378,10 +2511,23 @@
         var dateForFy = new Date(toDate);
         var fyear1 = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
 
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetSolarMajorBreakdown", "SolarReport")' + '?fy=' + fyear1 + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site_ids,
+            url: '@Url.Action("GetSolarMajorBreakdown", "SolarReport")' + '?fy=' + fyear1 + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site=' + site + '&spv='+spv,
             //url: "/WindReport/GetWindPRReportSPVWise?fy=" + fyear + " &fromDate=" + fromDate + "&toDate=" + toDate,
             contentType: "application/json; charset=utf-8",
 
@@ -2483,7 +2629,286 @@
         });
 
     }
+ function ExportToExcelSPVWise() {
 
+        console.log(exceldata1)
+        result = exceldata1;
+
+        var columns = [
+            "Site", "Capacity", "Energy (in MU)  Tar", " Energy (in MU) Exp", " Energy (in MU) Act", " Energy (in MU) T.var(%)", " Energy (in MU) E.var(%)", "Revenue (MINR)", "GHI (kWh/m^2)  Tar",
+            "GHI (kWh/m^2)  Act ", "GHI (kWh/m^2)  Var (%) ", "POA (kWh/m^2)  Tar", "POA (kWh/m^2)  Act ",
+            "POA (kWh/m^2) Var (%)  ", "GHI VS POA Gain (%)  Tar ", "GHI VS POA Gain (%)  Act ", "GHI VS POA Gain(%)  Var (%)  ", "PLF (%)  Tar ", "PLF (%)  Act ", "PLF (%)  Var (%) ", "PR (%)  Tar ", "PR (%)  Act ", "PR (%)  Var (%)  ", "Temp Corr. PR (%)  Tar", "Temp Corr. PR (%)  Act ", "Temp Corr. PR (%)  Var (%) ", "MA (%)  Tar", "MA (%)  Act ", "MA (%)  Var (%) ", "IGA (%)  Tar", "IGA (%)  Act ", "IGA (%)  Var (%) ", "EGA (%)  Tar", "EGA (%)  Act ", "EGA (%)  Var (%) "
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+              var actual_pr = [];
+        var target_pr = [];
+        var pas_pr_var = [];
+        var neg_pr_var = [];
+        var Levels = [];
+         var actual_energy = [];
+        var target_energy = [];
+        var pas_energy_var = [];
+        var neg_energy_var = [];
+        var revenue_arr = [];
+            let total_capacity = 0;
+            let total_tar_kwh = 0;
+            let total_act_kwh = 0;
+            let total_expected_kwh = 0;
+            let total_revenue = 0;
+            let total_capTarGhi = 0;
+            let total_tar_ghi = 0;
+            let total_act_ghi = 0;
+            let total_capTarPlf = 0;
+            let total_tar_plf = 0;
+            let total_act_plf = 0;
+            let total_capTarGain = 0;
+            let total_tar_gain = 0;
+            let total_act_gain = 0;
+            let total_capTarPoa = 0;
+            let total_tar_poa = 0;
+            let total_act_poa = 0;
+            let total_capTarPr = 0;
+            let total_tar_pr = 0;
+            let total_act_pr = 0;
+            let total_capTarMa = 0;
+            let total_tar_ma = 0;
+            let total_act_ma = 0;
+            let total_capTarIga = 0;
+            let total_tar_iga = 0;
+            let total_act_iga = 0;
+            let total_capTarEga = 0;
+            let total_tar_ega = 0;
+            let total_act_ega = 0;
+            let total_capActGhi = 0;
+            let total_capActPlf = 0;
+            let total_capActGain = 0;
+            let total_capActPoa = 0;
+            let total_capActPr = 0;
+            let total_capActMa = 0;
+            let total_capActIga = 0;
+            let total_capActEga = 0;
+
+            let total_capTarTCPr = 0;
+            let total_capActTCPr = 0;
+            let total_tar_TCpr = 0;
+            let total_act_TCpr = 0;
+                Levels.push(result[i].spv);
+                let revenue = 0;
+                let jmr_var = 0;
+                let e_var = 0;
+                let plf_var = 0;
+                let ma_act_var = 0;
+                let iga_var = 0;
+                let ega_var = 0;
+                revenue = (result[i].act_jmr_kwh_mu - result[i].tar_kwh_mu) * result[i].total_tarrif;
+                let ghi_var = 0;
+                let poa_var = 0;
+                let pr_var = 0;
+                let gain_tar = 0;
+                let gain_act = 0;
+                let gain_var = 0;
+                let act_prval = 0;
+
+                let TCPr_var = 0;
+
+                revenue = (result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif;
+                if (result[i].act_kwh != 0 || result[i].tar_kwh != 0) {
+                    jmr_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
+                }
+                if (result[i].expected_kwh != 0 || result[i].expected_kwh) {
+                    e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                }
+                if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
+                    act_prval = 0;
+                }
+                else {
+                    act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
+                }
+                if (result[i].tar_ghi != 0) {
+                    ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
+                }
+                if (result[i].tar_poa != 0) {
+                    poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
+                }
+
+                TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
+
+                pr_var = (act_prval - result[i].tar_pr);
+                plf_var = (result[i].act_plf - result[i].tar_plf);
+                ma_act_var = (result[i].act_ma - result[i].tar_ma);
+                iga_var = (result[i].act_iga - result[i].tar_iga);
+                ega_var = (result[i].act_ega - result[i].tar_ega);
+
+
+                if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
+                    gain_tar = 0;
+                } else {
+                    gain_tar = (result[i].tar_poa / result[i].tar_ghi) * 100;
+                }
+                if (result[i].act_poa == 0 || result[i].act_ghi == 0) {
+                    gain_act = 0;
+                } else {
+                    gain_act = (result[i].act_poa / result[i].act_ghi) * 100;
+                }
+                if (gain_act == 0 || gain_tar == 0) {
+                    gain_var = 0;
+                } else {
+                    gain_var = (gain_act - gain_tar);
+                }
+                let pasitive;
+                let negative;
+                let j_pasitive;
+                let j_negative;
+
+                if (jmr_var < 0) {
+                    negative = jmr_var.toFixed(2);
+                    j_negative = jmr_var.toFixed(1);
+                }
+                else {
+                    pasitive = jmr_var.toFixed(2);
+                    j_pasitive = jmr_var.toFixed(1);
+                }
+                let pr_pasitive;
+                let pr_negative;
+                let p_pr_pasitive;
+                let p_pr_negative;
+                if (pr_var < 0) {
+                    pr_negative = pr_var.toFixed(2);
+                    // p_pr_negative = pr_var.toFixed(1);
+                }
+                else {
+                    pr_pasitive = pr_var.toFixed(2);
+
+                }
+                if (poa_var < 0) {
+                    p_pr_negative = pr_var.toFixed(1);
+                }
+                else {
+                    p_pr_pasitive = pr_var.toFixed(1);
+                }
+                // console.log(result[i].tar_kwh);
+                target_energy.push((result[i].tar_kwh).toFixed(1));
+                actual_energy.push(result[i].act_kwh.toFixed(1));
+                pas_energy_var.push(j_pasitive);
+                neg_energy_var.push(j_negative);
+
+                //target_pr.push(result[i].tar_pr.toFixed(1));
+                //actual_pr.push(result[i].act_pr.toFixed(1));
+                //pas_pr_var.push(p_pr_pasitive);
+                //neg_pr_var.push(p_pr_negative);
+                target_pr.push(result[i].tar_poa.toFixed(1));
+                actual_pr.push(result[i].act_poa.toFixed(1));
+                pas_pr_var.push(p_pr_pasitive);
+                neg_pr_var.push(p_pr_negative);
+
+                revenue_arr.push(revenue.toFixed(2));
+
+                total_capacity += result[i].capacity;
+                total_tar_kwh += result[i].tar_kwh;
+                //total_expected_kwh += result[i].expected_kwh;
+                total_expected_kwh += Number(result[i].expected_kwh) / 1000000;
+                total_act_kwh += result[i].act_kwh;
+                total_revenue += revenue;
+                total_tar_ghi += result[i].tar_ghi;
+                total_act_ghi += result[i].act_ghi;
+                total_tar_poa += result[i].tar_poa;
+                total_act_poa += result[i].act_poa;
+                total_tar_gain += gain_tar;
+                total_act_gain += gain_act;
+                total_tar_plf += result[i].tar_plf;
+                total_act_plf += result[i].act_plf;
+                total_tar_pr += result[i].tar_pr;
+                total_act_pr += act_prval;
+                total_tar_ma += result[i].tar_ma;
+                total_act_ma += result[i].act_ma;
+                total_tar_iga += result[i].tar_iga;
+                total_act_iga += result[i].act_iga;
+                total_tar_ega += result[i].tar_ega;
+                total_act_ega += result[i].act_ega;
+                total_capTarGhi += result[i].tar_ghi * result[i].capacity;
+                total_capTarPoa += result[i].tar_poa * result[i].capacity;
+                total_capTarPlf += result[i].tar_plf * result[i].capacity;
+                total_capTarPr += result[i].tar_pr * result[i].capacity;
+                total_capTarGain += gain_tar * result[i].capacity;
+                total_capTarMa += result[i].tar_ma * result[i].capacity;
+                total_capTarIga += result[i].tar_iga * result[i].capacity;
+                total_capTarEga += result[i].tar_ega * result[i].capacity;
+                total_capActGhi += result[i].act_ghi * result[i].capacity;
+                total_capActPoa += result[i].act_poa * result[i].capacity;
+                total_capActPlf += result[i].act_plf * result[i].capacity;
+                total_capActPr += act_prval * result[i].capacity;
+                total_capActGain += gain_act * result[i].capacity;
+                total_capActMa += result[i].act_ma * result[i].capacity;
+                total_capActIga += result[i].act_iga * result[i].capacity;
+                total_capActEga += result[i].act_ega * result[i].capacity;
+
+                total_tar_TCpr += result[i].tar_pr;
+                total_act_TCpr += result[i].temp_corrected_pr;
+                total_capTarTCPr += result[i].tar_pr * result[i].capacity;
+                total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
+
+            row.push(result[i].spv);
+            row.push(result[i].capacity);
+            row.push(result[i].tar_kwh);
+            row.push(result[i].expected_kwh / 1000000);
+            row.push(result[i].act_kwh);
+            row.push(jmr_var);
+            row.push(e_var);
+            row.push(revenue);
+            row.push(result[i].tar_ghi);
+            row.push(result[i].act_ghi);
+            row.push(ghi_var);
+            row.push(result[i].tar_poa);
+            row.push(result[i].act_poa);
+            row.push(poa_var);
+            row.push(gain_tar);
+            row.push(gain_act);
+            row.push(gain_var);
+            row.push(result[i].tar_plf);
+            row.push(result[i].act_plf);
+            row.push(plf_var);
+            row.push(result[i].tar_pr);
+            row.push(act_prval);
+            row.push(pr_var);
+            row.push(result[i].tar_pr);
+            row.push(result[i].temp_corrected_pr);
+            row.push(TCPr_var);
+            row.push(result[i].tar_ma);
+            row.push(result[i].act_ma);
+            row.push(ma_act_var);
+            row.push(result[i].tar_iga);
+            row.push(result[i].act_iga);
+            row.push(iga_var);
+            row.push(result[i].tar_ega);
+            row.push(result[i].act_ega);
+            row.push(ega_var);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar PerformanceRep SPVWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar PerformanceRep SPVWise.xlsx");
+
+    }
 
     // Mothly Report WTG Wise
 
@@ -2497,6 +2922,20 @@
         var dateForFy = new Date(toDate);
         var fyear1 = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         var actual_energy = [];
         var target_energy = [];
         var pas_energy_var = [];
@@ -2512,7 +2951,7 @@
         var reporthead = "SPV Wise Reports";
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetSolarPRReportSPVWise", "SolarReport")' + '?fy=' + fyear1 + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site_ids,
+            url: '@Url.Action("GetSolarPRReportSPVWise", "SolarReport")' + '?fy=' + fyear1 + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site + '&spv='+spv ,
             //url: "/WindReport/GetWindPRReportSPVWise?fy=" + fyear + " &fromDate=" + fromDate + "&toDate=" + toDate,
             contentType: "application/json; charset=utf-8",
 
@@ -2577,6 +3016,7 @@
 
 
                 if (result.length > 0) {
+                    exceldata1 = result;
                     //console.log("Datatable");
                     let total_capacity = 0;
                     let total_tar_kwh = 0;
@@ -2656,10 +3096,10 @@
                             act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
-                            ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
+                            ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
                         }
                         if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
+                            poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
                         }
 
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
@@ -2684,7 +3124,7 @@
                         if (gain_act == 0 || gain_tar == 0) {
                             gain_var = 0;
                         } else {
-                            gain_var = (gain_act - gain_tar);
+                            gain_var = (gain_act.toFixed(2) - gain_tar.toFixed(2));
                         }
                         let pasitive;
                         let negative;
@@ -2875,26 +3315,26 @@
                         avg_act_TCpr = total_capActTCPr / total_capacity;
                     }
                     if (total_tar_kwh != 0) {
-                        avg_jmr_var = (((total_act_kwh - total_tar_kwh) / total_tar_kwh) * 100)
+                        avg_jmr_var = (((total_act_kwh.toFixed(2) - total_tar_kwh.toFixed(2)) / total_tar_kwh.toFixed(2)) * 100)
                     }
                     if (total_expected_kwh != 0) {
-                        avg_e_var = (((total_act_kwh - total_expected_kwh) / total_expected_kwh) * 100);
+                        avg_e_var = (((total_act_kwh.toFixed(2) - total_expected_kwh.toFixed(2)) / total_expected_kwh.toFixed(2)) * 100);
                     }
                     if (avg_tar_ghi != 0) {
-                        avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
+                        avg_ghi_var = (((avg_act_ghi.toFixed(2) - avg_tar_ghi.toFixed(2)) / avg_tar_ghi.toFixed(2)) * 100);
                     }
                     if (avg_tar_poa != 0) {
-                        avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
+                        avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
                     }
 
-                    avg_TCpr_var = (avg_act_TCpr - avg_tar_TCpr);
+                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
 
-                    avg_pr_var = (avg_act_pr - avg_tar_pr);
-                    avg_gain_var = (avg_act_gain - avg_tar_gain);
-                    avg_plf_var = (avg_act_plf - avg_tar_plf);
-                    avg_ma_var = (avg_act_ma - avg_tar_ma);
-                    avg_iga_var = (avg_act_iga - avg_tar_iga);
-                    avg_ega_var = (avg_act_ega - avg_tar_ega);
+                    avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
+                    avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
+                    avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
+                    avg_ma_var = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
+                    avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
+                    avg_ega_var = (avg_act_ega.toFixed(2) - avg_tar_ega.toFixed(2));
 
                     tbl += '<tfoot><tr>';
                     tbl += '<th rowspan="1" colspan="1" style="width: 10%; font-weight: bold;">Grand Total</th>';
@@ -2905,7 +3345,7 @@
                     tbl += '<td class="text-right"><b>' + avg_jmr_var.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_e_var.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + total_revenue.toFixed(2) + '</b></td>';
-                    tbl += '<td class="text-right"><b>' + avg_tar_ghi.toFixed(2) + '</b></td>';                  
+                    tbl += '<td class="text-right"><b>' + avg_tar_ghi.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ghi.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_ghi_var.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_tar_poa.toFixed(2) + '</b></td>';
@@ -2945,7 +3385,6 @@
                 $("#reportsDailySPV").html("").html(tbl);
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example8').DataTable({
-                  
                     dom: 'Bfrtip',
                     fixedHeader: true,
                     responsive: true,
@@ -2961,13 +3400,7 @@
                     fixedColumns: {
                         left: 2
                     },
-                    //columnDefs: [
-                    //    {
-                    //        targets: 1,
-                    //        className: 'noVis'
-                    //    }
-                    //],
-                   
+
                     buttons: [
                         {
                             extend: 'excel',
@@ -3323,8 +3756,89 @@
                                    return title;
                                }
                             }
-                       }
-                    ]                  
+                       },
+                         {
+     text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+     className: 'btn ml-1   ',
+
+     action: function () {
+        ExportToExcelSPVWise();
+     },
+      format: {
+             header: function (data, columnIdx) {
+                 if (columnIdx == 1) {
+                     return 'Capacity (MW)';
+                 }
+                 else if (columnIdx == 2) {
+                     return 'JMR Energy (in MU)  Tar';
+                 }
+                 else if (columnIdx == 3) {
+                     return 'JMR Energy (in MU)  Exp';
+                 }
+                 else if (columnIdx == 4) {
+                     return 'JMR Energy (in MU)  Act';
+                 }
+                 else if (columnIdx == 5) {
+                     return 'JMR Energy (in MU)  T.Var (%)';
+                 }
+                 else if (columnIdx == 6) {
+                     return 'JMR Energy (in MU)  E.Var (%)';
+                 }
+                 else if (columnIdx == 7) {
+                     return 'Revenue (MINR) ';
+                 }
+                 else if (columnIdx == 8) {
+                     return 'Wind Speed (m/s)  Tar';
+                 }
+                 else if (columnIdx == 9) {
+                     return 'Wind Speed (m/s)  Act ';
+                 }
+                 else if (columnIdx == 10) {
+                     return 'Wind Speed (m/s)  Var (%) ';
+                 }
+                 else if (columnIdx == 11) {
+                     return 'PLF (%)  Tar';
+                 }
+                 else if (columnIdx == 12) {
+                     return 'PLF (%)  Act ';
+                 }
+                 else if (columnIdx == 13) {
+                     return 'PLF (%)  Var (%) ';
+                 }
+                 else if (columnIdx == 14) {
+                     return 'MA Actual (%)  Tar';
+                 }
+                 else if (columnIdx == 15) {
+                     return 'MA Actual (%)  Act ';
+                 }
+                 else if (columnIdx == 16) {
+                     return 'MA Actual (%)  Var (%) ';
+                 }
+                 else if (columnIdx == 17) {
+                     return 'IGA (%)  Tar';
+                 }
+                 else if (columnIdx == 18) {
+                     return 'IGA (%)  Act ';
+                 }
+                 else if (columnIdx == 19) {
+                     return 'IGA (%)  Var (%) ';
+                 }
+                 else if (columnIdx == 20) {
+                     return 'EGA (%)  Tar';
+                 }
+                 else if (columnIdx == 21) {
+                     return 'EGA (%)  Act ';
+                 }
+                 else if (columnIdx == 22) {
+                     return 'EGA (%)  Var (%) ';
+                 }
+                 else {
+                     return data;
+                 }
+             }
+         }
+ },
+                    ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
@@ -3336,9 +3850,9 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm  ');
                 //$('#example1').removeClass('dataTable');
-                $('#example1').wrap("<div class='scrolledTable'></div>");
+                $('#example8').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
                 //It will convert div to image of PSPV
                 var divPSPV = document.getElementById('divPSPV');
@@ -3605,6 +4119,289 @@
         });
 
     }
+
+     function ExportToExcelSiteWise() {
+
+        console.log(exceldata2)
+        result = exceldata2;
+
+        var columns = [
+            "Site", "Capacity", "Energy (in MU)  Tar", " Energy (in MU) Exp", " Energy (in MU) Act", " Energy (in MU) T.var(%)", " Energy (in MU) E.var(%)", "Revenue (MINR)", "GHI (kWh/m^2)  Tar",
+            "GHI (kWh/m^2)  Act ", "GHI (kWh/m^2)  Var (%) ", "POA (kWh/m^2)  Tar", "POA (kWh/m^2)  Act ",
+            "POA (kWh/m^2) Var (%)  ", "GHI VS POA Gain (%)  Tar ", "GHI VS POA Gain (%)  Act ", "GHI VS POA Gain(%)  Var (%)  ", "PLF (%)  Tar ", "PLF (%)  Act ", "PLF (%)  Var (%) ", "PR (%)  Tar ", "PR (%)  Act ", "PR (%)  Var (%)  ", "Temp Corr. PR (%)  Tar", "Temp Corr. PR (%)  Act ", "Temp Corr. PR (%)  Var (%) ", "MA (%)  Tar", "MA (%)  Act ", "MA (%)  Var (%) ", "IGA (%)  Tar", "IGA (%)  Act ", "IGA (%)  Var (%) ", "EGA (%)  Tar", "EGA (%)  Act ", "EGA (%)  Var (%) "
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+              var actual_pr = [];
+        var target_pr = [];
+        var pas_pr_var = [];
+        var neg_pr_var = [];
+        var Levels = [];
+            var actual_energy = [];
+            var target_energy = [];
+            var pas_energy_var = [];
+            var neg_energy_var = [];
+        var revenue_arr = [];
+            let total_capacity = 0;
+            let total_tar_kwh = 0;
+            let total_act_kwh = 0;
+            let total_expected_kwh = 0;
+            let total_revenue = 0;
+            let total_capTarGhi = 0;
+            let total_tar_ghi = 0;
+            let total_act_ghi = 0;
+            let total_capTarPlf = 0;
+            let total_tar_plf = 0;
+            let total_act_plf = 0;
+            let total_capTarGain = 0;
+            let total_tar_gain = 0;
+            let total_act_gain = 0;
+            let total_capTarPoa = 0;
+            let total_tar_poa = 0;
+            let total_act_poa = 0;
+            let total_capTarPr = 0;
+            let total_tar_pr = 0;
+            let total_act_pr = 0;
+            let total_capTarMa = 0;
+            let total_tar_ma = 0;
+            let total_act_ma = 0;
+            let total_capTarIga = 0;
+            let total_tar_iga = 0;
+            let total_act_iga = 0;
+            let total_capTarEga = 0;
+            let total_tar_ega = 0;
+            let total_act_ega = 0;
+            let total_capActGhi = 0;
+            let total_capActPlf = 0;
+            let total_capActGain = 0;
+            let total_capActPoa = 0;
+            let total_capActPr = 0;
+            let total_capActMa = 0;
+            let total_capActIga = 0;
+            let total_capActEga = 0;
+
+            let total_capTarTCPr = 0;
+            let total_capActTCPr = 0;
+            let total_tar_TCpr = 0;
+            let total_act_TCpr = 0;
+
+
+                let revenue = 0;
+                let jmr_var = 0;
+                let e_var = 0;
+                //let wind_var = 0;
+                let ghi_var = 0;
+                let poa_var = 0;
+                let plf_var = 0;
+                let ma_act_var = 0;
+                let iga_var = 0;
+                let ega_var = 0;
+                let pr_var = 0;
+                let gain_tar = 0;
+                let gain_act = 0;
+                let gain_var = 0;
+                let act_prval = 0;
+                let TCPr_var = 0;
+
+                revenue = (result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif;
+                if (result[i].act_kwh != 0 || result[i].tar_kwh != 0) {
+                    jmr_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
+                }
+                if (result[i].expected_kwh != 0 || result[i].expected_kwh) {
+                    e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                }
+                if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
+                    act_prval = 0;
+                }
+                else {
+                    act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
+                }
+                if (result[i].tar_ghi != 0) {
+                    ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
+                }
+                if (result[i].tar_poa != 0) {
+                    poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
+                }
+
+                TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
+
+                pr_var = (act_prval - result[i].tar_pr);
+                plf_var = (result[i].act_plf - result[i].tar_plf);
+                ma_act_var = (result[i].act_ma - result[i].tar_ma);
+                iga_var = (result[i].act_iga - result[i].tar_iga);
+                ega_var = (result[i].act_ega - result[i].tar_ega);
+
+
+                if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
+                    gain_tar = 0;
+                } else {
+                    gain_tar = (result[i].tar_poa / result[i].tar_ghi) * 100;
+                }
+                if (result[i].act_poa == 0 || result[i].act_ghi == 0) {
+                    gain_act = 0;
+                } else {
+                    gain_act = (result[i].act_poa / result[i].act_ghi) * 100;
+                }
+                if (gain_act == 0 || gain_tar == 0) {
+                    gain_var = 0;
+                } else {
+                    gain_var = ((gain_act - gain_tar)); /// gain_tar) * 100;
+                }
+
+
+                let pasitive;
+                let negative;
+                let e_pasitive;
+                let e_negative;
+                if (jmr_var < 0) {
+                    negative = jmr_var.toFixed(2);
+                    e_negative = jmr_var.toFixed(1);
+                }
+                else {
+                    pasitive = jmr_var.toFixed(2);
+                    e_pasitive = jmr_var.toFixed(1);
+                }
+                let pr_pasitive;
+                let pr_negative;
+                let pr_pasitive_p;
+                let pr_negative_p;
+                if (pr_var < 0) {
+                    pr_negative = pr_var.toFixed(2);
+
+                }
+                else {
+                    pr_pasitive = pr_var.toFixed(2);
+
+                }
+
+                if (poa_var < 0) {
+                    pr_negative_p = pr_var.toFixed(1)
+                }
+                else {
+                    pr_pasitive_p = pr_var.toFixed(1)
+                }
+
+                //console.log(result[i].tar_kwh);
+                target_energy.push((result[i].tar_kwh).toFixed(1));
+                actual_energy.push(result[i].act_kwh.toFixed(1));
+                pas_energy_var.push(pasitive);
+                neg_energy_var.push(negative);
+                Levels.push(result[i].site);
+
+                //target_pr.push(result[i].tar_pr.toFixed(1));
+                //actual_pr.push(result[i].act_pr.toFixed(1));
+                //pas_pr_var.push(pr_pasitive);
+                //neg_pr_var.push(pr_negative);
+
+                target_pr.push(result[i].tar_poa.toFixed(1));
+                actual_pr.push(result[i].act_poa.toFixed(1));
+                pas_pr_var.push(pr_pasitive);
+                neg_pr_var.push(pr_negative);
+                total_capacity += result[i].capacity;
+                total_tar_kwh += result[i].tar_kwh;
+                total_expected_kwh += result[i].expected_kwh / 1000000;
+                total_act_kwh += result[i].act_kwh;
+                total_revenue += revenue;
+                total_tar_ghi += result[i].tar_ghi;
+                total_act_ghi += result[i].act_ghi;
+                total_tar_poa += result[i].tar_poa;
+                total_act_poa += result[i].act_poa;
+                total_tar_gain += gain_tar;
+                total_act_gain += gain_act;
+                total_tar_plf += result[i].tar_plf;
+                total_act_plf += result[i].act_plf;
+                total_tar_pr += result[i].tar_pr;
+                total_act_pr += act_prval;
+                total_tar_ma += result[i].tar_ma;
+                total_act_ma += result[i].act_ma;
+                total_tar_iga += result[i].tar_iga;
+                total_act_iga += result[i].act_iga;
+                total_tar_ega += result[i].tar_ega;
+                total_act_ega += result[i].act_ega;
+                total_capTarGhi += result[i].tar_ghi * result[i].capacity;
+                total_capTarPoa += result[i].tar_poa * result[i].capacity;
+                total_capTarPlf += result[i].tar_plf * result[i].capacity;
+                total_capTarPr += result[i].tar_pr * result[i].capacity;
+                total_capTarGain += gain_tar * result[i].capacity;
+                total_capTarMa += result[i].tar_ma * result[i].capacity
+                total_capTarIga += result[i].tar_iga * result[i].capacity;
+                total_capTarEga += result[i].tar_ega * result[i].capacity;
+                total_capActGhi += result[i].act_ghi * result[i].capacity;
+                total_capActPoa += result[i].act_poa * result[i].capacity;
+                total_capActPlf += result[i].act_plf * result[i].capacity;
+                total_capActPr += act_prval * result[i].capacity;
+                total_capActGain += gain_act * result[i].capacity;
+                total_capActMa += result[i].act_ma * result[i].capacity;
+                total_capActIga += result[i].act_iga * result[i].capacity;
+                total_capActEga += result[i].act_ega * result[i].capacity;
+
+                total_tar_TCpr += result[i].tar_pr;
+                total_act_TCpr += result[i].temp_corrected_pr;
+                total_capTarTCPr += result[i].tar_pr * result[i].capacity;
+                total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
+
+            row.push(result[i].site);
+            row.push(result[i].capacity);
+            row.push(result[i].tar_kwh);
+            row.push(result[i].expected_kwh / 1000000);
+            row.push(result[i].act_kwh);
+            row.push(jmr_var);
+            row.push(e_var);
+            row.push(revenue);
+            row.push(result[i].tar_ghi);
+            row.push(result[i].act_ghi);
+            row.push(ghi_var);
+            row.push(result[i].tar_poa);
+            row.push(result[i].act_poa);
+            row.push(poa_var);
+            row.push(gain_tar);
+            row.push(gain_act);
+            row.push(gain_var);
+            row.push(result[i].tar_plf);
+            row.push(result[i].act_plf);
+            row.push(plf_var);
+            row.push(result[i].tar_pr);
+            row.push(act_prval);
+            row.push(pr_var);
+            row.push(result[i].tar_pr);
+            row.push(result[i].temp_corrected_pr);
+            row.push(TCPr_var);
+            row.push(result[i].tar_ma);
+            row.push(result[i].act_ma);
+            row.push(ma_act_var);
+            row.push(result[i].tar_iga);
+            row.push(result[i].act_iga);
+            row.push(iga_var);
+            row.push(result[i].tar_ega);
+            row.push(result[i].act_ega);
+            row.push(ega_var);
+            rows.push(row);
+
+
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar PerformanceRep SiteWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar PerformanceRep SiteWise.xlsx");
+
+    }
+
     //------------------------------------
     // Mothly Report SIte Wise
     function GetPerformanceBySite() {
@@ -3617,6 +4414,20 @@
         var dateForFy = new Date(toDate);
         var fyear1 = getFinancialYear(dateForFy);
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        let site = "";
+        let spv = "";
+        $('select#site option:selected').each(function () {
+            site += $(this).val() + ",";
+        });
+        site = site != "" ? site.slice(0, -1) : site;
+
+        $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
+        spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (userRole == "User" && site == "") {
+            site = site_ids;
+        }
         var reporthead = "Site Wise Reports";
         var Energy_Dataset = [];
         var Wind_Dataset = [];
@@ -3633,7 +4444,7 @@
 
         $.ajax({
             type: "GET",
-            url: '@Url.Action("GetSolarPRReportSiteWise", "SolarReport")' + '?fy=' + fyear1 + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site_ids,
+            url: '@Url.Action("GetSolarPRReportSiteWise", "SolarReport")' + '?fy=' + fyear1 + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site+ '&spv='+spv,
             //url: "/WindReport/GetWindPRReportSiteWise?fy=" + fyear+" &fromDate=" + fromDate + "&toDate=" + toDate,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
@@ -3697,7 +4508,7 @@
 
 
                 if (result.length > 0) {
-
+                    exceldata2 = result;
                     //let target_energy = [];
                     //let actual_energy = [];
                     //let pas_energy_var = [];
@@ -3783,10 +4594,10 @@
                             act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
                         }
                         if (result[i].tar_ghi != 0) {
-                            ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
+                            ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
                         }
                         if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
+                            poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
                         }
 
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
@@ -4014,26 +4825,26 @@
                         avg_act_TCpr = total_capActTCPr / total_capacity;
                     }
                     if (total_tar_kwh != 0) {
-                        avg_jmr_var = (((total_act_kwh - total_tar_kwh) / total_tar_kwh) * 100)
+                        avg_jmr_var = (((total_act_kwh.toFixed(2) - total_tar_kwh.toFixed(2)) / total_tar_kwh.toFixed(2)) * 100)
                     }
                     if (total_expected_kwh != 0) {
-                        avg_e_var = (((total_act_kwh - total_expected_kwh) / total_expected_kwh) * 100);
+                        avg_e_var = (((total_act_kwh.toFixed(2) - total_expected_kwh.toFixed(2)) / total_expected_kwh.toFixed(2)) * 100);
                     }
                     if (avg_tar_ghi != 0) {
-                        avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
+                        avg_ghi_var = (((avg_act_ghi.toFixed(2) - avg_tar_ghi.toFixed(2)) / avg_tar_ghi.toFixed(2)) * 100);
                     }
                     if (avg_tar_poa != 0) {
-                        avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
+                        avg_poa_var = (((avg_act_poa.toFixed(2) - avg_tar_poa.toFixed(2)) / avg_tar_poa.toFixed(2)) * 100);
                     }
 
-                    avg_TCpr_var = (avg_act_TCpr- avg_tar_TCpr);
+                    avg_TCpr_var = (avg_act_TCpr.toFixed(2) - avg_tar_TCpr.toFixed(2));
 
-                    avg_pr_var = (avg_act_pr - avg_tar_pr);
-                    avg_gain_var = (avg_act_gain - avg_tar_gain);
-                    avg_plf_var = (avg_act_plf - avg_tar_plf);
-                    avg_ma_var = (avg_act_ma - avg_tar_ma);
-                    avg_iga_var = (avg_act_iga - avg_tar_iga);
-                    avg_ega_var = (avg_act_ega - avg_tar_ega);
+                    avg_pr_var = (avg_act_pr.toFixed(2) - avg_tar_pr.toFixed(2));
+                    avg_gain_var = (avg_act_gain.toFixed(2) - avg_tar_gain.toFixed(2));
+                    avg_plf_var = (avg_act_plf.toFixed(2) - avg_tar_plf.toFixed(2));
+                    avg_ma_var = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
+                    avg_iga_var = (avg_act_iga.toFixed(2) - avg_tar_iga.toFixed(2));
+                    avg_ega_var = (avg_act_ega.toFixed(2) - avg_tar_ega.toFixed(2));
 
                     tbl += '<tfoot><tr>';
                     tbl += '<th rowspan="1" colspan="1" style="width: 10%; font-weight: bold;">Grand Total</th>';
@@ -4456,7 +5267,88 @@
                                 }
 
                             }
-                        }
+                        },
+                          {
+    text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+    className: 'btn ml-1   ',
+
+    action: function () {
+       ExportToExcelSiteWise();
+    },
+     format: {
+            header: function (data, columnIdx) {
+                if (columnIdx == 1) {
+                    return 'Capacity (MW)';
+                }
+                else if (columnIdx == 2) {
+                    return 'JMR Energy (in MU)  Tar';
+                }
+                else if (columnIdx == 3) {
+                    return 'JMR Energy (in MU)  Exp';
+                }
+                else if (columnIdx == 4) {
+                    return 'JMR Energy (in MU)  Act';
+                }
+                else if (columnIdx == 5) {
+                    return 'JMR Energy (in MU)  T.Var (%)';
+                }
+                else if (columnIdx == 6) {
+                    return 'JMR Energy (in MU)  E.Var (%)';
+                }
+                else if (columnIdx == 7) {
+                    return 'Revenue (MINR) ';
+                }
+                else if (columnIdx == 8) {
+                    return 'Wind Speed (m/s)  Tar';
+                }
+                else if (columnIdx == 9) {
+                    return 'Wind Speed (m/s)  Act ';
+                }
+                else if (columnIdx == 10) {
+                    return 'Wind Speed (m/s)  Var (%) ';
+                }
+                else if (columnIdx == 11) {
+                    return 'PLF (%)  Tar';
+                }
+                else if (columnIdx == 12) {
+                    return 'PLF (%)  Act ';
+                }
+                else if (columnIdx == 13) {
+                    return 'PLF (%)  Var (%) ';
+                }
+                else if (columnIdx == 14) {
+                    return 'MA Actual (%)  Tar';
+                }
+                else if (columnIdx == 15) {
+                    return 'MA Actual (%)  Act ';
+                }
+                else if (columnIdx == 16) {
+                    return 'MA Actual (%)  Var (%) ';
+                }
+                else if (columnIdx == 17) {
+                    return 'IGA (%)  Tar';
+                }
+                else if (columnIdx == 18) {
+                    return 'IGA (%)  Act ';
+                }
+                else if (columnIdx == 19) {
+                    return 'IGA (%)  Var (%) ';
+                }
+                else if (columnIdx == 20) {
+                    return 'EGA (%)  Tar';
+                }
+                else if (columnIdx == 21) {
+                    return 'EGA (%)  Act ';
+                }
+                else if (columnIdx == 22) {
+                    return 'EGA (%)  Var (%) ';
+                }
+                else {
+                    return data;
+                }
+            }
+        }
+},
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');

@@ -101,7 +101,9 @@
 <script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -137,6 +139,56 @@
 
         });
     }
+
+
+    function exportToExcel() {
+
+        console.log(exceldata)
+        result = exceldata;
+
+        var columns = [
+            "FY", "Date", "Site", "GHI", "POA", "kWh ",
+                "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(result[i].fy || 0);
+            row.push(formattedDate);
+            row.push(result[i].sites || 0);
+            row.push(result[i].ghi || 0);
+            row.push(result[i].poa || 0);
+            row.push(result[i].kWh || 0);
+            row.push(result[i].ma || 0);
+            row.push(result[i].iga || 0);
+            row.push(result[i].ega || 0);
+            row.push(result[i].pr || 0);
+            row.push(result[i].plf || 0);
+            
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar Daily Target KPI");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar Daily Target KPI.xlsx");
+
+    }
+
 
     function getReport() {
 
@@ -185,6 +237,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
 
                         //var tempDate = new Date(result[i].date);
@@ -194,17 +247,17 @@
                         tbl += '<td class="text-left">' + result[i].fy + '</td>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
                         tbl += '<td class="text-left">' + result[i].sites + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2)+ '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].p50.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].p75.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].p90.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].ghi || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].poa || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].kWh || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].ma || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].iga || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].ega || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].pr || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].plf || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].p50 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].p75 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].p90 || 0).toFixed(2) + '</td>';
 			tbl += '</tr>';
                     }
                 }
@@ -244,8 +297,17 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');

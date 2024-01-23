@@ -2,7 +2,9 @@
 @{
     ViewData["Title"] = "Error";
 }
-
+@{
+    Layout = null;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +46,7 @@
                     <div class="col-md-12 text-center">
                         <h3 class="text-danger">SSO Login Failed</h3>
                         <div class="col-md-12 row">
-                            
+
                             <div class="col-md-12 text-left" style="padding-left: 30px; padding-right: 30px;">
                                 Dear user,<br>
                                 Your user id ( @TempData["username"] ) is not registed on portal.
@@ -52,13 +54,13 @@
                                 <br>
                                 Please contact your admin to register your user id.
                             </div>
-                            
-                            </div>
+
                         </div>
                     </div>
+                </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-    
+

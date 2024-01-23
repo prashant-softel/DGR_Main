@@ -277,6 +277,18 @@
                                 </li>
                             }
 
+                            @if (approvalCnt > 0 || @HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a href="~/Home/heatMap" class="nav-link">
+                                        <i class="nav-icon fas fa-chart-bar"></i>
+                                        <p>
+                                            Heat Map
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+
 
                             @if (windView > 0)
                             {

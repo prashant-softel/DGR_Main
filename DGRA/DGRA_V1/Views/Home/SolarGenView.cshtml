@@ -129,8 +129,10 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -166,6 +168,85 @@
 
         });
     }
+
+    function exportToExcel() {
+
+        console.log(exceldata)
+        result = exceldata;
+
+        var columns = [
+            "Date", "State", "Site","Inverter", "GHI", "POA",
+            "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
+            "Plant_PR (%)", "MA(%)", "IGA(%)", "EGA_A (%)",
+            "EGA_B (%)", "EGA_C (%)", "INV_PLF_AC (%)", "PLANT_PLF_AC (%)","PI","Pro_hrs","Lull_hrs",
+            "USMH", "SMH", "others", "IGBDH","EGDBH","LS","Total_BD_hrs","USMH_Loss","SMH_Loss","Others_Loss",
+            "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", "Total_Losses"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(formattedDate);
+            row.push(result[i].state);
+            row.push(result[i].site);
+            row.push(result[i].location_name);
+            row.push(result[i].ghi);
+            row.push(result[i].poa);
+            row.push(result[i].expected_kwh);
+            row.push(result[i].inv_kwh);
+            row.push(result[i].plant_kwh);
+            row.push(result[i].inv_pr);
+            row.push(result[i].plant_pr);
+            row.push(result[i].ma);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            row.push(result[i].inv_plf_ac);
+            row.push(result[i].plant_plf_ac);
+            row.push(result[i].pi);
+            row.push(result[i].prod_hrs);
+            row.push(result[i].lull_hrs_bd);
+            row.push(result[i].usmh_bs);
+            row.push(result[i].smh_bd);
+            row.push(result[i].oh_bd);
+            row.push(result[i].igbdh_bd);
+            row.push(result[i].egbdh_bd);
+            row.push(result[i].load_shedding_bd);
+            row.push(result[i].total_bd_hrs);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(result[i].total_losses);
+            rows.push(row);
+           
+            
+
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar Generation Summary");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar Generation Summary.xlsx");
+
+    }
+
 
     function getReport() {
 
@@ -233,6 +314,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
 
                         //var tempDate = new Date(result[i].date);
@@ -316,7 +398,15 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {

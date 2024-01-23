@@ -7563,6 +7563,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<int> SetSolarApprovalFlagForImportBatches(string dataId, int approvedBy, string approvedByName, int status)
         {
+            int automation_approved = 0;
+            int pyrano15min_approved = 0;
+            int pyrano1min_approved = 0;
             string functionName = "SetSolarApprovalFlagForImportBatches";
             string info = " Inside SetSolarApprovalFlagForImportBatches function. Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
@@ -7641,6 +7644,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 res = await Context.ExecuteNonQry<int>(qry1.Substring(0, (qry1.Length - 1)) + ";").ConfigureAwait(false);
                 finalResult = 3;
                 approval_InformationLog("Insert query : " + qry1.Substring(0, (qry1.Length - 1)) + ";" );
+                int returnRes = 0;
+                automation_approved = 1;
+
 
             }
             catch(Exception e)
@@ -7706,7 +7712,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     return 0;
                 }
             }
-
+            // check pyanometer data exist or not send count on upload_status table using heatmap
+           /* string qry7 = "select count(site_id) as pyrano15_count from uploading_pyranometer_15_min_solar where import_batch_id IN (" + dataId + ") group by site_id";
+            try
+            {
+                _importedData = await Context.GetData<SolarUploadingFileGeneration2>(qry7).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while updating uploading_file_breakdown_solar approved status, due to : " + e.ToString();
+            }
+            string qry8 = "select count(site_id) as pyrano1_count from uploading_pyranometer_1_min_solar where import_batch_id IN (" + dataId + ") group by site_id";
+            try
+            {
+                _importedData = await Context.GetData<SolarUploadingFileGeneration2>(qry8).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while updating uploading_file_breakdown_solar approved status, due to : " + e.ToString();
+            }
+           */
+            //------------------
             approval_InformationLog("At the end of function finaResult : " + finalResult);
             info = " SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
@@ -16621,7 +16647,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }*/
 
 
-                    List<HeatMapData1> resultListNew = new List<HeatMapData1>();
+                   /* List<HeatMapData1> resultListNew = new List<HeatMapData1>();
 
                     foreach (var dateStr in allDates1)
                     {
@@ -16646,25 +16672,29 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             };
                             resultListNew.Add(newEntry);
                         }
-                    }
+                    }*/
                     //int haresh = 1;
-                    foreach (var dateStr in allDates1)
-                    {
+                    //foreach (var dateStr in allDates1)
+                    //{
                         foreach (HeatMapData1 heatmap in _HeatMapData)
-                    //foreach (var heatmap in resultListNew)
-                    {
-                        Boolean matchvalue = false;
-                            //foreach (var element in allDates1)
-                            //{
-                           
-
-                            string siteName = heatmap.site;
+                        {
+                        bool found = false;
+                        string siteName = heatmap.site;
                             if (!resultMap.ContainsKey(siteName))
                             {
                                 resultMap[siteName] = new List<Dictionary<string, object>>();
                             }
-                            var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
+                           // var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
                             string date = heatmap.data_date.ToString("yyyy-MM-dd");
+                            foreach (var dateStr in allDates1)
+                            {
+                                if (dateStr == date)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                                
+                            }
                             int approveCount = 0;
                             int automation = 0;
                             int pyrano15min =0;
@@ -16672,13 +16702,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             IDictionary<string, object> dictionary = new Dictionary<string, object>();
                             //if (date == element && heatmap.selected == 0)
                             //{
-                            if (entry != null)
+                            if (found)
                             {
 
                                 approveCount = heatmap.approve_count;
-                                 automation = heatmap.automation;
+                                automation = heatmap.automation;
                                 pyrano15min = heatmap.pyranometer15min;
-                                 pyrano1min = heatmap.pyranometer1min;
+                                pyrano1min = heatmap.pyranometer1min;
 
                                 dictionary.Add(new KeyValuePair<string, object>("date", date));
                                 dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
@@ -16694,7 +16724,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                     pyrano15min = -1;
                                     pyrano1min = -1;
                                     //IDictionary<string, object> dictionary = new Dictionary<string, object>();
-                                    dictionary.Add(new KeyValuePair<string, object>("date", dateStr));
+                                    dictionary.Add(new KeyValuePair<string, object>("date", "2024-01-06"));
                                     dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
                                     dictionary.Add(new KeyValuePair<string, object>("pyranometer15min", pyrano15min));
                                     dictionary.Add(new KeyValuePair<string, object>("pyranometer1min", pyrano1min));
@@ -16709,7 +16739,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             resultMap[siteName].Add(dataEntry);*/
                             resultMap[siteName].Add((Dictionary<string, object>)dictionary);
                         }
-                    }
+                    //}
 
                    
                     //Convert resultMap to the desired format

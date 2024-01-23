@@ -120,8 +120,10 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <script src="~/Content/theme/dist/js/comman.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -170,6 +172,56 @@
         });
     }
 
+    function exportToExcel() {
+
+        result = exceldata;
+        var columns = [
+            "Date", "Site", "From Time", "To Time", "AC Capacity (MW)", "Nos. of Trackers in BD. (Nos)", "Nos. of Module &#64; Tracker (Nos)", "Module (Wp)", "BD. Tracker Capacity (kW)"
+            , "Actual POA", "Actual GHI", "AOP PR (%) ", "Gen Losses (kWh)", "Remarks"
+        ];
+
+        var rows = [];
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            var month = moment(result[i].date, 'YYYY-MM-DD').format('MMM-YY');
+            var start_time = toHoursAndMinutes(result[i].from_time.totalSeconds);
+            var stop_time = toHoursAndMinutes(result[i].to_time.totalSeconds);
+
+            row.push(formattedDate);
+            row.push(result[i].site);
+            row.push( start_time);
+            row.push(stop_time);
+            row.push(result[i].ac_capacity);
+            row.push(result[i].trackers_in_BD);
+            row.push(result[i].module_tracker);
+            row.push(result[i].module_WP);
+            row.push(result[i].breakdown_tra_capacity);
+            row.push(result[i].actual_poa);
+            row.push(result[i].actual_ghi);
+            row.push(result[i].target_aop_pr);
+            row.push(result[i].tracker_loss);
+            row.push(result[i].remark);
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar Tracker Loss");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar Tracker Loss.xlsx");
+
+    }
     function getReport() {
 
         let site_id = "";
@@ -218,6 +270,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                    for (var i = 0; i < result.length; i++) {
                        var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                        var month = moment(result[i].date, 'YYYY-MM-DD').format('MMM-YY');
@@ -287,8 +340,17 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');

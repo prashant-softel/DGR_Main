@@ -110,7 +110,9 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -146,6 +148,89 @@
 
         });
     }
+    function exportToExcel() {
+       /* let site_id = "";
+
+        var site = $('select#site option:selected').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        if (site_id == "" || site_id == null) {
+            alert("Please select site ");
+            return false;
+        }
+
+        var daterange = $('#daterange').val();
+        var arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');*/
+
+        //$.ajax({
+           // type: "GET",
+           // url: '@Url.Action("WindGenView", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+          //  contentType: "application/json; charset=utf-8",
+           // datatype: "JSON",
+           // success: function (result, status, xhr) {
+        result=exceldata;
+                var columns = [
+                    "Date", "State", "Site", "WTG", "Wind Speed (m/s)", "kWh",
+                    "Feeder", "MA_ACT (%)", "MA_CON (%)", "IGA (%)", "EGA (%)",
+                    "EGA_B (%)", "EGA_C (%)", "PLF (%)", "Grid Hours", "Lull Hours",
+                    "Production Hours", "Unscheduled Number", "Scheduled Number",
+                    "Others Number", "IGBDH Number", "EGBDH Number", "Load Shedding Number"
+                ];
+
+                var rows = [];
+                for (var i = 0; i < result.length; i++) {
+                    var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(formattedDate);
+                    row.push(result[i].state);
+                    row.push(result[i].site);
+                    row.push(result[i].wtg);
+                    row.push(result[i].wind_speed);
+                    row.push(result[i].kwh);
+                    row.push(result[i].feeder);
+                    row.push(result[i].ma_actual);
+                    row.push(result[i].ma_contractual);
+                    row.push(result[i].iga);
+                    row.push(result[i].ega);
+                    row.push(result[i].ega_b);
+                    row.push(result[i].ega_c);
+                    row.push(result[i].plf);
+                    row.push(result[i].grid_hrs);
+                    row.push(result[i].lull_hrs);
+                    row.push(result[i].production_hrs);
+                    row.push(result[i].unschedule_num);
+                    row.push(result[i].schedule_num);
+                    row.push(result[i].others_num);
+                    row.push(result[i].igbdh_num);
+                    row.push(result[i].egbdh_num);
+                    row.push(result[i].load_shedding_num);
+                    rows.push(row);
+                }
+
+                var data = [columns].concat(rows);
+
+                var ws = XLSX.utils.aoa_to_sheet(data);
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Wind_Generation_Summary");
+                var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+                function s2ab(s) {
+                    var buf = new ArrayBuffer(s.length);
+                    var view = new Uint8Array(buf);
+                    for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                    return buf;
+                }
+
+                saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind_Generation_Summary.xlsx");
+            //}
+        //});
+    }
+
+
+
 
     function getReport() {
 
@@ -206,6 +291,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
 
                         
@@ -277,7 +363,16 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
@@ -294,6 +389,7 @@
                         })
                     }
                 });
+
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
@@ -304,7 +400,8 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
-               // $('#example1').wrap("<div class='scrolledTable'></div>");
+
+                // $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loader").style.display = 'none';
                 //$('#example1').removeClass('dataTable');
 
