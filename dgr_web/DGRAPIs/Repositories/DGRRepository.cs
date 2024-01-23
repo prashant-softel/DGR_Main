@@ -6114,6 +6114,7 @@ ORDER BY site;";
             string newQery = $@"SELECT
     site,
 spv,
+site_count,
 inv_count,
 capacity,
 total_tarrif,
@@ -6121,9 +6122,9 @@ tar_kwh,
 act_kwh,
 pr_expected_kwh,
 lineloss,
-tar_ghi,
+tar_ghi / site_count AS tar_ghi,
 act_ghi / inv_count AS act_ghi,
-tar_poa,
+tar_poa / site_count AS tar_poa,
 act_poa / inv_count AS act_poa,
 tar_plf,
 act_plf,
@@ -6138,7 +6139,7 @@ act_ega
 FROM
     (SELECT 
         t1.site AS site,
-        spv, t5.inv_count AS inv_count,
+        spv, t5.site_count AS site_count, t6.inv_count AS inv_count,
         (SELECT ac_capacity FROM site_master_solar where site=t1.site and state=t1.state)as capacity,
         (SELECT dc_capacity FROM site_master_solar where site=t1.site and state=t1.state)as dc_capacity,
         (SELECT total_tarrif FROM site_master_solar where site=t1.site and state=t1.state)as total_tarrif,
@@ -6159,7 +6160,7 @@ FROM
         (SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar WHERE sites=t1.site AND {datefilter} AND fy= '{fy}') AS tar_iga,
         sum(iga)/count(*) AS act_iga,
         (SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar WHERE sites=t1.site AND {datefilter} AND fy= '{fy}') AS tar_ega,
-        sum(ega)/count(*) AS act_ega FROM daily_gen_summary_solar t1 LEFT JOIN site_master_solar t2 ON t1.site = t2.site LEFT JOIN (SELECT COUNT(inverter) AS inv_count, t4.spv AS inv_spv FROM solar_ac_dc_capacity t3 LEFT JOIN site_master_solar t4 ON t3.site_id = t4.site_master_solar_id GROUP BY t4.spv) t5 ON spv = t5.inv_spv WHERE {datefilter} {filter} 
+        sum(ega)/count(*) AS act_ega FROM daily_gen_summary_solar t1 LEFT JOIN site_master_solar t2 ON t1.site = t2.site LEFT JOIN (SELECT COUNT(site) AS site_count, spv AS count_spv FROM `site_master_solar` GROUP BY spv ORDER BY spv) t5 ON spv = t5.count_spv LEFT JOIN (SELECT COUNT(inverter) AS inv_count, tb2.spv AS inv_spv FROM solar_ac_dc_capacity tb1 LEFT JOIN site_master_solar tb2 ON tb1.site_id = tb2.site_master_solar_id GROUP BY tb2.spv) t6 ON spv = t6.inv_spv WHERE {datefilter} {filter} 
     GROUP BY spv) 
 AS subquery;";
 
