@@ -37,7 +37,7 @@ namespace DGRAPIs.Models
         public string spv { get; set; }
         public int site_id { get; set; }
         public string site { get; set; }
-        public int BD_Type { get; set; }
+        public int bd_type { get; set; }
         public int isDeleted { get; set; }
         public int isMonthly { get; set; }
         public int isSPV { get; set; }

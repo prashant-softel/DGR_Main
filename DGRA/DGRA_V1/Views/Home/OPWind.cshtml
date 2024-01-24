@@ -1155,11 +1155,11 @@
                     var Other = []; //bdType = 3
 
                     for (var k = 0; k < result.length; k++) {
-                        if (result[k].bD_Type == 1) {
+                        if (result[k].bd_type == 1) {
                             EGB.push(result[k]);
-                        } else if (result[k].bD_Type == 2) {
+                        } else if (result[k].bd_type == 2) {
                             BD.push(result[k]);
-                        } else if (result[k].bD_Type == 3) {
+                        } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
                         }
                     }
@@ -1673,7 +1673,8 @@
                 anyChanges.push(0); // No change in comment
             } else {
                 ECM_data[k].updated_by = updatedBy;
-                ECM_data[k].updated_comment = updatedComment;
+                ECM_data[k].updated_comment = updatedComment.toString();
+                ECM_data[k].isSPV = Number(ECM_data[k].isSPV);
                 ECM_data[k].isMonthly = 0; //0 for monthly 1 for yearly.
                 ECM_data[k].isDeleted = 1; //1 active 0 for deleted.
                 anyChanges.push(1); // Change in comment.
@@ -1697,8 +1698,6 @@
                     console.log("result after adding : ");
                     console.log(result);
                     if (Number(result) > 0) {
-
-                        ClearACM();
                         var mDisplay = document.getElementById("monthlyComments");
                         var mAdd = document.getElementById("monthlyAdd");
                         var mEdit = document.getElementById("monthlyEdit");
@@ -1709,7 +1708,7 @@
                         mEdit.style.display = "none";
                         mDelete.style.display = "none";
 
-                        showToast("Comments Added.", 5000, "monthlyComments");
+                        showToast("Comments Updated.", 5000, "monthlyComments");
                     }
 
                 },
@@ -1717,10 +1716,10 @@
                     console.log("Error:", error);
                 }
             });
-        } else {
+        }else {
             // No changes, call toast function
             console.log("No changes in comments. Calling the toast function.");
-            showToast("", 7000, "ECM");
+            showToast("No Changes to Update.", 7000, "ECM");
         }
     }
 

@@ -16273,7 +16273,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //Site wise.
                 if (isDisplay == 1)
                 {
-                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
                 }
                 else if (isDisplay == 0)
                 {
@@ -16354,7 +16354,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 foreach (var _element in set)
                 {
                     string spvTemp = SPV_siteHash[_element.site_id].ToString();
-                    insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.BD_Type}, 1, {_element.isMonthly}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                    insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.bd_type}, 1, {_element.isMonthly}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
                     //site_ids.Add(Convert.ToString(_element.site_id));
                     //month_no.Add(Convert.ToString(_element.month_no));
                     //year.Add(Convert.ToString(_element.year));
@@ -16503,7 +16503,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach(var _upData in set)
             {
-                updateQry += $"UPDATE OPComments SET comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = '{DateTime.Now}' WHERE type = {_upData.type} AND site_id = {_upData.site_id} AND month_no = {_upData.month_no} AND isMonthly = {_upData.isMonthly} AND BD_type = '{_upData.BD_Type}';";
+                //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
+                if(_upData.isSPV == 1)
+                {
+                    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND site_id = {_upData.site_id} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
+                }
+                else
+                {
+                    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND spv = {_upData.spv} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
+                }
             }
             try
             {
