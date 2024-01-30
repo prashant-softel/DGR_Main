@@ -508,6 +508,13 @@
                                 //resdate.push(Object(value).date);
                                 let status_count = 0;
                                 let tooltopmsg = "";
+                                /*const currentDate = new Date(Object(value).date);
+                                const nextDate = new Date(Object(value).date + 1);
+                                if ((nextDate - currentDate) > 86400000) { // 86400000 milliseconds in a day
+                                    // There is a missing date between currentDate and nextDate
+                                    const missingDate = new Date(currentDate.getTime() + 86400000);
+                                    console.log (missingDate.toISOString().split('T')[0]);
+                                }*/
                                 /*let bfound = false;
                                 let founddate = "";
                                 for (var i = 0; i <= datelist.count; i++) {
@@ -567,84 +574,9 @@
             }
         });
 
-       /* var xValues = ['20/09/2023', '21/09/2023', '22/09/2023', '23/09/2023', '24/09/2023'];
-
-        var yValues = ['DGRA'];
-
-        var zValues = [
-            [1,0,1,1,1,1]
-        ];
-
-        var colorscaleValue = [
-            [0, '#ee403d'],
-            [1, '#28a745']
-        ];
-
-        var data = [{
-            x: xValues,
-            y: yValues,
-            z: zValues,
-            xgap: 5,
-            ygap: 5,
-            type: 'heatmap',
-            colorscale: colorscaleValue,
-            showscale: false,
-            hovertemplate: [
-                '<b>20/09/2023</b><br>Uploaded',
-                '<b>21/09/2023</b><br>Missing',
-                '<b>22/09/2023</b><br>Uploaded',
-                '<b>23/09/2023</b><br>Uploaded',
-                '<b>24/09/2023</b><br>Uploaded',
-            ],
-        }];
-
-        var layout = {
-            title: 'Automation Heatmap',
-            annotations: [],
-            xaxis: {
-                ticks: '',
-                side: 'top'
-            },
-            yaxis: {
-                ticks: '',
-                ticksuffix: ' ',
-                width: 500,
-                height: 500,
-                autosize: false,
-            }
-        };
-
-        for (var i = 0; i < yValues.length; i++) {
-            for (var j = 0; j < xValues.length; j++) {
-                var currentValue = zValues[i][j];
-                if (currentValue != 0.0) {
-                    var textColor = 'white';
-                } else {
-                    var textColor = 'black';
-                }
-                var result = {
-                    xref: 'x1',
-                    yref: 'y1',
-                    x: xValues[j],
-                    y: yValues[i],
-                    text: zValues[i][j],
-                    font: {
-                        family: 'Arial',
-                        size: 12,
-                        color: 'rgb(50, 171, 96)'
-                    },
-                    showarrow: false,
-                    font: {
-                        color: textColor
-                    }
-                };
-                layout.annotations.push(result);
-            }
-        }
-
-        Plotly.newPlot('HeatMap', data);*/
+     
     }
-
+   
     function getDatesInRange(startDate, endDate) {
       
         if (moment(startDate, 'YYYY-MM-DD').isSame(moment(endDate, 'YYYY-MM-DD'), 'day'))
@@ -657,11 +589,7 @@
             date = moment(date).add(1, 'day');
             //dates.push(date.format('YYYY-MM-DD'));
         }
-       /* do {
-            dates.push(moment(date).format('YYYY-MM-DD'));
-            date = moment(date).add(1, 'day');
-           
-        } while (moment(date).isBefore(endDate));*/
+       
         dates.shift();
         return dates;
     }

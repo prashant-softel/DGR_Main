@@ -156,4 +156,10 @@ namespace DGRAPIs.Models
         public string spv_name { get; set; }
         public dynamic last_modified_on { get; set; }
     }
+    public class WindUploadStatus
+    {
+        public int upload_status_id { get; set; }
+      
+
+    }
 }

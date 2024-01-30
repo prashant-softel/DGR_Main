@@ -68,4 +68,15 @@ namespace DGRAPIs.Models
         public int import_batch_id { get; set; }
 
     }
+
+    public class SolarUploadingFileGeneration3
+    {
+        public Int64 gen_count { get; set; }
+        public Int64 pyro1_count { get; set; }
+        public Int64 pyro15_count { get; set; }
+        public int site_id { get; set; }
+       
+        public int import_batch_id { get; set; }
+
+    }
 }
