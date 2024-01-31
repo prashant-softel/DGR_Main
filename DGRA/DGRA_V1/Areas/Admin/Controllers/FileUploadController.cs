@@ -331,12 +331,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                             //string _filePath = @"G:\TempFile\docupload.xlsx";
                             //string _filePath = env.ContentRootPath + @"\TempFile\docupload.xlsx";
                             dataSetMain = GetDataTableFromExcel(_filePath, true, ref fileSheets);
-                            if (dataSetMain == null)
+                            bool hasData = CheckDataSetForData(dataSetMain);
+                            if (!hasData)
                             {
                                 m_ErrorLog.SetError(",Unable to extract excel sheet data for importing,");
                                 string msg = "datSetMain null " + dataSetMain;
                                 //ErrorLog(msg);
                                 LogError(user_id, 0, 4, "ExcelDataReadAndUpload", msg);
+                                return "Unable to extract data from excel file.";
                             }
 
 
@@ -2591,7 +2593,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(monthValidation(addUnit.JMR_Month, addUnit.JMR_Month_no, rowNumber));
                         errorFlag.Add(yearValidation(addUnit.JMR_Year, rowNumber));
 
-                        addUnit.Plant_Section = dr["Plant Section"] is DBNull || string.IsNullOrEmpty((string)dr["Plant Section"]) ? "Nil" : Convert.ToString(dr["Plant Section"]);
+                        //addUnit.Plant_Section = dr["Plant Section"] is DBNull || string.IsNullOrEmpty((string)dr["Plant Section"]) ? "Nil" : Convert.ToString(dr["Plant Section"]);
                         //errorFlag.Add(stringNullValidation(addUnit.Plant_Section, "Plant Section", rowNumber));
 
                         addUnit.Controller_KWH_INV = Convert.ToDouble((dr["Controller (kWh)/INV (kWh)"] is DBNull) ? 0 : dr["Controller (kWh)/INV (kWh)"]);
@@ -2747,7 +2749,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(siteValidation(addUnit.site, addUnit.siteId, rowNumber));
                         objImportBatch.importSiteId = addUnit.siteId;
 
-                        addUnit.plantSection = string.IsNullOrEmpty((string)dr["Plant Section"]) ? "Nil" : Convert.ToString(dr["Plant Section"]);
+                        //addUnit.plantSection = string.IsNullOrEmpty((string)dr["Plant Section"]) ? "Nil" : Convert.ToString(dr["Plant Section"]);
                         //errorFlag.Add(stringNullValidation(addUnit.plantSection, "Plant Section", rowNumber));
 
                         addUnit.jmrDate = string.IsNullOrEmpty((string)dr["JMR date"]) ? "Nil" : Convert.ToString(dr["JMR date"]);
@@ -9895,5 +9897,24 @@ namespace DGRA_V1.Areas.admin.Controllers
             }
             return retValue;
         }
+
+        static bool CheckDataSetForData(DataSet dataSet)
+        {
+            if (dataSet == null || dataSet.Tables.Count == 0)
+            {
+                return false; // No tables in the DataSet
+            }
+
+            foreach (DataTable table in dataSet.Tables)
+            {
+                if (table.Rows.Count > 0)
+                {
+                    return true; // At least one table has rows
+                }
+            }
+
+            return false; // No tables with rows found
+        }
+
     }
 }

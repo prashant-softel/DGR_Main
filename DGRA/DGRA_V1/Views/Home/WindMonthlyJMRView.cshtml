@@ -248,7 +248,7 @@
                 tbl += '<th style="width: 5%;">FY</th>';
                 tbl += '<th>JMR Month</th>';
                 tbl += '<th style="width: 6%;">Site</th>';
-                tbl += '<th>Plant Section</th>';
+                //tbl += '<th>Plant Section</th>';
                 tbl += '<th>Controller <br>(kWh INV)</th>';
                 tbl += '<th>Scheduled Unit <br>(kWh)</th>';
                 tbl += '<th>Export <br>(kWh)</th>';
@@ -273,10 +273,10 @@
                         var formattedDate = moment(result[i].jmR_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                        // var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
 
-                        var plant_sel = result[i].plant_Section;
-                        if (result[i].plant_Section == null || result[i].plant_Section == "") {
-                            plant_sel = "";
-                        }
+                        //var plant_sel = result[i].plant_Section;
+                        //if (result[i].plant_Section == null || result[i].plant_Section == "") {
+                        //    plant_sel = "";
+                        //}
                         var sch_Unit = result[i].scheduled_Units_kWh;
                         if (result[i].scheduled_Units_kWh == null ) {
                             sch_Unit = 0;
@@ -290,7 +290,7 @@
                         tbl += '<td class="text-left">' + result[i].fy + '</td>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].jmR_Month + '</td>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
-                        tbl += '<td class="text-left">' + plant_sel + '</td>';
+                        //tbl += '<td class="text-left">' + plant_sel + '</td>';
                         tbl += '<td class="text-right">' + result[i].controller_KWH_INV.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + sch_Unit.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].export_kWh.toFixed(2) + '</td>';
