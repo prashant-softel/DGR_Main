@@ -227,7 +227,21 @@
                                                 </div>
                                             </div>
                                         </div>
-                                            <div class="scrollable-container" id="monthlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Delete Division</h4></div>
+                                            <div class="scrollable-container" id="monthlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                                <div id="DCM">
+                                                    <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                        <select class="form-control col-sm-4" id="DCM_BDSelect" onchange="DMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
+                                                            <option value="0">Select BD Type</option>
+                                                            <option value="1">EGB</option>
+                                                            <option value="2">BD</option>
+                                                            <option value="3">Other</option>
+                                                        </select>
+                                                    </div>
+                                                    <div id="DCM_content">
+
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="comment-buttons" id="monthCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
                                                 <div style="display: flex; gap: 13px;">
                                                     <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAdd()">
@@ -1502,7 +1516,7 @@
                     "year": year1,
                     "type": type,
                     "site_id": Number(document.getElementById((BDelement.siteSelectDD + "_" + j)).value),
-                    "BDType": Number(bdType),
+                    "bd_type": Number(bdType),
                     "isDeleted": isDeleted,
                     "isMonthly": isMonthly,
                     "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
@@ -1591,15 +1605,18 @@
     //ECM Edit functionality.
     var ECM_data = [];
     function monthEdit() {
-            var mDisplay = document.getElementById("monthlyComments");
-            var mAdd = document.getElementById("monthlyAdd");
-            var mEdit = document.getElementById("monthlyEdit");
-            var mDelete = document.getElementById("monthlyDelete");
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
 
-            mDisplay.style.display = "none";
-            mAdd.style.display = "none";
-            mEdit.style.display = "block";
-            mDelete.style.display = "none";
+        var destContainer = document.getElementById("ECM_content");
+        destContainer.innerHTML = "";
+
+        mDisplay.style.display = "none";
+        mAdd.style.display = "none";
+        mEdit.style.display = "block";
+        mDelete.style.display = "none";
     }
     //Get data after changing the Option from BD dropdown.
     function EMCOnchange() {
@@ -1724,21 +1741,162 @@
     }
 
     function monthDelete() {
-            var mDisplay = document.getElementById("monthlyComments");
-            var mAdd = document.getElementById("monthlyAdd");
-            var mEdit = document.getElementById("monthlyEdit");
-            var mDelete = document.getElementById("monthlyDelete");
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
 
-            mDisplay.style.display = "none";
-            mAdd.style.display = "none";
-            mEdit.style.display = "none";
-            mDelete.style.display = "block";
+        mDisplay.style.display = "none";
+        mAdd.style.display = "none";
+        mEdit.style.display = "none";
+        mDelete.style.display = "block";
+        //var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+        //$("#monthlyDelete").html("").html(snippet);
+    }
+    var DCM_data = [];
+    function DMCOnchange() {
+        var BD_dropdown = document.getElementById("DCM_BDSelect");
+        var BD_value = BD_dropdown.value;
+        console.log("BD value selected in Delete is : " + BD_value);
+        var temDate = nDval.split("-");
 
-            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+        var monthNo = temDate[1];
+        var year = temDate[0];
 
-            $("#monthlyDelete").html("").html(snippet);
+        //isDisplay: 0 = display, 1: Edit
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPCommentsMonthly", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                DCM_data = [];
+                DCM_data = [...result];
+                console.log("Display Delete Result : ");
+                console.log(DCM_data);
+                var destContainer = document.getElementById("DCM_content");
+                destContainer.innerHTML = "";
 
+                DCM_data.forEach((elem, index) => createDeleteUI(elem, destContainer, index));
+                var saveButton = document.createElement('button');
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border - radius: 5px; ";
+                saveButton.onclick = DCMSaveButton;
+                saveButton.textContent = "Save";
+                destContainer.appendChild(saveButton);
             }
+        });
+    }
+    //Function for creating the UI for the Edit.
+    function createDeleteUI(element, Destcontainer, index) {
+        element.index_id = index;
+        var commentContainer = document.createElement('div');
+        commentContainer.className = 'comment-container';
+        commentContainer.style.display = 'flex';
+        commentContainer.style.alignItems = 'center';
+
+        var siteLabel = document.createElement('label');
+        siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.textContent = element.site;
+        siteLabel.id = "DCMLabel" + index;
+        element.label_id = "DCMLabel" + index;
+
+        var CommentLabel = document.createElement('label');
+        CommentLabel.style.cssText = "width: 340px; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        CommentLabel.textContent = element.comment;
+        CommentLabel.id = "DCMLabel" + index;
+        element.comment_id = "DCMComment" + index;
+
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.style.cssText = "height: 30px; width: 30px; margin-left: 10px; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        checkbox.id = 'checkbox' + index;
+        checkbox.onclick = function () {
+            handleCheckboxClick(index);
+        };
+
+        commentContainer.appendChild(siteLabel);
+        commentContainer.appendChild(CommentLabel);
+        commentContainer.appendChild(checkbox);
+
+        Destcontainer.appendChild(commentContainer);
+    }
+    var DCM_deleteData = [];
+    var DCM_index = [];
+    function handleCheckboxClick(index) {
+        console.log('Checkbox clicked for index:', index);
+        // Add your logic here
+        if (DCM_index.includes(index)) {
+            DCM_deleteData = DCM_deleteData.filter(function (item) {
+                return item.index_id !== index;
+            });
+
+            var indexOfData = DCM_index.indexOf(index);
+            DCM_deleteData = DCM_deleteData.filter(function (item) {
+                return item.index_id !== index;
+            });
+
+            // Remove the found index from DCM_index
+            if (indexOfData !== -1) {
+                DCM_index.splice(indexOfData, 1);
+            }
+        } else {
+            DCM_deleteData.push(DCM_data[index]);
+            DCM_index.push(index);
+        }
+    }
+
+    function DCMSaveButton() {
+        console.log("Edit save button just after save : ");
+        console.log(DCM_data);
+        console.log("data after save delete :");
+        console.log(DCM_deleteData);
+        console.log(DCM_index);
+        if (DCM_index.length > 0) {
+            //Data is there for delete.
+            var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+            for (var k = 0; k < DCM_deleteData.length; k++) {
+                DCM_deleteData[k].deleted_by = updatedBy;
+                DCM_deleteData[k].isSPV = Number(DCM_deleteData[k].isSPV);
+                DCM_deleteData[k].isMonthly = 0; //0 for monthly 1 for yearly.
+                DCM_deleteData[k].isDeleted = 0; //1 active 0 for deleted.
+                DCM_deleteData[k].isSPV = isSPV;
+            }
+
+            console.log("Calling the API for changes.");
+            //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPDCM", "WindReport")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(DCM_deleteData),
+                success: function (result, status, xhr) {
+                    console.log("result after adding : ");
+                    console.log(result);
+                    if (Number(result) > 0) {
+                        var mDisplay = document.getElementById("monthlyComments");
+                        var mAdd = document.getElementById("monthlyAdd");
+                        var mEdit = document.getElementById("monthlyEdit");
+                        var mDelete = document.getElementById("monthlyDelete");
+
+                        mDisplay.style.display = "block";
+                        mAdd.style.display = "none";
+                        mEdit.style.display = "none";
+                        mDelete.style.display = "none";
+
+                        showToast("Comments Updated.", 5000, "monthlyComments");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        } else {
+            // No changes, call toast function
+            showToast("No Comments Selected to Delete.", 7000, "DCM");
+        }
+
+    }
 
 
     function yearDisplay() {
