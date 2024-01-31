@@ -1907,6 +1907,13 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         //addUnit.wind_speed = string.IsNullOrEmpty((string)dr["Wind_Speed"]) ? 0 : Convert.ToDouble(dr["Wind_Speed"]);
                         addUnit.wind_speed = validateNumeric(((string)dr["Wind_Speed"]), "Wind_Speed", rowNumber, dr["Wind_Speed"] is DBNull, logErrorFlag, out importValue) ? 0 : importValue;
+                        if (addUnit.wind_speed >= 21 || addUnit.wind_speed <= 0)
+                        {
+                            m_ErrorLog.SetError(",Row <" + rowNumber + "> column <Wind_Speed> : Wind speed must be greater than 0 and less than or equal to 20.");
+                            errorCount++;
+                            skipRow = true;
+                            continue;
+                        }
                         errorFlag.Add(numericNullValidation(addUnit.wind_speed, "Wind_Speed", rowNumber));
 
                         //addUnit.operating_hrs = dr["Gen_Hrs"] is DBNull || string.IsNullOrEmpty((string)dr["Gen_Hrs"]) ? 0 : Convert.ToDouble(dr["Gen_Hrs"]);

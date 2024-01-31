@@ -6084,8 +6084,9 @@ ORDER BY site;";
                 " sum(ghi) as tar_ghi, sum(poa) as tar_poa, sum(plf)/count(plf) as tar_plf," +
                 " sum(pr)/count(pr) as tar_pr, sum(ma)/count(ma) as tar_ma, sum(iga)/count(iga) as tar_iga, sum(ega)/count(ega) as tar_ega " +
                 "from temp_viewSPV group by spv ";
+            string newQuery2 = $@"SELECT spv, tar_kwh, tar_ghi/site_count AS tar_ghi, tar_poa/site_count AS tar_poa, tar_plf, tar_pr, tar_ma, tar_iga, tar_ega, site_count FROM (SELECT spv, sum(gen_nos) as tar_kwh, sum(ghi) as tar_ghi, sum(poa) as tar_poa, sum(plf)/count(plf) as tar_plf, sum(pr)/count(pr) as tar_pr, sum(ma)/count(ma) as tar_ma, sum(iga)/count(iga) as tar_iga, sum(ega)/count(ega) as tar_ega, t5.site_count FROM temp_viewSPV LEFT JOIN (SELECT COUNT(site) AS site_count, spv AS count_spv FROM `site_master_solar` GROUP BY spv ORDER BY spv) t5 ON spv = t5.count_spv GROUP BY spv) AS subquery;";
             List<SolarPerformanceReports1> tempdata = new List<SolarPerformanceReports1>();
-            tempdata = await Context.GetData<SolarPerformanceReports1>(qry2).ConfigureAwait(false);
+            tempdata = await Context.GetData<SolarPerformanceReports1>(newQuery2).ConfigureAwait(false);
 
             string qry7 = "select spv,SUM(ac_capacity)  as capacity from site_master_solar " + filter2+" group by spv ";
                 
