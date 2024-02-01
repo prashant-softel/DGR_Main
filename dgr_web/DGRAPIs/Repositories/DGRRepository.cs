@@ -1307,7 +1307,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
              {
                  string ex = e.Message;
              }
-             string qry2 = " select month(date) as month, sites as Site, sum(gen_nos) as tarkwh, sum(poa)/count(poa) as tarIR from temp_view_year_solar group by year(date),site_id; ";
+             string qry2 = " select month(date) as month, sites as Site, sum(gen_nos) as tarkwh, sum(poa)/count(poa) as tarIR from temp_view_year_solar group by site_id; ";
              List<SolarDashboardData> _SolarDashboardData2 = new List<SolarDashboardData>();
              _SolarDashboardData2 = await Context.GetData<SolarDashboardData>(qry2).ConfigureAwait(false);
 
@@ -1324,9 +1324,12 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
  replace(t2.LineLoss, '%', '') as linLoss,sum(t1.inv_kwh) - (sum(t1.inv_kwh) * replace(t2.LineLoss, '%', '') / 100) as jmrkwh,
  (t3.gen_nos * 1000000) as tarkwh, sum(t3.poa) / count(t3.poa) as tarIR from daily_gen_summary_solar t1 left join monthly_line_loss_solar t2 on t2.fy = '" + FY + "' and t2.month_no = month(t1.date) and t2.site_id = t1.site_id left join daily_target_kpi_solar t3 on t3.date = t1.date and t3.site_id = t1.site_id  where "  + filter + " group by year(t1.date) , t1.Site order by t1.date desc ";*/
 
-           string qry = @"  SELECT t1.date,month(t1.date) as month, t1.site,sum(t1.inv_kwh) as inv_kwh, sum(t1.jmrkwh) as jmrkwh,AVG(t1.IR) as IR,tarkwh, tarIR FROM(SELECT t1.date, month(t1.date) as month, year(t1.date) as year, t1.site, sum(t1.inv_kwh) as inv_kwh, replace(t2.LineLoss, '%', '') as linLoss, sum(t1.inv_kwh) - (sum(t1.inv_kwh) * replace(t2.LineLoss, '%', '') / 100) as jmrkwh, sum(t1.poa) / count(t1.poa) as IR,(t3.gen_nos * 1000000) as tarkwh,sum(t3.poa) / count(t3.poa) as tarIR from daily_gen_summary_solar t1 left join monthly_line_loss_solar t2 on t2.fy = '" + FY + "' and t2.month_no = month(t1.date) and t2.site_id = t1.site_id left join daily_target_kpi_solar t3 on t3.date = t1.date and t3.site_id = t1.site_id  where " + filter + " group by t1.site, t1.date  order by t1.date asc) as t1 group by YEAR(t1.date),t1.site";
+           //string qry = @"  SELECT t1.date,month(t1.date) as month, t1.site,sum(t1.inv_kwh) as inv_kwh, sum(t1.jmrkwh) as jmrkwh,AVG(t1.IR) as IR,tarkwh, tarIR FROM(SELECT t1.date, month(t1.date) as month, year(t1.date) as year, t1.site, sum(t1.inv_kwh) as inv_kwh, replace(t2.LineLoss, '%', '') as linLoss, sum(t1.inv_kwh) - (sum(t1.inv_kwh) * replace(t2.LineLoss, '%', '') / 100) as jmrkwh, sum(t1.poa) / count(t1.poa) as IR,(t3.gen_nos * 1000000) as tarkwh,sum(t3.poa) / count(t3.poa) as tarIR from daily_gen_summary_solar t1 left join monthly_line_loss_solar t2 on t2.fy = '" + FY + "' and t2.month_no = month(t1.date) and t2.site_id = t1.site_id left join daily_target_kpi_solar t3 on t3.date = t1.date and t3.site_id = t1.site_id  where " + filter + " group by t1.site, t1.date  order by t1.date asc) as t1 group by YEAR(t1.date),t1.site";
 
-             //t3 on t3.sites=t1.site and t3.date=t1.date  where t1.approve_status=" + approve_status + " and " + filter + "  group by t1.Site,month(t1.date),year(t1.date)  order by t1.date desc ";
+           // New Changes 01 Feb Ir Issue  
+            string qry = @"  SELECT t1.date,month(t1.date) as month, t1.site,sum(t1.inv_kwh) as inv_kwh, sum(t1.jmrkwh) as jmrkwh,AVG(t1.IR) as IR,tarkwh, tarIR FROM(SELECT t1.date, month(t1.date) as month, year(t1.date) as year, t1.site, sum(t1.inv_kwh) as inv_kwh, replace(t2.LineLoss, '%', '') as linLoss, sum(t1.inv_kwh) - (sum(t1.inv_kwh) * replace(t2.LineLoss, '%', '') / 100) as jmrkwh, sum(t1.poa) / count(t1.poa) as IR,(t3.gen_nos * 1000000) as tarkwh,sum(t3.poa) / count(t3.poa) as tarIR from daily_gen_summary_solar t1 left join monthly_line_loss_solar t2 on t2.fy = '" + FY + "' and t2.month_no = month(t1.date) and t2.site_id = t1.site_id left join daily_target_kpi_solar t3 on t3.date = t1.date and t3.site_id = t1.site_id  where " + filter + " group by t1.site, t1.date  order by t1.date asc) as t1 group by t1.site";
+
+            //t3 on t3.sites=t1.site and t3.date=t1.date  where t1.approve_status=" + approve_status + " and " + filter + "  group by t1.Site,month(t1.date),year(t1.date)  order by t1.date desc ";
 
             List<SolarDashboardData> _SolarDashboardData = new List<SolarDashboardData>();
              _SolarDashboardData = await Context.GetData<SolarDashboardData>(qry).ConfigureAwait(false);

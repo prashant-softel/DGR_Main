@@ -108,7 +108,7 @@ namespace DGRA_V1.Controllers
             try
             {
                 //user.DisplayName
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UserLogin?username=" + user.UserPrincipalName + "&password="+ pass+ "&isSSO=true";
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/UserLogin?username=" + user.Mail + "&password="+ pass+ "&isSSO=true";
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {
