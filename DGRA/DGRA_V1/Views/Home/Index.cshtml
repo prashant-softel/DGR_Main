@@ -283,15 +283,16 @@
                 contentType: "application/json; charset=utf-8",
                 //data: '{"username":"' + username + '","pass":"' + password + '"}',
                 dataType: "html",
-                success: function (result, status, xhr) {
-                    console.log("This is result after success " + result + typeof (result));
-                    if (result != '') {
-                        var data = JSON.parse(result);
-                        console.log("Parsed data is " + data);
-                        //console.log("User Email is : " + result[0]['useremail'] + "Password is : " + result[0]['password']);
-                        console.log("User Email is : " + data.useremail + "Password is : " + data.password);
-                        var useremail = data.useremail;
-                        var password = data.password;
+                    success: function (result, status, xhr) {
+                        if (result != '') {
+
+                            console.log("This is result after success " + result + typeof (result));
+                            var data = JSON.parse(result);
+                            console.log("Parsed data is " + data);
+                            //console.log("User Email is : " + result[0]['useremail'] + "Password is : " + result[0]['password']);
+                            console.log("User Email is : " + data.useremail + "Password is : " + data.password);
+                            var useremail = data.useremail;
+                            var password = data.password;
 
                         if (result) {
                             console.log("Inside onload function's if condition");
