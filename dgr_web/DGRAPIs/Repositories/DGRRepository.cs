@@ -16273,11 +16273,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //Site wise.
                 if (isDisplay == 1)
                 {
-                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
                 }
                 else if (isDisplay == 0)
                 {
-                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
                 }
             }
             else if(isSPV == 0)
@@ -16285,11 +16285,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //SPV wise.
                 if (isDisplay == 1)
                 {
-                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
                 }
                 else if (isDisplay == 0)
                 {
-                    fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
                 }
             }
 
@@ -16512,6 +16512,30 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND spv = {_upData.spv} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
                 }
+            }
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = $"Exception caught while updating data into OPComments table, due to : {e.ToString()}";
+                LogError(0, 1, 7, functionName, msg, backend);
+                return result;
+            }
+            return result;
+        }
+        internal async Task<int> OPCommentsDelete(List<OPComments> set)
+        {
+            string functionName = "OPCommentsDelete";
+
+            int result = 0;
+            string updateQry = "";
+
+            foreach(var _upData in set)
+            {
+                updateQry += $"UPDATE OPComments SET deleted_by= {_upData.deleted_by}, isDeleted= 0, deleted_at = CURRENT_TIMESTAMP WHERE OPC_id = {_upData.opc_id};";
             }
             try
             {

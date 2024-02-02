@@ -200,6 +200,7 @@ namespace DGRAPIs.BS
         Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes);
         Task<int> OPCommentsInsert(List<OPComments> set);
         Task<int> OPCommentsEdit(List<OPComments> set);
+        Task<int> OPCommentsDelete(List<OPComments> set);
         Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay);
             //Tanvi's Change 1 function
         Task<int> dgrUploadingReminder();
@@ -2770,6 +2771,21 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.OPCommentsEdit(set);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> OPCommentsDelete(List<OPComments> set)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPCommentsDelete(set);
                 }
             }
             catch (Exception ex)

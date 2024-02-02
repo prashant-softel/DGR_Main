@@ -2877,6 +2877,25 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("OPCommentsDelete")]
+        [HttpPost]
+        public async Task<IActionResult> OPCommentsDelete(List<OPComments> set)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPCommentsDelete(set);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
         //Tanvi's Changes Hereafter. 1 function.
         [Route("dgrUploadingReminder")]
         [HttpGet]

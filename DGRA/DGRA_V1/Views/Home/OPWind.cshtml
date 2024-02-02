@@ -167,17 +167,23 @@
                                     </div>
 
                                     <!-- Monthly Section -->
-                                    <div class="container" style="flex: 1; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
+                                    <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
                                         <div class="scrollable-container" id="monthlyComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor:default;">
                                             <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DMC_Other" style="display: block; cursor: default;"></div>
                                         </div>
-                                        <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                        <div class="scrollable-container" id="monthlyAdd" style=" overflow: hidden; display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
                                              @*Scrollable division*@
 
                                              @*Entire content division with BDtype site and reason.*@
-                                            <div class="addCommentMonthly" id="ACM">
+                                            <div class="addCommentMonthly" id="ACM" style="overflow: hidden;">
+                                                <div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="ACM_info_div">
+                                                    <p id="ACM_info" style ="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
                                                 </div>
@@ -211,9 +217,16 @@
                                                 <button style="display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACMCancel()">Cancel</button>
                                             </div>                                                
 
-                                            </div>
-                                        <div class="scrollable-container" id="monthlyEdit" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
-                                            <div id="ECM">
+                                        </div>
+                                        <div class="scrollable-container" id="monthlyEdit" style="overflow: hidden; display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                            <div id="ECM" style="overflow: hidden;">
+                                                <div id="backBtnECM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="ECM_info_div">
+                                                    <p id="ECM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
+                                                <div id="ECM_info"></div>
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ECM_BDSelect" onchange="EMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
@@ -227,8 +240,14 @@
                                                 </div>
                                             </div>
                                         </div>
-                                            <div class="scrollable-container" id="monthlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
-                                                <div id="DCM">
+                                            <div class="scrollable-container" id="monthlyDelete" style="overflow: hidden; display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                                <div id="DCM" style="overflow: hidden;">
+                                                    <div id="backBtnDCM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
+                                                        <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                    </div>
+                                                    <div id="DCM_info_div">
+                                                        <p id="DCM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                    </div>
                                                     <div class="d-flex justify-content-end" style="padding: 10px;">
                                                         <select class="form-control col-sm-4" id="DCM_BDSelect" onchange="DMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                             <option value="0">Select BD Type</option>
@@ -1139,7 +1158,7 @@
         mEdit.style.display = "none";
         mDelete.style.display = "none";
 
-        console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
+        //console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
         if (spv == "") {
             isSPV = 1;
             //console.log("So you will be seeing Data site wise.");
@@ -1271,14 +1290,34 @@
     ];
     function monthAdd() {
         var mDisplay = document.getElementById("monthlyComments");
-            var mAdd = document.getElementById("monthlyAdd");
-            var mEdit = document.getElementById("monthlyEdit");
-            var mDelete = document.getElementById("monthlyDelete");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
 
-            mDisplay.style.display = "none";
-            mAdd.style.display = "block";
-            mEdit.style.display = "none";
-            mDelete.style.display = "none";
+        mDisplay.style.display = "none";
+        mAdd.style.display = "block";
+        mEdit.style.display = "none";
+        mDelete.style.display = "none";
+
+        var infoDiv = document.getElementById("ACM_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var monthNo = Number(temDate[1]);
+        var mo = monthNumberToName[monthNo];
+
+        var sentence = "Month : " + mo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var monthCardButtons = document.getElementById("monthCardButtons");
+        monthCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
 
         var bdOptions = '';
         var temBDArray = [...ACM_info[0].bdArray];
@@ -1287,15 +1326,6 @@
         }
         var BDMainTem = "#ACM_breakdownSelect1";
         $(BDMainTem).html("").html(bdOptions);
-
-                /*var snippet = '<h5>Monthly Add division</h5> </br> <div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" style="height: 40px; margin-left: 10px;"><option value="" disabled selected>Select BD type.</option><option value="egb">EGB</option><option value="bd">BD</option><option value="other">Other</option></select></div><div id="siteContainer"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></div><div class="d-flex justify-content-end"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span></div></div></div><br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';*/
-
-                //var snippet = '<h5>Monthly Add division</h5> </br> <div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div><div class="d-flex justify-content-end"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span></div></div></div> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
-
-
-                //<div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sitesM" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity= 0.90" onmouseout="this.style.opacity=0.90" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
-
-            //$("#monthlyAdd").html("").html(snippet);
     }
 
     //ACM change in bdDD
@@ -1303,6 +1333,10 @@
         elementTemp = ACM_info[BDSet];
         var dropId = elementTemp.bdSelectDD;
         var selectedValue = document.getElementById(dropId).value;
+
+        var backButton = document.getElementById("backBtnACM");
+        backButton.style.display = "none";
+
         getSiteForMonthAdd(true, selectedValue, BDSet)
     }
     //ACM add BREAKDOWN.
@@ -1541,17 +1575,7 @@
                 if (Number(result) > 0) {
 
                     ClearACM();
-                    var mDisplay = document.getElementById("monthlyComments");
-                    var mAdd = document.getElementById("monthlyAdd");
-                    var mEdit = document.getElementById("monthlyEdit");
-                    var mDelete = document.getElementById("monthlyDelete");
-
-                    mDisplay.style.display = "block";
-                    mAdd.style.display = "none";
-                    mEdit.style.display = "none";
-                    mDelete.style.display = "none";
-
-                    showToast("Comments Added.", 5000, "monthlyComments");
+                    returnHome("Add", "Update");
                 }
 
             },
@@ -1568,6 +1592,14 @@
         var mEdit = document.getElementById("monthlyEdit");
         var mDelete = document.getElementById("monthlyDelete");
 
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            monthover();
+        };
+        mainButtons.onmouseout = function () {
+            monthout();
+        };
+
         mDisplay.style.display = "block";
         mAdd.style.display = "none";
         mEdit.style.display = "none";
@@ -1579,7 +1611,7 @@
         mainACM_div.innerHTML = "";
 
         var RefreshContent = '';
-        RefreshContent = '<div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACM_info_div"> <p id = "ACM_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
 
         mainACM_div.innerHTML = RefreshContent;
         ACM_info = [];
@@ -1617,6 +1649,26 @@
         mAdd.style.display = "none";
         mEdit.style.display = "block";
         mDelete.style.display = "none";
+
+        var infoDiv = document.getElementById("ECM_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var monthNo = Number(temDate[1]);
+        var mo = monthNumberToName[monthNo];
+
+        var sentence = "Month : " + mo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var monthCardButtons = document.getElementById("monthCardButtons");
+        monthCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
     }
     //Get data after changing the Option from BD dropdown.
     function EMCOnchange() {
@@ -1624,6 +1676,9 @@
         var BD_value = BD_dropdown.value;
         console.log("BD value selected in Edit is : " + BD_value);
         var temDate = nDval.split("-");
+
+        var backButton = document.getElementById("backBtnECM");
+        backButton.style.display = "none";
 
         var monthNo = temDate[1];
         var year = temDate[0];
@@ -1643,11 +1698,29 @@
                 destContainer.innerHTML = "";
 
                 ECM_data.forEach((elem, index) => createUI(elem, destContainer, index));
+                var containerDiv = document.createElement('div');
+                containerDiv.className = 'd-flex justify-content-center';
+
+                // Create the Save button
                 var saveButton = document.createElement('button');
-                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border - radius: 5px; ";
-                saveButton.onclick = ECMSaveButton;
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                saveButton.onclick = DCMSaveButton;
                 saveButton.textContent = "Save";
-                destContainer.appendChild(saveButton);
+
+                // Create the Cancel button
+                var cancelButton = document.createElement('button');
+                cancelButton.style = "display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                cancelButton.onclick = function () {
+                    returnHome("Edit", "Cancel");
+                }
+                cancelButton.textContent = "Cancel";
+
+                // Append buttons to the container
+                containerDiv.appendChild(saveButton);
+                containerDiv.appendChild(cancelButton);
+
+                // Append the container to your destination container
+                destContainer.appendChild(containerDiv);
             }
         });
     }
@@ -1699,12 +1772,11 @@
             }
             ECM_data[k].isSPV = isSPV;
         }
-        console.log("Edited after updating button : ");
-        console.log(ECMFinalData);
-        console.log(anyChanges);
+        //console.log("Edited after updating button : ");
+        //console.log(ECMFinalData);
+        //console.log(anyChanges);
         if (anyChanges.includes(1)) {
-            console.log("Calling the API for changes.");
-            //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
+            //console.log("Calling the API for changes.");
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("OPECM", "WindReport")',
@@ -1712,20 +1784,10 @@
                 dataType: "json",
                 data: JSON.stringify(ECMFinalData),
                 success: function (result, status, xhr) {
-                    console.log("result after adding : ");
-                    console.log(result);
+                    //console.log("result after adding : ");
+                    //console.log(result);
                     if (Number(result) > 0) {
-                        var mDisplay = document.getElementById("monthlyComments");
-                        var mAdd = document.getElementById("monthlyAdd");
-                        var mEdit = document.getElementById("monthlyEdit");
-                        var mDelete = document.getElementById("monthlyDelete");
-
-                        mDisplay.style.display = "block";
-                        mAdd.style.display = "none";
-                        mEdit.style.display = "none";
-                        mDelete.style.display = "none";
-
-                        showToast("Comments Updated.", 5000, "monthlyComments");
+                        returnHome("Edit", "Update");
                     }
 
                 },
@@ -1750,6 +1812,29 @@
         mAdd.style.display = "none";
         mEdit.style.display = "none";
         mDelete.style.display = "block";
+
+        var destContainer = document.getElementById("DCM_content");
+        destContainer.innerHTML = "";
+
+        var infoDiv = document.getElementById("DCM_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var monthNo = Number(temDate[1]);
+        var mo = monthNumberToName[monthNo];
+
+        var sentence = "Month : " + mo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var monthCardButtons = document.getElementById("monthCardButtons");
+        monthCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
         //var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
         //$("#monthlyDelete").html("").html(snippet);
     }
@@ -1759,6 +1844,9 @@
         var BD_value = BD_dropdown.value;
         console.log("BD value selected in Delete is : " + BD_value);
         var temDate = nDval.split("-");
+
+        var backButton = document.getElementById("backBtnDCM");
+        backButton.style.display = "none";
 
         var monthNo = temDate[1];
         var year = temDate[0];
@@ -1778,11 +1866,30 @@
                 destContainer.innerHTML = "";
 
                 DCM_data.forEach((elem, index) => createDeleteUI(elem, destContainer, index));
+
+                var containerDiv = document.createElement('div');
+                containerDiv.className = 'd-flex justify-content-center';
+
+                // Create the Save button
                 var saveButton = document.createElement('button');
-                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border - radius: 5px; ";
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = DCMSaveButton;
                 saveButton.textContent = "Save";
-                destContainer.appendChild(saveButton);
+
+                // Create the Cancel button
+                var cancelButton = document.createElement('button');
+                cancelButton.style = "display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                cancelButton.onclick = function () {
+                    returnHome("Delete", "Cancel");
+                }
+                cancelButton.textContent = "Cancel";
+
+                // Append buttons to the container
+                containerDiv.appendChild(saveButton);
+                containerDiv.appendChild(cancelButton);
+
+                // Append the container to your destination container
+                destContainer.appendChild(containerDiv);
             }
         });
     }
@@ -1823,7 +1930,7 @@
     var DCM_deleteData = [];
     var DCM_index = [];
     function handleCheckboxClick(index) {
-        console.log('Checkbox clicked for index:', index);
+        //console.log('Checkbox clicked for index:', index);
         // Add your logic here
         if (DCM_index.includes(index)) {
             DCM_deleteData = DCM_deleteData.filter(function (item) {
@@ -1853,17 +1960,16 @@
         console.log(DCM_index);
         if (DCM_index.length > 0) {
             //Data is there for delete.
-            var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+            var deletedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
             for (var k = 0; k < DCM_deleteData.length; k++) {
-                DCM_deleteData[k].deleted_by = updatedBy;
+                DCM_deleteData[k].deleted_by = deletedBy;
                 DCM_deleteData[k].isSPV = Number(DCM_deleteData[k].isSPV);
                 DCM_deleteData[k].isMonthly = 0; //0 for monthly 1 for yearly.
                 DCM_deleteData[k].isDeleted = 0; //1 active 0 for deleted.
                 DCM_deleteData[k].isSPV = isSPV;
             }
 
-            console.log("Calling the API for changes.");
-            //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
+            //console.log("Calling the API for changes.");
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("OPDCM", "WindReport")',
@@ -1871,20 +1977,10 @@
                 dataType: "json",
                 data: JSON.stringify(DCM_deleteData),
                 success: function (result, status, xhr) {
-                    console.log("result after adding : ");
-                    console.log(result);
+                    //console.log("result after adding : ");
+                    //console.log(result);
                     if (Number(result) > 0) {
-                        var mDisplay = document.getElementById("monthlyComments");
-                        var mAdd = document.getElementById("monthlyAdd");
-                        var mEdit = document.getElementById("monthlyEdit");
-                        var mDelete = document.getElementById("monthlyDelete");
-
-                        mDisplay.style.display = "block";
-                        mAdd.style.display = "none";
-                        mEdit.style.display = "none";
-                        mDelete.style.display = "none";
-
-                        showToast("Comments Updated.", 5000, "monthlyComments");
+                        returnHome("Delete", "Update");
                     }
                 },
                 error: function (xhr, status, error) {
@@ -1898,6 +1994,51 @@
 
     }
 
+    function returnHome(functionality, isUpdateCancel) {
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
+
+        mDisplay.style.display = "block";
+        mAdd.style.display = "none";
+        mEdit.style.display = "none";
+        mDelete.style.display = "none";
+
+        // Function call to get the comments data. Display Monthly Comments (DMC).
+        DMC(site_id, spv, nDval);
+
+        if (isUpdateCancel == "Update") {
+            if (functionality == "Edit") {
+                showToast("Comments Updated successfully.", 5000, "monthlyComments");
+            } else if (functionality == "Add") {
+                showToast("Comments Added successfully.", 5000, "monthlyComments");
+            } else if (functionality == "Delete") {
+                showToast("Comments Deleted successfully.", 5000, "monthlyComments");
+            }
+        }
+        if (isUpdateCancel == "Cancel") {
+            if (functionality == "Edit") {
+                var backButton1 = document.getElementById("backBtnECM");
+                backButton1.style.display = "flex";
+            } else if (functionality == "Add") {
+                var backButton2 = document.getElementById("backBtnACM");
+                backButton2.style.display = "flex";
+            } else if (functionality == "Delete") {
+                var backButton3 = document.getElementById("backBtnDCM");
+                backButton3.style.display = "flex";
+            }
+        }
+
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            monthover();
+        };
+        mainButtons.onmouseout = function () {
+            monthout();
+        };
+
+    }
 
     function yearDisplay() {
             var yDisplay = document.getElementById("yearlyComments");
