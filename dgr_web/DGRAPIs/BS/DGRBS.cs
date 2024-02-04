@@ -197,11 +197,11 @@ namespace DGRAPIs.BS
 
         //DGR V3.
         Task<List<HeatMapData>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
-        Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes);
+        Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly);
         Task<int> OPCommentsInsert(List<OPComments> set);
         Task<int> OPCommentsEdit(List<OPComments> set);
         Task<int> OPCommentsDelete(List<OPComments> set);
-        Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay);
+        Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly);
             //Tanvi's Change 1 function
         Task<int> dgrUploadingReminder();
     }
@@ -2732,13 +2732,13 @@ namespace DGRAPIs.BS
 
         }
 
-        public async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes)
+        public async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.OPGetSiteListForEdit(month_no, year, siteType, bdTypes);
+                    return await repos.OPGetSiteListForEdit(month_no, year, siteType, bdTypes, isMonthly);
                 }
             }
             catch (Exception ex)
@@ -2795,13 +2795,13 @@ namespace DGRAPIs.BS
 
         }
 
-        public async Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay)
+        public async Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
         {
             try
             {
                 using (var repos = new DGRRepository(getDB))
                 {
-                    return await repos.GetOPCommentsMonthly(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay);
+                    return await repos.GetOPCommentsMonthly(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay, isMonthly);
                 }
             }
             catch (Exception ex)

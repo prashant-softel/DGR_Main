@@ -2803,12 +2803,12 @@ namespace DGRAPIs.Controllers
 
         [Route("OPGetSiteListForEdit")]
         [HttpGet]
-        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes)
+        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
         {
             {
                 try
                 {
-                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, bdTypes);
+                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, bdTypes, isMonthly);
                     return Ok(data);
 
                 }
@@ -2841,12 +2841,12 @@ namespace DGRAPIs.Controllers
         //Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType)
         [Route("GetOPCommentsMonthly")]
         [HttpGet]
-        public async Task<IActionResult> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay)
+        public async Task<IActionResult> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
         {
             {
                 try
                 {
-                    var data = await _dgrBs.GetOPCommentsMonthly(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay);
+                    var data = await _dgrBs.GetOPCommentsMonthly(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay, isMonthly);
                     return Ok(data);
 
                 }

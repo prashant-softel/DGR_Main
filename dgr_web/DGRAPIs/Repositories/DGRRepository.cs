@@ -16260,7 +16260,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //Fetch Operational Performance Comments Monthly.
-        internal async Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay)
+        internal async Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
         {
             string functionName = "GetOPComments";
             //site_type = 1 Solar, 2 : Wind 
@@ -16273,11 +16273,25 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //Site wise.
                 if (isDisplay == 1)
                 {
-                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.month_no IN({month_no}) AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    }
                 }
                 else if (isDisplay == 0)
                 {
-                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.site_id IN({site_id}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    }
                 }
             }
             else if(isSPV == 0)
@@ -16285,11 +16299,25 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //SPV wise.
                 if (isDisplay == 1)
                 {
-                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    }
                 }
                 else if (isDisplay == 0)
                 {
-                    fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = 0 AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    }
                 }
             }
 
@@ -16440,7 +16468,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return finalSPVList;
         }
         //Operational Performance Comments Get Site function.
-        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes)
+        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
         {
             string functionName = "OPGetSiteListForEdit";
             int result = 0;
@@ -16455,7 +16483,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<OPSite> finalSiteList = new List<OPSite>();
 
             //get data from OP table as per filter.
-            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND BD_type = '{bdTypes}' AND year IN({year}) AND type IN({siteType});";
+            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND isMonthly= {isMonthly} AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
             try
             {
                 siteDataFromOP = await Context.GetData<OPSite>(fetchQry).ConfigureAwait(false);
