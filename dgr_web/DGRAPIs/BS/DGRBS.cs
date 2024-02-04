@@ -198,6 +198,7 @@ namespace DGRAPIs.BS
         //DGR V3.
         Task<List<HeatMapData>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
         Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly);
+        Task<List<OPSPV>> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly);
         Task<int> OPCommentsInsert(List<OPComments> set);
         Task<int> OPCommentsEdit(List<OPComments> set);
         Task<int> OPCommentsDelete(List<OPComments> set);
@@ -2739,6 +2740,21 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.OPGetSiteListForEdit(month_no, year, siteType, bdTypes, isMonthly);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<OPSPV>> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPGetSpvListForEdit(month_no, year, siteType, bdTypes, isMonthly);
                 }
             }
             catch (Exception ex)

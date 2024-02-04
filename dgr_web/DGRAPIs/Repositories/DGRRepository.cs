@@ -16297,26 +16297,30 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             else if(isSPV == 0)
             {
                 //SPV wise.
+                string[] spvArray = spv.Split(',');
+                spvArray = Array.FindAll(spvArray, s => !string.IsNullOrWhiteSpace(s));
+                string TempSpv = string.Join("','", spvArray);
+                TempSpv = $"'{TempSpv}'";
                 if (isDisplay == 1)
                 {
                     if (isMonthly == 0)
                     {
-                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op  WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, op.spv;";
                     }
                     else
                     {
-                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, op.spv;";
                     }
                 }
                 else if (isDisplay == 0)
                 {
                     if (isMonthly == 0)
                     {
-                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, op.spv;";
                     }
                     else
                     {
-                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({site_id}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.year = {year} ORDER BY op.BD_type, op.spv;";
                     }
                 }
             }
@@ -16373,7 +16377,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if (set.Count > 0 && SPV_siteHash.Count > 0)
             {
-                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by) VALUES ";
+                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, isSPV, comment, added_by, updated_by) VALUES ";
                 string insert_values = "";
                 //HashSet<string> site_ids = new HashSet<string>();
                 //HashSet<string> month_no = new HashSet<string>();
@@ -16381,8 +16385,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 foreach (var _element in set)
                 {
-                    string spvTemp = SPV_siteHash[_element.site_id].ToString();
-                    insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.bd_type}, 1, {_element.isMonthly}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                    if (_element.isSPV == 1)
+                    {
+                        string spvTemp = SPV_siteHash[_element.site_id].ToString();
+                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                    }
+                    else
+                    {
+                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{_element.spv}', 0, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                    }
+                    
                     //site_ids.Add(Convert.ToString(_element.site_id));
                     //month_no.Add(Convert.ToString(_element.month_no));
                     //year.Add(Convert.ToString(_element.year));
@@ -16420,53 +16432,53 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return result;
         }
         //Operational Performance Comments Get SPV function.
-        internal async Task<List<OPSPV>> OPGetSPVListForEdit(string month_no, int year, int siteType, string siteId)
-        {
-            string functionName = "OPGetSPVListForEdit";
-            int result = 0;
-            List<OPSPV> spvDatafromMaster = new List<OPSPV>();
-            List<OPSPV> spvDataFromOP = new List<OPSPV>();
-            List<OPSPV> finalSPVList = new List<OPSPV>();
+        //internal async Task<List<OPSPV>> OPGetSPVListForEdit(string month_no, int year, int siteType, string siteId)
+        //{
+        //    string functionName = "OPGetSPVListForEdit";
+        //    int result = 0;
+        //    List<OPSPV> spvDatafromMaster = new List<OPSPV>();
+        //    List<OPSPV> spvDataFromOP = new List<OPSPV>();
+        //    List<OPSPV> finalSPVList = new List<OPSPV>();
 
-            //get data from OP table as per filter.
-            string fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE month_no IN({month_no}) AND year IN({year}) AND siteType IN({siteType});";
-            try
-            {
-                spvDataFromOP = await Context.GetData<OPSPV>(fetchQry).ConfigureAwait(false);
-                result = 1;
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
-                LogError(0, 1, 7, functionName, msg, backend);
-            }
+        //    //get data from OP table as per filter.
+        //    string fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE month_no IN({month_no}) AND year IN({year}) AND siteType IN({siteType});";
+        //    try
+        //    {
+        //        spvDataFromOP = await Context.GetData<OPSPV>(fetchQry).ConfigureAwait(false);
+        //        result = 1;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+        //        LogError(0, 1, 7, functionName, msg, backend);
+        //    }
 
-            //Get data from master table.
-            string fetchQryMaster = $"SELECT spv AS spv FROM site_master WHERE site_master_id IN(" + siteId;
-            try
-            {
-                spvDatafromMaster = await Context.GetData<OPSPV>(fetchQryMaster).ConfigureAwait(false);
-                result = 2;
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
-                LogError(0, 1, 7, functionName, msg, backend);
-            }
-            if(result == 2)
-            {
-                foreach (var masterSPV in spvDatafromMaster)
-                {
-                    // Check if the spv is not present in spvDataFromOP
-                    if (!spvDataFromOP.Any(opSPV => opSPV.spv == masterSPV.spv))
-                    {
-                        finalSPVList.Add(masterSPV);
-                    }
-                }
-            }
+        //    //Get data from master table.
+        //    string fetchQryMaster = $"SELECT spv AS spv FROM site_master WHERE site_master_id IN(" + siteId;
+        //    try
+        //    {
+        //        spvDatafromMaster = await Context.GetData<OPSPV>(fetchQryMaster).ConfigureAwait(false);
+        //        result = 2;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+        //        LogError(0, 1, 7, functionName, msg, backend);
+        //    }
+        //    if(result == 2)
+        //    {
+        //        foreach (var masterSPV in spvDatafromMaster)
+        //        {
+        //            // Check if the spv is not present in spvDataFromOP
+        //            if (!spvDataFromOP.Any(opSPV => opSPV.spv == masterSPV.spv))
+        //            {
+        //                finalSPVList.Add(masterSPV);
+        //            }
+        //        }
+        //    }
 
-            return finalSPVList;
-        }
+        //    return finalSPVList;
+        //}
         //Operational Performance Comments Get Site function.
         internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
         {
@@ -16483,7 +16495,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             List<OPSite> finalSiteList = new List<OPSite>();
 
             //get data from OP table as per filter.
-            string fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND isMonthly= {isMonthly} AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            string fetchQry = "";
+            if (isMonthly == 0)
+            {
+                fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND isMonthly= {isMonthly}  AND isSPV = 1 AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
+            else
+            {
+                fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE isMonthly= {isMonthly}  AND isSPV = 1 AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
             try
             {
                 siteDataFromOP = await Context.GetData<OPSite>(fetchQry).ConfigureAwait(false);
@@ -16521,6 +16541,72 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             return finalSiteList;
         }
+        internal async Task<List<OPSPV>> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            string functionName = "OPGetSpvListForEdit";
+            //site_type = 1 Solar, 2 : Wind 
+            //isSPV : 0 = SPV, 1= Site.
+            //isDisplay: 0 = display, 1: Edit
+            int result = 0;
+            string filter = "ORDER BY spv;";
+            //if (siteId != null)
+            //{
+            //    filter = $" WHERE site_master_id IN({siteId}) ORDER BY site;";
+            //}
+
+            List<OPSPV> spvDatafromMaster = new List<OPSPV>();
+            List<OPSPV> spvDataFromOP = new List<OPSPV>();
+            List<OPSPV> finalSpvList = new List<OPSPV>();
+
+            //get data from OP table as per filter.
+            string fetchQry = "";
+            if (isMonthly == 0)
+            {
+                //monthly
+                fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op WHERE month_no IN({month_no}) AND isMonthly= {isMonthly} AND isSPV = 0 AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
+            else
+            {
+                //yearly
+                fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op WHERE isMonthly= {isMonthly} AND BD_type = '{bdTypes}' AND isSPV = 0 AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
+            try
+            {
+                spvDataFromOP = await Context.GetData<OPSPV>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            //Get data from master table.
+            string fetchQryMaster = $"SELECT DISTINCT spv AS spv FROM site_master;"; //{filter}
+            try
+            {
+                spvDatafromMaster = await Context.GetData<OPSPV>(fetchQryMaster).ConfigureAwait(false);
+                result = 2;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if (result == 2)
+            {
+                foreach (var masterSpv in spvDatafromMaster)
+                {
+                    // Check if the site is not present in siteDataFromOP
+                    if (!spvDataFromOP.Any(opSpv => opSpv.spv == masterSpv.spv))
+                    {
+                        finalSpvList.Add(masterSpv);
+                    }
+                }
+            }
+
+            return finalSpvList;
+        }
         //Operational Performance Comments Edit function.
         internal async Task<int> OPCommentsEdit(List<OPComments> set)
         {
@@ -16532,14 +16618,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             foreach(var _upData in set)
             {
                 //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
-                if(_upData.isSPV == 1)
-                {
-                    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND site_id = {_upData.site_id} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
-                }
-                else
-                {
-                    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND spv = {_upData.spv} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
-                }
+                updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE OPC_id = {_upData.opc_id};";
+                //if (_upData.isSPV == 1)
+                //{
+                //    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND site_id = {_upData.site_id} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
+                //}
+                //else
+                //{
+                //    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND spv = {_upData.spv} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
+                //}
             }
             try
             {

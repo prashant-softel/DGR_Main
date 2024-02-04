@@ -2819,6 +2819,24 @@ namespace DGRAPIs.Controllers
                 }
             }
         }
+        [Route("OPGetSpvListForEdit")]
+        [HttpGet]
+        public async Task<IActionResult> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPGetSpvListForEdit(month_no, year, siteType, bdTypes, isMonthly);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
 
         [Route("OPCommentsInsert")]
         [HttpPost]

@@ -787,6 +787,34 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
 
         }
+        public async Task<IActionResult> OPGetSpvListForEdit(int month_no, int year, int siteType, int bdTypes, int isMonthly)
+        {
+            string line = "";
+
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPGetSpvListForEdit?month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&bdTypes=" + bdTypes + "&isMonthly=" + isMonthly;
+                // var url = "http://localhost:23835/api/DGR/GetSiteList?state="+ statedata + "&spvdata="+ spvdata;
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+
+        }
 
         public async Task<IActionResult> GetOPCommentsMonthly(int month_no, int year, int siteType, string site_id, int isSPV, string spv, int bdType, int isDisplay, int isMonthly)
         {
