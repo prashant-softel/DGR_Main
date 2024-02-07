@@ -3026,5 +3026,137 @@ namespace DGRAPIs.Controllers
             }
             return dt;
         }
+
+
+        [Route("OPGetSiteListForEdit")]
+        [HttpGet]
+        public async Task<IActionResult> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPGetSiteListForEdit(month_no, year, siteType, bdTypes, isMonthly);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        [Route("OPGetSpvListForEdit")]
+        [HttpGet]
+        public async Task<IActionResult> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPGetSpvListForEdit(month_no, year, siteType, bdTypes, isMonthly);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        [Route("OPCommentsInsert")]
+        [HttpPost]
+        public async Task<IActionResult> OPCommentsInsert(List<OPComments> set)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPCommentsInsert(set);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        //Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType)
+        [Route("GetOPComments")]
+        [HttpGet]
+        public async Task<IActionResult> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetOPComments(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay, isMonthly);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        [Route("OPCommentsEdit")]
+        [HttpPost]
+        public async Task<IActionResult> OPCommentsEdit(List<OPComments> set)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPCommentsEdit(set);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        [Route("OPCommentsDelete")]
+        [HttpPost]
+        public async Task<IActionResult> OPCommentsDelete(List<OPComments> set)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.OPCommentsDelete(set);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        //Tanvi's Changes Hereafter. 1 function.
+        [Route("dgrUploadingReminder")]
+        [HttpGet]
+        public async Task<IActionResult> dgrUploadingReminder()
+        {
+            try
+            {
+                var data = await _dgrBs.dgrUploadingReminder();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

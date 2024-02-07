@@ -3987,7 +3987,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 }
                 try
                 {
-                    var res = await MailService.SendEmailAsync(request, _settings);
+                    var res = await MailService.SendEmailAsync(request, _settings,0);
                     PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail SendEmailAsync function completed");
                     info = "Weekly Mail SendEmailAsync function completed";
                     //LogInfo(0, 0, 0, functionName, info, backend);
@@ -7797,7 +7797,105 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             info = " SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
             await LogInfo(0, 1, 5, functionName, info, backend);
-          
+            if(finalResult !=0 || finalResult > 0)
+            {
+                int returnRes = 0;
+                try
+                {
+                    //returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status, 2);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception in executing UploadStatusOperations function, due to : " + e.ToString();
+                    await LogError(0, 1, 5, functionName, msg, backend);
+                    return 0;
+                }
+            }
+
+            MailSettings _settings = new MailSettings();
+            var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+            //_settings.Mail = "kasrsanket@gmail.com";
+            //_settings.DisplayName = "Sanket Kar";
+            _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+            //_settings.Password = "lozirdytywjlvcxd";
+            _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+            //_settings.Host = "smtp.gmail.com";
+            _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+            //_settings.Port = 587;
+            _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+
+
+            string Msg = "Weekly PR Report Generated";
+            // private MailServiceBS mailService;
+            List<string> AddTo = new List<string>();
+            List<string> AddCc = new List<string>();
+
+            //List<string> AddCc = new List<string>();
+            MailRequest request = new MailRequest();
+
+            try
+            {
+                string query1 = $"select site_id as id , site as name , STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date, useremail from import_batches left join site_master_solar on\r\n site_master_solar.site_master_solar_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
+
+                List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
+
+                if (finalResult > 0)
+                {
+                    foreach (var sites in sitelist)
+                    {                      
+
+                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id} ;";
+                        try
+                        {
+                           
+                            AddTo.Add(sites.useremail);
+                           
+                            List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
+                            foreach (var item in data3)
+                            {
+                                AddCc.Add(item.useremail);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = e.ToString();
+                        }
+
+                        string dataDate = sites.data_date.ToString("dd-MM-yyyy");
+
+
+                        string tb = "<p style='text-align: left;'>Dear User,<br>";
+                        tb += $"DGR Data Successfully uploaded for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                        //AddTo = new List<string>();
+                        //AddTo.Add("tanvi@softeltech.in");
+                        request.ToEmail = AddTo;
+                        request.CcEmail = AddCc;
+                        request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Successful";
+                        request.Body = tb;
+
+                        try
+                        {
+                            var res2 = await MailService.SendEmailAsync(request, _settings,1);
+                            //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = e.Message;
+                            PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+
+                        }
+                    }
+
+                }
+            }
+            catch
+            {
+
+            }
             return finalResult;
         }
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
@@ -7824,6 +7922,92 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     int updateRes = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
                     finalResult = 2;
+
+                    try
+                    {
+
+                        MailSettings _settings = new MailSettings();
+                        var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                        _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+                        //_settings.Mail = "kasrsanket@gmail.com";
+                        //_settings.DisplayName = "Sanket Kar";
+                        _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+                        //_settings.Password = "lozirdytywjlvcxd";
+                        _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+                        //_settings.Host = "smtp.gmail.com";
+                        _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+                        //_settings.Port = 587;
+                        _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+
+
+                        string Msg = "Weekly PR Report Generated";
+                        // private MailServiceBS mailService;
+                        List<string> AddTo = new List<string>();
+                        List<string> AddCc = new List<string>();
+
+                        //List<string> AddCc = new List<string>();
+                        MailRequest request = new MailRequest();
+
+                        string query1 = $"select site_id as id , site as name ,STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date, useremail from import_batches left join site_master_solar on\r\n site_master_solar.site_master_solar_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
+
+                        List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
+
+                        if (finalResult > 0)
+                        {
+                            foreach (var sites in sitelist)
+                            {
+
+                                string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id} ;";
+
+                                try
+                                {
+                                    AddTo.Add(sites.useremail);
+
+                                    List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
+                                    foreach (var item in data3)
+                                    {
+                                        AddCc.Add(item.useremail);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = e.ToString();
+                                }
+
+                                string dataDate = sites.data_date.ToString("dd-MM-yyyy");
+
+
+                                string tb = "<p style='text-align: left;'>Dear User,<br>";
+                                tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                                //AddTo = new List<string>();
+                                //AddTo.Add("tanvi@softeltech.in");
+                                request.ToEmail = AddTo;
+                                request.CcEmail = AddCc;
+                                request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Rejected";
+                                request.Body = tb;
+
+                                try
+                                {
+                                    var res2 = await MailService.SendEmailAsync(request, _settings,1);
+                                    //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+
+                                }
+                                catch (Exception e)
+                                {
+                                    string msg = e.Message;
+                                    PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+
+                                }
+                            }
+
+                        }
+                    }
+                    catch
+                    {
+
+                    }
                 }
                 catch (Exception e)
                 {
@@ -11900,7 +12084,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
  
 
-                var res = await MailService.SendEmailAsync(request, _settings);
+                var res = await MailService.SendEmailAsync(request, _settings, 0);
                 PPT_InformationLog("Send Email Async function called from repository");
 
                 //LogInfo(0, 0, 3, functionName, "Send Email Async function called from repository", backend);
@@ -16886,6 +17070,702 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 yield return date.ToString("yyyy-MM-dd");
             }
+        }
+
+        //Get the total wtgs for a particaular site and count of tml samples should be present.
+        internal async Task<int> WindTMLRecordCount(string date, int site_id, int type, int dataCount, int isDelete)
+        {
+            //isDelete: 0 don't delete, isDelete: 1 delete count from uploading file status table.
+            string functionName = "WindTMLRecordCount";
+            int returnResult = 0;
+            //Case 1 :- all tml files uploaded at once. simple import in table.
+            //Case 2 :- few wtgs left. (left but not duplicate) add to the existing count in the table.
+            //Case 3 :- reimport of files all wtgs delete and update the count in the table.
+            //Case 4 :- reimport the files few duplicate few new.
+
+            //SELECT COUNT(*) FROM `location_master` WHERE site_master_id = 217;
+            string fetchQry = "SELECT COUNT(*) as realCount FROM location_master WHERE site_master_id =" + site_id + ";";
+            List<TMLCountComparision> _CountData = new List<TMLCountComparision>();
+            try
+            {
+                _CountData = await Context.GetData<TMLCountComparision>(fetchQry).ConfigureAwait(false);
+                returnResult = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching wtg count from database, due to : " + e.ToString();
+                await LogError(0, 1, 7, functionName, msg, backend);
+                return 0;
+            }
+
+            if (isDelete == 1)
+            {
+                List<TMLCountComparision> _countData = new List<TMLCountComparision>();
+                int expected_TML = 0;
+                int actual_TML = 0;
+                int wtg_count = 0;
+
+                try
+                {
+                    string fetchActualCount = "SELECT expected_TML, actual_TML, wtg_count FROM upload_status WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+
+                    _countData = await Context.GetData<TMLCountComparision>(fetchActualCount).ConfigureAwait(false);
+                    if (_countData.Count > 0)
+                    {
+                        expected_TML = (int)_countData[0].expected_TML;
+                        actual_TML = (int)_countData[0].actual_TML;
+                        wtg_count = (int)_countData[0].wtg_count;
+
+                        if (actual_TML > dataCount)
+                        {
+                            dataCount = actual_TML - dataCount;
+                        }
+                        else if (actual_TML < dataCount)
+                        {
+                            dataCount = dataCount - actual_TML;
+                        }
+                        //else
+                        //{
+                        //    dataCount = dataCount;
+                        //}
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching count records from upload_status table " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                }
+                try
+                {
+                    //string deleteQry = "UPDATE upload_status SET actual_TML = actual_TML - " + dataCount + " WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    //string deleteQry = "UPDATE upload_status SET actual_TML = " + dataCount + " WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    string deleteQry = "UPDATE upload_status SET actual_TML = 0 WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    int delRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting actual count, due to : " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (_CountData.Count > 0)
+                    {
+                        int realCount = Convert.ToInt32(_CountData[0].realCount);
+                        int actualCount = dataCount;
+                        int expectedCount = realCount * 144;
+                        int difference = expectedCount - actualCount;
+
+                        if (difference == 0)
+                        {
+                            DateTime today = DateTime.Now;
+                            string importDateCon = today.ToString("yyyy-MM-dd");
+                            string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                            string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ")";
+                            string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML =" + actualCount + ", wtg_count=" + realCount;
+                            string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
+                            try
+                            {
+                                int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                                returnResult = 2;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+                                await LogError(0, 1, 7, functionName, msg, backend);
+                                return 0;
+                            }
+                        }
+                        //Implementation is remainging at he point while uploading TML files...after same site and data records are being deleted from the database tables it should also be deleted from the uploading_Status table containing count of expected vs actual. After deletion of same date and site records you will be having the count of how many records are being deleted.
+                        else if (difference > 0)
+                        {
+                            DateTime today = DateTime.Now;
+                            string importDateCon = today.ToString("yyyy-MM-dd");
+                            string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                            string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ")";
+                            string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML = actual_TML +" + actualCount + ", wtg_count=" + realCount;
+                            string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
+                            try
+                            {
+                                int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                                returnResult = 2;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+                                await LogError(0, 1, 7, functionName, msg, backend);
+                                return 0;
+                            }
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while calculating expected and actual data count, due to : " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
+            }
+            return returnResult;
+        }
+
+        //Operational Prformance Functions of v3
+        //Fetch Operational Performance Comments Monthly.
+        internal async Task<List<OPComments>> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
+        {
+            string functionName = "GetOPComments";
+            //site_type = 1 Solar, 2 : Wind 
+            //isSPV : 0 = SPV, 1= Site.
+            //isDisplay: 0 = display, 1: Edit
+
+            string fetch_qry = "";
+            if (isSPV == 1)
+            {
+                //Site wise.
+                if (isDisplay == 1)
+                {
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.site_id, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.year = {year}  AND op.BD_type= {bdType} ORDER BY op.BD_type, sm.site;";
+                    }
+                }
+                else if (isDisplay == 0)
+                {
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.site_id IN({site_id}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment, sm.site FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.site_id IN({site_id}) AND op.year = {year} ORDER BY op.BD_type, sm.site;";
+                    }
+                }
+            }
+            else if (isSPV == 0)
+            {
+                //SPV wise.
+                string[] spvArray = spv.Split(',');
+                spvArray = Array.FindAll(spvArray, s => !string.IsNullOrWhiteSpace(s));
+                string TempSpv = string.Join("','", spvArray);
+                TempSpv = $"'{TempSpv}'";
+                if (isDisplay == 1)
+                {
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op  WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.month_no IN({month_no}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, op.spv;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.year = {year} AND op.BD_type= {bdType} ORDER BY op.BD_type, op.spv;";
+                    }
+                }
+                else if (isDisplay == 0)
+                {
+                    if (isMonthly == 0)
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type, op.spv;";
+                    }
+                    else
+                    {
+                        fetch_qry = $"SELECT op.OPC_id AS opc_id, op.month_no, op.year, op.type, op.spv, op.BD_type, op.isMonthly, op.comment FROM OPComments AS op WHERE op.type = {siteType} AND op.isDeleted = 1 AND isSPV = {isSPV} AND op.isMonthly = {isMonthly} AND op.spv IN({TempSpv}) AND op.year = {year} ORDER BY op.BD_type, op.spv;";
+                    }
+                }
+            }
+
+            List<OPComments> _CommentsData = new List<OPComments>();
+
+            try
+            {
+                _CommentsData = await Context.GetData<OPComments>(fetch_qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception caught while fetching data from OPComments table due to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            return _CommentsData;
+        }
+        //Operational Performance Comments Insert Comment function.
+        internal async Task<int> OPCommentsInsert(List<OPComments> set)
+        {
+            string functionName = "OPCommentsInsert";
+            int result = 0;
+            int val = 0;
+            Hashtable SPV_siteHash = new Hashtable();
+            try
+            {
+                SPV_siteHash = await SiteId_SPVHashTableWind();
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while gettign spvHashtable, due to: " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+                return 0;
+            }
+            if (set.Count > 0 && SPV_siteHash.Count > 0)
+            {
+                string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, isSPV, comment, added_by, updated_by) VALUES ";
+                string insert_values = "";
+                //HashSet<string> site_ids = new HashSet<string>();
+                //HashSet<string> month_no = new HashSet<string>();
+                //HashSet<string> year = new HashSet<string>();
+
+                foreach (var _element in set)
+                {
+                    if (_element.isSPV == 1)
+                    {
+                        string spvTemp = SPV_siteHash[_element.site_id].ToString();
+                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                    }
+                    else
+                    {
+                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{_element.spv}', 0, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                    }
+
+                    //site_ids.Add(Convert.ToString(_element.site_id));
+                    //month_no.Add(Convert.ToString(_element.month_no));
+                    //year.Add(Convert.ToString(_element.year));
+                }
+                //try
+                //{
+                //    string delQry = "DELETE ";
+                //    result = 1;
+                //}
+                //catch (Exception e)
+                //{
+                //    string msg = "Exception while deleting data from OPComments table due to, " + e.ToString();
+                //    LogError(0, 1, 7, functionName, msg, backend);
+                //    return 0;
+                //}
+                try
+                {
+                    //Insert query.
+                    string finalInsertQry = insertQry + insert_values;
+                    val = await Context.ExecuteNonQry<int>(finalInsertQry.Substring(0, (finalInsertQry.Length - 1)) + ";").ConfigureAwait(false);
+                    result = val;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while inserting data into OPComments into table, due to :" + e.ToString();
+                    LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
+
+            }
+            else
+            {
+                //set is empty.
+            }
+            return result;
+        }
+        //Operational Performance Comments Get SPV function.
+        //internal async Task<List<OPSPV>> OPGetSPVListForEdit(string month_no, int year, int siteType, string siteId)
+        //{
+        //    string functionName = "OPGetSPVListForEdit";
+        //    int result = 0;
+        //    List<OPSPV> spvDatafromMaster = new List<OPSPV>();
+        //    List<OPSPV> spvDataFromOP = new List<OPSPV>();
+        //    List<OPSPV> finalSPVList = new List<OPSPV>();
+
+        //    //get data from OP table as per filter.
+        //    string fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE month_no IN({month_no}) AND year IN({year}) AND siteType IN({siteType});";
+        //    try
+        //    {
+        //        spvDataFromOP = await Context.GetData<OPSPV>(fetchQry).ConfigureAwait(false);
+        //        result = 1;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+        //        LogError(0, 1, 7, functionName, msg, backend);
+        //    }
+
+        //    //Get data from master table.
+        //    string fetchQryMaster = $"SELECT spv AS spv FROM site_master WHERE site_master_id IN(" + siteId;
+        //    try
+        //    {
+        //        spvDatafromMaster = await Context.GetData<OPSPV>(fetchQryMaster).ConfigureAwait(false);
+        //        result = 2;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+        //        LogError(0, 1, 7, functionName, msg, backend);
+        //    }
+        //    if(result == 2)
+        //    {
+        //        foreach (var masterSPV in spvDatafromMaster)
+        //        {
+        //            // Check if the spv is not present in spvDataFromOP
+        //            if (!spvDataFromOP.Any(opSPV => opSPV.spv == masterSPV.spv))
+        //            {
+        //                finalSPVList.Add(masterSPV);
+        //            }
+        //        }
+        //    }
+
+        //    return finalSPVList;
+        //}
+        //Operational Performance Comments Get Site function.
+        internal async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            string functionName = "OPGetSiteListForEdit";
+            int result = 0;
+            string filter = "ORDER BY site;";
+            //if (siteId != null)
+            //{
+            //    filter = $" WHERE site_master_id IN({siteId}) ORDER BY site;";
+            //}
+
+            List<OPSite> siteDatafromMaster = new List<OPSite>();
+            List<OPSite> siteDataFromOP = new List<OPSite>();
+            List<OPSite> finalSiteList = new List<OPSite>();
+
+            //get data from OP table as per filter.
+            string fetchQry = "";
+            if (isMonthly == 0)
+            {
+                fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE month_no IN({month_no}) AND isMonthly= {isMonthly}  AND isSPV = 1 AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
+            else
+            {
+                fetchQry = $"SELECT op.site_id AS site_id FROM OPComments AS op WHERE isMonthly= {isMonthly}  AND isSPV = 1 AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
+            try
+            {
+                siteDataFromOP = await Context.GetData<OPSite>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            //Get data from master table.
+            string fetchQryMaster = $"SELECT site_master_id AS site_id, site FROM site_master;"; //{filter}
+            try
+            {
+                siteDatafromMaster = await Context.GetData<OPSite>(fetchQryMaster).ConfigureAwait(false);
+                result = 2;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if (result == 2)
+            {
+                foreach (var masterSite in siteDatafromMaster)
+                {
+                    // Check if the site is not present in siteDataFromOP
+                    if (!siteDataFromOP.Any(opSite => opSite.site_id == masterSite.site_id))
+                    {
+                        finalSiteList.Add(masterSite);
+                    }
+                }
+            }
+
+            return finalSiteList;
+        }
+        internal async Task<List<OPSPV>> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            string functionName = "OPGetSpvListForEdit";
+            //site_type = 1 Solar, 2 : Wind 
+            //isSPV : 0 = SPV, 1= Site.
+            //isDisplay: 0 = display, 1: Edit
+            int result = 0;
+            string filter = "ORDER BY spv;";
+            //if (siteId != null)
+            //{
+            //    filter = $" WHERE site_master_id IN({siteId}) ORDER BY site;";
+            //}
+
+            List<OPSPV> spvDatafromMaster = new List<OPSPV>();
+            List<OPSPV> spvDataFromOP = new List<OPSPV>();
+            List<OPSPV> finalSpvList = new List<OPSPV>();
+
+            //get data from OP table as per filter.
+            string fetchQry = "";
+            if (isMonthly == 0)
+            {
+                //monthly
+                fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op WHERE month_no IN({month_no}) AND isMonthly= {isMonthly} AND isSPV = 0 AND BD_type = '{bdTypes}' AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
+            else
+            {
+                //yearly
+                fetchQry = $"SELECT op.spv AS spv FROM OPComments AS op WHERE isMonthly= {isMonthly} AND BD_type = '{bdTypes}' AND isSPV = 0 AND isDeleted = 1 AND year IN({year}) AND type IN({siteType});";
+            }
+            try
+            {
+                spvDataFromOP = await Context.GetData<OPSPV>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            //Get data from master table.
+            string fetchQryMaster = $"SELECT DISTINCT spv AS spv FROM site_master;"; //{filter}
+            try
+            {
+                spvDatafromMaster = await Context.GetData<OPSPV>(fetchQryMaster).ConfigureAwait(false);
+                result = 2;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from OPComments table dur to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if (result == 2)
+            {
+                foreach (var masterSpv in spvDatafromMaster)
+                {
+                    // Check if the site is not present in siteDataFromOP
+                    if (!spvDataFromOP.Any(opSpv => opSpv.spv == masterSpv.spv))
+                    {
+                        finalSpvList.Add(masterSpv);
+                    }
+                }
+            }
+
+            return finalSpvList;
+        }
+        //Operational Performance Comments Edit function.
+        internal async Task<int> OPCommentsEdit(List<OPComments> set)
+        {
+            string functionName = "OPCEdit";
+
+            int result = 0;
+            string updateQry = "";
+
+            foreach (var _upData in set)
+            {
+                //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
+                updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE OPC_id = {_upData.opc_id};";
+                //if (_upData.isSPV == 1)
+                //{
+                //    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND site_id = {_upData.site_id} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
+                //}
+                //else
+                //{
+                //    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND spv = {_upData.spv} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
+                //}
+            }
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = $"Exception caught while updating data into OPComments table, due to : {e.ToString()}";
+                LogError(0, 1, 7, functionName, msg, backend);
+                return result;
+            }
+            return result;
+        }
+        internal async Task<int> OPCommentsDelete(List<OPComments> set)
+        {
+            string functionName = "OPCommentsDelete";
+
+            int result = 0;
+            string updateQry = "";
+
+            foreach (var _upData in set)
+            {
+                updateQry += $"UPDATE OPComments SET deleted_by= {_upData.deleted_by}, isDeleted= 0, deleted_at = CURRENT_TIMESTAMP WHERE OPC_id = {_upData.opc_id};";
+            }
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = $"Exception caught while updating data into OPComments table, due to : {e.ToString()}";
+                LogError(0, 1, 7, functionName, msg, backend);
+                return result;
+            }
+            return result;
+        }
+
+        internal async Task<Hashtable> SiteId_SPVHashTableWind()
+        {
+            string functionName = "SiteId_SPVHashTableWind";
+            Hashtable spvSite = new Hashtable();
+            List<SPVSiteWind> spvSiteData = new List<SPVSiteWind>();
+
+            string query = "Select site_master_id, site, spv FROM site_master;";
+            try
+            {
+                spvSiteData = await Context.GetData<SPVSiteWind>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching site Spv data from database, due to : " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if (spvSiteData.Count > 1)
+            {
+                foreach (var element in spvSiteData)
+                {
+                    spvSite.Add(element.site_master_id, element.spv);
+                }
+            }
+
+            return spvSite;
+
+        }
+
+        // Tanvi's Changes.
+        internal async Task<int> dgrUploadingReminder()
+        {
+
+            PPT_InformationLog("From DGR Repository : dgrUploadingReminder : " + DateTime.Now);
+            //MAILING FUNCTIONALITY
+
+            string info = ("dgrUploadingReminder function called from repository ");
+            string functionName = "dgrUploadingReminder";
+            //await LogInfo(0, 0, 0, functionName, info, backend);
+
+            MailSettings _settings = new MailSettings();
+            var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+            //_settings.Mail = "kasrsanket@gmail.com";
+            //_settings.DisplayName = "Sanket Kar";
+            _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+            //_settings.Password = "lozirdytywjlvcxd";
+            _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+            //_settings.Host = "smtp.gmail.com";
+            _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+            //_settings.Port = 587;
+            _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+
+
+            string Msg = "Weekly PR Report Generated";
+            // private MailServiceBS mailService;
+            List<string> AddToWind = new List<string>();
+            List<string> AddToSolar = new List<string>();
+
+            //List<string> AddCc = new List<string>();
+            MailRequest request = new MailRequest();
+
+            DateTime dt = DateTime.Now;
+            string today = dt.ToString("yyyy-MM-dd");
+            //string today = "2023-11-12";
+
+
+            string tb = "<p style='text-align: left;'>Dear User,<br>";
+            tb += $"This is a remainder email that DGR data is not uploaded for {dt.ToString("dd-MMM-yyyy")} .<p>";
+
+            string windSiteQry = $"SELECT site_master_id as id,site as name FROM site_master as wind left join import_batches  on import_batches.site_id = wind.site_master_id and import_file_type = 1 and date(data_date) = '{today}' and import_type = 1 where site_id is null; ";
+
+            List<SiteList> sitelist = await Context.GetData<SiteList>(windSiteQry).ConfigureAwait(false);
+
+            foreach (var site in sitelist)
+            {
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 1 and identity = {site.id} ;";
+                try
+                {
+                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data2)
+                    {
+                        AddToWind.Add(item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside dgrUploadingReminder function : Exception Caught while fetching and adding To emails : Due to : " + msg);
+                }
+
+                AddToWind = new List<string>();
+                AddToWind.Add("tanvi@softeltech.in");
+                request.ToEmail = AddToWind;
+                //request.CcEmail = AddCc;
+                request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                request.Body = tb;
+
+                try
+                {
+                    var res = await MailService.SendEmailAsync(request, _settings, 0);
+                    PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+                    info = "Dgr Reminder SendEmailAsync function completed";
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    PPT_ErrorLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+                    info = "Dgr Reminder SendEmailAsync function failed exception :" + e.Message;
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+            }
+
+            string solarSiteQry = $"SELECT site_id,site_master_solar_id as id,site as name FROM site_master_solar as solar left join import_batches on import_batches.site_id = solar.site_master_solar_id and import_file_type = 1 and date(data_date) = '{today}' and import_type = 2 where site_id is null; ";
+
+            List<SiteList> solarSitelist = await Context.GetData<SiteList>(solarSiteQry).ConfigureAwait(false);
+
+            foreach (var site in solarSitelist)
+            {
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id} ;";
+                try
+                {
+                    List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
+                    foreach (var item in data2)
+                    {
+                        AddToSolar.Add(item.useremail);
+                        PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    PPT_ErrorLog("From DGR Repository: Inside dgrUploadingReminder function : Exception Caught while fetching and adding To emails : Due to : " + msg);
+                }
+
+                AddToSolar = new List<string>();
+                AddToSolar.Add("tanvi@softeltech.in");
+                request.ToEmail = AddToSolar;
+                //request.CcEmail = AddCc;
+                request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                request.Body = tb;
+
+                try
+                {
+                    var res = await MailService.SendEmailAsync(request, _settings, 0);
+                    PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+                    info = "Dgr Reminder SendEmailAsync function completed";
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                    PPT_ErrorLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+                    info = "Dgr Reminder SendEmailAsync function failed exception :" + e.Message;
+                    //await LogInfo(0, 0, 0, functionName, info, backend);
+
+                }
+            }
+            return 1;
         }
     }
 }

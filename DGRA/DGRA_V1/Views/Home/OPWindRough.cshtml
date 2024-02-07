@@ -1,0 +1,1559 @@
+﻿﻿@using Newtonsoft.Json;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@using Microsoft.AspNetCore.Http;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@model DGRA_V1.Models.DailyGenSummary
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@{
+    ViewData["Title"] = "OPWind";
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@{
+    // Get the current year and month
+    var currentYearMonth = DateTime.Now.ToString("yyyy-MM");
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@{
+    string windSiteList = "";
+
+    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@for (int i = 0; i < @usermodel.access_list.Count; i++)
+{
+    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 1)
+    {
+        windSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+<!-- dropdown search -->
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<!--Date Range -->
+<script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src="~/Content/theme/plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
+<script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- DataTables  & Plugins -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/dist/js/comman.js"></script>
+<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>*@
+<script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
+<link rel="stylesheet" href="opComments.css">
+<style>
+    .anychart-credits {
+        display: none !important;
+    }
+</style>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-center">Wind Operational Performance</h3>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="input-group row">
+                            <label class="col-sm-3 col-form-label">Date Range : </label>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                             @*<input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">*@
+                            <input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2018-05" style="border: 1px solid #aaa" />
+
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                            <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-7">
+                        <!-- Left Column of charts -->
+                        <div class="">
+                            <div>
+                                <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center;">
+                                    <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
+                                </div>
+                                <div style="position: relative;">
+                                    <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
+                                    <div id="Waterfall" style="width: 100%; z-index: 1;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="position: relative;">
+                                    <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
+                                    <div id="WaterfallYearly" style="width: 100%; z-index: 1;"></div>
+                                </div>
+                                yyyy-MM" yyyy-MM")" value="2018-05" />
+
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 col-form-label text-right"></label>
+                                    <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 col-form-label text-right"></label>
+                                    <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                                <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;"></button>
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-7">
+
+                            <!-- Left Column of charts -->
+                            <div class="">
+                                <div>
+                                    <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center;">
+                                        <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
+                                    </div>
+                                    <div style="position: relative;">
+                                        <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;"></div>
+                                        <div id="Waterfall" style="width: 100%; z-index: 1;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="position: relative;">
+                                        <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;"></div>
+                                        <div id="WaterfallYearly" style="width: 100%; z-index: 1;"></div>
+                                    </div>
+                                     @*<div class="card-title text-center"> Yearly </div>
+                                        <div id="WaterfallYearly" style="width: 100%;"></div>*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="commentsSection" style="display: none; margin-top: 20px" class="col-md-5">
+                            <!-- Right column of comments -->
+                            <div class="card h-90vh w-100">
+                                <div class="card-header">
+                                    <h3 class="card-title text-center">Reasons For Underperformance</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div>
+                                        <!-- Other content here -->
+                                    </div>
+
+                                    <!-- Monthly Section -->
+                                     @*<div class="rectangle" style="position: absolute; top: 10px; left: 10px; width: 80px; height: 30px; background-color: #fff; border: 1px solid #ccc; text-align: center; line-height: 30px;">
+                                            Monthly
+                                        </div>*@
+                                    <div class="container" style="flex: 1; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
+                                        <div class="scrollable-container" id="monthlyComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor:default;"></div>
+                                        <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Add Division</h4></div>
+                                        <div class="scrollable-container" id="monthlyEdit" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Edit Division</h4></div>
+                                        <div class="scrollable-container" id="monthlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h4>Monthly Delete Division</h4></div>
+                                        <div class="comment-buttons" id="monthCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
+                                            <div style="display: flex; gap: 13px;">
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAdd()">
+                                                    <i class="fas fa-plus" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #FFCA5A; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthEdit()">
+                                                    <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #EE403D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthDelete()">
+                                                    <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <!-- Other content here -->
+                                    </div>
+
+                                    <!-- Yearly Section -->
+                                     @*<div class="rectangle" style="position: absolute; top: 10px; left: 10px; width: 80px; height: 30px; background-color: #fff; border: 1px solid #ccc; text-align: center; line-height: 30px;">
+                                            Yearly
+                                        </div>*@
+                                    <div class="container" style="flex: 1; overflow-y: auto; margin-top: 20px; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
+                                        <div class="scrollable-container" id="yearlyComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; "></div>
+                                        <div class="scrollable-container" id="yearlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h5>Yearly Add division</h5></div>
+                                        <div class="scrollable-container" id="yearlyEdit" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h5>Yearly Edit division</h5></div>
+                                        <div class="scrollable-container" id="yearlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"></div>
+                                        <div class="comment-buttons" id="yearCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
+                                            <div style="display: flex; gap: 13px;">
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAdd()">
+                                                    <i class="fas fa-plus" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #FFCA5A; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearEdit()">
+                                                    <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #EE403D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearDelete()">
+                                                    <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="loader" class="loader  center" style="display:none"></div>
+                </div>
+            </div>
+    </section>
+
+</div>
+<!-- /.content-wrapper -->
+
+@*------------------------------------------------------------------------------------------------------------------------------------------------*@
+<script type="text/javascript">
+$(document).ready(function () {
+$('#daterange').daterangepicker(
+{
+maxDate: new Date(),
+locale: {
+format: 'DD/MM/YYYY',
+}
+});
+
+$("#hide").click(function () {
+$("#chart").hide();
+$("#show").css('display', 'block');
+});
+$("#show").click(function () {
+$("chart").show();
+$("#hide").css('display', 'none');
+});
+
+});
+
+
+window.onload = function () {
+var state = "";
+var spv = "";
+var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+ @*$.ajax({
+        type: "POST",
+        //url: "/WindReport/GetSiteList",
+        url: '@Url.Action("GetSiteList", "WindReport")' + '?sitelist=' + site_ids,
+        contentType: "application/json; charset=utf-8",
+        // data: '{"state":"' + val + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            var options = "";
+            for (var k = 0; k < result.length; k++) {
+                options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
+            }
+            $("#site").html(options);
+            $('select#site').multipleSelect({
+                "minimumCountSelected": 1,
+                "placeholder": "Select Site(s)",
+                filter:true
+            });
+        }
+
+    });*@
+GetSPV(false);
+getSite(false);
+}
+let site_id = "";
+function getReport() {
+var site = "";
+site_id = "";
+site = $('select#site option:selected').each(function () {
+    site_id += $(this).val() + ",";
+});
+site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+if (site_id == "" || site_id == null) {
+    alert("Please select site ");
+    return false;
+}
+document.getElementById("loader").style.display = 'flex';
+/*document.getElementById("CloseViewTableBtn").style.display = 'none';*/
+//document.getElementById("DailyGenView").style.display = 'none';
+console.log(site_id);
+var daterange = $('#daterange').val();
+var arr1 = new Array();
+arr1 = daterange.split("-");
+var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+
+getChartData(site_id, fromDate, toDate);
+//setTimeout(() => {
+//    getChartDataYearly(site_id);
+//}, 2000);
+//getChartDataYearly(site_id);
+}
+
+function GetSPV(fliterVal) {
+let state_id = "";
+let site_ids = "";
+
+if (fliterVal == false) {
+    site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+}
+if($('#state').val())
+{
+    $('select#state option:selected').each(function () {
+        state_id += "'"+$(this).val() + "',";
+    });
+    state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
+}
+if (state_id != "") {
+     site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+}
+$.ajax({
+    type: "GET",
+    ///url: "/WindReport/GetSPVList?state=" + val,
+    url: '@Url.Action("GetSPVList", "WindReport")' + '?state=' + state_id + '&sitelist=' + site_ids,
+    contentType: "application/json; charset=utf-8",
+    datatype: "html",
+    success: function (result, status, xhr) {
+
+        var options = "";
+        for (var j = 0; j < result.length; j++) {
+                    options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
+                }
+                $("#spv").multipleSelect('destroy');
+                $("#spv").html(options);
+                $('select#spv').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select SPV(s)",
+                    filter:true
+                });
+
+            }
+        });
+        getSite(false);
+    }
+
+    function getSite(fliterVal) {
+        var site_ids = "";
+        if (fliterVal == false) {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+            }
+            let state_id = "";
+            $('select#state option:selected').each(function () {
+            state_id += $(this).val() + ",";
+            });
+            state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
+
+            let spv = "";
+            $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+            });
+            spv = spv != "" ? spv.slice(0, -1) : spv;
+            if (state_id != "" || spv != "") {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+            }
+            $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state_id + '&spv=' + spv + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+            var options = "";
+            for (var k = 0; k < result.length; k++) {
+            options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
+            }
+            $("#site").multipleSelect('destroy');
+            $("#site").html("").html(options);
+
+            $('select#site').multipleSelect({
+            "minimumCountSelected": 2,
+            "placeholder": "Select Site(s)",
+            filter:true
+            });
+            }
+            });
+            }
+
+            //function closeTableData() {
+            //    document.getElementById("viewTableBtn").style.display = 'flex';
+            //    document.getElementById("DailyGenView").style.display = 'none';
+            //    document.getElementById("CloseViewTableBtn").style.display = 'none';
+            //}
+
+            var data = [];
+            function getChartData(site_id, fromDate, toDate) {
+            var expected_final = 0.0;
+            var lineloss_final = 0.0;
+            var target_final = 0.0;
+            var lossUSMH_final = 0.0;
+            var lossSMH_final = 0.0;
+            var lossNC_final = 0.0;
+            var lossIGBD_final = 0.0;
+            var lossEGBD_final = 0.0;
+            var lossLULL_final = 0.0;
+            var lossPCD_final = 0.0;
+            var actual_final = 0.0;
+            var loadShedding = 0.0;
+            console.log("Inside getChartData function.");
+            $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+
+            success: function (result, status, xhr) {
+            console.log(result);
+            document.getElementById("commentsSection").style.display = "flex";
+            //document.getElementById("loader").style.display = 'none';
+            var CloseBtnStatus = "";
+            var isMonthlyDataPresent = 0;
+            //CloseBtnStatus = document.getElementById("CloseViewTableBtn").style.display;
+            //console.log("Close btn status : " + CloseBtnStatus + " type " + typeof (CloseBtnStatus));
+            //if (CloseBtnStatus == "flex") {
+            //    document.getElementById("viewTableBtn").style.display = 'none';
+            //}
+            //if (CloseBtnStatus == "none"){
+            //    document.getElementById("viewTableBtn").style.display = 'flex';
+            //}
+            getChartDataYearly(site_id);
+
+            if (result.length > 0) {
+            for (var i = 0; i < result.length; i++) {
+            //console.log("Expected : ", result[i].expected_final);
+            //console.log("LineLoss : ", result[i].lineloss_final);
+            //console.log("Target : ",result[i].target_final);
+            //console.log("USHM : ",result[i].lossUSMH_final);
+            //console.log("SMH : ",result[i].lossSMH_final);
+            //console.log("NC : ",result[i].lossNC_final);
+            //console.log("IGBD : ",result[i].lossIGBD_final);
+            //console.log("EGBD : ",result[i].lossLULL_final);
+            //console.log("LULL : ",result[i].lossPCD_final);
+            //console.log("Actual : ", result[i].actual_final);
+            //console.log("Load Shedding : ", result[i].loadShedding);
+
+            expected_final = result[i].expected_final;
+            lineloss_final = result[i].lineloss_final;
+            target_final = result[i].target_final /1000000;
+            lossUSMH_final = result[i].lossUSMH_final;
+            lossSMH_final = result[i].lossSMH_final;
+            lossNC_final = result[i].lossNC_final;
+            lossIGBD_final = result[i].lossIGBD_final;
+            lossEGBD_final = result[i].lossEGBD_final;
+            lossLULL_final = result[i].lossLULL_final;
+            lossPCD_final = result[i].lossPCD_final;
+            actual_final = result[i].actual_final;
+            loadShedding = result[i].loadShedding;
+            isMonthlyDataPresent = Number(result[i].monthlyData);
+
+            if (isMonthlyDataPresent != 100) {
+            document.getElementById("dataNotPresentDiv").style.display = "none";
+            document.getElementById("Waterfall").style.display = "flex";
+            CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+            } else {
+            var division = document.getElementById("dataNotPresent");
+            division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+            division.style.display = "flex";
+            document.getElementById("dataNotPresentDiv").style.display = "flex";
+            document.getElementById("Waterfall").style.display = "none";
+            }
+
+            //console.log("-------------------------------------------");
+            //console.log("Expected : ", expected_final);
+            //console.log("LineLoss : ", lineloss_final);
+            //console.log("Target : ", target_final);
+            //console.log("USHM : ", lossUSMH_final);
+            //console.log("SMH : ", lossSMH_final);
+            //console.log("NC : ", lossNC_final);
+            //console.log("IGBD : ", lossIGBD_final);
+            //console.log("EGBD : ", lossEGBD_final);
+            //console.log("LULL : ", lossLULL_final);
+            //console.log("PCD : ", lossPCD_final);
+            //console.log("Actual : ", actual_final);
+            //console.log("Load Shedding : ", loadShedding);
+            //data = [
+            //    { x: 'Target', value: target_final.toFixed(1) },
+            //    { x: 'Expected', value: expected_final.toFixed(1) },
+            //    { x: 'USMH', value: lossUSMH_final.toFixed(1) },
+            //    { x: 'SMH', value: lossSMH_final.toFixed(1) },
+            //    { x: 'Other', value: lossNC_final.toFixed(1) },
+            //    { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
+            //    { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
+            //    { x: 'LULL', value: lossLULL_final.toFixed(1) },
+            //    { x: 'PCD', value: lossPCD_final.toFixed(1) },
+            //    { x: 'LineLoss', value: lineloss_final.toFixed(1) },
+            //    { x: 'Actual', value: actual_final.toFixed(1) },
+            //];
+            }
+            }
+            else {
+
+            // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+            }
+            }
+            });
+
+
+            console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
+            //monthlychart(data);
+
+            }
+
+            function getChartDataYearly(site_id) {
+            var expected_final = 0.0;
+            var lineloss_final = 0.0;
+            var target_final = 0.0;
+            var lossUSMH_final = 0.0;
+            var lossSMH_final = 0.0;
+            var lossNC_final = 0.0;
+            var lossIGBD_final = 0.0;
+            var lossEGBD_final = 0.0;
+            var lossLULL_final = 0.0;
+            var lossPCD_final = 0.0;
+            var actual_final = 0.0;
+            var loadShedding = 0.0;
+            console.log("Inside getChartDataYearly function.");
+            var data_Array1 = [];
+            document.getElementById("loader").style.display = 'flex';
+            //document.getElementById("viewTableBtn").style.display = 'flex';
+            var daterange = $('#daterange').val();
+            var arr1 = new Array();
+            arr1 = daterange.split("-");
+            var today = new Date(arr1[0]);
+
+            fyear = getFinancialYear(today);
+            fdate = getFinancialYearDateStartDate(fyear);
+            var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+            var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+            //var dateParts = fromDate.split('-');
+            //var year = parseInt(dateParts[0]);
+            //year -= 1;
+            //var newDate = new Date(year, dateParts[1] - 1, dateParts[2]);
+            //var newFromDate = newDate.toISOString().slice(0, 10);
+            //console.log("Yearly Report From date : " + newFromDate + " To date : " + toDate);
+
+            console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
+            var fromToDates = getFinancialYearDates(toDate);
+            console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
+
+            $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromToDates.fromDate + '&toDate=' + fromToDates.toDate + '&isYearly=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+
+            success: function (result, status, xhr) {
+            console.log(result);
+            //document.getElementById("loader").style.display = 'none';
+
+            if (result.length > 0) {
+            for (var i = 0; i < result.length; i++) {
+            console.log("Expected : ", result[i].expected_final);
+            console.log("LineLoss : ", result[i].lineloss_final);
+            console.log("Target : ",result[i].target_final);
+            console.log("USHM : ",result[i].lossUSMH_final);
+            console.log("SMH : ",result[i].lossSMH_final);
+            console.log("NC : ",result[i].lossNC_final);
+            console.log("IGBD : ",result[i].lossIGBD_final);
+            console.log("EGBD : ",result[i].lossLULL_final);
+            console.log("LULL : ",result[i].lossPCD_final);
+            console.log("Actual : ", result[i].actual_final);
+            console.log("Load Shedding : ", result[i].loadShedding);
+
+            expected_final = result[i].expected_final;
+            lineloss_final = result[i].lineloss_final;
+            target_final = result[i].target_final /1000000;
+            lossUSMH_final = result[i].lossUSMH_final;
+            lossSMH_final = result[i].lossSMH_final;
+            lossNC_final = result[i].lossNC_final;
+            lossIGBD_final = result[i].lossIGBD_final;
+            lossEGBD_final = result[i].lossEGBD_final;
+            lossLULL_final = result[i].lossLULL_final;
+            lossPCD_final = result[i].lossPCD_final;
+            actual_final = result[i].actual_final;
+            loadShedding = result[i].loadShedding;
+
+            CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+
+
+            console.log("-------------------------------------------");
+            console.log("Expected : ", expected_final);
+            console.log("LineLoss : ", lineloss_final);
+            console.log("Target : ", target_final);
+            console.log("USHM : ", lossUSMH_final);
+            console.log("SMH : ", lossSMH_final);
+            console.log("NC : ", lossNC_final);
+            console.log("IGBD : ", lossIGBD_final);
+            console.log("EGBD : ", lossEGBD_final);
+            console.log("LULL : ", lossLULL_final);
+            console.log("PCD : ", lossPCD_final);
+            console.log("Actual : ", actual_final);
+            console.log("Load Shedding : ", loadShedding);
+            //data = [
+            //    { x: 'Target', value: target_final.toFixed(1) },
+            //    { x: 'Expected', value: expected_final.toFixed(1) },
+            //    { x: 'USMH', value: lossUSMH_final.toFixed(1) },
+            //    { x: 'SMH', value: lossSMH_final.toFixed(1) },
+            //    { x: 'Other', value: lossNC_final.toFixed(1) },
+            //    { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
+            //    { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
+            //    { x: 'LULL', value: lossLULL_final.toFixed(1) },
+            //    { x: 'PCD', value: lossPCD_final.toFixed(1) },
+            //    { x: 'LineLoss', value: lineloss_final.toFixed(1) },
+            //    { x: 'Actual', value: actual_final.toFixed(1) },
+            //];
+            }
+            }
+            else {
+
+            // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+            }
+            }
+            });
+
+
+            console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
+            //monthlychart(data);
+
+            }
+
+            function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
+            console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
+            Plotly.purge('Waterfall');
+            let total_opExpected = total_expected - total_lineloss;
+            let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+            total_egbd = Number(total_egbd) + Number(loadShedding);
+
+            let t_target = Number(total_target).toFixed(2);
+            let t_opExpected = Number(total_opExpected).toFixed(2);
+            let t_bd = Number(total_bd).toFixed(2);
+            let t_egbd = Number(total_egbd).toFixed(2);
+            let t_pcd = Number(total_pcd).toFixed(2);
+            let t_oh = Number(total_oh).toFixed(2);
+            let t_actual = Number(total_actual).toFixed(2);
+            //let t_lineloss = Number(total_lineloss).toFixed(2);
+            //let t_loadShedding = Number(loadShedding).toFixed(2);
+
+
+
+            let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+            let exp_percentage = 100;
+            let bd_percentage = (total_bd / total_opExpected) * 100;
+            //let loadShedding_percentage = (loadShedding / total_expected) * 100;
+            let egbd_percentage = (total_egbd / total_expected) * 100;
+            let pcd_percentage = (total_pcd / total_expected) * 100;
+            let oh_percentage = (total_oh / total_expected) * 100;
+            let actul_percentage = ((total_actual) / total_expected) * 100;
+
+
+            //#86C466 : green. #77CAE7 : blue. #EE403D : red. #14a105 : dark-green.
+            //#7dddff
+            var columnColors = [
+            "#86C466", // Target
+            "#7dddff", // Expected
+            "#EE403D", // BD
+            "#EE403D", // EGB
+            "#86C466", // PCD
+            "#EE403D", // Other
+            "#7dddff"  // Actual
+            ];
+
+            let rMeasure = "relative";
+            let aMeasure = "absolute";
+            let pcdMeasure = "relative";
+            let lineLossMeasure = "relative";
+
+            if (Number(total_pcd) > 0) {
+            //columnColors[7] = "#EE403D";
+            pcdMeasure = "absolute";
+            }
+            //if (Number(total_lineloss) > 0) {
+            //    //columnColors[8] = "#EE403D";
+            //    lineLossMeasure = "absolute";
+            //}
+
+            var data = [
+            {
+            //name: "2018",
+            type: "waterfall",
+            orientation: "v",
+            measure: [
+            "relative",
+            "absolute",
+            "relative",
+            "relative",
+            "relative",
+            "relative",
+            "absolute"
+            ],
+            x: [
+            "Target",
+            "Expected",
+            "BD",
+            "EGB",
+            //"Curtailment",
+            "PCD",
+            "Other",
+            "Actual"
+            ],
+            textposition: "outside",
+            //textposition: "inside",
+            text: [
+            t_target,
+            t_opExpected,
+            t_bd,
+            t_egbd,
+            //t_loadShedding,
+            t_pcd ,
+            t_oh,
+            t_actual
+            ],
+            y: [
+            Number(total_target),
+            Number(total_opExpected),
+            Number(total_bd),
+            Number(total_egbd),
+            //Number(loadShedding),
+            Number(total_pcd),
+            Number(total_oh),
+            Number(total_actual)
+            ],
+            hoverData: [
+            Number(total_target),
+            Number(total_opExpected),
+            Number(total_bd),
+            Number(total_egbd),
+            //Number(loadShedding),
+            Number(total_pcd),
+            Number(total_oh),
+            Number(total_actual)
+            ],
+            hovertemplate: [
+            '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+            '<b>Expected</b><br>Value: ' + total_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+            '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+            '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+            '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+            '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+            '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+            ],
+
+            //'<b>%{x}</b><br>' +
+            ///*'Column: %{x}<br>' +*/
+            //'Value: %{y}',
+            //absolute: { marker: { color: "#77CAE7" } },
+            //relative: { marker: { color: "#77CAE7" } },
+            totals: { marker: { color: "#86C466" } },
+            increasing: { marker: { color: "#77CAE7" } },
+            decreasing: { marker: { color: "#EE403D" } },
+
+            //totals: { marker: { color: columnColors } },
+            //increasing: { marker: { color: columnColors } },
+            //decreasing: { marker: { color: columnColors } },
+            connector: {
+            line: {
+            color: "white"
+            }
+            },
+            }
+            ];
+            layout = {
+            //title: {
+            //    text: "Monthly",
+            //    dy: 2,
+            //    y: "110",
+            //},
+            xaxis: {
+            type: "category",
+            fixedrange: true
+            },
+            yaxis: {
+            type: "linear",
+            fixedrange: true,
+            range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            /*visible: false,*/
+            autosize: true,
+            showlegend: true,
+            trace: false,
+            margin: {
+            l: 30,// left margin
+            b: 30,
+            r: 1,
+            },
+            width: 1000,
+            height: 350,
+
+            };
+            var config = {
+            displayModeBar: false,
+            displaylogo: false,
+            infolayer: false,
+            visible: false,
+            };
+
+            Plotly.newPlot('Waterfall', data, layout, config);
+
+            //var traceVisibility = false;
+
+            //// Update the trace visibility
+            //Plotly.update('Waterfall', { visible: traceVisibility });
+
+            //var style = document.createElement('style');
+            //style.textContent = '.infolayer { display: none !important; }';
+            //document.head.appendChild(style);
+            //var customCSS = `.plot-container .main-svg text.title-text { y: 110; }`;
+            //var style = document.createElement('style');
+            //style.textContent = customCSS;
+            //document.head.appendChild(style);
+
+            document.getElementById("monthTitle").style.display = "block";
+            /*Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });*/
+
+            }
+
+            function CreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
+            console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
+            Plotly.purge('WaterfallYearly');
+            let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+            total_bd = Number(total_bd).toFixed(4);
+
+            total_expected = Number(total_expected) - Number(total_lineloss);
+            total_expected = Number(total_expected).toFixed(4);
+
+            total_egbd = Number(total_egbd) + Number(loadShedding);
+            total_egbd = total_egbd.toFixed(4);
+            let t_target = Number(total_target).toFixed(2);
+            let t_expected = Number(total_expected).toFixed(2);
+            let t_bd = Number(total_bd).toFixed(2);
+            let t_egbd = Number(total_egbd).toFixed(2);
+            let t_pcd = Number(total_pcd).toFixed(2);
+            let t_oh = Number(total_oh).toFixed(2);
+            let t_actual = Number(total_actual).toFixed(2);
+            //let t_lull = Number(total_lull).toFixed(2);
+            //let t_loadShedding = Number(loadShedding).toFixed(2);
+
+
+            // Percentage Value
+            /*let exp_percentage = ((total_expected - total_target) / total_target) * 100;*/
+            let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+            let exp_percentage = 100;
+            let bd_percentage = (total_bd / total_expected) * 100;
+            let egbd_percentage = (total_egbd / total_expected) * 100;
+            //let loadShedding_percentage = (loadShedding / total_expected) * 100;
+            //let lull_percentage = (total_lull / total_expected) * 100;
+            let pcd_percentage = (total_pcd / total_expected) * 100;
+            let oh_percentage = (total_oh / total_expected) * 100;
+            let actul_percentage = ((total_actual) / total_expected) * 100;
+
+            var data = [
+            {
+            //name: "2018",
+            type: "waterfall",
+            orientation: "v",
+            measure: [
+            "relative",
+            "absolute",
+            "relative",
+            "relative",
+            "relative",
+            "relative",
+            "absolute"
+            ],
+            x: [
+            "Target",
+            "Expected",
+            "BD",
+            "EGB",
+            "PCD",
+            "Other",
+            "Actual"
+            ],
+            textposition: "outside",
+            //textposition: "inside",
+            text: [
+            t_target,
+            t_expected,
+            t_bd,
+            t_egbd,
+            t_pcd,
+            t_oh,
+            t_actual
+            ],
+            y: [
+            Number(total_target),
+            Number(total_expected),
+            Number(total_bd),
+            Number(total_egbd),
+            Number(total_pcd),
+            Number(total_oh),
+            Number(total_actual)
+            ],
+            hovertemplate: [
+            '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+            '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+            '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+            '<b>EGB</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+            '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+            '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+            '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+            ],
+            //hovertemplate: '<b>%{x}</b><br>' +
+            //    /*'Column: %{x}<br>' +*/
+            //    'Value: %{y}',
+            //absolute: { marker: { color: "#77CAE7" } },
+            //relative: { marker: { color: "#77CAE7" } },
+            totals: { marker: { color: "#86C466" } },
+            increasing: { marker: { color: "#77CAE7" } },
+            decreasing: { marker: { color: "#EE403D" } },
+            connector: {
+            line: {
+            color: "white"
+            }
+            },
+            }
+            ];
+            layout = {
+            //title: {
+            //    text: "Yearly",
+            //    margin: { t: 0, b: 0 }
+            //},
+            xaxis: {
+            type: "category",
+            fixedrange: true
+            },
+            yaxis: {
+            type: "linear",
+            fixedrange: true,
+            range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            autosize: true,
+            showlegend: true,
+            trace: false,
+            margin: {
+            l: 30,// left margin
+            b: 30,
+            r: 1,
+            },
+            width: 1000,
+            height: 350,
+            };
+            var config = {
+            displayModeBar: false,
+            trace: false,
+            };
+            Plotly.newPlot('WaterfallYearly', data, layout, config);
+            document.getElementById("loader").style.display = 'none';
+            document.getElementById("yearTitle").style.display = 'block';
+
+            //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
+
+            }
+
+            function clearRecords() {
+            console.log("Inside clear onclick function.");
+            var table = document.getElementById("example1");
+            table.innerHTML = "";
+
+            const dataTable = $('#example1').DataTable();
+
+            // clear the DataTable
+            dataTable.clear().draw();
+            }
+
+            // EVERYTHING FOR COMMENTS HEREAFTER.
+
+
+            //for card buttons hide and display 4 functions.
+            function yearover() {
+            var yearcardButtons = document.getElementById("yearCardButtons");
+            yearcardButtons.style.display = "block";
+            }
+
+            function yearout() {
+            var yearcardButtons = document.getElementById("yearCardButtons");
+            yearcardButtons.style.display = "none";
+            }
+            function monthover() {
+            var yearcardButtons = document.getElementById("monthCardButtons");
+            yearcardButtons.style.display = "block";
+            }
+
+            function monthout() {
+            var yearcardButtons = document.getElementById("monthCardButtons");
+            yearcardButtons.style.display = "none";
+            }
+
+            //Functions for onclick functionality of buttons. 6 functions.
+            function monthDisplay() {
+            var mDisplay = document.getElementById("monthlyComments");
+            var mAdd = document.getElementById("monthlyAdd");
+            var mEdit = document.getElementById("monthlyEdit");
+            var mDelete = document.getElementById("monthlyDelete");
+
+            mDisplay.style.display = "block";
+            mAdd.style.display = "none";
+            mEdit.style.display = "none";
+            mDelete.style.display = "none";
+            }
+            function monthAdd() {
+            var mDisplay = document.getElementById("monthlyComments");
+            var mAdd = document.getElementById("monthlyAdd");
+            var mEdit = document.getElementById("monthlyEdit");
+            var mDelete = document.getElementById("monthlyDelete");
+
+            mDisplay.style.display = "none";
+            mAdd.style.display = "block";
+            mEdit.style.display = "none";
+            mDelete.style.display = "none";
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+
+            $("#monthlyAdd").html("").html(snippet);
+            }
+            function monthEdit() {
+            var mDisplay = document.getElementById("monthlyComments");
+            var mAdd = document.getElementById("monthlyAdd");
+            var mEdit = document.getElementById("monthlyEdit");
+            var mDelete = document.getElementById("monthlyDelete");
+
+            mDisplay.style.display = "none";
+            mAdd.style.display = "none";
+            mEdit.style.display = "block";
+            mDelete.style.display = "none";
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+
+            $("#monthlyEdit").html("").html(snippet);
+            }
+            function monthDelete() {
+            var mDisplay = document.getElementById("monthlyComments");
+            var mAdd = document.getElementById("monthlyAdd");
+            var mEdit = document.getElementById("monthlyEdit");
+            var mDelete = document.getElementById("monthlyDelete");
+
+            mDisplay.style.display = "none";
+            mAdd.style.display = "none";
+            mEdit.style.display = "none";
+            mDelete.style.display = "block";
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+
+            $("#monthlyDelete").html("").html(snippet);
+
+            }
+
+            function yearDisplay() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+            yDisplay.style.display = "block";
+            yAdd.style.display = "none";
+            yEdit.style.display = "none";
+            yDelete.style.display = "none";
+            }
+            function yearAdd() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+
+            $("#yearlyAdd").html("").html(snippet);
+
+            yDisplay.style.display = "none";
+            yAdd.style.display = "block";
+            yEdit.style.display = "none";
+            yDelete.style.display = "none";
+            }
+            function yearEdit() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+
+            $("#yearlyEdit").html("").html(snippet);
+
+            yDisplay.style.display = "none";
+            yAdd.style.display = "none";
+            yEdit.style.display = "block";
+            yDelete.style.display = "none";
+
+            }
+            function yearDelete() {
+            var yDisplay = document.getElementById("yearlyComments");
+            var yAdd = document.getElementById("yearlyAdd");
+            var yEdit = document.getElementById("yearlyEdit");
+            var yDelete = document.getElementById("yearlyDelete");
+
+            var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
+
+            $("#yearlyDelete").html("").html(snippet);
+
+            yDisplay.style.display = "none";
+            yAdd.style.display = "none";
+            yEdit.style.display = "none";
+            yDelete.style.display = "block";
+
+
+            }
+            //Function for building display comments. 1 function.
+            function addComment(container, siteName, commentText) {
+            var strongElement = document.createElement('strong');
+            strongElement.style.minWidth = '120px'; // Set a minimum width for the site name portion
+            strongElement.textContent = siteName + ' : ';
+
+            var comment = document.createTextNode(commentText);
+
+            container.appendChild(strongElement);
+            container.appendChild(comment);
+            container.appendChild(document.createElement('br')); // Add a line break after each comment
+            }
+            var monthlyComments = document.getElementById('monthlyComments');
+            var yearlyComments = document.getElementById('yearlyComments');
+            //Add some example comments
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
+            addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
+            addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
+            addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
+            addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
+            addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
+            addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
+            addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
+            addComment(yearlyComments, 'Gurvepalli', 'Comment 2 for section 2');
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+@*
+             <div class="row">
+                <div class="col-sm-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                        <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                                    </div>
+                                </div>
+                            </div>
+                <div>
+                    <input type="text" />
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()">
+                    <i class="fas fa-plus" style="font-size: 18px;"></i>
+                </div>
+            </div>
+
+             <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div>
+         -------------
+
+
+
+     <div class="d-flex justify-content-end">
+        <select class="form-control col-sm-3" style="height: 40px; margin-left: 10px;">
+            <option value="" disabled selected>Select BD type.</option>
+            <option value="egb">EGB</option>
+            <option value="bd">BD</option>
+            <option value="other">Other</option>
+        </select>
+    </div>
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="form-group">
+                <div class="row" style="position: relative; width: 100%;">
+                    <label class="col-sm-2 col-form-label text-right">Site :</label>
+                    <select class="form-control col-sm-6" id="sitesM" name="site[]" style="height: 40px;"></select>
+                    <input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
+            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+            <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
+        </div>
+        <div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()">
+            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+            <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
+        </div>
+    </div>
+    <br>
+    <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
+
+
+             <div class="row">
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <div class="row" style="position: relative; width: 100%;">
+                        <label class="col-sm-2 col-form-label text-right">Site :</label>
+                        <select class="form-control col-sm-3" style="height: 40px;"></select>
+                        <select class="form-control col-sm-3" style="height: 40px; margin-left: 10px;">
+                            <option value="" disabled selected>Select BD type.</option>
+                            <option value="egb">EGB</option>
+                            <option value="bd">BD</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 420px;" />
+                        <div class="d-flex justify-content-end" style="margin-left: 10px;">
+                            <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
+                                <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
+                            </div>
+                            <div style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite()">
+                                <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>
+
+
+
+
+
+
+*@
+
+
+
+
+@*
+         dummy code functionality.
+         <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Dynamic Dropdowns and Inputs</title>
+      <style>
+        .dropdown-set {
+          margin-bottom: 10px;
+        }
+
+        #output {
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+
+      <div id="dropdownContainer">
+        <!-- Initial Set -->
+        <div class="dropdown-set">
+          <label for="dropdown1">Site:</label>
+          <select id="dropdown1" name="sites[]">
+            <option value="274">Devgarh</option>
+            <option value="222">Dangri</option>
+            <option value="234">Badnawar</option>
+            <option value="255">Gurvepalli</option>
+          </select>
+          <input type="text" name="remarks[]" placeholder="Remark">
+        </div>
+      </div>
+
+      <button onclick="addDropdownSet()">Add Set</button>
+      <button onclick="saveData()">Save</button>
+
+      <div id="output"></div>
+
+      <script>
+        function addDropdownSet() {
+          // Clone the last dropdown set
+          var lastDropdownSet = document.querySelector('.dropdown-set:last-child');
+          var newDropdownSet = lastDropdownSet.cloneNode(true);
+
+          // Update the IDs of the new set
+          var dropdownCount = document.querySelectorAll('.dropdown-set').length + 1;
+          newDropdownSet.querySelector('label').textContent = 'Site:';
+          newDropdownSet.querySelector('select').id = 'dropdown' + dropdownCount;
+          newDropdownSet.querySelector('input').placeholder = 'Remark';
+
+
+          // Append the new set to the container
+          document.getElementById('dropdownContainer').appendChild(newDropdownSet);
+        }
+
+        function saveData() {
+          var dropdownSets = document.querySelectorAll('.dropdown-set');
+          var data = [];
+
+          dropdownSets.forEach(function(set) {
+            var siteSelect = set.querySelector('select');
+            var remarkInput = set.querySelector('input');
+
+            var siteValue = siteSelect.value;
+            var remarkValue = remarkInput.value;
+
+            data.push({ site: siteValue, remark: remarkValue });
+          });
+
+          // Display the collected data below the buttons
+          var outputDiv = document.getElementById('output');
+          outputDiv.innerHTML = '<h2>Collected Data:</h2>';
+          data.forEach(function(entry, index) {
+            outputDiv.innerHTML += '<p>Set ' + (index + 1) + ': Site ' + entry.site + ', Remark ' + entry.remark + '</p>';
+          });
+        }
+      </script>
+
+    </body>
+    </html>
+
+
+
+
+
+*@

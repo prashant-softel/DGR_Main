@@ -81,4 +81,11 @@ namespace DGRAPIs.Models
         public double loadShedding { get; set; }
         public int monthlyData { get; set; }
     }
+    public class TMLCountComparision
+    {
+        public Int64 realCount { get; set; }
+        public Int64 expected_TML { get; set; }
+        public Int64 actual_TML {get;set;}
+        public Int64 wtg_count {get;set;}
+    }
 }
