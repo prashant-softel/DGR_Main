@@ -81,6 +81,10 @@
     .anychart-credits {
         display: none !important;
     }
+    .table-condensed thead tr:nth-child(2),
+    .table-condensed tbody td.day {
+        display: none;
+    }
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -100,8 +104,8 @@
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                             @*<input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">*@
-                            <input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2023-09" style="border: 1px solid #aaa" />
+                             <input type="text" class="form-control float-right col-sm-6" value="" id="daterange" name="daterange">
+                            @*<input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2023-09" style="border: 1px solid #aaa" />*@
 
                         </div>
                     </div>
@@ -451,11 +455,14 @@
     var siteType = 2; //site_type = 1 Solar, 2 : Wind
 
     $(document).ready(function () {
-    $('#daterange').daterangepicker({
-        maxDate: new Date(),
-        locale: {
-        format: 'DD/MM/YYYY',
-        }
+        $('#daterange').daterangepicker({
+            maxDate: new Date(),
+            minDate: '2013-01',
+            singleDatePicker: true,
+            showDropdowns: true,
+            locale: {
+                format: 'YYYY-MM',
+            }
     });
 
     $("#hide").click(function () {
@@ -473,7 +480,7 @@
     var currentYearMonth = currentDate.toISOString().slice(0, 7);
 
     // Set the max attribute dynamically
-    document.getElementById('daterang').setAttribute('max', currentYearMonth);
+    //document.getElementById('daterang').setAttribute('max', currentYearMonth);
 
     function getMonthRange(yearMonth) {
         const [year, month] = yearMonth.split('-');
@@ -537,10 +544,8 @@
             spv += $(this).val() + ",";
         });
         document.getElementById("loader").style.display = 'flex';
-        /*document.getElementById("CloseViewTableBtn").style.display = 'none';*/
-        //document.getElementById("DailyGenView").style.display = 'none';
         //console.log(site_id);
-        var dval = document.getElementById("daterang");
+        var dval = document.getElementById("daterange");
         nDval = dval.value;
         //console.log("364 line : ",nDval);
         var daterange = getMonthRange(nDval);
@@ -562,10 +567,6 @@
 
         //Function call to get the chart data monthly.
         getChartData(site_id, fromDate, toDate);
-        //setTimeout(() => {
-        //    getChartDataYearly(site_id);
-        //}, 2000);
-        //getChartDataYearly(site_id);
     }
 
     function GetSPV(fliterVal) {
@@ -650,12 +651,6 @@
             }
             });
             }
-
-            //function closeTableData() {
-            //    document.getElementById("viewTableBtn").style.display = 'flex';
-            //    document.getElementById("DailyGenView").style.display = 'none';
-            //    document.getElementById("CloseViewTableBtn").style.display = 'none';
-            //}
 
             var data = [];
             function getChartData(site_id, fromDate, toDate) {
@@ -769,10 +764,6 @@
             }
             });
 
-
-            //console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
-            //monthlychart(data);
-
             }
 
             function getChartDataYearly(site_id) {
@@ -792,7 +783,7 @@
             var data_Array1 = [];
             document.getElementById("loader").style.display = 'flex';
             //document.getElementById("viewTableBtn").style.display = 'flex';
-                var dval = document.getElementById("daterang");
+                var dval = document.getElementById("daterange");
                 var nDval = dval.value;
                 //console.log(nDval);
                 var daterange = getMonthRange(nDval);
@@ -805,14 +796,6 @@
             var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
             var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
 
-            //var dateParts = fromDate.split('-');
-            //var year = parseInt(dateParts[0]);
-            //year -= 1;
-            //var newDate = new Date(year, dateParts[1] - 1, dateParts[2]);
-            //var newFromDate = newDate.toISOString().slice(0, 10);
-            //console.log("Yearly Report From date : " + newFromDate + " To date : " + toDate);
-
-            //console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
             var fromToDates = getFinancialYearDates(toDate);
             //console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
 
@@ -890,10 +873,6 @@
             }
             }
             });
-
-
-            //console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final, " Load Shedding : ", loadShedding);
-            //monthlychart(data);
 
             }
 
@@ -1297,11 +1276,11 @@
 
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetOPCommentsMonthly", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=0' + '&spv=' + spv,
+                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=0' + '&spv=' + spv,
                 datatype: "html",
                 success: function (result, status, xhr) {
-                    console.log("Display Result : ");
-                    console.log(result);
+                    //console.log("Display Result : ");
+                    //console.log(result);
 
                     var EGB = []; //bdType = 1
                     var BD = []; //bdType = 2
@@ -1316,10 +1295,10 @@
                             Other.push(result[k]);
                         }
                     }
-                    console.log("After 3 different arrays : ");
-                    console.log(EGB);
-                    console.log(BD);
-                    console.log(Other);
+                    //console.log("After 3 different arrays : ");
+                    //console.log(EGB);
+                    //console.log(BD);
+                    //console.log(Other);
                     var EGB_div = document.getElementById("DMC_EGB");
                     var BD_div = document.getElementById("DMC_BD");
                     var Other_div = document.getElementById("DMC_Other");
@@ -1524,31 +1503,12 @@
     //Get remaining sites for the first BD set site dropdown.
     function getSiteForMonthAdd(fliterVal, siteDiv, BDSetCount) {
         //console.log("Inside getsiteforAddComments siteDiv: " + siteDiv + " BDSetCount : " + BDSetCount);
-        var site_ids = "";
-        if (fliterVal == false) {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        let state_id = "";
-        $('select#state option:selected').each(function () {
-            state_id += $(this).val() + ",";
-        });
-        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
 
-        let spv = "";
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (state_id != "" || spv != "") {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        //month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId
-
-        var dval = document.getElementById("daterang");
+        var dval = document.getElementById("daterange");
         var nDval = dval.value;
         const dateparseRes = parseDate(nDval);
         var month_nos = dateparseRes.monthNumber;
-        console.log(month_nos);
+        //console.log(month_nos);
         var year = dateparseRes.year;
         var ele = ACM_info[BDSetCount];
 
@@ -1699,7 +1659,7 @@
 
             var userName =  "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
             var role =  "@HttpContextAccessor.HttpContext.Session.GetString("role")";
-            var dval = document.getElementById("daterang");
+            var dval = document.getElementById("daterange");
             var YearMonth = dval.value;
             var temp = YearMonth.split("-");
             var year1 = Number(temp[0]);
@@ -1868,7 +1828,7 @@
     function EMCOnchange() {
         var BD_dropdown = document.getElementById("ECM_BDSelect");
         var BD_value = BD_dropdown.value;
-        console.log("BD value selected in Edit is : " + BD_value);
+        //console.log("BD value selected in Edit is : " + BD_value);
         var temDate = nDval.split("-");
 
         var backButton = document.getElementById("backBtnECM");
@@ -1880,7 +1840,7 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPCommentsMonthly", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -1890,15 +1850,19 @@
                 console.log(ECM_data);
                 var destContainer = document.getElementById("ECM_content");
                 destContainer.innerHTML = "";
-
-                ECM_data.forEach((elem, index) => createUI(elem, destContainer, index));
+                if (ECM_data.length > 0) {
+                    ECM_data.forEach((elem, index) => createUI(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments to Edit.";
+                }
+                
                 var containerDiv = document.createElement('div');
                 containerDiv.className = 'd-flex justify-content-center';
 
                 // Create the Save button
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
-                saveButton.onclick = DCMSaveButton;
+                saveButton.onclick = ECMSaveButton;
                 saveButton.textContent = "Save";
 
                 // Create the Cancel button
@@ -1956,8 +1920,8 @@
     }
 
     function ECMSaveButton() {
-        console.log("Edit save button just after save : ");
-        console.log(ECM_data);
+        //console.log("Edit save button just after save : ");
+        //console.log(ECM_data);
         var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
         var anyChanges = [];
         var ECMFinalData = []
@@ -2048,7 +2012,7 @@
     function DMCOnchange() {
         var BD_dropdown = document.getElementById("DCM_BDSelect");
         var BD_value = BD_dropdown.value;
-        console.log("BD value selected in Delete is : " + BD_value);
+        //console.log("BD value selected in Delete is : " + BD_value);
         var temDate = nDval.split("-");
 
         var backButton = document.getElementById("backBtnDCM");
@@ -2060,7 +2024,7 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPCommentsMonthly", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -2071,7 +2035,12 @@
                 var destContainer = document.getElementById("DCM_content");
                 destContainer.innerHTML = "";
 
-                DCM_data.forEach((elem, index) => createDeleteUI(elem, destContainer, index));
+                if (DCM_data.length > 0) {
+                    DCM_data.forEach((elem, index) => createDeleteUI(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments to delete.";
+                }
+                
 
                 var containerDiv = document.createElement('div');
                 containerDiv.className = 'd-flex justify-content-center';
@@ -2109,7 +2078,19 @@
 
         var siteLabel = document.createElement('label');
         siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
-        siteLabel.textContent = element.site;
+        //siteLabel.textContent = element.site;
+        var textContent = (isSPV == 0) ? element.spv : element.site;
+        if (isSPV == 0) {
+            var marquee = document.createElement('marquee');
+            marquee.textContent = textContent;
+            marquee.direction = "left";
+            marquee.behavior = "scroll";
+            marquee.scrollAmount = "3";
+            siteLabel.appendChild(marquee);
+        }
+        else {
+            siteLabel.textContent = textContent;
+        }
         siteLabel.id = "DCMLabel" + index;
         element.label_id = "DCMLabel" + index;
 
@@ -2159,11 +2140,11 @@
     }
 
     function DCMSaveButton() {
-        console.log("Edit save button just after save : ");
-        console.log(DCM_data);
-        console.log("data after save delete :");
-        console.log(DCM_deleteData);
-        console.log(DCM_index);
+        //console.log("Edit save button just after save : ");
+        //console.log(DCM_data);
+        //console.log("data after save delete :");
+        //console.log(DCM_deleteData);
+        //console.log(DCM_index);
         if (DCM_index.length > 0) {
             //Data is there for delete.
             var deletedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
@@ -2246,9 +2227,6 @@
 
     }
 
-
-
-
     //ALL for Display Year Comments. (DYC).
     // Display year commets main function.
     function DYC(site_id, spv, nDval) {
@@ -2281,7 +2259,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetOPCommentsMonthly", "WindReport")' + '?month_no = ' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=1' + '&spv=' + spv ,
+                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no = ' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=1' + '&spv=' + spv ,
                 datatype: "html",
                 success: function (result, status, xhr) {
                     console.log("Display Result Yearly  : ");
@@ -2300,10 +2278,10 @@
                             Other.push(result[k]);
                         }
                     }
-                    //console.log("After 3 different arrays Yearly : ");
-                    //console.log(EGB);
-                    //console.log(BD);
-                    //console.log(Other);
+                    console.log("After 3 different arrays Yearly : ");
+                    console.log(EGB);
+                    console.log(BD);
+                    console.log(Other);
                     var EGBY_div = document.getElementById("DYC_EGB");
                     var BDY_div = document.getElementById("DYC_BD");
                     var OtherY_div = document.getElementById("DYC_Other");
@@ -2437,7 +2415,7 @@
         elementTemp = ACY_info[BDSet];
         var dropId = elementTemp.bdSelectDD;
         var selectedValue = document.getElementById(dropId).value;
-        console.log("inside year onchange BD select : " + selectedValue);
+        //console.log("inside year onchange BD select : " + selectedValue);
 
         getSiteForYearAdd(true, selectedValue, BDSet)
         var backButton = document.getElementById("backBtnACY");
@@ -2508,58 +2486,63 @@
 
     //Get remaining sites for the first BD set site dropdown.
     function getSiteForYearAdd(fliterVal, siteDiv, BDSetCount) {
-        console.log("Inside getsiteforAddComments year siteDiv: " + siteDiv + " BDSetCount : " + BDSetCount);
-        var site_ids = "";
-        if (fliterVal == false) {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        let state_id = "";
-        $('select#state option:selected').each(function () {
-            state_id += $(this).val() + ",";
-        });
-        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
-
-        let spv = "";
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (state_id != "" || spv != "") {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        //month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId
-
-        var dval = document.getElementById("daterang");
+        //console.log("Inside getsiteforAddComments year siteDiv: " + siteDiv + " BDSetCount : " + BDSetCount);
+           
+        var dval = document.getElementById("daterange");
         var nDval = dval.value;
         const dateparseRes = parseDate(nDval);
         var month_nos = dateparseRes.monthNumber;
-        console.log(month_nos);
+        //console.log(month_nos);
         var year = dateparseRes.year;
         var ele = ACY_info[BDSetCount];
 
         var bdTypes = Number(document.getElementById(ele.bdSelectDD).value);
         //console.log("BD type Selected is : " + bdTypes);
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&bdTypes=' + bdTypes + '&isMonthly=1',
-            contentType: "application/json; charset=utf-8",
-            datatype: "html",
-            success: function (result, status, xhr) {
-                var options = "";
-                console.log(result);
-                ele.siteArray = [...result];
-                ele.totalSiteCount = result.length;
+        if (isSPV == 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPGetSpvListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&bdTypes=' + bdTypes + '&isMonthly=1',
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "";
+                    //console.log(result);
+                    ele.siteArray = [...result];
+                    ele.totalSiteCount = result.length;
 
-                //after this the current BD selection Drop down should be disabled.
-                for (var k = 0; k < result.length; k++) {
-                    options += '<option value="' + result[k].site_id + '">' + result[k].site + '</option>';
+                    //after this the current BD selection Drop down should be disabled.
+                    for (var k = 0; k < result.length; k++) {
+                        options += '<option value="' + result[k].spv + '">' + result[k].spv + '</option>';
+                    }
+                    //$("#sitesM").multipleSelect('destroy');
+                    var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
+                    //console.log("destination dropdoen name : " + DestTemp);
+                    $(DestTemp).html("").html(options);
                 }
-                //$("#sitesM").multipleSelect('destroy');
-                var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
-                //console.log("destination dropdoen name : " + DestTemp);
-                $(DestTemp).html("").html(options);
-            }
-        });
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&bdTypes=' + bdTypes + '&isMonthly=1',
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "";
+                    console.log(result);
+                    ele.siteArray = [...result];
+                    ele.totalSiteCount = result.length;
+
+                    //after this the current BD selection Drop down should be disabled.
+                    for (var k = 0; k < result.length; k++) {
+                        options += '<option value="' + result[k].site_id + '">' + result[k].site + '</option>';
+                    }
+                    //$("#sitesM").multipleSelect('destroy');
+                    var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
+                    //console.log("destination dropdoen name : " + DestTemp);
+                    $(DestTemp).html("").html(options);
+                }
+            });
+        }
     }
 
     // Function to add a new set of site dropdown and input fields
@@ -2588,28 +2571,55 @@
 
             if (thisElement.siteCount > 1) {
                 //get prevoious dropdown id
-                var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
-                //console.log("previous site DD Id" + previous_siteDD);
+                if (isSPV == 1) {
+                    //site wise
+                    var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
+                    //console.log("previous site DD Id" + previous_siteDD);
 
-                var selectedValue = document.getElementById(previous_siteDD).value;
-                //console.log('Selected Value:', selectedValue);
+                    var selectedValue = document.getElementById(previous_siteDD).value;
+                    //console.log('Selected Value:', selectedValue);
 
-                // Find the index of the element with site_id equal to
-                var indexToRemove = thisElement.siteArray.findIndex(function (site) {
-                    return site.site_id === Number(selectedValue);
-                });
+                    // Find the index of the element with site_id equal to
+                    var indexToRemove = thisElement.siteArray.findIndex(function (site) {
+                        return site.site_id === Number(selectedValue);
+                    });
 
-                // If the element is found, remove it using splice
-                if (indexToRemove !== -1) {
-                    thisElement.siteArray.splice(indexToRemove, 1);
+                    // If the element is found, remove it using splice
+                    if (indexToRemove !== -1) {
+                        thisElement.siteArray.splice(indexToRemove, 1);
+                    }
+
+                    var optionss = "";
+                    for (var k = 0; k < thisElement.siteArray.length; k++) {
+                        optionss += '<option value="' + thisElement.siteArray[k].site_id + '">' + thisElement.siteArray[k].site + '</option>';
+                    }
+                    var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
+                    $(siteSelectTem).html("").html(optionss);
+                } else {
+                    //SPV wise
+                    var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
+                    //console.log("previous site DD Id" + previous_siteDD);
+
+                    var selectedValue = document.getElementById(previous_siteDD).value;
+                    //console.log('Selected Value:', selectedValue);
+
+                    // Find the index of the element with site_id equal to
+                    var indexToRemove = thisElement.siteArray.findIndex(function (site) {
+                        return site.spv === selectedValue;
+                    });
+
+                    // If the element is found, remove it using splice
+                    if (indexToRemove !== -1) {
+                        thisElement.siteArray.splice(indexToRemove, 1);
+                    }
+
+                    var optionss = "";
+                    for (var k = 0; k < thisElement.siteArray.length; k++) {
+                        optionss += '<option value="' + thisElement.siteArray[k].spv + '">' + thisElement.siteArray[k].spv + '</option>';
+                    }
+                    var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
+                    $(siteSelectTem).html("").html(optionss);
                 }
-
-                var optionss = "";
-                for (var k = 0; k < thisElement.siteArray.length; k++) {
-                    optionss += '<option value="' + thisElement.siteArray[k].site_id + '">' + thisElement.siteArray[k].site + '</option>';
-                }
-                var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
-                $(siteSelectTem).html("").html(optionss);
             }
             //console.log("ACY_info array after inserting site set.");
             //console.log(ACY_info);
@@ -2633,7 +2643,7 @@
 
             var userName = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
             var role = "@HttpContextAccessor.HttpContext.Session.GetString("role")";
-            var dval = document.getElementById("daterang");
+            var dval = document.getElementById("daterange");
             var YearMonth = dval.value;
             var temp = YearMonth.split("-");
             var year1 = Number(temp[0]);
@@ -2648,20 +2658,42 @@
 
 
             for (var j = 1; j <= BDelement.siteCount; j++) {
-                var eachData = {
-                    //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
-                    "month": month,
-                    "month_no": month_no,
-                    "year": year1,
-                    "type": type,
-                    "site_id": Number(document.getElementById((BDelement.siteSelectDD + "_" + j)).value),
-                    "bd_type": Number(bdType),
-                    "isDeleted": isDeleted,
-                    "isMonthly": isMonthly,
-                    "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
-                    "added_by": addedBy,
-                    "updated_by": updatedBy,
+                var eachData = {};
+                if (isSPV == 0) {
+                    eachData = {
+                        //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
+                        "month": month,
+                        "month_no": month_no,
+                        "year": year1,
+                        "type": type,
+                        "site_id": 0,
+                        "bd_type": Number(bdType),
+                        "isDeleted": isDeleted,
+                        "isMonthly": isMonthly,
+                        "isSPV": Number(isSPV),
+                        "SPV": document.getElementById((BDelement.siteSelectDD + "_" + j)).value,
+                        "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                        "added_by": addedBy,
+                        "updated_by": updatedBy,
+                    }
+                } else {
+                    eachData = {
+                        //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
+                        "month": month,
+                        "month_no": month_no,
+                        "year": year1,
+                        "type": type,
+                        "site_id": Number(document.getElementById((BDelement.siteSelectDD + "_" + j)).value),
+                        "bd_type": Number(bdType),
+                        "isDeleted": isDeleted,
+                        "isMonthly": isMonthly,
+                        "isSPV": Number(isSPV),
+                        "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                        "added_by": addedBy,
+                        "updated_by": updatedBy,
+                    }
                 }
+                
                 ACYFinalData.push(eachData);
             }
         }
@@ -2779,7 +2811,7 @@
     function EYCOnchange() {
         var BD_dropdown = document.getElementById("ECY_BDSelect");
         var BD_value = BD_dropdown.value;
-        console.log("BD value selected in Edit Year is : " + BD_value);
+        //console.log("BD value selected in Edit Year is : " + BD_value);
         var temDate = nDval.split("-");
 
         var backButton = document.getElementById("backBtnECY");
@@ -2791,21 +2823,24 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPCommentsMonthly", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1'  + '&isMonthly=1',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1'  + '&isMonthly=1',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
                 ECY_data = [];
                 ECY_data = [...result];
-                console.log("Display Edit Result : ");
-                console.log(ECY_data);
+                //console.log("Display Edit Result : ");
+                //console.log(ECY_data);
                 var destContainer = document.getElementById("ECY_content");
                 destContainer.innerHTML = "";
 
-                ECY_data.forEach((elem, index) => createUIYear(elem, destContainer, index));
+                if (ECY_data.length > 0) {
+                    ECY_data.forEach((elem, index) => createUIYear(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments to Edit.";
+                }
                 var containerDiv = document.createElement('div');
                 containerDiv.className = 'd-flex justify-content-center';
-
                 // Create the Save button
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
@@ -2836,7 +2871,18 @@
 
         var siteLabel = document.createElement('label');
         siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
-        siteLabel.textContent = element.site;
+        var textContent = (isSPV == 0) ? element.spv : element.site;
+        if (isSPV == 0) {
+            var marquee = document.createElement('marquee');
+            marquee.textContent = textContent;
+            marquee.direction = "left";
+            marquee.behavior = "scroll";
+            marquee.scrollAmount = "3";
+            siteLabel.appendChild(marquee);
+        }
+        else {
+            siteLabel.textContent = textContent;
+        }
         siteLabel.id = "ECYLabel" + index;
         element.label_id = "ECYLabel" + index;
 
@@ -2855,8 +2901,8 @@
     }
 
     function ECYSaveButton() {
-        console.log("Edit Year save button just after save : ");
-        console.log(ECY_data);
+        //console.log("Edit Year save button just after save : ");
+        //console.log(ECY_data);
         var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
         var anyChanges = [];
         var ECYFinalData = []
@@ -2959,7 +3005,7 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPCommentsMonthly", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=1',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=1',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -2970,7 +3016,11 @@
                 var destContainer = document.getElementById("DCY_content");
                 destContainer.innerHTML = "";
 
-                DCY_data.forEach((elem, index) => createDeleteUIYear(elem, destContainer, index));
+                if (DCY_data.length > 0) {
+                    DCY_data.forEach((elem, index) => createDeleteUIYear(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments for Deletion.";
+                }
 
                 var containerDiv = document.createElement('div');
                 containerDiv.className = 'd-flex justify-content-center';
@@ -2978,7 +3028,7 @@
                 // Create the Save button
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
-                saveButton.onclick = DCMSaveButton;
+                saveButton.onclick = DCYSaveButton;
                 saveButton.textContent = "Save";
 
                 // Create the Cancel button
@@ -3008,7 +3058,18 @@
 
         var siteLabel = document.createElement('label');
         siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
-        siteLabel.textContent = element.site;
+        var textContent = (isSPV == 0) ? element.spv : element.site;
+        if (isSPV == 0) {
+            var marquee = document.createElement('marquee');
+            marquee.textContent = textContent;
+            marquee.direction = "left";
+            marquee.behavior = "scroll";
+            marquee.scrollAmount = "3";
+            siteLabel.appendChild(marquee);
+        }
+        else {
+            siteLabel.textContent = textContent;
+        }
         siteLabel.id = "DCYLabel" + index;
         element.label_id = "DCYLabel" + index;
 
@@ -3058,15 +3119,15 @@
     }
 
     function DCYSaveButton() {
-        console.log("Edit Year save button just after save : ");
-        console.log(DCY_data);
-        console.log("data after save delete :");
-        console.log(DCY_deleteData);
-        console.log(DCY_index);
+        //console.log("Edit Year save button just after save : ");
+        //console.log(DCY_data);
+        //console.log("data after save delete :");
+        //console.log(DCY_deleteData);
+        //console.log(DCY_index);
         if (DCY_index.length > 0) {
             //Data is there for delete.
             var deletedBy = @HttpContextAccessor.HttpContext.Session.GetString("userid"); //userId.
-            console.log("User Id of the deletor : " + deletedBy);
+            //console.log("User Id of the deletor : " + deletedBy);
             for (var k = 0; k < DCY_deleteData.length; k++) {
                 DCY_deleteData[k].deleted_by = deletedBy;
                 DCY_deleteData[k].isSPV = Number(DCY_deleteData[k].isSPV);
@@ -3097,7 +3158,6 @@
             // No changes, call toast function
             showToast("No Comments Selected to Delete.", 7000, "DCY");
         }
-
     }
 
     function returnHomeYear(functionality, isUpdateCancel) {
@@ -3146,76 +3206,6 @@
 
     }
 
-
-
-
-
-
-    //function yearDisplay() {
-    //        var yDisplay = document.getElementById("yearlyComments");
-    //        var yAdd = document.getElementById("yearlyAdd");
-    //        var yEdit = document.getElementById("yearlyEdit");
-    //        var yDelete = document.getElementById("yearlyDelete");
-
-    //        yDisplay.style.display = "block";
-    //        yAdd.style.display = "none";
-    //        yEdit.style.display = "none";
-    //        yDelete.style.display = "none";
-    //        }
-    //function yearAdd() {
-    //        var yDisplay = document.getElementById("yearlyComments");
-    //        var yAdd = document.getElementById("yearlyAdd");
-    //        var yEdit = document.getElementById("yearlyEdit");
-    //        var yDelete = document.getElementById("yearlyDelete");
-
-    //            getSiteForYearAdd(true);
-    //            var snippet = '<h5>Yearly Add division</h5></br><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" id="sites" name="site[]" multiple style="height: 40px;"></select><input type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /></div></div></div></div></br><div class="row"><div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1;" onmouseover="this.style.opacity= 0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px;"></i></div></div></br><button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-
-    //            //'<h5>Yearly Add division</h5> </br> <div class="row"> <div class="col-sm-3"> <div class="form-group"> <div class="row"> <label class="col-sm-2 col-form-label text-right">Site : </label> <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select> </div> </div> </div> <div> <input type="text" /> </div> </div> </br> <div class="row"> <div style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px;"></i> </div> </div> </br>  <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-    //        $("#yearlyAdd").html("").html(snippet);
-
-    //        yDisplay.style.display = "none";
-    //        yAdd.style.display = "block";
-    //        yEdit.style.display = "none";
-    //        yDelete.style.display = "none";
-    //        }
-    //function yearEdit() {
-    //        var yDisplay = document.getElementById("yearlyComments");
-    //        var yAdd = document.getElementById("yearlyAdd");
-    //        var yEdit = document.getElementById("yearlyEdit");
-    //        var yDelete = document.getElementById("yearlyDelete");
-
-    //        var snippet = '<h5>Yearly Edit division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-
-    //        $("#yearlyEdit").html("").html(snippet);
-
-    //        yDisplay.style.display = "none";
-    //        yAdd.style.display = "none";
-    //        yEdit.style.display = "block";
-    //        yDelete.style.display = "none";
-
-    //        }
-    //function yearDelete() {
-    //        var yDisplay = document.getElementById("yearlyComments");
-    //        var yAdd = document.getElementById("yearlyAdd");
-    //        var yEdit = document.getElementById("yearlyEdit");
-    //        var yDelete = document.getElementById("yearlyDelete");
-
-    //        var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="yearDisplay()">Save</button>';
-
-    //        $("#yearlyDelete").html("").html(snippet);
-
-    //        yDisplay.style.display = "none";
-    //        yAdd.style.display = "none";
-    //        yEdit.style.display = "none";
-    //        yDelete.style.display = "block";
-
-
-    //}
-    //function yearAddBD() {
-
-    //}
-
     function parseDate(dateString) {
         const [year, month] = dateString.split('-');
 
@@ -3236,106 +3226,15 @@
         };
     }
 
-
-    @*function getSiteForYearAdd(fliterVal) {
-        var site_ids = "";
-        if (fliterVal == false) {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        let state_id = "";
-        $('select#state option:selected').each(function () {
-            state_id += $(this).val() + ",";
-        });
-        state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
-
-        let spv = "";
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
-        spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (state_id != "" || spv != "") {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-        //month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&siteId" + siteId
-
-        var dval = document.getElementById("daterang");
-        var nDval = dval.value;
-        const dateparseRes = parseDate(nDval);
-        var month_nos = dateparseRes.monthNumber;
-        console.log(month_nos);
-        var year = dateparseRes.year;
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 2 + '&siteId' + site_ids,
-            contentType: "application/json; charset=utf-8",
-            datatype: "html",
-            success: function (result, status, xhr) {
-                var options = "";
-                for (var k = 0; k < result.length; k++) {
-                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
-                }
-                $("#sites").multipleSelect('destroy');
-                $("#sites").html("").html(options);
-
-                $('select#sites').multipleSelect({
-                    "minimumCountSelected": 2,
-                    "placeholder": "Select Site(s)",
-                    filter: true
-                });
-            }
-        });
-    }*@
-
-
-            //Function for building display comments. 1 function.
-            function addComment(container, siteName, commentText) {
-            var strongElement = document.createElement('strong');
-            strongElement.style.minWidth = '120px'; // Set a minimum width for the site name portion
-            strongElement.textContent = siteName + ' : ';
-
-            var comment = document.createTextNode(commentText);
-
-            container.appendChild(strongElement);
-            container.appendChild(comment);
-            container.appendChild(document.createElement('br')); // Add a line break after each comment
-            }
-            var monthlyComments = document.getElementById('monthlyComments');
-            var yearlyComments = document.getElementById('yearlyComments');
-            //Add some example comments
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Dangri', 'Comment 1 for section 1');
-            //addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
-            //addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
-            //addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
-            //addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
-            //addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
-            //addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
-            //addComment(monthlyComments, 'Gurvepalli', 'Comment 2 for section 1');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-            addComment(yearlyComments, 'Dangri', 'Comment 1 for section 2');
-    addComment(yearlyComments, 'Gurvepalli', 'Comment 2 for section 2');
-
     function showToast(message, duration, division) {
         // Create the toast element with inline styles
         var toast = document.createElement('div');
         toast.innerHTML = message + '<span onclick="closeToastByClick()" style="cursor: pointer; position: absolute; top: 0; right: 0; padding: 5px;">&times;</span>';
+        //position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgb(238, 64, 61); color: rgb(255, 255, 255); padding: 15px; border-radius: 5px; display: block;
         toast.style.position = 'absolute';
-        toast.style.top = '30%';
-        toast.style.right = '40%';
+        toast.style.top = '50%';
+        toast.style.left = '50%';
+        toast.style.transform = 'translate(-50%, -50%)';
         toast.style.backgroundColor = '#ee403d';
         toast.style.color = '#ffffff';
         toast.style.padding = '15px';

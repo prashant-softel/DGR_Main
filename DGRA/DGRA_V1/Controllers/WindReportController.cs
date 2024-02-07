@@ -816,13 +816,13 @@ namespace DGRA_V1.Controllers
 
         }
 
-        public async Task<IActionResult> GetOPCommentsMonthly(int month_no, int year, int siteType, string site_id, int isSPV, string spv, int bdType, int isDisplay, int isMonthly)
+        public async Task<IActionResult> GetOPComments(int month_no, int year, int siteType, string site_id, int isSPV, string spv, int bdType, int isDisplay, int isMonthly)
         {
             string line = "";
             //?month_no =' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetOPCommentsMonthly?month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&spv=" + spv + "&site_id=" + site_id + "&bdType=" + bdType + "&isDisplay=" + isDisplay + "&isMonthly=" + isMonthly + "&isSpv=" + isSPV;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetOPComments?month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&spv=" + spv + "&site_id=" + site_id + "&bdType=" + bdType + "&isDisplay=" + isDisplay + "&isMonthly=" + isMonthly + "&isSpv=" + isSPV;
 
                 WebRequest request = WebRequest.Create(url);
 

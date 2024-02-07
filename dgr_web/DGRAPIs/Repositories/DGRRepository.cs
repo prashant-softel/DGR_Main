@@ -16260,7 +16260,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //Fetch Operational Performance Comments Monthly.
-        internal async Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
+        internal async Task<List<OPComments>> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
         {
             string functionName = "GetOPComments";
             //site_type = 1 Solar, 2 : Wind 
@@ -16337,25 +16337,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 LogError(0, 1, 7, functionName, msg, backend);
             }
             
-            return _CommentsData;
-        }
-        //Fetch Operational Performance Comments Yearly.
-        internal async Task<List<OPComments>> GetOPCommentsYearly(string site, string month_no, int year, string spv_id, int siteType)
-        {
-            string functionName = "GetOPComments";
-            //site_type = 1 Solar, 2 : Wind 
-            string fetch_qry = $"SELECT op.month_no, op.year, op.type, op.spv_id, op.BD_type, op.isMonthly, op.comment, sm.site, sm.spv FROM OPComments AS op LEFT JOIN site_master AS sm ON op.site_id = sm.site_master_id WHERE op.site_type = {siteType} AND op.isDeleted = 1 AND op.isMonthly = 1 AND op.site = IN({site}) AND op.month_no IN({month_no}) AND op.year = {year} ORDER BY op.BD_type;";
-            List<OPComments> _CommentsData = new List<OPComments>();
-            try
-            {
-                _CommentsData = await Context.GetData<OPComments>(fetch_qry).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception caught while fetching data from OPComments table due to, " + e.ToString();
-                LogError(0, 1, 7, functionName, msg, backend);
-            }
-
             return _CommentsData;
         }
         //Operational Performance Comments Insert Comment function.

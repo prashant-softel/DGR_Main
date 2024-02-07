@@ -2857,14 +2857,14 @@ namespace DGRAPIs.Controllers
             }
         }
         //Task<List<OPComments>> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType)
-        [Route("GetOPCommentsMonthly")]
+        [Route("GetOPComments")]
         [HttpGet]
-        public async Task<IActionResult> GetOPCommentsMonthly(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
+        public async Task<IActionResult> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
         {
             {
                 try
                 {
-                    var data = await _dgrBs.GetOPCommentsMonthly(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay, isMonthly);
+                    var data = await _dgrBs.GetOPComments(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay, isMonthly);
                     return Ok(data);
 
                 }
