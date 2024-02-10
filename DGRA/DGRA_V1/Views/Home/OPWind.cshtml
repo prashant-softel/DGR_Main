@@ -397,28 +397,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                     @*<div class="rectangle" style="position: absolute; top: 10px; left: 10px; width: 80px; height: 30px; background-color: #fff; border: 1px solid #ccc; text-align: center; line-height: 30px;">
-            Yearly
-        </div>*@
-                                     @*<div class="container" style="flex: 1; overflow-y: auto; margin-top: 20px; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
-            <div class="scrollable-container" id="yearlyComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; "></div>
-            <div class="scrollable-container" id="yearlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h5>Yearly Add division</h5></div>
-            <div class="scrollable-container" id="yearlyEdit" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"><h5>Yearly Edit division</h5></div>
-            <div class="scrollable-container" id="yearlyDelete" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;"></div>
-            <div class="comment-buttons" id="yearCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
-                <div style="display: flex; gap: 13px;">
-                    <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAdd()">
-                        <i class="fas fa-plus" style="font-size: 18px;"></i>
-                    </div>
-                    <div style="width: 40.89px; height: 34.76px; position: relative; background: #FFCA5A; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearEdit()">
-                        <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
-                    </div>
-                    <div style="width: 40.89px; height: 34.76px; position: relative; background: #EE403D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearDelete()">
-                        <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>*@
                                 </div>
                             </div>
                         </div>
@@ -500,27 +478,6 @@
     var state = "";
     var spv = "";
     var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-     @*$.ajax({
-            type: "POST",
-            //url: "/WindReport/GetSiteList",
-            url: '@Url.Action("GetSiteList", "WindReport")' + '?sitelist=' + site_ids,
-            contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
-            datatype: "html",
-            success: function (result, status, xhr) {
-                var options = "";
-                for (var k = 0; k < result.length; k++) {
-                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
-                }
-                $("#site").html(options);
-                $('select#site').multipleSelect({
-                    "minimumCountSelected": 1,
-                    "placeholder": "Select Site(s)",
-                    filter:true
-                });
-            }
-
-        });*@
     GetSPV(false);
     getSite(false);
     }
@@ -679,30 +636,10 @@
             //document.getElementById("loader").style.display = 'none';
             var CloseBtnStatus = "";
             var isMonthlyDataPresent = 0;
-            //CloseBtnStatus = document.getElementById("CloseViewTableBtn").style.display;
-            //console.log("Close btn status : " + CloseBtnStatus + " type " + typeof (CloseBtnStatus));
-            //if (CloseBtnStatus == "flex") {
-            //    document.getElementById("viewTableBtn").style.display = 'none';
-            //}
-            //if (CloseBtnStatus == "none"){
-            //    document.getElementById("viewTableBtn").style.display = 'flex';
-            //}
             getChartDataYearly(site_id);
 
             if (result.length > 0) {
             for (var i = 0; i < result.length; i++) {
-            //console.log("Expected : ", result[i].expected_final);
-            //console.log("LineLoss : ", result[i].lineloss_final);
-            //console.log("Target : ",result[i].target_final);
-            //console.log("USHM : ",result[i].lossUSMH_final);
-            //console.log("SMH : ",result[i].lossSMH_final);
-            //console.log("NC : ",result[i].lossNC_final);
-            //console.log("IGBD : ",result[i].lossIGBD_final);
-            //console.log("EGBD : ",result[i].lossLULL_final);
-            //console.log("LULL : ",result[i].lossPCD_final);
-            //console.log("Actual : ", result[i].actual_final);
-            //console.log("Load Shedding : ", result[i].loadShedding);
-
             expected_final = result[i].expected_final;
             lineloss_final = result[i].lineloss_final;
             target_final = result[i].target_final /1000000;
@@ -728,33 +665,6 @@
             document.getElementById("dataNotPresentDiv").style.display = "flex";
             document.getElementById("Waterfall").style.display = "none";
             }
-
-            //console.log("-------------------------------------------");
-            //console.log("Expected : ", expected_final);
-            //console.log("LineLoss : ", lineloss_final);
-            //console.log("Target : ", target_final);
-            //console.log("USHM : ", lossUSMH_final);
-            //console.log("SMH : ", lossSMH_final);
-            //console.log("NC : ", lossNC_final);
-            //console.log("IGBD : ", lossIGBD_final);
-            //console.log("EGBD : ", lossEGBD_final);
-            //console.log("LULL : ", lossLULL_final);
-            //console.log("PCD : ", lossPCD_final);
-            //console.log("Actual : ", actual_final);
-            //console.log("Load Shedding : ", loadShedding);
-            //data = [
-            //    { x: 'Target', value: target_final.toFixed(1) },
-            //    { x: 'Expected', value: expected_final.toFixed(1) },
-            //    { x: 'USMH', value: lossUSMH_final.toFixed(1) },
-            //    { x: 'SMH', value: lossSMH_final.toFixed(1) },
-            //    { x: 'Other', value: lossNC_final.toFixed(1) },
-            //    { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
-            //    { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
-            //    { x: 'LULL', value: lossLULL_final.toFixed(1) },
-            //    { x: 'PCD', value: lossPCD_final.toFixed(1) },
-            //    { x: 'LineLoss', value: lineloss_final.toFixed(1) },
-            //    { x: 'Actual', value: actual_final.toFixed(1) },
-            //];
             }
             }
             else {
@@ -811,17 +721,6 @@
 
             if (result.length > 0) {
             for (var i = 0; i < result.length; i++) {
-            console.log("Expected : ", result[i].expected_final);
-            console.log("LineLoss : ", result[i].lineloss_final);
-            console.log("Target : ",result[i].target_final);
-            console.log("USHM : ",result[i].lossUSMH_final);
-            console.log("SMH : ",result[i].lossSMH_final);
-            console.log("NC : ",result[i].lossNC_final);
-            console.log("IGBD : ",result[i].lossIGBD_final);
-            console.log("EGBD : ",result[i].lossLULL_final);
-            console.log("LULL : ",result[i].lossPCD_final);
-            console.log("Actual : ", result[i].actual_final);
-            console.log("Load Shedding : ", result[i].loadShedding);
 
             expected_final = result[i].expected_final;
             lineloss_final = result[i].lineloss_final;
@@ -837,34 +736,6 @@
             loadShedding = result[i].loadShedding;
 
             CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
-
-
-            console.log("-------------------------------------------");
-            console.log("Expected : ", expected_final);
-            console.log("LineLoss : ", lineloss_final);
-            console.log("Target : ", target_final);
-            console.log("USHM : ", lossUSMH_final);
-            console.log("SMH : ", lossSMH_final);
-            console.log("NC : ", lossNC_final);
-            console.log("IGBD : ", lossIGBD_final);
-            console.log("EGBD : ", lossEGBD_final);
-            console.log("LULL : ", lossLULL_final);
-            console.log("PCD : ", lossPCD_final);
-            console.log("Actual : ", actual_final);
-            console.log("Load Shedding : ", loadShedding);
-            //data = [
-            //    { x: 'Target', value: target_final.toFixed(1) },
-            //    { x: 'Expected', value: expected_final.toFixed(1) },
-            //    { x: 'USMH', value: lossUSMH_final.toFixed(1) },
-            //    { x: 'SMH', value: lossSMH_final.toFixed(1) },
-            //    { x: 'Other', value: lossNC_final.toFixed(1) },
-            //    { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
-            //    { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
-            //    { x: 'LULL', value: lossLULL_final.toFixed(1) },
-            //    { x: 'PCD', value: lossPCD_final.toFixed(1) },
-            //    { x: 'LineLoss', value: lineloss_final.toFixed(1) },
-            //    { x: 'Actual', value: actual_final.toFixed(1) },
-            //];
             }
             }
             else {
@@ -877,7 +748,6 @@
             }
 
             function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
-            //console.log("Inside create chart function : Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Other : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " LULL : " + total_lull + " PCD : " + total_pcd + " Linesloss : " + total_lineloss + " Actual : " + total_actual + " Load Shedding : " + loadShedding);
             Plotly.purge('Waterfall');
             let total_opExpected = total_expected - total_lineloss;
             let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
@@ -890,15 +760,12 @@
             let t_pcd = Number(total_pcd).toFixed(2);
             let t_oh = Number(total_oh).toFixed(2);
             let t_actual = Number(total_actual).toFixed(2);
-            //let t_lineloss = Number(total_lineloss).toFixed(2);
-            //let t_loadShedding = Number(loadShedding).toFixed(2);
 
 
 
             let tar_percentage = ((total_expected - total_target) / total_target) * 100;
             let exp_percentage = 100;
             let bd_percentage = (total_bd / total_opExpected) * 100;
-            //let loadShedding_percentage = (loadShedding / total_expected) * 100;
             let egbd_percentage = (total_egbd / total_expected) * 100;
             let pcd_percentage = (total_pcd / total_expected) * 100;
             let oh_percentage = (total_oh / total_expected) * 100;
@@ -1225,22 +1092,22 @@
 
             //for card buttons hide and display 4 functions.
             function yearover() {
-            var yearcardButtons = document.getElementById("yearCardButtons");
-            yearcardButtons.style.display = "block";
+                var yearcardButtons = document.getElementById("yearCardButtons");
+                yearcardButtons.style.display = "block";
             }
 
             function yearout() {
-            var yearcardButtons = document.getElementById("yearCardButtons");
-            yearcardButtons.style.display = "none";
+                var yearcardButtons = document.getElementById("yearCardButtons");
+                yearcardButtons.style.display = "none";
             }
             function monthover() {
-            var yearcardButtons = document.getElementById("monthCardButtons");
-            yearcardButtons.style.display = "block";
+                var yearcardButtons = document.getElementById("monthCardButtons");
+                yearcardButtons.style.display = "block";
             }
 
             function monthout() {
-            var yearcardButtons = document.getElementById("monthCardButtons");
-            yearcardButtons.style.display = "none";
+                var yearcardButtons = document.getElementById("monthCardButtons");
+                yearcardButtons.style.display = "none";
             }
 
             //Functions for onclick functionality of buttons. 6 functions.
@@ -1504,8 +1371,8 @@
     function getSiteForMonthAdd(fliterVal, siteDiv, BDSetCount) {
         //console.log("Inside getsiteforAddComments siteDiv: " + siteDiv + " BDSetCount : " + BDSetCount);
 
-        var dval = document.getElementById("daterange");
-        var nDval = dval.value;
+        //var dval = document.getElementById("daterange");
+        //var nDval = dval.value;
         const dateparseRes = parseDate(nDval);
         var month_nos = dateparseRes.monthNumber;
         //console.log(month_nos);
@@ -2068,7 +1935,7 @@
             }
         });
     }
-    //Function for creating the UI for the Edit.
+    //Function for creating the UI for the Dlete.
     function createDeleteUI(element, Destcontainer, index) {
         element.index_id = index;
         var commentContainer = document.createElement('div');
@@ -2351,8 +2218,8 @@
         }
     }
 
-    // ALL for ADD COMMENTS.
-    //ADD Main function
+    // ALL for ADD COMMENTS. Yearly
+    //ADD Main function Yearly.
     var ACY_info = [
         {
             "bdSetCount": 1,

@@ -38,6 +38,7 @@
 <link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <style>
     .anychart-credits {
         display: none !important;
@@ -50,19 +51,23 @@
     .groups {
         display: none !important;
     }
+    .table-condensed thead tr:nth-child(2),
+    .table-condensed tbody td.day {
+        display: none;
+    }
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <section class="content">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title text-center">Solar Operational Performance </h3>
+                <h3 class="card-title text-center">Solar Expected Vs Actual Losses </h3>
             </div>
-            <div class="card-body">
+            <div class="card-body d-flex flex-column">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="input-group row">
-                            <label class="col-sm-3 col-form-label">Date Range : </label>
+                            <label class="col-sm-3.1 col-form-label">Date Range :&nbsp;&nbsp;</label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
@@ -92,35 +97,14 @@
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
                             <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style="margin-left: -5rem; width: 5rem;">Search</button>
-                            <!--<button type="button" class="btn btn-block btn-danger" onclick="clearRecords()" style="margin-left:-5rem; width: 5rem;">Clear</button>-->
                         </div>
                         <div class="col-md-1"></div>
                     </div>
-                   
-                    @*<div class="col-md-2">
-                <div class="form-group">
-                    <div class="row">
-                        <!--<label class="col-sm-3 col-form-label text-left">PR : </label>-->
-                        <!--<select class="form-control  col-sm-9" id="pr" name="pr[]" multiple>
-        </select>-->
-                    </div>
-                </div>
-            </div>*@
 
                 </div>
-                @* <div class="row">
-            <div class="col-md-5"></div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style=" width: 5rem;">Search</button>
-            </div>
-            <div class="col-md-5"></div>
-        </div>*@
                 <hr>
                 <div class="row">
-                    <!--<div class="col-sm-3"> PR Type :</div>-->
-
                     <div class="col-sm-4">
-
                         <div class="form-group row">
                             <span>PR Type :</span>
                             <div class="col-sm-3">
@@ -141,20 +125,275 @@
                     <div class="col-sm-8">
                     </div>
                 </div>
-                <br>
+
                 <hr>
-                <br>
-                <div class="col-sm-12">
-                    <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px;"></div>
-                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
-                </div>
-                <br>
-                <hr>
-                <br>
-                <div class="col-sm-12">
-                    <div id="Waterfallyearly" style="overflow-x: auto; width: 100%; height: 400px;"></div>
-                    <!--<canvas id="yearly_chart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
-                </div>
+                <div class="row">
+                    <div class="row w-100">
+                        <div class="col-md-7">
+                            <!-- Left Column of charts -->
+                            <div class="">
+                                <div>
+                                    <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center;">
+                                        <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
+                                    </div>
+                                    <div style="position: relative;">
+                                        <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
+                                        <div id="Waterfall" style="width: 100%; z-index: 1;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="position: relative;">
+                                        <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
+                                        <div id="Waterfallyearly" style="width: 100%; z-index: 1;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="commentsSection" style="display: none; margin-top: 20px" class="col-md-5">
+                            <!-- Right column of comments -->
+                            <div class="card h-90vh w-100">
+                                <div class="card-header">
+                                    <h3 class="card-title text-center">Reasons For Underperformance</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div>
+                                        <!-- Other content here -->
+                                    </div>
+
+                                    <!-- Monthly Section -->
+                                    <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
+                                        <div class="scrollable-container" id="monthlyComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor:default;">
+                                            <div id="DMC_EGB" style="display: block; cursor: default;"></div>
+                                            <div id="DMC_BD" style="display: block; cursor: default;"></div>
+                                            <div id="DMC_Other" style="display: block; cursor: default;"></div>
+                                        </div>
+                                        <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
+                                            @*Scrollable division*@
+
+                                            @*Entire content division with BDtype site and reason.*@
+                                            <div class="addCommentMonthly" id="ACM" style="overflow: hidden;">
+                                                <div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="ACM_info_div">
+                                                    <p id="ACM_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p>
+                                                    <p id="ACM_info" style="text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
+                                                <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                    <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
+                                                </div>
+                                                <div id="ACM_siteContainer1">
+                                                    <div class="row">
+                                                        <div class="col-sm-7">
+                                                            <div class="form-group">
+                                                                <div class="row" style="position: relative; width: 100%;">
+                                                                    <label class="col-sm-2 col-form-label text-right">Site :</label>
+                                                                    <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select>
+                                                                    <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
+                                                        <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                                                        <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
+                                                    </div>
+                                                    <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)">
+                                                        <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                                                        <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="d-flex justify-content-center">
+                                                <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACMSaveData()">Save</button>
+                                                <button style="display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACMCancel()">Cancel</button>
+                                            </div>
+
+                                        </div>
+                                        <div class="scrollable-container" id="monthlyEdit" style="overflow: hidden; display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                            <div id="ECM" style="overflow: hidden;">
+                                                <div id="backBtnECM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="ECM_info_div">
+                                                    <p id="ECM_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">EDIT</p>
+                                                    <p id="ECM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
+                                                <div id="ECM_info"></div>
+                                                <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                    <select class="form-control col-sm-4" id="ECM_BDSelect" onchange="EMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
+                                                        <option value="0">Select BD Type</option>
+                                                        <option value="1">EGB</option>
+                                                        <option value="2">BD</option>
+                                                        <option value="3">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div id="ECM_content">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="scrollable-container" id="monthlyDelete" style="overflow: hidden; display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                            <div id="DCM" style="overflow: hidden;">
+                                                <div id="backBtnDCM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="DCM_info_div">
+                                                    <p id="DCM_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">DELETE</p>
+                                                    <p id="DCM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
+                                                <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                    <select class="form-control col-sm-4" id="DCM_BDSelect" onchange="DMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
+                                                        <option value="0">Select BD Type</option>
+                                                        <option value="1">EGB</option>
+                                                        <option value="2">BD</option>
+                                                        <option value="3">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div id="DCM_content">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="comment-buttons" id="monthCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
+                                            <div style="display: flex; gap: 13px;">
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAdd()">
+                                                    <i class="fas fa-plus" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #FFCA5A; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthEdit()">
+                                                    <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #EE403D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthDelete()">
+                                                    <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <!-- Other content here -->
+                                    </div>
+
+                                    <!-- Yearly Section -->
+                                    <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
+                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor:default;">
+                                            <div id="DYC_EGB" style="display: block; cursor: default;"></div>
+                                            <div id="DYC_BD" style="display: block; cursor: default;"></div>
+                                            <div id="DYC_Other" style="display: block; cursor: default;"></div>
+                                        </div>
+                                        <div class="scrollable-container" id="yearAdd" style="display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
+                                            @*Scrollable division*@
+
+                                            @*Entire content division with BDtype site and reason.*@
+                                            <div class="addCommentYear" id="ACY" style="overflow: hidden;">
+                                                <div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="ACY_info_div">
+                                                    <p id="ACY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p>
+                                                    <p id="ACY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
+                                                <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                    <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
+                                                </div>
+                                                <div id="ACY_siteContainer1">
+                                                    <div class="row">
+                                                        <div class="col-sm-7">
+                                                            <div class="form-group">
+                                                                <div class="row" style="position: relative; width: 100%;">
+                                                                    <label class="col-sm-2 col-form-label text-right">Site :</label>
+                                                                    <select class="form-control col-sm-6" value="" id="ACY_sitesM1_1" style="height: 40px;"></select>
+                                                                    <input id="ACY_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()">
+                                                        <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                                                        <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
+                                                    </div>
+                                                    <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)">
+                                                        <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                                                        <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="d-flex justify-content-center">
+                                                <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACYSaveData()">Save</button>
+                                                <button style="display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACYCancel()">Cancel</button>
+                                            </div>
+
+                                        </div>
+                                        <div class="scrollable-container" id="yearEdit" style="overflow: hidden; display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                            <div id="ECY" style="overflow: hidden;">
+                                                <div id="backBtnECY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="ECY_info_div">
+                                                    <p id="ECY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">EDIT</p>
+                                                    <p id="ECY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
+                                                <div id="ECY_info"></div>
+                                                <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                    <select class="form-control col-sm-4" id="ECY_BDSelect" onchange="EYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
+                                                        <option value="0">Select BD Type</option>
+                                                        <option value="1">EGB</option>
+                                                        <option value="2">BD</option>
+                                                        <option value="3">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div id="ECY_content">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="scrollable-container" id="yearDelete" style="overflow: hidden; display: none; height: 36vh; margin: 5px; padding: 10px; overflow-y: auto; cursor: default; text-align: center;">
+                                            <div id="DCY" style="overflow: hidden;">
+                                                <div id="backBtnDCY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
+                                                    <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
+                                                </div>
+                                                <div id="DCY_info_div">
+                                                    <p id="DCY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">DELETE</p>
+                                                    <p id="DCY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
+                                                </div>
+                                                <div class="d-flex justify-content-end" style="padding: 10px;">
+                                                    <select class="form-control col-sm-4" id="DCY_BDSelect" onchange="DYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
+                                                        <option value="0">Select BD Type</option>
+                                                        <option value="1">EGB</option>
+                                                        <option value="2">BD</option>
+                                                        <option value="3">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div id="DCY_content">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="comment-buttons" id="yearCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
+                                            <div style="display: flex; gap: 13px;">
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAdd()">
+                                                    <i class="fas fa-plus" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #FFCA5A; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearEdit()">
+                                                    <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div style="width: 40.89px; height: 34.76px; position: relative; background: #EE403D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearDelete()">
+                                                    <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
                 <br>
                 <hr>
                 <div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>
@@ -182,6 +421,7 @@
 <!-- DataTables  & Plugins -->
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -189,6 +429,7 @@
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script src="~/Content/theme/dist/js/comman.js"></script>
 <!--<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>-->
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
@@ -236,22 +477,65 @@
             visibility: visible;
         }
 </style>
+
 <script type="text/javascript">
+    //Get month complete in words from month number.
+    const monthNumberToName = {
+        1: 'January',
+        2: 'February',
+        3: 'March',
+        4: 'April',
+        5: 'May',
+        6: 'June',
+        7: 'July',
+        8: 'August',
+        9: 'September',
+        10: 'October',
+        11: 'November',
+        12: 'December'
+    };
+    //For Comments variables :
+    var isSPV = 0; //0 = SPV, 1= Site.
+    var siteType = 2; //site_type = 1 Solar, 2 : Wind
+    let site_id = "";
+    let spv = "";
+    var nDval = "";
+
     $(document).ready(function () {
         $('#daterange').daterangepicker(
         {
             maxDate: new Date(),
+            minDate: '2013-01',
+            singleDatePicker: true,
+            showDropdowns: true,
             locale: {
-                format: 'DD/MM/YYYY',
+                format: 'YYYY-MM',
             }
         });
     });
+
+    //For operational performance page date selection till getmonth function.
+    var currentDate = new Date();
+    var currentYearMonth = currentDate.toISOString().slice(0, 7);
+    function getMonthRange(yearMonth) {
+        const [year, month] = yearMonth.split('-');
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        // Format the dates as "dd/mm/yyyy"
+        const formattedStartDate = startDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const formattedEndDate = endDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+        // Return the formatted date range
+        return `${formattedStartDate}-${formattedEndDate}`;
+    }
+    //For operational Performance BD array.
+    var bdArray = [{ "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }];
 
     window.onload = function () {
         var today = new Date();
         fyear = getFinancialYear(today);
         fdate = getFinancialYearDateStartDate(fyear);
-        //console.log(fdate);
         GetSPV();
     }
     function handleMouseHover() {
@@ -332,11 +616,14 @@
     {
         var data_Array = [];
         document.getElementById("loader").style.display = 'flex';
-        var daterange = $('#daterange').val();
+        var dval = document.getElementById("daterange");
+        nDval = dval.value;
+        var daterange = getMonthRange(nDval);
         var arr1 = new Array();
         arr1 = daterange.split("-");
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+
         let site_id = "";
         let spv_list = "";
         let prType = "";
@@ -351,10 +638,38 @@
             spv_list += $(this).val() + ",";
         });
         spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
-        var site = $('select#site option:selected').each(function () {
-            site_id += $(this).val() + ",";
+        spv = spv_list;
+        var cnt = 0;
+        $('#site option').each(function () {
+            if ($(this).is(':selected')) {
+                cnt++;
+            }
+
         });
-        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        if (cnt > 0) {
+            var site = $('select#site option:selected').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        else {
+            $('select#site').find('option').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        console.log("SIte List", site_id);
+
+        if (spv == "") {
+            isSPV = 1;
+            //console.log("So you will be seeing Data site wise.");
+        } else {
+            isSPV = 0;
+            //console.log("So you will be seeing Data spv wise.");
+        }
+        // Function call to get the comments data. Display Monthly Comments (DMC).
+        DMC(site_id, spv, nDval);
+        DYC(site_id, spv, nDval);
 
         $.ajax({
             type: "POST",
@@ -469,16 +784,22 @@
 
 
                 //Call function draw the chart
-                    monthlychart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
+                    monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
 
             }
-            else {
+                else {
+                    var division = document.getElementById("Waterfall");
+                    division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+                    division.style.display = "flex";
+                    document.getElementById("Waterfall").style.display = "flex";
+
             }
             tbl += '</table>';
             $("#exp_vs_actual").html("").html(tbl);
             $('#example1').DataTable({
                 dom: 'Bfrtip',
-                responsive: false,
+                fixedHeader: true,
+                responsive: true,
                 lengthChange: false,
                 autoWidth: true,
                 paging: true,
@@ -519,21 +840,13 @@
             $(".dt-buttons").addClass('btn-group flex-wrap');
             $(".dt-buttons > button").addClass('btn btn-secondary');
             $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-            $('#example1').wrap("<div class='scrolledTable'></div>");
+            //$('#example1').wrap("<div class='scrolledTable'></div>");
             getYearlyReport();
         }
     });
     }
-
     function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
         console.log("Inside monthly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
-
-        let total_opExpected = Number(total_expected);
-        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
-
-        let t_opExpected = Number(total_opExpected).toFixed(2);
-        let t_total_bd = Number(total_bd * -1).toFixed(2);
-        total_egbd = Number(total_egbd) + Number(total_curtaiment);
 
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
@@ -542,15 +855,12 @@
         let t_oh = Number(total_oh * -1).toFixed(2);
         let t_igbd = Number(total_igbd * -1).toFixed(2);
         let t_egbd = Number(total_egbd * -1).toFixed(2);
-        let t_curtaiment = Number(total_curtaiment).toFixed(2);
+        let t_curtaiment = Number(total_curtaiment * -1).toFixed(2);
         let t_pr = Number(total_pr).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
-        let data_opExpected = Number(total_opExpected);
-        let data_total_bd = Number(total_bd) * -1;
-
         let data_target = Number(total_target);
-        let data_expected = Number(total_expected) * -1;
+        let data_expected = Number(total_expected);
         let data_usmh = Number(total_usmh) * -1;
         let data_smh = Number(total_smh) * -1;
         let data_oh = Number(total_oh) * -1;
@@ -560,15 +870,17 @@
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
-
-        // Percentage Value 
-        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        // Percentage Value
+        let tar_percentage = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage = 100;
-        let bd_percentage = (total_bd / total_opExpected) * 100;
-        let oh_percentage = (total_oh / total_expected) * 100;
-        let egbd_percentage = (total_egbd / total_expected) * 100;
-        let pr_percentage = (total_pr / total_expected) * 100;
-        let actul_percentage = ((total_actual) / total_expected) * 100;
+        let usmh_percentage = (data_usmh / data_expected) * 100;
+        let smh_percentage = (data_smh / data_expected) * 100;
+        let oh_percentage = (data_oh / data_expected) * 100;
+        let igbd_percentage = (data_igbd / data_expected) * 100;
+        let egbd_percentage = (data_egbd / data_expected) * 100;
+        let cur_percentage = (data_curtaiment / data_expected) * 100;
+        let pr_percentage = (data_pr / data_expected) * 100;
+        let actul_percentage = ((data_actual) / data_expected) * 100;
 
         //data_pr = 0.4;
         // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
@@ -593,14 +905,20 @@
                     rMeasure,
                     rMeasure,
                     rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "BD",
+                    "USMH",
+                    "SMH",
                     "Other",
+                    "IGBD",
                     "EGBD",
+                    "Curtailment",
                     "PR",
                     "Actual"
                  ],
@@ -608,31 +926,45 @@
                 //textposition: "inside",
                 text: [
                     t_target,
-                    t_opExpected,
-                    t_total_bd,
+                    t_expected,
+                    t_usmh,
+                    t_smh,
                     t_oh,
+                    t_igbd,
                     t_egbd,
+                    t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
-                    data_opExpected,
-                    data_total_bd,
+                    data_expected,
+                    data_usmh,
+                    data_smh,
                     data_oh,
+                    data_igbd,
                     data_egbd,
+                    data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-                    '<b>Expected</b><br>Value: ' + data_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>BD</b><br>Value: ' + data_total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
-                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )',
+                    '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2)+ '% )',
+                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
+                //hovertemplate: '<b>%{x}</b><br>' +
+                //    /*'Column: %{x}<br>' +*/
+                //    'Value: %{y}',
+                //absolute: { marker: { color: "#77CAE7" } },
+               //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
                 increasing: { marker: { color: "#77CAE7" } },
                 decreasing: { marker: { color: "#EE403D" } },
@@ -645,21 +977,25 @@
         ];
         //#86C466 : green. #77CAE7 : blue. #EE403D : red. #14a105 : dark-green.
         //
-        //var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
-        //if (data_curtaiment > 0) {
-        //    columnColors[7] = "#14a105";
-        //    data[0].measure[7].marker = { color: '#14a105' };
-        //}
-        //if (data_pr > 0) {
-        //    columnColors[8] = "#14a105";
-        //    data[0].measure[8].marker = { color: '#14a105' };
-        //}
+        var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
+        if (data_curtaiment > 0) {
+            columnColors[7] = "#14a105";
+            data[0].measure[7].marker = { color: '#14a105' };
+        }
+        if (data_pr > 0) {
+            columnColors[8] = "#14a105";
+            data[0].measure[8].marker = { color: '#14a105' };
+        }
 
+        // Set the marker color for each data point using the columnColors array
+        //for (var i = 0; i < data[0].y.length; i++) {
+        //    data[0].measure[i].marker = { color: columnColors[i] };
+        //}
 
         layout = {
-            title: {
-                text: "Monthly"
-            },
+            //title: {
+            //    text: "Monthly"
+            //},
             xaxis: {
                 type: "category",
                 fixedrange: true
@@ -670,11 +1006,28 @@
                 range: [0, Math.max(...data[0].y) * 1.1]
             },
             autosize: true,
-            showlegend: true
+            showlegend: true,
+            trace: false,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 1000,
+            height: 350,
         };
-        Plotly.newPlot('Waterfall', data, layout);
-    }
+        var config = {
+            displayModeBar: false,
+            displaylogo: false,
+            infolayer: false,
+            visible: false,
+        };
+        Plotly.newPlot('Waterfall', data, layout, config);
+        document.getElementById("monthTitle").style.display = "block";
+        document.getElementById("commentsSection").style.display = "flex";
+        //Plotly.newPlot('Waterfall', data, layout, { staticPlot: true });
 
+    }
     function getYearlyReport()
     {
         var data_Array1 = [];
@@ -707,10 +1060,32 @@
             spv_list += $(this).val() + ",";
         });
         spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
-        var site = $('select#site option:selected').each(function () {
+        /*var site = $('select#site option:selected').each(function () {
             site_id += $(this).val() + ",";
         });
-        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;*/
+
+        var cnt = 0;
+        $('#site option').each(function () {
+            if ($(this).is(':selected')) {
+                cnt++;
+            }
+
+        });
+        if (cnt > 0) {
+            var site = $('select#site option:selected').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        else {
+            $('select#site').find('option').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        console.log("SIte List", site_id);
+
 
         $.ajax({
             type: "POST",
@@ -769,10 +1144,11 @@
                     curtailment_cal = (total_curtaiment / total_expected) * 100;
                     pr_cal = (total_pr / total_expected) * 100;
                     actual_cal = (total_actual / total_expected) * 100;
-               
-                    // Call function draw the yearly chart
-                    yearlyChart(total_target.toFixed(4), total_expected.toFixed(4), total_usmh.toFixed(4), total_smh.toFixed(4), total_oh.toFixed(4), total_igbd.toFixed(4), total_egbd.toFixed(4), total_curtaiment.toFixed(4), total_pr.toFixed(4), total_actual.toFixed(4));
 
+
+
+                    // Call function draw the yearly chart
+                    yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
                 }
                 else {
                 }
@@ -782,48 +1158,43 @@
         }
 
     function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
-        console.log("Inside yearly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
-        let total_opExpected = Number(total_expected) - Number(total_curtaiment);
-        let total_bd = Number(total_smh) + Number(total_usmh) + Number(total_igbd);
-        total_egbd = Number(total_egbd) + Number(total_curtaiment);
 
-        let t_opExpected = Number(total_opExpected).toFixed(2);
-        let t_bd = Number(total_bd * -1).toFixed(2);
+        console.log("Inside yearly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
 
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
-        let t_usmh = Number(total_usmh).toFixed(2);
-        let t_smh = Number(total_smh).toFixed(2);
-        let t_oh = Number(total_oh).toFixed(2);
-        let t_igbd = Number(total_igbd).toFixed(2);
-        let t_egbd = Number(total_egbd).toFixed(2);
-        let t_curtaiment = Number(total_curtaiment).toFixed(2);
+        let t_usmh = Number(total_usmh * -1).toFixed(2);
+        let t_smh = Number(total_smh * -1).toFixed(2);
+        let t_oh = Number(total_oh * -1).toFixed(2);
+        let t_igbd = Number(total_igbd * -1).toFixed(2);
+        let t_egbd = Number(total_egbd * -1).toFixed(2);
+        let t_curtaiment = Number(total_curtaiment * -1).toFixed(2);
         let t_pr = Number(total_pr).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
-        let data_opExpected = Number(total_opExpected);
-        let data_bd = Number(total_bd) * -1;
-
         let data_target = Number(total_target);
         let data_expected = Number(total_expected);
-        let data_usmh = Number(total_usmh) * -1;
-        let data_smh = Number(total_smh) * -1;
-        let data_oh = Number(total_oh) * -1;
-        let data_igbd = Number(total_igbd) * -1;
-        let data_egbd = Number(total_egbd) * -1;
-        let data_curtaiment = Number(total_curtaiment) * -1;
+        let data_usmh = Number(total_usmh *-1) ;
+        let data_smh = Number(total_smh *-1) ;
+        let data_oh = Number(total_oh *-1) ;
+        let data_igbd = Number(total_igbd *-1) ;
+        let data_egbd = Number(total_egbd *-1) ;
+        let data_curtaiment = Number(total_curtaiment *-1) ;
         let data_pr = Number(total_pr);
         let data_actual = Number(total_actual);
 
-
-        // Percentage Value 
-        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        // Percentage Value
+        let tar_percentage = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage = 100;
-        let bd_percentage = (total_bd / total_opExpected) * 100;
-        let oh_percentage = (total_oh / total_expected) * 100;
-        let egbd_percentage = (total_egbd / total_expected) * 100;
-        let pr_percentage = (total_pr / total_expected) * 100;
-        let actul_percentage = ((total_actual) / total_expected) * 100;
+        let usmh_percentage = (data_usmh / data_expected) * 100;
+        let smh_percentage = (data_smh / data_expected) * 100;
+        let oh_percentage = (data_oh / data_expected) * 100;
+        let igbd_percentage = (data_igbd / data_expected) * 100;
+        let egbd_percentage = (data_egbd / data_expected) * 100;
+        let cur_percentage = (data_curtaiment / data_expected) * 100;
+        let pr_percentage = (data_pr / data_expected) * 100;
+        let actul_percentage = ((data_actual) / data_expected) * 100;
+
 
        // console.log("After toFixing to 2 digits : values, Target : " + t_target + " Expected : " + t_expected + " USMH : " + t_usmh + " SMH : " + t_smh + " Others : " + t_oh + " IGBD : " + t_igbd + " EGBD : " + t_egbd + " Curtaiment : " + t_curtaiment + " PR : " + t_pr + " Actual : " + t_actual);
         let prMeasure = "";
@@ -847,14 +1218,20 @@
                     rMeasure,
                     rMeasure,
                     rMeasure,
+                    rMeasure,
+                    rMeasure,
+                    rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "BD",
+                    "USMH",
+                    "SMH",
                     "Other",
+                    "IGBD",
                     "EGBD",
+                    "Curtailment",
                     "PR",
                     "Actual"
                 ],
@@ -862,31 +1239,45 @@
                 //textposition: "inside",
                 text: [
                     t_target,
-                    t_opExpected,
-                    t_bd,
+                    t_expected,
+                    t_usmh,
+                    t_smh,
                     t_oh,
+                    t_igbd,
                     t_egbd,
+                    t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
-                    data_opExpected,
-                    data_bd,
+                    data_expected,
+                    data_usmh,
+                    data_smh,
                     data_oh,
+                    data_igbd,
                     data_egbd,
+                    data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
-                    '<b>Target</b><br>Value: ' + data_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-                    '<b>Expected</b><br>Value: ' + data_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + data_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + data_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + data_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>PR</b><br>Value: ' + data_pr + '<br> (' + pr_percentage.toFixed(2) + '% )',
-                    '<b>Actual</b><br>Value: ' + data_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                    '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
+                //hovertemplate: '<b>%{x}</b><br>' +
+                //    /*'Column: %{x}<br>' +*/
+                //    'Value: %{y}',
+                //absolute: { marker: { color: "#77CAE7" } },
+                //relative: { marker: { color: "#77CAE7" } },
                 totals: { marker: { color: "#86C466" } },
                 increasing: { marker: { color: "#77CAE7" } },
                 decreasing: { marker: { color: "#EE403D" } },
@@ -898,9 +1289,9 @@
             }
         ];
         layout = {
-            title: {
-                text: "Yearly"
-            },
+            //title: {
+            //    text: "Yearly"
+            //},
             xaxis: {
                 type: "category",
                 fixedrange: true
@@ -911,9 +1302,2064 @@
                 range: [0, Math.max(...data[0].y) * 1.1]
             },
             autosize: true,
-            showlegend: true
+            showlegend: true,
+            trace: false,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 1000,
+            height: 350,
+        };
+        var config = {
+            displayModeBar: false,
+            displaylogo: false,
+            infolayer: false,
+            visible: false,
         };
         Plotly.newPlot('Waterfallyearly', data, layout);
-}
+        document.getElementById("yearTitle").style.display = 'block';
+    }
+
+
+    //ALL FOR COMMENTS HEREAFTER...
+    //for card buttons hide and display 4 functions.
+    function yearover() {
+        var yearcardButtons = document.getElementById("yearCardButtons");
+        yearcardButtons.style.display = "block";
+    }
+
+    function yearout() {
+        var yearcardButtons = document.getElementById("yearCardButtons");
+        yearcardButtons.style.display = "none";
+    }
+    function monthover() {
+        var yearcardButtons = document.getElementById("monthCardButtons");
+        yearcardButtons.style.display = "block";
+    }
+
+    function monthout() {
+        var yearcardButtons = document.getElementById("monthCardButtons");
+        yearcardButtons.style.display = "none";
+    }
+    // Display monthly commets main function.
+    function DMC(site_id, spv, nDval) {
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
+
+        mDisplay.style.display = "block";
+        mAdd.style.display = "none";
+        mEdit.style.display = "none";
+        mDelete.style.display = "none";
+
+        console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
+        if (spv == "") {
+            isSPV = 1;
+            //console.log("So you will be seeing Data site wise.");
+        } else {
+            isSPV = 0;
+            //console.log("So you will be seeing Data spv wise.");
+        }
+
+        //0 = SPV, 1= Site.
+        var temDate = nDval.split("-");
+        var year = 0;
+        var monthNo = 0;
+        if (temDate.length > 1) {
+            year = Number(temDate[0]);
+            monthNo = Number(temDate[1]);
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=0' + '&spv=' + spv,
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    //console.log("Display Result : ");
+                    //console.log(result);
+
+                    var EGB = []; //bdType = 1
+                    var BD = []; //bdType = 2
+                    var Other = []; //bdType = 3
+
+                    for (var k = 0; k < result.length; k++) {
+                        if (result[k].bd_type == 1) {
+                            EGB.push(result[k]);
+                        } else if (result[k].bd_type == 2) {
+                            BD.push(result[k]);
+                        } else if (result[k].bd_type == 3) {
+                            Other.push(result[k]);
+                        }
+                    }
+                    //console.log("After 3 different arrays : ");
+                    //console.log(EGB);
+                    //console.log(BD);
+                    //console.log(Other);
+                    var EGB_div = document.getElementById("DMC_EGB");
+                    var BD_div = document.getElementById("DMC_BD");
+                    var Other_div = document.getElementById("DMC_Other");
+                    if (EGB.length > 0) {
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "4px";
+                        commentDiv.id = "EGB_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 25px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                        for (var i = 0; i < EGB.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + EGB[i].spv + ':</strong> ' + EGB[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        EGB_div.innerHTML = "";
+                        EGB_div.appendChild(commentDiv);
+                    } else {
+                        EGB_div.style.display = "none";
+                    }
+                    if (BD.length > 0) {
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "4px";
+                        commentDiv.id = "BD_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 25px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                        for (var i = 0; i < BD.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + BD[i].spv + ':</strong> ' + BD[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>'
+                        commentDiv.innerHTML = commentContent;
+                        BD_div.innerHTML = "";
+                        BD_div.appendChild(commentDiv);
+                    } else {
+                        BD_div.style.display = "none";
+                    }
+                    if (Other.length > 0) {
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "4px";
+                        commentDiv.id = "Other_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 25px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                        for (var i = 0; i < Other.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + Other[i].spv + ':</strong> ' + Other[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        Other_div.innerHTML = "";
+                        Other_div.appendChild(commentDiv);
+                    } else {
+                        Other_div.style.display = "none";
+                    }
+                }
+            });
+        }
+    }
+
+    // ALL for ADD COMMENTS. for monthly comments part.
+    //ADD Main function
+    var ACM_info = [
+        {
+            "bdSetCount": 1,
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+        },
+        {
+            "mainDiv": "ACM",
+            "bdSelectDD": "ACM_breakdownSelect1",
+            "siteMainDiv": "ACM_siteContainer1",
+            "siteSelectDD": "ACM_sitesM1",
+            "commentInput": "ACM_commentInput1",
+
+            "siteArray": [],
+            "totalSiteCount": 0, //will be updated at the time of sites are fetched.
+            "siteCount": 1, //Will increment as we add the sites in this BD set.
+        }
+    ];
+    function monthAdd() {
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
+
+        mDisplay.style.display = "none";
+        mAdd.style.display = "block";
+        mEdit.style.display = "none";
+        mDelete.style.display = "none";
+
+        var infoDiv = document.getElementById("ACM_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var monthNo = Number(temDate[1]);
+        var mo = monthNumberToName[monthNo];
+
+        var sentence = "Month : " + mo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var monthCardButtons = document.getElementById("monthCardButtons");
+        monthCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
+
+        var bdOptions = '';
+        var temBDArray = [...ACM_info[0].bdArray];
+        for (var k = 0; k < temBDArray.length; k++) {
+            bdOptions += '<option value="' + temBDArray[k].value + '">' + temBDArray[k].name + '</option>';
+        }
+        var BDMainTem = "#ACM_breakdownSelect1";
+        $(BDMainTem).html("").html(bdOptions);
+    }
+
+    //ACM change in bdDD
+    function ACM_bd_change(BDSet) {
+        elementTemp = ACM_info[BDSet];
+        var dropId = elementTemp.bdSelectDD;
+        var selectedValue = document.getElementById(dropId).value;
+
+        var backButton = document.getElementById("backBtnACM");
+        backButton.style.display = "none";
+
+        getSiteForMonthAdd(true, selectedValue, BDSet)
+    }
+    //ACM add BREAKDOWN.
+    function monthAddBD() {
+        //console.log("ACM_info array before inserting BD set.");
+        //console.log(ACM_info);
+        if (ACM_info[0].bdArray.length > 2) {
+            ACM_info[0].bdSetCount++;
+            var BDCounter = ACM_info[0].bdSetCount;
+            var newElementBDSet = {
+                "mainDiv": "ACM",
+                "bdSelectDD": "ACM_breakdownSelect" + BDCounter,
+                "siteMainDiv": "ACM_siteContainer" + BDCounter,
+                "siteSelectDD": "ACM_sitesM" + BDCounter,
+                "commentInput": "ACM_commentInput" + BDCounter,
+
+                "siteArray": [],
+                "totalSiteCount": 0, //will be updated at the time of sites are fetched.
+                "siteCount": 1, //Will increment as we add the sites in this BD set.
+            }
+            ACM_info.push(newElementBDSet);
+            var thisEle = ACM_info[BDCounter];
+            var idSite = thisEle.siteSelectDD + "_" + thisEle.siteCount;
+            var idInput = thisEle.commentInput + "_" + thisEle.siteCount;
+            //console.log("Created Site and input ids : " + idSite + " and " + idInput);
+
+            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACM_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select><input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
+
+            var bdContainer = document.getElementById('ACM');
+
+            // Insert the new content at the end of siteContainer
+            bdContainer.insertAdjacentHTML('beforeend', newBDContent);
+
+            //remove the bd type selected in previous set dropdown.
+            var prevEle = ACM_info[BDCounter - 1];
+            var dropId = prevEle.bdSelectDD; //'ACM_breakdownSelect1';
+            var selectedValue = document.getElementById(dropId).value;
+            //console.log('Selected BD Value:', selectedValue);
+
+            // Find the index of the element with site_id equal to
+            var indexToRemove = ACM_info[0].bdArray.findIndex(function (bd) {
+                return bd.value === Number(selectedValue);
+            });
+
+            // If the element is found, remove it using splice
+            if (indexToRemove !== -1) {
+                ACM_info[0].bdArray.splice(indexToRemove, 1);
+            }
+
+            var optionss = "";
+            for (var k = 0; k < ACM_info[0].bdArray.length; k++) {
+                optionss += '<option value="' + ACM_info[0].bdArray[k].value + '">' + ACM_info[0].bdArray[k].name + '</option>';
+            }
+            var bdSelectTem = "#" + thisEle.bdSelectDD //"#ACM_breakdownSelect" + BDCounter;
+            $(bdSelectTem).html("").html(optionss);
+
+            //console.log("ACM_info array after inserting BD set.");
+            //console.log(ACM_info);
+        } else {
+            showToast('No BDs to Add', 5000, 'monthlyAdd');
+        }
+
+    }
+
+    //Get remaining sites for the first BD set site dropdown.
+    function getSiteForMonthAdd(fliterVal, siteDiv, BDSetCount) {
+        //console.log("Inside getsiteforAddComments siteDiv: " + siteDiv + " BDSetCount : " + BDSetCount);
+
+        var dval = document.getElementById("daterange");
+        var nDval = dval.value;
+        const dateparseRes = parseDate(nDval);
+        var month_nos = dateparseRes.monthNumber;
+        //console.log(month_nos);
+        var year = dateparseRes.year;
+        var ele = ACM_info[BDSetCount];
+
+        var bdTypes = Number(document.getElementById(ele.bdSelectDD).value);
+        //console.log("BD type Selected is : " + bdTypes);
+        if (isSPV == 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPGetSpvListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 1 + '&bdTypes=' + bdTypes + '&isMonthly=0',
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "";
+                    //console.log(result);
+                    ele.siteArray = [...result];
+                    ele.totalSiteCount = result.length;
+
+                    //after this the current BD selection Drop down should be disabled.
+                    for (var k = 0; k < result.length; k++) {
+                        options += '<option value="' + result[k].spv + '">' + result[k].spv + '</option>';
+                    }
+                    //$("#sitesM").multipleSelect('destroy');
+                    var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
+                    //console.log("destination dropdoen name : " + DestTemp);
+                    $(DestTemp).html("").html(options);
+                }
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 1 + '&bdTypes=' + bdTypes + '&isMonthly=0',
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "";
+                    //console.log(result);
+                    ele.siteArray = [...result];
+                    ele.totalSiteCount = result.length;
+
+                    //after this the current BD selection Drop down should be disabled.
+                    for (var k = 0; k < result.length; k++) {
+                        options += '<option value="' + result[k].site_id + '">' + result[k].site + '</option>';
+                    }
+                    //$("#sitesM").multipleSelect('destroy');
+                    var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
+                    //console.log("destination dropdoen name : " + DestTemp);
+                    $(DestTemp).html("").html(options);
+                }
+            });
+        }
+    }
+
+    // Function to add a new set of site dropdown and input fields
+    function addSite(BDCount) {
+        // dafault container siteContainer
+        // current bd container element from ACM_info
+
+        //console.log(mainSiteRes.length);
+        var thisElement = ACM_info[BDCount];
+        //console.log("ACM_info array before inserting site set.");
+        //console.log(ACM_info);
+
+        if (thisElement.siteArray.length > 1) {
+            thisElement.siteCount++;
+            var idSite = thisElement.siteSelectDD + "_" + thisElement.siteCount;
+            var idInput = thisElement.commentInput + "_" + thisElement.siteCount;
+            //console.log("Created Site and input ids : " + idSite + " and " + idInput );
+
+            var Newcontent = '<div class="row"> <div class="col-sm-7" > <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select> <input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div > </div >';
+            //'ACM_siteContainer1'
+            var containerDestination = thisElement.siteMainDiv;
+            var siteContainer = document.getElementById(containerDestination);
+
+            // Insert the new content at the end of siteContainer
+            siteContainer.insertAdjacentHTML('beforeend', Newcontent);
+
+            if (thisElement.siteCount > 1) {
+                //get prevoious dropdown id
+                if (isSPV == 1) {
+                    //site wise
+                    var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
+                    //console.log("previous site DD Id" + previous_siteDD);
+
+                    var selectedValue = document.getElementById(previous_siteDD).value;
+                    //console.log('Selected Value:', selectedValue);
+
+                    // Find the index of the element with site_id equal to
+                    var indexToRemove = thisElement.siteArray.findIndex(function (site) {
+                        return site.site_id === Number(selectedValue);
+                    });
+
+                    // If the element is found, remove it using splice
+                    if (indexToRemove !== -1) {
+                        thisElement.siteArray.splice(indexToRemove, 1);
+                    }
+
+                    var optionss = "";
+                    for (var k = 0; k < thisElement.siteArray.length; k++) {
+                        optionss += '<option value="' + thisElement.siteArray[k].site_id + '">' + thisElement.siteArray[k].site + '</option>';
+                    }
+                    var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
+                    $(siteSelectTem).html("").html(optionss);
+                } else {
+                    //SPV wise
+                    var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
+                    //console.log("previous site DD Id" + previous_siteDD);
+
+                    var selectedValue = document.getElementById(previous_siteDD).value;
+                    //console.log('Selected Value:', selectedValue);
+
+                    // Find the index of the element with site_id equal to
+                    var indexToRemove = thisElement.siteArray.findIndex(function (site) {
+                        return site.spv === selectedValue;
+                    });
+
+                    // If the element is found, remove it using splice
+                    if (indexToRemove !== -1) {
+                        thisElement.siteArray.splice(indexToRemove, 1);
+                    }
+
+                    var optionss = "";
+                    for (var k = 0; k < thisElement.siteArray.length; k++) {
+                        optionss += '<option value="' + thisElement.siteArray[k].spv + '">' + thisElement.siteArray[k].spv + '</option>';
+                    }
+                    var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
+                    $(siteSelectTem).html("").html(optionss);
+                }
+            }
+            //console.log("ACM_info array after inserting site set.");
+            //console.log(ACM_info);
+        }
+        else {
+            showToast('No sites to Add', 5000, 'monthlyAdd');
+        }
+    }
+
+    //function to get the data from all input boxes and select boxes.
+    function ACMSaveData() {
+        //console.log("ACM_info after clicking save button :");
+        //console.log(ACM_info);
+        var ACMFinalData = [];
+
+        var bdSetCount = ACM_info[0].bdSetCount;
+        for (var k = 1; k <= bdSetCount; k++) {
+            var BDelement = ACM_info[k];
+            var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+
+            var userName =  "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
+            var role =  "@HttpContextAccessor.HttpContext.Session.GetString("role")";
+            var dval = document.getElementById("daterange");
+            var YearMonth = dval.value;
+            var temp = YearMonth.split("-");
+            var year1 = Number(temp[0]);
+            var month_no = Number(temp[1]);
+            var month = monthNumberToName[month_no];
+            var type = 1; //1=solar, 2= wind;
+            var isDeleted = 1;
+            var isMonthly = 0;
+            var addedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+            var updatedBy = 0;
+            console.log("User name : " + userName + "role : " + role + " user id: " + addedBy);
+
+
+            for (var j = 1; j <= BDelement.siteCount; j++) {
+                var siteNumber = 0;
+                var eachData = {};
+                if (isSPV == 0) {
+                    eachData = {
+                        //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
+                        "month": month,
+                        "month_no": month_no,
+                        "year": year1,
+                        "type": type,
+                        "site_id": 0,
+                        "bd_type": Number(bdType),
+                        "isDeleted": isDeleted,
+                        "isMonthly": isMonthly,
+                        "isSPV": Number(isSPV),
+                        "spv": document.getElementById((BDelement.siteSelectDD + "_" + j)).value,
+                        "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                        "added_by": addedBy,
+                        "updated_by": updatedBy,
+                    }
+                } else {
+                    eachData = {
+                        //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
+                        "month": month,
+                        "month_no": month_no,
+                        "year": year1,
+                        "type": type,
+                        "site_id": Number(document.getElementById((BDelement.siteSelectDD + "_" + j)).value),
+                        "bd_type": Number(bdType),
+                        "isDeleted": isDeleted,
+                        "isMonthly": isMonthly,
+                        "isSPV": Number(isSPV),
+                        "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                        "added_by": addedBy,
+                        "updated_by": updatedBy,
+                    }
+                }
+                ACMFinalData.push(eachData);
+            }
+        }
+        console.log("data after extracting : ");
+        console.log(ACMFinalData);
+
+    $.ajax({
+            type: "POST",
+            url: '@Url.Action("OPACM", "WindReport")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(ACMFinalData),
+            success: function (result, status, xhr) {
+                console.log("result after adding : ");
+                console.log(result);
+                if (Number(result) > 0) {
+
+                    ClearACM();
+                    returnHome("Add", "Update");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", error);
+            }
+    });
+    }
+    //function Cancel data.
+    function ACMCancel() {
+        ClearACM();
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
+
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            monthover();
+        };
+        mainButtons.onmouseout = function () {
+            monthout();
+        };
+
+        mDisplay.style.display = "block";
+        mAdd.style.display = "none";
+        mEdit.style.display = "none";
+        mDelete.style.display = "none";
+    }
+    //function to clear ACM section after successful add or cancel.
+    function ClearACM() {
+        var mainACM_div = document.getElementById("ACM");
+        mainACM_div.innerHTML = "";
+
+        var RefreshContent = '';
+        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACM_info_div"> <p id = "ACM_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+
+        mainACM_div.innerHTML = RefreshContent;
+        ACM_info = [];
+        ACM_info = [
+            {
+                "bdSetCount": 1,
+                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+            },
+            {
+                "mainDiv": "ACM",
+                "bdSelectDD": "ACM_breakdownSelect1",
+                "siteMainDiv": "ACM_siteContainer1",
+                "siteSelectDD": "ACM_sitesM1",
+                "commentInput": "ACM_commentInput1",
+
+                "siteArray": [],
+                "totalSiteCount": 0, //will be updated at the time of sites are fetched.
+                "siteCount": 1, //Will increment as we add the sites in this BD set.
+            }
+        ];
+    }
+
+    //ALL for EDIT Comments for monthly comments part.
+    //ECM Edit functionality.
+    var ECM_data = [];
+    function monthEdit() {
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
+
+        var destContainer = document.getElementById("ECM_content");
+        destContainer.innerHTML = "";
+
+        mDisplay.style.display = "none";
+        mAdd.style.display = "none";
+        mEdit.style.display = "block";
+        mDelete.style.display = "none";
+
+        var infoDiv = document.getElementById("ECM_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var monthNo = Number(temDate[1]);
+        var mo = monthNumberToName[monthNo];
+
+        var sentence = "Month : " + mo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var monthCardButtons = document.getElementById("monthCardButtons");
+        monthCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
+    }
+    //Get data after changing the Option from BD dropdown.
+    function EMCOnchange() {
+        var BD_dropdown = document.getElementById("ECM_BDSelect");
+        var BD_value = BD_dropdown.value;
+        //console.log("BD value selected in Edit is : " + BD_value);
+        var temDate = nDval.split("-");
+
+        var backButton = document.getElementById("backBtnECM");
+        backButton.style.display = "none";
+
+        var monthNo = temDate[1];
+        var year = temDate[0];
+
+        //isDisplay: 0 = display, 1: Edit
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                ECM_data = [];
+                ECM_data = [...result];
+                console.log("Display Edit Result : ");
+                console.log(ECM_data);
+                var destContainer = document.getElementById("ECM_content");
+                destContainer.innerHTML = "";
+                if (ECM_data.length > 0) {
+                    ECM_data.forEach((elem, index) => createUI(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments to Edit.";
+                }
+
+                var containerDiv = document.createElement('div');
+                containerDiv.className = 'd-flex justify-content-center';
+
+                // Create the Save button
+                var saveButton = document.createElement('button');
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                saveButton.onclick = ECMSaveButton;
+                saveButton.textContent = "Save";
+
+                // Create the Cancel button
+                var cancelButton = document.createElement('button');
+                cancelButton.style = "display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                cancelButton.onclick = function () {
+                    returnHome("Edit", "Cancel");
+                }
+                cancelButton.textContent = "Cancel";
+
+                // Append buttons to the container
+                containerDiv.appendChild(saveButton);
+                containerDiv.appendChild(cancelButton);
+
+                // Append the container to your destination container
+                destContainer.appendChild(containerDiv);
+            }
+        });
+    }
+    //Function for creating the UI for the Edit.
+    function createUI(element, Destcontainer, index) {
+        var commentContainer = document.createElement('div');
+        commentContainer.className = 'comment-container';
+
+        var siteLabel = document.createElement('label');
+        siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); display: inline-block; overflow: hidden;";
+        //"width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;"
+        var textContent = (isSPV == 0) ? element.spv : element.site;
+        if (isSPV == 0) {
+            var marquee = document.createElement('marquee');
+            marquee.textContent = textContent;
+            marquee.direction = "left";
+            marquee.behavior = "scroll";
+            marquee.scrollAmount = "3";
+            siteLabel.appendChild(marquee);
+        }
+        else {
+            siteLabel.textContent = textContent;
+        }
+        siteLabel.id = "ECMLabel" + index;
+        element.label_id = "ECMLabel" + index;
+
+        var commentInput = document.createElement('input');
+        commentInput.className = 'comment-input';
+        commentInput.type = 'text';
+        commentInput.style = "margin-left: 10px; width: 370px; height: 35px; border: 1px solid #ccc; vertical-align: top;";
+        commentInput.value = element.comment;
+        commentInput.id = "ECMInput_" + index;
+        element.input_id = "ECMInput_" + index;
+        commentContainer.appendChild(siteLabel);
+        commentContainer.appendChild(commentInput);
+        Destcontainer.appendChild(commentContainer);
+    }
+
+    function ECMSaveButton() {
+        //console.log("Edit save button just after save : ");
+        //console.log(ECM_data);
+        var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+        var anyChanges = [];
+        var ECMFinalData = []
+        for (var k = 0; k < ECM_data.length; k++) {
+            //var tempId = "ECMInput_" + k;
+            var temEle = document.getElementById(ECM_data[k].input_id);
+            var updatedComment = temEle.value;
+            if (ECM_data[k].comment == updatedComment) {
+                anyChanges.push(0); // No change in comment
+            } else {
+                ECM_data[k].updated_by = updatedBy;
+                ECM_data[k].updated_comment = updatedComment.toString();
+                ECM_data[k].isSPV = Number(ECM_data[k].isSPV);
+                ECM_data[k].isMonthly = 0; //0 for monthly 1 for yearly.
+                ECM_data[k].isDeleted = 1; //1 active 0 for deleted.
+                anyChanges.push(1); // Change in comment.
+                ECMFinalData.push(ECM_data[k]);
+            }
+            ECM_data[k].isSPV = isSPV;
+        }
+        //console.log("Edited after updating button : ");
+        //console.log(ECMFinalData);
+        //console.log(anyChanges);
+        if (anyChanges.includes(1)) {
+            //console.log("Calling the API for changes.");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPECM", "WindReport")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(ECMFinalData),
+                success: function (result, status, xhr) {
+                    //console.log("result after adding : ");
+                    //console.log(result);
+                    if (Number(result) > 0) {
+                        returnHome("Edit", "Update");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        }else {
+            // No changes, call toast function
+            console.log("No changes in comments. Calling the toast function.");
+            showToast("No Changes to Update.", 7000, "ECM");
+        }
+    }
+
+    //ALL for DELETE Comments for monthly comments part.
+    function monthDelete() {
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
+
+        mDisplay.style.display = "none";
+        mAdd.style.display = "none";
+        mEdit.style.display = "none";
+        mDelete.style.display = "block";
+
+        var destContainer = document.getElementById("DCM_content");
+        destContainer.innerHTML = "";
+
+        var infoDiv = document.getElementById("DCM_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var monthNo = Number(temDate[1]);
+        var mo = monthNumberToName[monthNo];
+
+        var sentence = "Month : " + mo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var monthCardButtons = document.getElementById("monthCardButtons");
+        monthCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
+        //var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+        //$("#monthlyDelete").html("").html(snippet);
+    }
+    var DCM_data = [];
+    function DMCOnchange() {
+        var BD_dropdown = document.getElementById("DCM_BDSelect");
+        var BD_value = BD_dropdown.value;
+        //console.log("BD value selected in Delete is : " + BD_value);
+        var temDate = nDval.split("-");
+
+        var backButton = document.getElementById("backBtnDCM");
+        backButton.style.display = "none";
+
+        var monthNo = temDate[1];
+        var year = temDate[0];
+
+        //isDisplay: 0 = display, 1: Edit
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                DCM_data = [];
+                DCM_data = [...result];
+                console.log("Display Delete Result : ");
+                console.log(DCM_data);
+                var destContainer = document.getElementById("DCM_content");
+                destContainer.innerHTML = "";
+
+                if (DCM_data.length > 0) {
+                    DCM_data.forEach((elem, index) => createDeleteUI(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments to delete.";
+                }
+
+
+                var containerDiv = document.createElement('div');
+                containerDiv.className = 'd-flex justify-content-center';
+
+                // Create the Save button
+                var saveButton = document.createElement('button');
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                saveButton.onclick = DCMSaveButton;
+                saveButton.textContent = "Save";
+
+                // Create the Cancel button
+                var cancelButton = document.createElement('button');
+                cancelButton.style = "display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                cancelButton.onclick = function () {
+                    returnHome("Delete", "Cancel");
+                }
+                cancelButton.textContent = "Cancel";
+
+                // Append buttons to the container
+                containerDiv.appendChild(saveButton);
+                containerDiv.appendChild(cancelButton);
+
+                // Append the container to your destination container
+                destContainer.appendChild(containerDiv);
+            }
+        });
+    }
+    //Function for creating the UI for the Dlete.
+    function createDeleteUI(element, Destcontainer, index) {
+        element.index_id = index;
+        var commentContainer = document.createElement('div');
+        commentContainer.className = 'comment-container';
+        commentContainer.style.display = 'flex';
+        commentContainer.style.alignItems = 'center';
+
+        var siteLabel = document.createElement('label');
+        siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        //siteLabel.textContent = element.site;
+        var textContent = (isSPV == 0) ? element.spv : element.site;
+        if (isSPV == 0) {
+            var marquee = document.createElement('marquee');
+            marquee.textContent = textContent;
+            marquee.direction = "left";
+            marquee.behavior = "scroll";
+            marquee.scrollAmount = "3";
+            siteLabel.appendChild(marquee);
+        }
+        else {
+            siteLabel.textContent = textContent;
+        }
+        siteLabel.id = "DCMLabel" + index;
+        element.label_id = "DCMLabel" + index;
+
+        var CommentLabel = document.createElement('label');
+        CommentLabel.style.cssText = "width: 340px; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        CommentLabel.textContent = element.comment;
+        CommentLabel.id = "DCMLabel" + index;
+        element.comment_id = "DCMComment" + index;
+
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.style.cssText = "height: 30px; width: 30px; margin-left: 10px; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        checkbox.id = 'checkbox' + index;
+        checkbox.onclick = function () {
+            handleCheckboxClick(index);
+        };
+
+        commentContainer.appendChild(siteLabel);
+        commentContainer.appendChild(CommentLabel);
+        commentContainer.appendChild(checkbox);
+
+        Destcontainer.appendChild(commentContainer);
+    }
+    var DCM_deleteData = [];
+    var DCM_index = [];
+    function handleCheckboxClick(index) {
+        //console.log('Checkbox clicked for index:', index);
+        // Add your logic here
+        if (DCM_index.includes(index)) {
+            DCM_deleteData = DCM_deleteData.filter(function (item) {
+                return item.index_id !== index;
+            });
+
+            var indexOfData = DCM_index.indexOf(index);
+            DCM_deleteData = DCM_deleteData.filter(function (item) {
+                return item.index_id !== index;
+            });
+
+            // Remove the found index from DCM_index
+            if (indexOfData !== -1) {
+                DCM_index.splice(indexOfData, 1);
+            }
+        } else {
+            DCM_deleteData.push(DCM_data[index]);
+            DCM_index.push(index);
+        }
+    }
+    function DCMSaveButton() {
+        //console.log("Edit save button just after save : ");
+        //console.log(DCM_data);
+        //console.log("data after save delete :");
+        //console.log(DCM_deleteData);
+        //console.log(DCM_index);
+        if (DCM_index.length > 0) {
+            //Data is there for delete.
+            var deletedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+            for (var k = 0; k < DCM_deleteData.length; k++) {
+                DCM_deleteData[k].deleted_by = deletedBy;
+                DCM_deleteData[k].isSPV = Number(DCM_deleteData[k].isSPV);
+                DCM_deleteData[k].isMonthly = 0; //0 for monthly 1 for yearly.
+                DCM_deleteData[k].isDeleted = 0; //1 active 0 for deleted.
+                DCM_deleteData[k].isSPV = isSPV;
+            }
+
+            //console.log("Calling the API for changes.");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPDCM", "WindReport")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(DCM_deleteData),
+                success: function (result, status, xhr) {
+                    //console.log("result after adding : ");
+                    //console.log(result);
+                    if (Number(result) > 0) {
+                        returnHome("Delete", "Update");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        } else {
+            // No changes, call toast function
+            showToast("No Comments Selected to Delete.", 7000, "DCM");
+        }
+
+    }
+
+    //Returning to Home ie. Display comments for monthly comments part.
+    function returnHome(functionality, isUpdateCancel) {
+        var mDisplay = document.getElementById("monthlyComments");
+        var mAdd = document.getElementById("monthlyAdd");
+        var mEdit = document.getElementById("monthlyEdit");
+        var mDelete = document.getElementById("monthlyDelete");
+
+        mDisplay.style.display = "block";
+        mAdd.style.display = "none";
+        mEdit.style.display = "none";
+        mDelete.style.display = "none";
+
+        // Function call to get the comments data. Display Monthly Comments (DMC).
+        DMC(site_id, spv, nDval);
+
+        if (isUpdateCancel == "Update") {
+            if (functionality == "Edit") {
+                showToast("Comments Updated successfully.", 5000, "monthlyComments");
+            } else if (functionality == "Add") {
+                showToast("Comments Added successfully.", 5000, "monthlyComments");
+            } else if (functionality == "Delete") {
+                showToast("Comments Deleted successfully.", 5000, "monthlyComments");
+            }
+        }
+        if (isUpdateCancel == "Cancel") {
+            if (functionality == "Edit") {
+                var backButton1 = document.getElementById("backBtnECM");
+                backButton1.style.display = "flex";
+            } else if (functionality == "Add") {
+                var backButton2 = document.getElementById("backBtnACM");
+                backButton2.style.display = "flex";
+            } else if (functionality == "Delete") {
+                var backButton3 = document.getElementById("backBtnDCM");
+                backButton3.style.display = "flex";
+            }
+        }
+
+        var mainButtons = document.getElementById("monthContainer");
+        mainButtons.onmouseover = function () {
+            monthover();
+        };
+        mainButtons.onmouseout = function () {
+            monthout();
+        };
+
+    }
+
+    //ALL for Display Year Comments. (DYC).
+    // Display year commets main function.
+    function DYC(site_id, spv, nDval) {
+        var yDisplay = document.getElementById("yearComments");
+        var yAdd = document.getElementById("yearAdd");
+        var yEdit = document.getElementById("yearEdit");
+        var yDelete = document.getElementById("yearDelete");
+
+        yDisplay.style.display = "block";
+        yAdd.style.display = "none";
+        yEdit.style.display = "none";
+        yDelete.style.display = "none";
+
+        //console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
+        if (spv == "") {
+            isSPV = 1;
+            //console.log("So you will be seeing Data site wise.");
+        } else {
+            isSPV = 0;
+            //console.log("So you will be seeing Data spv wise.");
+        }
+
+        //0 = SPV, 1= Site.
+        var temDate = nDval.split("-");
+        var year = 0;
+        var monthNo = 0;
+        if (temDate.length > 1) {
+            year = Number(temDate[0]);
+            monthNo = Number(temDate[1]);
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no = ' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=1' + '&spv=' + spv ,
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    console.log("Display Result Yearly  : ");
+                    console.log(result);
+
+                    var EGB = []; //bdType = 1
+                    var BD = []; //bdType = 2
+                    var Other = []; //bdType = 3
+
+                    for (var k = 0; k < result.length; k++) {
+                        if (result[k].bd_type == 1) {
+                            EGB.push(result[k]);
+                        } else if (result[k].bd_type == 2) {
+                            BD.push(result[k]);
+                        } else if (result[k].bd_type == 3) {
+                            Other.push(result[k]);
+                        }
+                    }
+                    console.log("After 3 different arrays Yearly : ");
+                    console.log(EGB);
+                    console.log(BD);
+                    console.log(Other);
+                    var EGBY_div = document.getElementById("DYC_EGB");
+                    var BDY_div = document.getElementById("DYC_BD");
+                    var OtherY_div = document.getElementById("DYC_Other");
+                    if (EGB.length > 0) {
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "4px";
+                        commentDiv.id = "EGBY_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 25px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                        for (var i = 0; i < EGB.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + EGB[i].spv + ':</strong> ' + EGB[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        EGBY_div.innerHTML = "";
+                        EGBY_div.appendChild(commentDiv);
+                    } else {
+                        EGBY_div.style.display = "none";
+                    }
+                    if (BD.length > 0) {
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "4px";
+                        commentDiv.id = "BDY_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 25px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                        for (var i = 0; i < BD.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + BD[i].spv + ':</strong> ' + BD[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>'
+                        commentDiv.innerHTML = commentContent;
+                        BDY_div.innerHTML = "";
+                        BDY_div.appendChild(commentDiv);
+                    } else {
+                        BDY_div.style.display = "none";
+                    }
+                    if (Other.length > 0) {
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "4px";
+                        commentDiv.id = "OtherY_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 25px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                        for (var i = 0; i < Other.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + Other[i].spv + ':</strong> ' + Other[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        OtherY_div.innerHTML = "";
+                        OtherY_div.appendChild(commentDiv);
+                    } else {
+                        OtherY_div.style.display = "none";
+                    }
+                }
+            });
+
+        }
+    }
+
+    // ALL for ADD COMMENTS. Yearly
+    //ADD Main function Yearly.
+    var ACY_info = [
+        {
+            "bdSetCount": 1,
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+        },
+        {
+            "mainDiv": "ACY",
+            "bdSelectDD": "ACY_breakdownSelect1",
+            "siteMainDiv": "ACY_siteContainer1",
+            "siteSelectDD": "ACY_sitesM1",
+            "commentInput": "ACY_commentInput1",
+
+            "siteArray": [],
+            "totalSiteCount": 0, //will be updated at the time of sites are fetched.
+            "siteCount": 1, //Will increment as we add the sites in this BD set.
+        }
+    ];
+    function yearAdd() {
+        var yDisplay = document.getElementById("yearComments");
+        var yAdd = document.getElementById("yearAdd");
+        var yEdit = document.getElementById("yearEdit");
+        var yDelete = document.getElementById("yearDelete");
+
+        yDisplay.style.display = "none";
+        yAdd.style.display = "block";
+        yEdit.style.display = "none";
+        yDelete.style.display = "none";
+
+        var infoDiv = document.getElementById("ACY_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var yearNo = Number(temDate[0]);
+        //var mo = monthNumberToName[monthNo];
+
+        var sentence = "Year : " + yearNo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var yearCardButtons = document.getElementById("yearCardButtons");
+        yearCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("yearContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
+
+        var bdOptions = '';
+        var temBDArray = [...ACY_info[0].bdArray];
+        for (var k = 0; k < temBDArray.length; k++) {
+            bdOptions += '<option value="' + temBDArray[k].value + '">' + temBDArray[k].name + '</option>';
+        }
+        var BDMainTem = "#ACY_breakdownSelect1";
+        $(BDMainTem).html("").html(bdOptions);
+    }
+
+    //ACY change in bdDD yearly
+    function ACY_bd_change(BDSet) {
+        elementTemp = ACY_info[BDSet];
+        var dropId = elementTemp.bdSelectDD;
+        var selectedValue = document.getElementById(dropId).value;
+        //console.log("inside year onchange BD select : " + selectedValue);
+
+        getSiteForYearAdd(true, selectedValue, BDSet)
+        var backButton = document.getElementById("backBtnACY");
+        backButton.style.display = "none";
+
+    }
+    //ACY add BREAKDOWN. yearly
+    function yearAddBD() {
+        //console.log("ACY_info array before inserting BD set.");
+        //console.log(ACY_info);
+        if (ACY_info[0].bdArray.length > 2) {
+            ACY_info[0].bdSetCount++;
+            var BDCounter = ACY_info[0].bdSetCount;
+            var newElementBDSet = {
+                "mainDiv": "ACY",
+                "bdSelectDD": "ACY_breakdownSelect" + BDCounter,
+                "siteMainDiv": "ACY_siteContainer" + BDCounter,
+                "siteSelectDD": "ACY_sitesM" + BDCounter,
+                "commentInput": "ACY_commentInput" + BDCounter,
+
+                "siteArray": [],
+                "totalSiteCount": 0, //will be updated at the time of sites are fetched.
+                "siteCount": 1, //Will increment as we add the sites in this BD set.
+            }
+            ACY_info.push(newElementBDSet);
+            var thisEle = ACY_info[BDCounter];
+            var idSite = thisEle.siteSelectDD + "_" + thisEle.siteCount;
+            var idInput = thisEle.commentInput + "_" + thisEle.siteCount;
+            //console.log("Created Site and input ids : " + idSite + " and " + idInput);
+
+            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACY_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select><input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACY_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACY_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSiteYear(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
+
+            var bdContainer = document.getElementById('ACY');
+
+            // Insert the new content at the end of siteContainer
+            bdContainer.insertAdjacentHTML('beforeend', newBDContent);
+
+            //remove the bd type selected in previous set dropdown.
+            var prevEle = ACY_info[BDCounter - 1];
+            var dropId = prevEle.bdSelectDD; //'ACM_breakdownSelect1';
+            var selectedValue = document.getElementById(dropId).value;
+            //console.log('Selected BD Value:', selectedValue);
+
+            // Find the index of the element with site_id equal to
+            var indexToRemove = ACY_info[0].bdArray.findIndex(function (bd) {
+                return bd.value === Number(selectedValue);
+            });
+
+            // If the element is found, remove it using splice
+            if (indexToRemove !== -1) {
+                ACY_info[0].bdArray.splice(indexToRemove, 1);
+            }
+
+            var optionss = "";
+            for (var k = 0; k < ACY_info[0].bdArray.length; k++) {
+                optionss += '<option value="' + ACY_info[0].bdArray[k].value + '">' + ACY_info[0].bdArray[k].name + '</option>';
+            }
+            var bdSelectTem = "#" + thisEle.bdSelectDD //"#ACM_breakdownSelect" + BDCounter;
+            $(bdSelectTem).html("").html(optionss);
+
+            //console.log("ACY_info array after inserting BD set.");
+            //console.log(ACY_info);
+        } else {
+            showToast('No BDs to Add', 5000, 'yearAdd');
+        }
+
+    }
+
+    //Get remaining sites for the first BD set site dropdown yearly
+    function getSiteForYearAdd(fliterVal, siteDiv, BDSetCount) {
+        //console.log("Inside getsiteforAddComments year siteDiv: " + siteDiv + " BDSetCount : " + BDSetCount);
+
+        var dval = document.getElementById("daterange");
+        var nDval = dval.value;
+        const dateparseRes = parseDate(nDval);
+        var month_nos = dateparseRes.monthNumber;
+        //console.log(month_nos);
+        var year = dateparseRes.year;
+        var ele = ACY_info[BDSetCount];
+
+        var bdTypes = Number(document.getElementById(ele.bdSelectDD).value);
+        //console.log("BD type Selected is : " + bdTypes);
+        if (isSPV == 0) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPGetSpvListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 1 + '&bdTypes=' + bdTypes + '&isMonthly=1',
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "";
+                    //console.log(result);
+                    ele.siteArray = [...result];
+                    ele.totalSiteCount = result.length;
+
+                    //after this the current BD selection Drop down should be disabled.
+                    for (var k = 0; k < result.length; k++) {
+                        options += '<option value="' + result[k].spv + '">' + result[k].spv + '</option>';
+                    }
+                    //$("#sitesM").multipleSelect('destroy');
+                    var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
+                    //console.log("destination dropdoen name : " + DestTemp);
+                    $(DestTemp).html("").html(options);
+                }
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPGetSiteListForEdit", "WindReport")' + '?month_no=' + month_nos + '&year=' + year + '&siteType=' + 1 + '&bdTypes=' + bdTypes + '&isMonthly=1',
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "";
+                    console.log(result);
+                    ele.siteArray = [...result];
+                    ele.totalSiteCount = result.length;
+
+                    //after this the current BD selection Drop down should be disabled.
+                    for (var k = 0; k < result.length; k++) {
+                        options += '<option value="' + result[k].site_id + '">' + result[k].site + '</option>';
+                    }
+                    //$("#sitesM").multipleSelect('destroy');
+                    var DestTemp = "#" + ele.siteSelectDD + "_" + ele.siteCount;
+                    //console.log("destination dropdoen name : " + DestTemp);
+                    $(DestTemp).html("").html(options);
+                }
+            });
+        }
+    }
+
+    // Function to add a new set of site dropdown and input fields yearly
+    function addSiteYear(BDCount) {
+        // dafault container siteContainer
+        // current bd container element from ACY_info
+
+        //console.log(mainSiteRes.length);
+        var thisElement = ACY_info[BDCount];
+        //console.log("ACY_info array before inserting site set.");
+        //console.log(ACY_info);
+
+        if (thisElement.siteArray.length > 1) {
+            thisElement.siteCount++;
+            var idSite = thisElement.siteSelectDD + "_" + thisElement.siteCount;
+            var idInput = thisElement.commentInput + "_" + thisElement.siteCount;
+            //console.log("Created Site and input ids : " + idSite + " and " + idInput );
+
+            var Newcontent = '<div class="row"> <div class="col-sm-7" > <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select> <input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div > </div >';
+            //'ACY_siteContainer1'
+            var containerDestination = thisElement.siteMainDiv;
+            var siteContainer = document.getElementById(containerDestination);
+
+            // Insert the new content at the end of siteContainer
+            siteContainer.insertAdjacentHTML('beforeend', Newcontent);
+
+            if (thisElement.siteCount > 1) {
+                //get prevoious dropdown id
+                if (isSPV == 1) {
+                    //site wise
+                    var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
+                    //console.log("previous site DD Id" + previous_siteDD);
+
+                    var selectedValue = document.getElementById(previous_siteDD).value;
+                    //console.log('Selected Value:', selectedValue);
+
+                    // Find the index of the element with site_id equal to
+                    var indexToRemove = thisElement.siteArray.findIndex(function (site) {
+                        return site.site_id === Number(selectedValue);
+                    });
+
+                    // If the element is found, remove it using splice
+                    if (indexToRemove !== -1) {
+                        thisElement.siteArray.splice(indexToRemove, 1);
+                    }
+
+                    var optionss = "";
+                    for (var k = 0; k < thisElement.siteArray.length; k++) {
+                        optionss += '<option value="' + thisElement.siteArray[k].site_id + '">' + thisElement.siteArray[k].site + '</option>';
+                    }
+                    var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
+                    $(siteSelectTem).html("").html(optionss);
+                } else {
+                    //SPV wise
+                    var previous_siteDD = thisElement.siteSelectDD + "_" + (thisElement.siteCount - 1)
+                    //console.log("previous site DD Id" + previous_siteDD);
+
+                    var selectedValue = document.getElementById(previous_siteDD).value;
+                    //console.log('Selected Value:', selectedValue);
+
+                    // Find the index of the element with site_id equal to
+                    var indexToRemove = thisElement.siteArray.findIndex(function (site) {
+                        return site.spv === selectedValue;
+                    });
+
+                    // If the element is found, remove it using splice
+                    if (indexToRemove !== -1) {
+                        thisElement.siteArray.splice(indexToRemove, 1);
+                    }
+
+                    var optionss = "";
+                    for (var k = 0; k < thisElement.siteArray.length; k++) {
+                        optionss += '<option value="' + thisElement.siteArray[k].spv + '">' + thisElement.siteArray[k].spv + '</option>';
+                    }
+                    var siteSelectTem = "#" + thisElement.siteSelectDD + "_" + thisElement.siteCount;
+                    $(siteSelectTem).html("").html(optionss);
+                }
+            }
+            //console.log("ACY_info array after inserting site set.");
+            //console.log(ACY_info);
+        }
+        else {
+            showToast('No sites to Add', 5000, 'yearAdd');
+        }
+
+    }
+
+    //function to get the data from all input boxes and select boxes. yearly
+    function ACYSaveData() {
+        //console.log("ACY_info after clicking save button :");
+        //console.log(ACY_info);
+        var ACYFinalData = [];
+
+        var bdSetCount = ACY_info[0].bdSetCount;
+        for (var k = 1; k <= bdSetCount; k++) {
+            var BDelement = ACY_info[k];
+            var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+
+            var userName = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
+            var role = "@HttpContextAccessor.HttpContext.Session.GetString("role")";
+            var dval = document.getElementById("daterange");
+            var YearMonth = dval.value;
+            var temp = YearMonth.split("-");
+            var year1 = Number(temp[0]);
+            var month_no = Number(temp[1]);
+            var month = monthNumberToName[month_no];
+            var type = 1; //1=solar, 2= wind;
+            var isDeleted = 1;
+            var isMonthly = 1; //0 = monthly, 1= yearly
+            var addedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+            var updatedBy = 0;
+            console.log("User name : " + userName + "role : " + role + " user id: " + addedBy);
+
+
+            for (var j = 1; j <= BDelement.siteCount; j++) {
+                var eachData = {};
+                if (isSPV == 0) {
+                    eachData = {
+                        //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
+                        "month": month,
+                        "month_no": month_no,
+                        "year": year1,
+                        "type": type,
+                        "site_id": 0,
+                        "bd_type": Number(bdType),
+                        "isDeleted": isDeleted,
+                        "isMonthly": isMonthly,
+                        "isSPV": Number(isSPV),
+                        "SPV": document.getElementById((BDelement.siteSelectDD + "_" + j)).value,
+                        "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                        "added_by": addedBy,
+                        "updated_by": updatedBy,
+                    }
+                } else {
+                    eachData = {
+                        //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
+                        "month": month,
+                        "month_no": month_no,
+                        "year": year1,
+                        "type": type,
+                        "site_id": Number(document.getElementById((BDelement.siteSelectDD + "_" + j)).value),
+                        "bd_type": Number(bdType),
+                        "isDeleted": isDeleted,
+                        "isMonthly": isMonthly,
+                        "isSPV": Number(isSPV),
+                        "comment": document.getElementById((BDelement.commentInput + "_" + j)).value,
+                        "added_by": addedBy,
+                        "updated_by": updatedBy,
+                    }
+                }
+
+                ACYFinalData.push(eachData);
+            }
+        }
+        //console.log("data after extracting : ");
+        //console.log(ACYFinalData);
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("OPACM", "WindReport")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(ACYFinalData),
+            success: function (result, status, xhr) {
+                console.log("result after adding : ");
+                console.log(result);
+                if (Number(result) > 0) {
+
+                    ClearACY();
+                    returnHomeYear("Add", "Update");
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", error);
+            }
+        });
+    }
+    //function Cancel data. yearly
+    function ACYCancel() {
+        ClearACY();
+        var yDisplay = document.getElementById("yearComments");
+        var yAdd = document.getElementById("yearAdd");
+        var yEdit = document.getElementById("yearEdit");
+        var yDelete = document.getElementById("yearDelete");
+
+        var mainButtons = document.getElementById("yearContainer");
+        mainButtons.onmouseover = function () {
+            yearover();
+        };
+        mainButtons.onmouseout = function () {
+            yearout();
+        };
+
+        yDisplay.style.display = "block";
+        yAdd.style.display = "none";
+        yEdit.style.display = "none";
+        yDelete.style.display = "none";
+    }
+    //function to clear ACM section after successful add or cancel. yearly
+    function ClearACY() {
+        var mainACY_div = document.getElementById("ACY");
+        mainACY_div.innerHTML = "";
+
+        var RefreshContent = '';
+        RefreshContent = '<div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACY_info_div"> <p id = "ACY_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACY_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACY_sitesM1_1" style="height: 40px;"></select> <input id="ACY_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+
+        mainACY_div.innerHTML = RefreshContent;
+        ACY_info = [];
+        ACY_info = [
+            {
+                "bdSetCount": 1,
+                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+            },
+            {
+                "mainDiv": "ACY",
+                "bdSelectDD": "ACY_breakdownSelect1",
+                "siteMainDiv": "ACY_siteContainer1",
+                "siteSelectDD": "ACY_sitesM1",
+                "commentInput": "ACY_commentInput1",
+
+                "siteArray": [],
+                "totalSiteCount": 0, //will be updated at the time of sites are fetched.
+                "siteCount": 1, //Will increment as we add the sites in this BD set.
+            }
+        ];
+    }
+
+     //ECY Edit functionality Yearly
+    var ECY_data = [];
+    function yearEdit() {
+        var yDisplay = document.getElementById("yearComments");
+        var yAdd = document.getElementById("yearAdd");
+        var yEdit = document.getElementById("yearEdit");
+        var yDelete = document.getElementById("yearDelete");
+
+        var destContainer = document.getElementById("ECY_content");
+        destContainer.innerHTML = "";
+
+        yDisplay.style.display = "none";
+        yAdd.style.display = "none";
+        yEdit.style.display = "block";
+        yDelete.style.display = "none";
+
+        var infoDiv = document.getElementById("ECY_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var yearNo = Number(temDate[0]);
+        //var mo = monthNumberToName[monthNo];
+
+        var sentence = "Year : " + yearNo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var yearCardButtons = document.getElementById("yearCardButtons");
+        yearCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("yearContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
+    }
+    //Get data after changing the Option from BD dropdown yearly
+    function EYCOnchange() {
+        var BD_dropdown = document.getElementById("ECY_BDSelect");
+        var BD_value = BD_dropdown.value;
+        //console.log("BD value selected in Edit Year is : " + BD_value);
+        var temDate = nDval.split("-");
+
+        var backButton = document.getElementById("backBtnECY");
+        backButton.style.display = "none";
+
+        var monthNo = temDate[1];
+        var year = temDate[0];
+
+        //isDisplay: 0 = display, 1: Edit
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1'  + '&isMonthly=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                ECY_data = [];
+                ECY_data = [...result];
+                //console.log("Display Edit Result : ");
+                //console.log(ECY_data);
+                var destContainer = document.getElementById("ECY_content");
+                destContainer.innerHTML = "";
+
+                if (ECY_data.length > 0) {
+                    ECY_data.forEach((elem, index) => createUIYear(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments to Edit.";
+                }
+                var containerDiv = document.createElement('div');
+                containerDiv.className = 'd-flex justify-content-center';
+                // Create the Save button
+                var saveButton = document.createElement('button');
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                saveButton.onclick = ECYSaveButton;
+                saveButton.textContent = "Save";
+
+                // Create the Cancel button
+                var cancelButton = document.createElement('button');
+                cancelButton.style = "display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                cancelButton.onclick = function () {
+                    returnHomeYear("Edit", "Cancel");
+                }
+                cancelButton.textContent = "Cancel";
+
+                // Append buttons to the container
+                containerDiv.appendChild(saveButton);
+                containerDiv.appendChild(cancelButton);
+
+                // Append the container to your destination container
+                destContainer.appendChild(containerDiv);
+            }
+        });
+    }
+    //Function for creating the UI for the Edit Year yearly
+    function createUIYear(element, Destcontainer, index) {
+        var commentContainer = document.createElement('div');
+        commentContainer.className = 'comment-container';
+
+        var siteLabel = document.createElement('label');
+        siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        var textContent = (isSPV == 0) ? element.spv : element.site;
+        if (isSPV == 0) {
+            var marquee = document.createElement('marquee');
+            marquee.textContent = textContent;
+            marquee.direction = "left";
+            marquee.behavior = "scroll";
+            marquee.scrollAmount = "3";
+            siteLabel.appendChild(marquee);
+        }
+        else {
+            siteLabel.textContent = textContent;
+        }
+        siteLabel.id = "ECYLabel" + index;
+        element.label_id = "ECYLabel" + index;
+
+        var commentInput = document.createElement('input');
+        commentInput.className = 'comment-input';
+        commentInput.type = 'text';
+        commentInput.style = "margin-left: 10px; width: 370px; height: 35px; border: 1px solid #ccc; vertical-align: top;";
+        commentInput.value = element.comment;
+        commentInput.id = "ECYInput_" + index;
+        element.input_id = "ECYInput_" + index;
+
+        commentContainer.appendChild(siteLabel);
+        commentContainer.appendChild(commentInput);
+
+        Destcontainer.appendChild(commentContainer);
+    }
+
+    function ECYSaveButton() {
+        //console.log("Edit Year save button just after save : ");
+        //console.log(ECY_data);
+        var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+        var anyChanges = [];
+        var ECYFinalData = []
+        for (var k = 0; k < ECY_data.length; k++) {
+            //var tempId = "ECMInput_" + k;
+            var temEle = document.getElementById(ECY_data[k].input_id);
+            var updatedComment = temEle.value;
+            if (ECY_data[k].comment == updatedComment) {
+                anyChanges.push(0); // No change in comment
+            } else {
+                ECY_data[k].updated_by = updatedBy;
+                ECY_data[k].updated_comment = updatedComment.toString();
+                ECY_data[k].isSPV = Number(ECY_data[k].isSPV);
+                ECY_data[k].isMonthly = 1; //0 for monthly 1 for yearly.
+                ECY_data[k].isDeleted = 1; //1 active 0 for deleted.
+                anyChanges.push(1); // Change in comment.
+                ECYFinalData.push(ECY_data[k]);
+            }
+            ECY_data[k].isSPV = isSPV;
+        }
+        //console.log("Edited after updating button : ");
+        //console.log(ECYFinalData);
+        //console.log(anyChanges);
+        if (anyChanges.includes(1)) {
+            //console.log("Calling the API for changes.");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPECM", "WindReport")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(ECYFinalData),
+                success: function (result, status, xhr) {
+                    //console.log("result after adding : ");
+                    //console.log(result);
+                    if (Number(result) > 0) {
+                        returnHomeYear("Edit", "Update");
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        } else {
+            // No changes, call toast function
+            console.log("No changes in comments. Calling the toast function. Year");
+            showToast("No Changes to Update.", 7000, "ECY");
+        }
+    }
+
+    //ALL for delete comments yearly.
+    function yearDelete() {
+        var yDisplay = document.getElementById("yearComments");
+        var yAdd = document.getElementById("yearAdd");
+        var yEdit = document.getElementById("yearEdit");
+        var yDelete = document.getElementById("yearDelete");
+
+        yDisplay.style.display = "none";
+        yAdd.style.display = "none";
+        yEdit.style.display = "none";
+        yDelete.style.display = "block";
+
+        var destContainer = document.getElementById("DCY_content");
+        destContainer.innerHTML = "";
+
+        var infoDiv = document.getElementById("DCY_info");
+        infoDiv.innerHTML = "";
+        var tempInfo = isSPV === 0 ? "SPV Wise" : "Site Wise";
+        var temDate = nDval.split("-");
+        var monthNo = Number(temDate[1]);
+        var mo = monthNumberToName[monthNo];
+
+        var sentence = "Month : " + mo + ". " + tempInfo;
+        infoDiv.innerHTML = sentence;
+
+        var yearCardButtons = document.getElementById("yearCardButtons");
+        yearCardButtons.style.display = "none";
+        var mainButtons = document.getElementById("yearContainer");
+        mainButtons.onmouseover = function () {
+            //monthover();
+        };
+        mainButtons.onmouseout = function () {
+            //monthout();
+        };
+        //var snippet = '<h5>Yearly Delete division</h5> </br> <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px;" onclick="monthDisplay()">Save</button>';
+        //$("#monthlyDelete").html("").html(snippet);
+    }
+    var DCY_data = [];
+    function DYCOnchange() {
+        var BD_dropdown = document.getElementById("DCY_BDSelect");
+        var BD_value = BD_dropdown.value;
+        console.log("BD Year value selected in Delete is : " + BD_value);
+        var temDate = nDval.split("-");
+
+        var backButton = document.getElementById("backBtnDCY");
+        backButton.style.display = "none";
+
+        var monthNo = temDate[1];
+        var year = temDate[0];
+
+        //isDisplay: 0 = display, 1: Edit
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                DCY_data = [];
+                DCY_data = [...result];
+                console.log("Display Year Delete Result : ");
+                console.log(DCY_data);
+                var destContainer = document.getElementById("DCY_content");
+                destContainer.innerHTML = "";
+
+                if (DCY_data.length > 0) {
+                    DCY_data.forEach((elem, index) => createDeleteUIYear(elem, destContainer, index));
+                } else {
+                    destContainer.innerHTML = "No Comments for Deletion.";
+                }
+
+                var containerDiv = document.createElement('div');
+                containerDiv.className = 'd-flex justify-content-center';
+
+                // Create the Save button
+                var saveButton = document.createElement('button');
+                saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                saveButton.onclick = DCYSaveButton;
+                saveButton.textContent = "Save";
+
+                // Create the Cancel button
+                var cancelButton = document.createElement('button');
+                cancelButton.style = "display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
+                cancelButton.onclick = function () {
+                    returnHomeYear("Delete", "Cancel");
+                }
+                cancelButton.textContent = "Cancel";
+
+                // Append buttons to the container
+                containerDiv.appendChild(saveButton);
+                containerDiv.appendChild(cancelButton);
+
+                // Append the container to your destination container
+                destContainer.appendChild(containerDiv);
+            }
+        });
+    }
+    //Function for creating the UI for the Edit.
+    function createDeleteUIYear(element, Destcontainer, index) {
+        element.index_id = index;
+        var commentContainer = document.createElement('div');
+        commentContainer.className = 'comment-container';
+        commentContainer.style.display = 'flex';
+        commentContainer.style.alignItems = 'center';
+
+        var siteLabel = document.createElement('label');
+        siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        var textContent = (isSPV == 0) ? element.spv : element.site;
+        if (isSPV == 0) {
+            var marquee = document.createElement('marquee');
+            marquee.textContent = textContent;
+            marquee.direction = "left";
+            marquee.behavior = "scroll";
+            marquee.scrollAmount = "3";
+            siteLabel.appendChild(marquee);
+        }
+        else {
+            siteLabel.textContent = textContent;
+        }
+        siteLabel.id = "DCYLabel" + index;
+        element.label_id = "DCYLabel" + index;
+
+        var CommentLabel = document.createElement('label');
+        CommentLabel.style.cssText = "width: 340px; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        CommentLabel.textContent = element.comment;
+        CommentLabel.id = "DCYLabel" + index;
+        element.comment_id = "DCYComment" + index;
+
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.style.cssText = "height: 30px; width: 30px; margin-left: 10px; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        checkbox.id = 'checkbox' + index;
+        checkbox.onclick = function () {
+            handleCheckboxClickYear(index);
+        };
+
+        commentContainer.appendChild(siteLabel);
+        commentContainer.appendChild(CommentLabel);
+        commentContainer.appendChild(checkbox);
+
+        Destcontainer.appendChild(commentContainer);
+    }
+    var DCY_deleteData = [];
+    var DCY_index = [];
+    function handleCheckboxClickYear(index) {
+        //console.log('Checkbox clicked for index:', index);
+        // Add your logic here
+        if (DCY_index.includes(index)) {
+            DCY_deleteData = DCY_deleteData.filter(function (item) {
+                return item.index_id !== index;
+            });
+
+            var indexOfData = DCY_index.indexOf(index);
+            DCY_deleteData = DCY_deleteData.filter(function (item) {
+                return item.index_id !== index;
+            });
+
+            // Remove the found index from DCM_index
+            if (indexOfData !== -1) {
+                DCY_index.splice(indexOfData, 1);
+            }
+        } else {
+            DCY_deleteData.push(DCY_data[index]);
+            DCY_index.push(index);
+        }
+    }
+
+    function DCYSaveButton() {
+        //console.log("Edit Year save button just after save : ");
+        //console.log(DCY_data);
+        //console.log("data after save delete :");
+        //console.log(DCY_deleteData);
+        //console.log(DCY_index);
+        if (DCY_index.length > 0) {
+            //Data is there for delete.
+            var deletedBy = @HttpContextAccessor.HttpContext.Session.GetString("userid"); //userId.
+            //console.log("User Id of the deletor : " + deletedBy);
+            for (var k = 0; k < DCY_deleteData.length; k++) {
+                DCY_deleteData[k].deleted_by = deletedBy;
+                DCY_deleteData[k].isSPV = Number(DCY_deleteData[k].isSPV);
+                DCY_deleteData[k].isMonthly = 0; //0 for monthly 1 for yearly.
+                DCY_deleteData[k].isDeleted = 0; //1 active 0 for deleted.
+                DCY_deleteData[k].isSPV = isSPV;
+            }
+
+            //console.log("Calling the API for changes.");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OPDCM", "WindReport")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(DCY_deleteData),
+                success: function (result, status, xhr) {
+                    //console.log("result after adding : ");
+                    //console.log(result);
+                    if (Number(result) > 0) {
+                        returnHomeYear("Delete", "Update");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        } else {
+            // No changes, call toast function
+            showToast("No Comments Selected to Delete.", 7000, "DCY");
+        }
+    }
+
+    //Return home i.e yearly display comments part.
+    function returnHomeYear(functionality, isUpdateCancel) {
+        var yDisplay = document.getElementById("yearComments");
+        var yAdd = document.getElementById("yearAdd");
+        var yEdit = document.getElementById("yearEdit");
+        var yDelete = document.getElementById("yearDelete");
+
+        yDisplay.style.display = "block";
+        yAdd.style.display = "none";
+        yEdit.style.display = "none";
+        yDelete.style.display = "none";
+
+        // Function call to get the comments data. Display Monthly Comments (DYC).
+        DYC(site_id, spv, nDval);
+
+        if (isUpdateCancel == "Update") {
+            if (functionality == "Edit") {
+                showToast("Comments Updated successfully.", 5000, "yearComments");
+            } else if (functionality == "Add") {
+                showToast("Comments Added successfully.", 5000, "yearComments");
+            } else if (functionality == "Delete") {
+                showToast("Comments Deleted successfully.", 5000, "yearComments");
+            }
+        }
+        if (isUpdateCancel == "Cancel") {
+            if (functionality == "Edit") {
+                var backButton1 = document.getElementById("backBtnECY");
+                backButton1.style.display = "flex";
+            } else if (functionality == "Add") {
+                var backButton2 = document.getElementById("backBtnACY");
+                backButton2.style.display = "flex";
+            } else if (functionality == "Delete") {
+                var backButton3 = document.getElementById("backBtnDCY");
+                backButton3.style.display = "flex";
+            }
+        }
+
+        var mainButtons = document.getElementById("yearContainer");
+        mainButtons.onmouseover = function () {
+            yearover();
+        };
+        mainButtons.onmouseout = function () {
+            yearout();
+        };
+
+    }
+
+    //Toast generator and display.
+    function showToast(message, duration, division) {
+        // Create the toast element with inline styles
+        var toast = document.createElement('div');
+        toast.innerHTML = message + '<span onclick="closeToastByClick()" style="cursor: pointer; position: absolute; top: 0; right: 0; padding: 5px;">&times;</span>';
+        //position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgb(238, 64, 61); color: rgb(255, 255, 255); padding: 15px; border-radius: 5px; display: block;
+        toast.style.position = 'absolute';
+        toast.style.top = '50%';
+        toast.style.left = '50%';
+        toast.style.transform = 'translate(-50%, -50%)';
+        toast.style.backgroundColor = '#ee403d';
+        toast.style.color = '#ffffff';
+        toast.style.padding = '15px';
+        toast.style.borderRadius = '5px';
+        toast.style.display = 'none';
+        toast.id = "toast";
+
+        // Append the toast to the maindiv
+        document.getElementById(division).appendChild(toast);
+
+        // Show the toast
+        toast.style.display = 'block';
+
+        // Set a timeout to hide the toast after the specified duration
+        setTimeout(function () {
+            closeToast(toast);
+        }, duration);
+    }
+
+    function closeToast(toast) {
+        // Hide and remove the toast
+        toast.style.display = 'none';
+        toast.parentNode.removeChild(toast);
+    }
+
+    function closeToastByClick() {
+        var toast = document.getElementById("toast");
+        toast.style.display = "none";
+        toast.parentNode.removeChild(toast);
+    }
+
+    function parseDate(dateString) {
+        const [year, month] = dateString.split('-');
+
+        if (!year || !month || isNaN(year) || isNaN(month)) {
+            // Handle invalid date string
+            return null;
+        }
+
+        const date = new Date(parseInt(year), parseInt(month) - 1); // Subtracting 1 to handle zero-based index
+
+        const monthNumber = month;
+        const shortMonthName = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
+
+        return {
+            monthNumber: monthNumber,
+            shortMonthName: shortMonthName,
+            year: year
+        };
+    }
 
 </script>
