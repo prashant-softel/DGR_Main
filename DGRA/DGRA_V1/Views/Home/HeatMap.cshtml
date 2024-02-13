@@ -420,7 +420,47 @@
             return false;
         }
        // document.getElementById("loader").style.display = 'flex';
+        /*  new fuction test */
+      /*  const existingData = [
+            { date: "2024-01-01", autonation: 1, pyranometer15min: 1, pyranometer1min: 1 },
+            { date: "2024-01-02", autonation: 1, pyranometer15min: 1, pyranometer1min: 1 },
+            { date: "2024-01-03", autonation: 0, pyranometer15min: 1, pyranometer1min: 1 },
+            { date: "2024-01-04", autonation: 1, pyranometer15min: 1, pyranometer1min: 1 },
+            { date: "2024-01-05", autonation: 0, pyranometer15min: 0, pyranometer1min: 1 },
+            { date: "2024-01-07", autonation: 1, pyranometer15min: 1, pyranometer1min: 1 },
+            { date: "2024-01-08", autonation: 0, pyranometer15min: 0, pyranometer1min: 0 },
+            { date: "2024-01-09", autonation: 1, pyranometer15min: 1, pyranometer1min: 1 }
+        ];
 
+        // Array to store missing dates
+        const missingDates = [];
+        for (let i = 1; i <= 10; i++) {
+            const currentDate = new Date(`2024-01-${i < 10 ? '0' + i : i}`).toISOString().split('T')[0];
+
+            // Check if the date is present in existing data
+            const dateExists = existingData.some(item => item.date === currentDate);
+
+            // If the date is missing, add it to the missingDates array
+            if (!dateExists) {
+                missingDates.push({
+                    date: currentDate,
+                    autonation: -1,  // default values for autonation, pyranometer15min, and pyranometer1min
+                    pyranometer15min: -1,
+                    pyranometer1min: -1
+                });
+            }
+        }
+
+        // Concatenate existing data with missing dates
+        const newData = existingData.concat(missingDates);
+
+        // Display the result
+        console.log(newData);
+        newData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Display the sorted array
+        console.log(newData);
+        */
         var siteType = $('select#siteType option:selected').val();
         var daterange = $('#daterange').val();
         var arr1 = new Array();
@@ -431,11 +471,9 @@
         const d1 = new Date(fromDate);
         const d2 = new Date(toDate);
         var datelist = getDatesInRange(d1, d2);
-       // console.log(datelist);
-        //console.log("site ::" + site);
-        //console.log("siteType ::" + siteType);
-        //console.log("fromDate ::" + fromDate);
-        //console.log("toDate ::" + toDate);
+        var datalengh = datelist.length;
+        var fdate = "";
+        console.log("selected data count :" + datalengh);
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetHeatMapData", "Dashboard")' + '?site=' + site + '&siteType=' + siteType + '&fromDate=' + fromDate + '&toDate=' + toDate + "&isAdmin=" + isAdmin,
@@ -448,19 +486,50 @@
                 tbl += '<tr><th >Site</th>';
                 for (var h = 0; h < datelist.length; h++) {
                     tbl += '<th>' + moment(datelist[h]).format('DD-MMM'); + '</th>';
+
+                    fdate = moment(datelist[0]).format('YYYY-MM');
                 }
                 tbl += '</tr></thead>';
                 for (var i = 0; i < result.length; i++) {
                     let sitedata = result[i].data;
                     tbl += '<tr><td>' + result[i].site + '</td>';
-                    //var resdate = [];
+                    const missingDates = [];
+                    for (let i = 1; i <= datalengh; i++) {
+                        const currentDate = new Date(fdate+`-${i < datalengh ? '0' + i : i}`).toISOString().split('T')[0];
+
+                        // Check if the date is present in existing data
+                        const dateExists = sitedata.some(item => item.date === currentDate);
+
+                        // If the date is missing, add it to the missingDates array
+                        if (!dateExists) {
+                            if (siteType == 1) {
+                                missingDates.push({
+                                    date: currentDate,
+                                    autonation: -1,  // default values for autonation, pyranometer15min, and pyranometer1min
+                                    uploded_tml: -1,
+                                    actual_tml: -1,
+                                    expected_tml: -1
+                                });
+                            }
+                            else {
+                                missingDates.push({
+                                    date: currentDate,
+                                    autonation: -1,  // default values for autonation, pyranometer15min, and pyranometer1min
+                                    pyranometer15min: -1,
+                                    pyranometer1min: -1
+                                });
+                            }
+                            
+                        }
+                    }
+                    const newData = sitedata.filter(Boolean).concat(missingDates);
 
                     if (siteType == 1) {
-
-                        Object.entries(sitedata).forEach(entry => {
+                        newData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        Object.entries(newData).forEach(entry => {
                             const [key, value] = entry;
                             if (typeof (value) == "object") {
-                             
+
                                 let status_count = 0;
                                 let tooltopmsg = "";
                                 if (Object(value).autonation == 1) {
@@ -481,16 +550,17 @@
                                 else {
                                     tooltopmsg = "TML data missing";
                                 }
-                                
+                                if (Object(value).autonation == -1 && Object(value).uploded_tml == -1) {
+                                    status_count = -1;
+                                }
+
                                 if ((Object(value).autonation == 0 && Object(value).uploded_tml == 1) && (Object(value).actual_tml != Object(value).expected_tml)) {
                                     tooltopmsg = "1- Generation data missing. <br> 2- TML sample are partial uploded";
                                 }
-
-                                // console.log("status", status_count);
                                 let applyclass = "black";
-                                // if (status_count == 3) { applyclass = "green"; }
                                 if (status_count == 2 || status_count == 1) { applyclass = "orange"; }
-                                if (status_count == 0) { applyclass = "gray"; tooltopmsg = "All data missing"; }
+                                if (status_count == 0) { applyclass = "gray"; tooltopmsg = "Wating for approval"; }
+                                if (status_count == -1) { applyclass = "black"; tooltopmsg = "All data missing"; }
                                 if (status_count == 3) {
                                     tbl += '<td class="green">&nbsp;</td>';
                                 }
@@ -500,31 +570,15 @@
                             }
                         });
                     }
-                    else
-                    {
-                        Object.entries(sitedata).forEach(entry => {
+                    else {
+                         newData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                       
+                        //let tooltopmsg = "";
+                         Object.entries(newData).forEach(entry => {
                             const [key, value] = entry;
                             if (typeof (value) == "object") {
-                                //resdate.push(Object(value).date);
-                                let status_count = 0;
                                 let tooltopmsg = "";
-                                /*const currentDate = new Date(Object(value).date);
-                                const nextDate = new Date(Object(value).date + 1);
-                                if ((nextDate - currentDate) > 86400000) { // 86400000 milliseconds in a day
-                                    // There is a missing date between currentDate and nextDate
-                                    const missingDate = new Date(currentDate.getTime() + 86400000);
-                                    console.log (missingDate.toISOString().split('T')[0]);
-                                }*/
-                                /*let bfound = false;
-                                let founddate = "";
-                                for (var i = 0; i <= datelist.count; i++) {
-                                    if (Object(value).date.indexOf(i) == -1) {
-                                        bfound = true;
-                                        founddate = datelist[i];
-                                    }
-                                }
-
-                                console.log(founddate);*/
+                                let status_count = 0;
                                 if (Object(value).autonation == 1) {
                                     status_count++;
                                 }
@@ -540,23 +594,27 @@
                                 if (Object(value).pyranometer1min == 1) {
                                     status_count++;
                                 }
+                               
                                 else {
                                     tooltopmsg = "Pyranometer 1 min data missing";
                                 }
-                                if (Object(value).pyranometer15min == 0 && Object(value).pyranometer1min==0) {
+
+                                if (Object(value).pyranometer15min == 0 && Object(value).pyranometer1min == 0) {
                                     tooltopmsg = "1- Pyranometer 1 min data missing. <br>2- Pyranometer 15 min data missing";
                                 }
-                                if (Object(value).autonation == 0 && Object(value).pyranometer1min==0) {
+                                if (Object(value).autonation == 0 && Object(value).pyranometer1min == 0) {
                                     tooltopmsg = "1- Generation data missing. <br>2- Pyranometer 1 min data missing";
                                 }
-                                if (Object(value).autonation == 0 && Object(value).pyranometer15min==0) {
+                                if (Object(value).autonation == 0 && Object(value).pyranometer15min == 0) {
                                     tooltopmsg = "1- Generation data missing. <br>2- Pyranometer 15 min data missing";
                                 }
-                                // console.log("status", status_count);
+                                if (Object(value).autonation == -1 && Object(value).pyranometer1min == -1 && Object(value).pyranometer1min == -1) {
+                                    status_count = -1;
+                                }
                                 let applyclass = "black";
-                                // if (status_count == 3) { applyclass = "green"; }
                                 if (status_count == 2 || status_count == 1) { applyclass = "orange"; }
-                                if (status_count == 0) { applyclass = "gray"; tooltopmsg = "All data missing"; }
+                                if (status_count == 0) { applyclass = "gray"; tooltopmsg = "Waiting for approval"; }
+                                if (status_count == -1) { applyclass = "black"; tooltopmsg = "All data missing"; }
                                 if (status_count == 3) {
                                     tbl += '<td class="green">&nbsp;</td>';
                                 }
@@ -564,11 +622,11 @@
                                     tbl += '<td class="' + applyclass + ' infotool-td"><span class="infotable">' + tooltopmsg + '</span></td>';
                                 }
                             }
+                       
                         });
                     }
-                   tbl += '<tr>';
+                   document.getElementById("loader").style.display = 'none';
                 }
-                //document.getElementById("loader").style.display = 'none';
                 tbl += '</tbody ></table >';
                 $("#HeatMap").html("").html(tbl);
             }
