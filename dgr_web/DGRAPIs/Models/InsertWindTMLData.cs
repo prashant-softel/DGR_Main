@@ -87,5 +87,6 @@ namespace DGRAPIs.Models
         public Int64 expected_TML { get; set; }
         public Int64 actual_TML {get;set;}
         public Int64 wtg_count {get;set;}
+        public int upload_status_id { get; set; }
     }
 }
