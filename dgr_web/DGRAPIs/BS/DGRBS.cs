@@ -215,7 +215,8 @@ namespace DGRAPIs.BS
         Task<int> OPCommentsEdit(List<OPComments> set);
         Task<int> OPCommentsDelete(List<OPComments> set);
         Task<List<OPComments>> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly);
-            //Tanvi's Change 1 function
+        Task<int> CalculateDailyExpected(string site, string data_date);
+        //Tanvi's Change 1 function
         Task<int> dgrUploadingReminder();
     }
     public class DGRBS : IDGRBS
@@ -2898,6 +2899,23 @@ namespace DGRAPIs.BS
             {
                 throw;
             }
+        }
+
+        public async Task<int> CalculateDailyExpected(string site, string data_date)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.CalculateDailyExpected(site, data_date);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
         //Tanvi's Changes 1 function.
         public async Task<int> dgrUploadingReminder()

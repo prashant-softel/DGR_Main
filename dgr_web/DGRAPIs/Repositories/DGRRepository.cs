@@ -17767,38 +17767,20 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //wind Expected vs actual daily basis calculation function.
-        internal async Task<List<GetWindTMLGraphData>> CalculateDailyExpected(string site, string fromDate, string toDate)
+        internal async Task<int> CalculateDailyExpected(string site, string data_date)
         {
-            string functionName = "GetWindTMLGraphData";
-            //if (site.Contains(',') || isYearly == 0)
-            //{
-            //    isYearly = 1;
-            //}
+            string functionName = "CalculateDailyExpected";
+            int returnRes = 0;
 
             List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
             List<ExpectedVsActualDaily> _tmlAllData = new List<ExpectedVsActualDaily>();
             //string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
             //string todate = Convert.ToDateTime(toDate).ToString("dd-MMM-yy");
-            string tmrFilter = "Date(Time_stamp) >= '" + fromDate + "'  and Date(Time_stamp) <= '" + toDate + "'";
-            double lossIGBD = 0;
-            double lossEGBD = 0;
-            double lossLULL = 0;
-            double lossOthersHour = 0;
-            double lossPCD = 0;
-            double lossSMH = 0;
-            double lossUSMH = 0;
-            double lossHealth = 0;
-            double loadShedding = 0;
-            double expected_power_sum = 0;
-            double actual_active_power = 0;
+            string tmrFilter = "Date(Time_stamp) = '" + data_date + "'";
             double target_sum = 0;
-            double gen_actual_active_power = 0;
             double lineloss_percentage = 0;
-            double lineloss_final = 0;
             double allSum = 0;
-            double finalExpectedPower = 0;
-            int monthlyData = 0;
-            ExpectedVsActualDaily storeData = new ExpectedVsActualDaily();
+            int wtgNumber = 0;
             try
             {
                 if (!string.IsNullOrEmpty(site))
@@ -17806,56 +17788,24 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     tmrFilter += " and site_id IN(" + site + ") ";
                 }
                 /*
-                 
-                 
-                 SELECT
-                    site_id,
-                    WTGs AS wtg,
-                    DATE(Time_stamp) AS data_date,
-                    SUM(avg_wind_speed) AS actual_wind_speed,
-                    SUM(avg_active_power) AS actual_active_power,
-                    SUM(recon_wind_speed) AS recon_wind_speed,
-                    SUM(exp_power_kw) AS expected_power,
-                    COUNT(*) AS tml_count,
-                    SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`,
-                    SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`,
-                    SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`,
-                    SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`,
-                    SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`,
-                    SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`,
-                    SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`,
-                    SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`,
-                    SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`,
-                    SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`,
-                    SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`,
-                    SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`,
-                    SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`,
-                    SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`
-                FROM
-                    uploading_file_tmr_data
-                WHERE
-                    DATE(Time_stamp) BETWEEN '2024-01-28' AND '2024-01-28'
-                    AND site_id IN (222)
-                GROUP BY
-                    WTGs;
 
-
-                SELECT site_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, SUM(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, SUM(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss` FROM uploading_file_tmr_data WHERE DATE(Time_stamp) BETWEEN '2024-01-28' AND '2024-01-28' AND site_id IN (222) GROUP BY WTGs;
+                SELECT site_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, SUM(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, SUM(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, SUM(kwh) as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id IN(222) AND date >= '2024-01-28' AND date <= '2024-01-28' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE DATE(Time_stamp) BETWEEN '2024-01-28' AND '2024-01-28' AND site_id IN (222) GROUP BY WTGs;
                  
                  */
                 //string fetchLossQry = "SELECT CASE WHEN all_bd = 'Load Shedding' THEN 'loadShedding' ELSE all_bd END as all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
-                string AllTMLDataQuery = $"SELECT site_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, SUM(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, SUM(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss` FROM uploading_file_tmr_data WHERE { tmrFilter } GROUP BY WTGs;";
+                string AllTMLDataQuery = $"SELECT site_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, SUM(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, SUM(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
 
                 try
                 {
                     _tmlAllData = await Context.GetData<ExpectedVsActualDaily>(AllTMLDataQuery).ConfigureAwait(false);
+                    returnRes = 1;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while fetching records from uploading_file_tmr_data , due to  : " + e.ToString();
                     //API_ErrorLog(msg);
                     LogError(0, 2, 5, functionName, msg, backend);
-
+                    return returnRes;
                 }
             }
             catch (Exception e)
@@ -17863,185 +17813,175 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string msg = "Exception while fetching records from tml_data table for daily calculation wtgs wise, due to  : " + e.ToString();
                 //API_ErrorLog(msg);
                 LogError(0, 2, 5, functionName, msg, backend);
+                return returnRes;
+            }
 
-            }
-            try
+            if (_tmlAllData.Count > 0)
             {
-                if (_tmlAllData.Count > 0)
-                {
-                    
-                }
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while extracting loss sum from _tmlDataList, due to : " + e.ToString();
-                //API_ErrorLog(msg);
-                LogError(0, 2, 5, functionName, msg, backend);
-
-            }
-            _tmlDataList.Clear();
-
-            //Target :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
-            string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
-            try
-            {
-                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchTargetQry).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while Fetching target sum form daily_target_kpi, due to : " + e.ToString();
-                //API_ErrorLog(msg);
-                LogError(0, 2, 5, functionName, msg, backend);
-
-            }
-            if (_tmlDataList.Count > 0)
-            {
+                //Fetch the WTG count from location master table.
+                string wtgCountQuery = $"SELECT COUNT(*) AS wtg_number FROM location_master WHERE site_master_id IN({site}) AND status = 1;";
                 try
                 {
-                    foreach (var unit in _tmlDataList)
+                    List<ExpectedVsActualDaily> wtgCount = new List<ExpectedVsActualDaily>();
+                    wtgCount = await Context.GetData<ExpectedVsActualDaily>(wtgCountQuery).ConfigureAwait(false);
+                    if (wtgCount.Count > 0)
                     {
-                        target_sum = unit.target_sum;
+                        wtgNumber = Convert.ToInt32(wtgCount[0].wtg_number);
                     }
+                    returnRes = 2;
                 }
                 catch (Exception e)
                 {
-                    string msg = "Exception while Extracting target sum from _tmlDataList, due to : " + e.ToString();
-                    //API_ErrorLog(msg);
+                    string msg = "Exception while fetching wtg count from the location master table, due to : " + e.ToString();
                     LogError(0, 2, 5, functionName, msg, backend);
-
+                    return returnRes;
                 }
-            }
-            _tmlDataList.Clear();
 
-            //Actual from Generation table :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
-            string fetchGenActualQry = "";
-            List<GetWindTMLGraphData> _tmlActualGenYearly = new List<GetWindTMLGraphData>();
-            fetchGenActualQry = "SELECT SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
-
-            try
-            {
-                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while Fetching Generation active power sum form daily_gen_summary, due to : " + e.ToString();
-                //API_ErrorLog(msg);
-                LogError(0, 2, 5, functionName, msg, backend);
-
-            }
-            if (_tmlDataList.Count > 0)
-            {
+                //Fetch target sum from daily target kpi.
+                string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id =" + site + " AND date = '" + data_date + "';";
                 try
                 {
-                    foreach (var unit in _tmlDataList)
-                    {
-                        gen_actual_active_power = unit.gen_actual_active_power;
-                    }
+                    _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchTargetQry).ConfigureAwait(false);
+                    returnRes = 3;
                 }
                 catch (Exception e)
                 {
-                    string msg = "Exception while Extracting Generation active power sum from _tmlDataList, due to : " + e.ToString();
+                    string msg = "Exception while Fetching target sum form daily_target_kpi, due to : " + e.ToString();
                     //API_ErrorLog(msg);
                     LogError(0, 2, 5, functionName, msg, backend);
-
+                    return returnRes;
                 }
-            }
-            _tmlDataList.Clear();
+                if (_tmlDataList.Count > 0)
+                {
+                    try
+                    {
+                        foreach (var unit in _tmlDataList)
+                        {
+                            target_sum = unit.target_sum;
+                        }
+                        target_sum /= wtgNumber;
+                        returnRes = 4;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while Extracting target sum from _tmlDataList, due to : " + e.ToString();
+                        //API_ErrorLog(msg);
+                        LogError(0, 2, 5, functionName, msg, backend);
+                        return returnRes;
 
-            //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
-            //              line_loss_per * actual / 1000000.
-            string toMonth = Convert.ToDateTime(toDate).ToString("MM");
-            string fromMonth = Convert.ToDateTime(fromDate).ToString("MM");
-            string fromYear = Convert.ToDateTime(fromDate).ToString("yyyy");
-            string toYear = Convert.ToDateTime(toDate).ToString("yyyy");
-            string fetchLinelossPerQry = "";
-            fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") ;";
+                    }
+                }
+                _tmlDataList.Clear();
 
-            try
-            {
-                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
-                //API_ErrorLog(msg);
-                LogError(0, 2, 5, functionName, msg, backend);
+                //Actual from daily generation summary.
+                //SELECT wtg, site_id, SUM(kwh) as controller_kwh FROM `daily_gen_summary` WHERE site_id IN(222) AND date >= '2024-01-28' AND date <= '2024-01-28' GROUP BY wtg;
+                //Already got in main tml data by joining above query.
 
-            }
-            if (_tmlDataList.Count > 0)
-            {
+                //Fetch the lineloss from the monthly lineloss table.
+                string dataMonth = Convert.ToDateTime(data_date).ToString("MM");
+                string dataYear = Convert.ToDateTime(data_date).ToString("yyyy");
+
+                string fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id =" + site + " AND month_no = " + dataMonth + " AND year =" + dataYear + ";";
                 try
                 {
-                    foreach (var unit in _tmlDataList)
-                    {
-                        lineloss_percentage = unit.line_loss_per;
-                    }
+                    _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
+                    returnRes = 5;
                 }
                 catch (Exception e)
                 {
-                    string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
+                    string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
                     //API_ErrorLog(msg);
                     LogError(0, 2, 5, functionName, msg, backend);
+                    return returnRes;
 
                 }
-            }
-            _tmlDataList.Clear();
+                if (_tmlDataList.Count > 0)
+                {
+                    try
+                    {
+                        foreach (var unit in _tmlDataList)
+                        {
+                            lineloss_percentage = unit.line_loss_per;
+                        }
+                        returnRes = 6;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
+                        //API_ErrorLog(msg);
+                        LogError(0, 2, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+                _tmlDataList.Clear();
 
-            //if (lineloss_percentage > 0)
-            //{
-            double lineloss = lineloss_percentage / 100;
-            double temp = (lineloss * gen_actual_active_power) * -1; //6;
-            lineloss_final = temp / 1000000;
-            //string linelossTemp = lineloss_final.ToString("0.##############");
-            //linelossTemp = linelossTemp.TrimEnd('0').TrimEnd('.');
-            //lineloss_final = Convert.ToDouble(linelossTemp);
-            //}
-            _tmlDataList.Clear();
 
-            //Calculating Difference in expected power.
-            gen_actual_active_power = (gen_actual_active_power / 1000000) + lineloss_final;
-            actual_active_power = gen_actual_active_power;
+                //After fetching all the required data from various tables finally calculating the data.
+                string insertQry = "INSERT INTO daily_expected_vs_actual (site_id, data_date, wtg, tml_count, actual_wind_speed, actual_active_power, recon_wind_speed, expected_power, usmh_loss, smh_loss, others_loss, igbd_loss, egbd_loss, loadshedding_loss, pcd_loss, lull_loss, nc_loss, healthcheck_loss, setup_loss, initialization_loss, startup_loss, controller_kwh, lineloss_mu, jmr_kwh, target_kwh, adjusted_expected, difference_expected, ma, iga, ega_a, ega_b, ega_c) VALUES";
+                string insertValues = "";
+                string finalinsertQuery = "";
+                foreach (var uni in _tmlAllData)
+                {
+                    uni.target_kwh = target_sum;
+                    uni.expected_power = (uni.expected_power/6)/ 1000000;
+                    string dateTem = Convert.ToDateTime(uni.data_date).ToString("yyyy-MM-dd");
+                    uni.data_date = dateTem;
 
-            allSum = expected_power_sum + lossUSMH + lossSMH + lossIGBD + lossEGBD + lossOthersHour + lossPCD + loadShedding + lineloss_final;//here NC contains other hours value., 
+                    //lineloss calculation.
+                    double lineloss = lineloss_percentage / 100;
+                    double temp = (lineloss * uni.controller_kwh) * -1; //6;
+                    uni.lineloss_mu = temp / 1000000;
 
-            double difference = 0;
-            //difference = actual_active_power - allSum;
-            difference = gen_actual_active_power - allSum;
-            if (difference != 0)
-            {
-                finalExpectedPower = expected_power_sum + difference;
+                    //calculating jmr kwh
+                    uni.jmr_kwh = (uni.controller_kwh / 1000000) + uni.lineloss_mu;
+
+                    //Calculating the difference
+                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss + uni.lineloss_mu;
+                    uni.difference_expected = uni.jmr_kwh - allSum;
+                    if (uni.difference_expected != 0)
+                    {
+                        uni.adjusted_expected = uni.expected_power + uni.difference_expected;
+                    }
+                    else
+                    {
+                        uni.adjusted_expected = uni.expected_power;
+                    }
+
+                    insertValues += $"({uni.site_id}, '{uni.data_date}', '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {uni.actual_active_power}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {uni.controller_kwh}, {uni.lineloss_mu}, {uni.jmr_kwh}, {uni.target_kwh}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
+                }
+                finalinsertQuery = insertQry + insertValues;
+                finalinsertQuery = finalinsertQuery.Substring(0, (finalinsertQuery.Length - 1)) + ";";
+
+                bool isDelete = false;
+                try
+                {
+                    //Delete previous data if any.
+                    string deleteQry = $"DELETE FROM daily_expected_vs_actual WHERE site_id IN({site}) AND data_date = '{data_date}';";
+                    int delres = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                    isDelete = true;
+                    returnRes = 7;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting previous records if any, due to : " + e.ToString();
+                    LogError(0, 2, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+
+                if (isDelete)
+                {
+                    int insertRes = await Context.ExecuteNonQry<int>(finalinsertQuery).ConfigureAwait(false);
+                    returnRes = 8;
+                }
             }
             else
             {
-                finalExpectedPower = expected_power_sum;
+                return 1000; //No data retrived from the tml data. i.e. no data in tml data for respective date site.
             }
 
-            try
-            {
-                _tmlDataList.Clear();
-                GetWindTMLGraphData finalData = new GetWindTMLGraphData()
-                {
-                    expected_final = finalExpectedPower,
-                    lineloss_final = lineloss_final,
-                    target_final = target_sum,
-                    lossUSMH_final = lossUSMH,
-                    lossSMH_final = lossSMH,
-                    lossNC_final = lossOthersHour,
-                    lossIGBD_final = lossIGBD,
-                    lossEGBD_final = lossEGBD,
-                    lossLULL_final = lossLULL,
-                    lossPCD_final = lossPCD,
-                    actual_final = actual_active_power,
-                    loadShedding = loadShedding,
-                    monthlyData = monthlyData,
-                };
-                _tmlDataList.Add(finalData);
-            }
-            catch (Exception e)
-            {
-                string msg = "Exception while inserting final Values into _tmlDataList, due to : " + e.ToString();
-            }
-            return _tmlDataList;
+            _tmlDataList.Clear();
+
+            return returnRes;
         }
 
         // Tanvi's Changes.

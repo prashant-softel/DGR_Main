@@ -3141,6 +3141,22 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("CalculateDailyExpected")]
+        [HttpGet]
+        public async Task<IActionResult> CalculateDailyExpected(string site, string data_date)
+        {
+            try
+            {
+                var data = await _dgrBs.CalculateDailyExpected(site, data_date);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         //Tanvi's Changes Hereafter. 1 function.
         [Route("dgrUploadingReminder")]
         [HttpGet]
