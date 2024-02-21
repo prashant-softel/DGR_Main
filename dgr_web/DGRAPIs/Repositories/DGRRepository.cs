@@ -16994,6 +16994,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         int actualCount = dataCount;
                         int expectedCount = realCount * 144;
                         int difference = expectedCount - actualCount;
+                        bool automationData = false;
 
                         if (difference == 0)
                         {
@@ -17002,7 +17003,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             string finalUpdateInsertQuery = "";
                             if (_getData.Count > 0)
                             {
+                                //DGR automation data already present.
                                 finalUpdateInsertQuery = $"UPDATE upload_status SET import_date = '{importDateCon}', data_date = '{date}', TML_uploaded = 1, expected_TML= {expectedCount}, actual_TML = {actualCount}, wtg_count = {realCount} WHERE upload_status_id = {_getData[0].upload_status_id}";
+                                automationData = true;
                             }
                             else
                             {
@@ -17023,6 +17026,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 //    int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
                                 //}
                                 returnResult = 2;
+                                if (automationData)
+                                {
+                                    int DailyData = await CalculateDailyExpected(site_id.ToString(), date);
+                                    returnResult = 3;
+                                }
                             }
                             catch (Exception e)
                             {
@@ -17793,7 +17801,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                  
                  */
                 //string fetchLossQry = "SELECT CASE WHEN all_bd = 'Load Shedding' THEN 'loadShedding' ELSE all_bd END as all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
-                string AllTMLDataQuery = $"SELECT site_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, SUM(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, SUM(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
+                string AllTMLDataQuery = $"SELECT site_id, wtg_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, SUM(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, SUM(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
 
                 try
                 {
@@ -17917,7 +17925,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                 //After fetching all the required data from various tables finally calculating the data.
-                string insertQry = "INSERT INTO daily_expected_vs_actual (site_id, data_date, wtg, tml_count, actual_wind_speed, actual_active_power, recon_wind_speed, expected_power, usmh_loss, smh_loss, others_loss, igbd_loss, egbd_loss, loadshedding_loss, pcd_loss, lull_loss, nc_loss, healthcheck_loss, setup_loss, initialization_loss, startup_loss, controller_kwh, lineloss_mu, jmr_kwh, target_kwh, adjusted_expected, difference_expected, ma, iga, ega_a, ega_b, ega_c) VALUES";
+                string insertQry = "INSERT INTO daily_expected_vs_actual (site_id, data_date, wtg_id, wtg, tml_count, actual_wind_speed, actual_active_power, recon_wind_speed, expected_power, usmh_loss, smh_loss, others_loss, igbd_loss, egbd_loss, loadshedding_loss, pcd_loss, lull_loss, nc_loss, healthcheck_loss, setup_loss, initialization_loss, startup_loss, controller_kwh, lineloss_mu, jmr_kwh, target_kwh, adjusted_expected, difference_expected, ma, iga, ega_a, ega_b, ega_c) VALUES";
                 string insertValues = "";
                 string finalinsertQuery = "";
                 foreach (var uni in _tmlAllData)
@@ -17947,7 +17955,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         uni.adjusted_expected = uni.expected_power;
                     }
 
-                    insertValues += $"({uni.site_id}, '{uni.data_date}', '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {uni.actual_active_power}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {uni.controller_kwh}, {uni.lineloss_mu}, {uni.jmr_kwh}, {uni.target_kwh}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
+                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {uni.actual_active_power}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {uni.controller_kwh}, {uni.lineloss_mu}, {uni.jmr_kwh}, {uni.target_kwh}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
                 }
                 finalinsertQuery = insertQry + insertValues;
                 finalinsertQuery = finalinsertQuery.Substring(0, (finalinsertQuery.Length - 1)) + ";";

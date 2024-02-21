@@ -94,6 +94,7 @@ namespace DGRAPIs.Models
         public string all_bd { get; set; }
         public int site_id { get; set; }
         public dynamic data_date { get; set; }
+        public Int64 wtg_id { get; set; }
         public string wtg { get; set; }
         public Int64 wtg_number { get; set; }
         public Int64 tml_count { get; set; }
