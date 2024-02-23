@@ -15434,8 +15434,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         // Actual vs Expected Function 
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
         {
-           
-
             bool GetFrom15Min = false;
             bool CombineReport = false;
             string todate1 = "";
@@ -17988,6 +17986,230 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             _tmlDataList.Clear();
+
+            return returnRes;
+        }
+
+
+        internal async Task<int> CalculateDailyExpectedSolar(string site, string fromDate, string toDate)
+        {
+            string functionName = "GetSolarExpectedReport";
+            int returnRes = 0;
+            bool AOPDataAdded = false;
+            bool TopliningDataAdded = false;
+            string insertDates = "";
+
+            string filter = "";
+            int chkfilter = 0;
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                chkfilter = 1;
+                filter += " where t1.date>='" + fromDate + "' and t1.date<='" + toDate + "' ";
+            }
+            if (!string.IsNullOrEmpty(site))
+            {
+                if (chkfilter == 0) filter += " where ";
+                else
+                {
+                    filter += " and ";
+                }
+                filter += " t1.site_id in (" + site + ") ";
+            }
+
+            string aopQuery = "";
+            string topliningQuery = "";
+            //AOP query..
+            //aopQuery = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega_a, avg(t1.ega_b) as ega_b, avg(t1.ega_c) as ega_c,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+
+            aopQuery = $"SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(inv_kwh_afterloss) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh) AS usmh, SUM(smh) AS smh, SUM(oh) AS others, SUM(igbdh) AS igbd, SUM(egbdh) AS egbd, SUM(load_shedding) AS loadShedding, SUM(total_losses) AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date { filter } GROUP BY t1.site, t1.date;";
+            
+            // toplining query...
+            topliningQuery = "SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(inv_kwh_afterloss) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma, AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh)/t2.pr*t2.toplining_PR AS usmh, SUM(smh)/t2.pr*t2.toplining_PR AS smh, SUM(oh)/t2.pr*t2.toplining_PR AS others, SUM(igbdh)/t2.pr*t2.toplining_PR AS igbd, SUM(egbdh)/t2.pr*t2.toplining_PR AS egbd, SUM(load_shedding)/t2.pr*t2.toplining_PR AS loadShedding, SUM(total_losses)/t2.pr*t2.toplining_PR AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date " + filter + " GROUP BY t1.site, t1.date ";
+
+            List<ExpectedVsActualSolarDaily> AOPData = new List<ExpectedVsActualSolarDaily>();
+            List<ExpectedVsActualSolarDaily> TopLiningData = new List<ExpectedVsActualSolarDaily>();
+            try
+            {
+                AOPData = await Context.GetData<ExpectedVsActualSolarDaily>(aopQuery).ConfigureAwait(false);
+                returnRes = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table for AOP, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+            if(AOPData.Count > 0)
+            {
+                try
+                {
+                    TopLiningData = await Context.GetData<ExpectedVsActualSolarDaily>(topliningQuery).ConfigureAwait(false);
+                    returnRes = 2;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table for Toplining, due to : " + e.ToString();
+                    //API_ErrorLog(msg);
+                    LogError(0, 1, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+            }
+            
+
+            string viewQry = "create or replace view expected_temp_view as SELECT t1.date,t3.site_master_solar_id as site_id, t3.site,t3.spv,(t3.ac_capacity*1000) as capacity,SUM(t1.inv_kwh) as kwh,t2.LineLoss,SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100) as kwh_afterloss,((SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))/((t3.ac_capacity*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year = year(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id group by t1.date ,t1.site";
+            try
+            {
+                await Context.ExecuteNonQry<int>(viewQry).ConfigureAwait(false);
+                returnRes = 3;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while creating temp view, due to : " + e.ToString();
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+
+            string viweFetchQry = "SELECT date,site, site_id, kwh_afterloss as inv_kwh, plf_afterloss as plant_kwh, LineLoss AS lineloss FROM `expected_temp_view` where date between '" + fromDate + "' and '" + toDate + "' and site_id IN(" + site + ");";
+            List<SolarExpectedvsActual> newdata = new List<SolarExpectedvsActual>();
+            try
+            {
+                newdata = await Context.GetData<SolarExpectedvsActual>(viweFetchQry).ConfigureAwait(false);
+                returnRes = 4;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching records from expected_temp_view, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+
+            try
+            {
+                //For AOP data.
+                foreach (var _dataElement in AOPData)
+                {
+                    try
+                    {
+                        foreach (var _actualData in newdata)
+                        {
+                            if (_dataElement.data_date == _actualData.date && _dataElement.site_id == _actualData.site_id)
+                            {
+                                string tempDate = $"'{Convert.ToDateTime(_dataElement.data_date).ToString("yyyy-MM-dd")}',";
+                                insertDates += tempDate;
+                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
+                                _dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                _dataElement.inv_kwh = _actualData.inv_kwh;
+                                _dataElement.jmr_kwh = _actualData.plant_kwh;
+                                _dataElement.lineloss = _actualData.lineloss;
+                            }
+                        }
+                        returnRes = 5;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while adding actual value to the main list, due to : " + e.ToString();
+                        //API_ErrorLog(msg);
+                        LogError(0, 1, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+                returnRes = 6;
+                AOPDataAdded = true;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while inserting data into main AOP list, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+            try
+            {
+                //For Toplining data.
+                foreach (var _dataElement in TopLiningData)
+                {
+                    try
+                    {
+                        foreach (var _actualData in newdata)
+                        {
+                            if (_dataElement.data_date == _actualData.date && _dataElement.site_id == _actualData.site_id)
+                            {
+                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
+                                _dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                _dataElement.inv_kwh = _actualData.inv_kwh;
+                                _dataElement.jmr_kwh = _actualData.plant_kwh;
+                                _dataElement.lineloss = _actualData.lineloss;
+                            }
+                        }
+                        returnRes = 7;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while adding actual value to the main toplining list, due to : " + e.ToString();
+                        //API_ErrorLog(msg);
+                        LogError(0, 1, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+                returnRes = 8;
+                TopliningDataAdded = true;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while inserting data into main list, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+
+            //block for doing insert operation in daily expected data.
+            if (TopliningDataAdded && AOPDataAdded)
+            {
+                //delete logic will be common for aop and Toplining.
+                insertDates = insertDates.Substring(0, (insertDates.Length - 1)) + "";
+                try
+                {
+                    string deleteQry = $"DELETE FROM daily_expected_vs_actual_solar WHERE site_id IN({site}) AND data_date IN({insertDates});";
+                    int delRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                    returnRes = 9;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting previous data from daily_expected_vs_actual_solar table due to, " + e.ToString();
+                    LogError(0, 1, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+                if(returnRes == 9)
+                {
+                    string insertStartingQuery = "INSERT INTO daily_expected_vs_actual_solar (site_id, data_date, target, expected_power, usmh, smh, others, igbd, egbd, loadShedding, pr, inv_kwh, lineloss, jmr_kwh, ma, iga, ega_a, ega_b, ega_c, aop_top) VALUES ";
+                    string aopValues = "";
+                    string topliningValues = "";
+
+                    foreach (var unit in AOPData)
+                    {
+                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {unit.ma}, {unit.iga}, {unit.ega_a}, {unit.ega_b}, {unit.ega_c}, 0),";
+                    }
+                    foreach (var unit in TopLiningData)
+                    {
+                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {unit.ma}, {unit.iga}, {unit.ega_a}, {unit.ega_b}, {unit.ega_c}, 1),";
+                    }
+                    string finalInsertQuery = insertStartingQuery + aopValues + topliningValues.Substring(0, (topliningValues.Length - 1)) + ";";
+
+                    try
+                    {
+                        int insertRes = await Context.ExecuteNonQry<int>(finalInsertQuery).ConfigureAwait(false);
+                        returnRes = 10;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while inserting data into daily_expected_vs_actual_solar table due to, " + e.ToString();
+                        LogError(0, 1, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+            }
 
             return returnRes;
         }

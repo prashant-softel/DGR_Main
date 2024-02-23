@@ -3156,6 +3156,21 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Route("CalculateDailyExpectedSolar")]
+        [HttpGet]
+        public async Task<IActionResult> CalculateDailyExpectedSolar(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.CalculateDailyExpectedSolar(site, fromDate, toDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         //Tanvi's Changes Hereafter. 1 function.
         [Route("dgrUploadingReminder")]
