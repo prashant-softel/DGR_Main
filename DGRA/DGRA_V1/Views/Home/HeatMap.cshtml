@@ -140,7 +140,7 @@
     .infotool .infotext {
         visibility: hidden;
         width: 220px;
-        background-color: darkgoldenrod;
+        background-color: #000000c7;
         color: #fff;
         text-align: left;
         border-radius: 6px;
@@ -326,10 +326,22 @@
 
 <script type="text/javascript">
 
- $(document).ready(function () {
+    $(document).ready(function () {
+        //var date = GetPreviousDate();
+       // console.log(new Date());
+        var tendays = GetLastTendays();
+        //console.log(tendays);
+        var stdate = new Date(tendays.startdate);
+        var eddate = new Date();
+        console.log(eddate);
         $('#daterange').daterangepicker(
             {
-                maxDate: new Date(),
+                startDate: stdate,
+                endDate: eddate,
+               // maxDate: new Date(),
+               // minDate: '01/01/2024',
+               // maxDate: AddDays(new Date(), -7),
+               // maxDate: '15/01/2024 - 25/01/2024',
                 locale: {
                     format: 'DD/MM/YYYY',
                 }
@@ -339,7 +351,7 @@
     function getSiteList() {
         var siteType = $('select#siteType option:selected').val();
         if (siteType == 2) {
-            console.log("siteType", siteType);
+           // console.log("siteType", siteType);
             GetSolarSite();
             document.getElementById("normal_site").style.display = 'none';
             document.getElementById("multple_site").style.display = 'block';
@@ -349,7 +361,7 @@
             document.getElementById("normal_site").style.display = 'none';
             document.getElementById("multple_site").style.display = 'block';
             GetWindSite();
-            console.log("siteType", siteType);
+           // console.log("siteType", siteType);
         }
     }
      function GetWindSite() {
@@ -470,9 +482,21 @@
         var isAdmin = 1;
         const d1 = new Date(fromDate);
         const d2 = new Date(toDate);
+
+        //var diffDays = d2.getDate() - d1.getDate();
+        const diffTime = Math.abs(d2 - d1);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        console.log(diffDays);
+        if (diffDays > 29) {
+            alert("Allow date selected on 30 or less than");
+            return false;
+        }
+        
         var datelist = getDatesInRange(d1, d2);
         var datalengh = datelist.length;
         var fdate = "";
+        var counter = 0;
+        let days = "";
         console.log("selected data count :" + datalengh);
         $.ajax({
             type: "GET",
@@ -488,15 +512,31 @@
                     tbl += '<th>' + moment(datelist[h]).format('DD-MMM'); + '</th>';
 
                     fdate = moment(datelist[0]).format('YYYY-MM');
+                     days = moment(datelist[0]).format('DD');
                 }
+                if (days <= "09") {
+                    counter = days.charAt(days.length - 1);
+                }
+                else {
+                    counter = days;
+                }
+                console.log("counter" +counter);
                 tbl += '</tr></thead>';
                 for (var i = 0; i < result.length; i++) {
                     let sitedata = result[i].data;
                     tbl += '<tr><td>' + result[i].site + '</td>';
-                    const missingDates = [];
+                    var missingDates = [];
+                   var cnt= Number(counter);
                     for (let i = 1; i <= datalengh; i++) {
-                        const currentDate = new Date(fdate+`-${i < datalengh ? '0' + i : i}`).toISOString().split('T')[0];
-
+                        var currentDate = "";
+                        if (cnt <= 9) {
+                            currentDate = new Date(fdate + `-${cnt < datalengh ? '0' + cnt : cnt}`).toISOString().split('T')[0];
+                        }
+                        else {
+                            currentDate = new Date(fdate + `-${cnt < datalengh ? cnt : cnt}`).toISOString().split('T')[0];
+                        }
+                        //const currentDate = new Date(fdate + `-${cnt < datalengh ? '0' + cnt : cnt}`).toISOString().split('T')[0];
+                        cnt++;
                         // Check if the date is present in existing data
                         const dateExists = sitedata.some(item => item.date === currentDate);
 
@@ -522,8 +562,8 @@
                             
                         }
                     }
-                    const newData = sitedata.filter(Boolean).concat(missingDates);
-
+                    var  newData = sitedata.filter(Boolean).concat(missingDates);
+                    console.log(newData);
                     if (siteType == 1) {
                         newData.sort((a, b) => new Date(a.date) - new Date(b.date));
                         Object.entries(newData).forEach(entry => {
@@ -572,7 +612,7 @@
                     }
                     else {
                          newData.sort((a, b) => new Date(a.date) - new Date(b.date));
-                       
+                        console.log(newData);
                         //let tooltopmsg = "";
                          Object.entries(newData).forEach(entry => {
                             const [key, value] = entry;
