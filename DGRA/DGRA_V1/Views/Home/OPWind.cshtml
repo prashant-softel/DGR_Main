@@ -2064,10 +2064,13 @@
 
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
+                DMC(site_id, spv, nDval);
                 showToast("Comments Updated successfully.", 5000, "monthlyComments");
             } else if (functionality == "Add") {
+                DMC(site_id, spv, nDval);
                 showToast("Comments Added successfully.", 5000, "monthlyComments");
             } else if (functionality == "Delete") {
+                DMC(site_id, spv, nDval);
                 showToast("Comments Deleted successfully.", 5000, "monthlyComments");
             }
         }
@@ -3043,10 +3046,13 @@
 
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
+                DYC(site_id, spv, nDval);
                 showToast("Comments Updated successfully.", 5000, "yearComments");
             } else if (functionality == "Add") {
+                DYC(site_id, spv, nDval);
                 showToast("Comments Added successfully.", 5000, "yearComments");
             } else if (functionality == "Delete") {
+                DYC(site_id, spv, nDval);
                 showToast("Comments Deleted successfully.", 5000, "yearComments");
             }
         }
