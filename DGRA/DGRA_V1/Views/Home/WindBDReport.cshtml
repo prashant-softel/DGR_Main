@@ -412,7 +412,7 @@
             datatype: "JSON",
             success: function (result, status, xhr) {
                 //console.log(result);
-                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline" style="width: 140%;">';
+                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 140%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>Date</th>';
                 tbl += '<th>Country</th>';
@@ -427,13 +427,13 @@
                 tbl += '<th>Reason of Breakdown</th>';
                 tbl += '<th>Action Taken</th>';
                 tbl += '</tr></thead>';
-                console.log(result.length);
+                console.log(result);
                 if (result.length > 0) {
                     console.log("Datatable");
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
@@ -473,6 +473,7 @@
                         left: 7
                     },
                     pageLength: 50,
+                    "order": [[4, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
