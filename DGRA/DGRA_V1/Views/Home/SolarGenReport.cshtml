@@ -1044,6 +1044,15 @@
                     const table = document.getElementById("example1");
 
                     for (var i = 0; i < result.length; i++) {
+
+                        var Expected_value = 0.00;
+                        if (result[i].expected_kwh < 0) {
+                            Expected_value = 0.00;
+                        }
+                        else {
+                            Expected_value = result[i].expected_kwh.toFixed(2);
+                        }
+
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
@@ -1056,7 +1065,7 @@
                         tbl += '<td class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + Expected_value + '</td>';
                         tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
