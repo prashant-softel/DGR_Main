@@ -18,6 +18,12 @@ namespace DGRAPIs.Models
         public dynamic pi { get; set; }
     }
 
+    public class SolarImportSiteDate
+    {
+        public int site_id { get; set; }
+        public string site { get; set; }
+        public string date { get; set; }
+    }
     public class SolarUploadingFileGeneration2
     {
         public int uploading_file_generation_solar_id { get; set; }
