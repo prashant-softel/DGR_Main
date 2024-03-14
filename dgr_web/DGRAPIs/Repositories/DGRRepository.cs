@@ -4492,7 +4492,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 try
                 {
                     values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.inverter + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.pi + "','" + batchId + "'),";
-                    uploadStatusValues += $"(2, {unit.site_id}, CURDATE(), '{unit.date}', 0, {batchId}, 0, 1, 1, 1, 1, 0, 0, 0),";
+                    uploadStatusValues = $"(2, {unit.site_id}, CURDATE(), '{unit.date}', 0, {batchId}, 0, 1, 1, 1, 1, 0, 0, 0),";
                 }
                 catch(Exception e)
                 {
