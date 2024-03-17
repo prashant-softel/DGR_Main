@@ -4509,16 +4509,56 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 {
                     string qry = " insert into uploading_file_generation (site_name, site_id, date, wtg, wtg_id, wind_speed, grid_hrs, operating_hrs, lull_hrs, kwh, import_batch_id) values";
                     string values = "";
-                    foreach (var unit in set)
+                    int siteId = 0;
+                    string data_date = "";
+                    try
                     {
-                        values += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.date + "','" + unit.wtg + "','" + unit.wtg_id + "','" + unit.wind_speed + "','" + unit.grid_hrs + "','" + unit.operating_hrs + "','" + unit.lull_hrs + "','" + unit.kwh + "','" + batchId + "'),";
+                        foreach (var unit in set)
+                        {
+                            siteId = unit.site_id;
+                            data_date = unit.date;
+                            values += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.date + "','" + unit.wtg + "','" + unit.wtg_id + "','" + unit.wind_speed + "','" + unit.grid_hrs + "','" + unit.operating_hrs + "','" + unit.lull_hrs + "','" + unit.kwh + "','" + batchId + "'),";
+                        }
+                        qry += values;
                     }
-                    qry += values;
+                    catch (Exception e)
+                    {
+
+                    }
 
                     try
                     {
                         insertRes =  await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
                         finalResult = 2;
+
+                        string query1 = "insert into upload_status (type, site_id,  import_date, data_date, uploaded_by, import_batch_id, TML_uploaded, automation, pyranometer1min, pyranometer15min, approve_count, expected_TML, actual_TML, wtg_count) values ('1','" + siteId + "',CURDATE() ,'" + data_date + "','0','" + batchId + "','0','0','0','0','0','0','0','0')";
+                        try
+                        {
+                            await Context.ExecuteNonQry<int>(query1).ConfigureAwait(false);
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception due while deleting tracker_loss records from table, due to :" + e.ToString();
+                            //return 0;
+                        }
+                        /*string selstatus = "SELECT upload_status_id FROM `upload_status` where type= 1 and import_batch_id = '" + batchId + "'";
+                        try
+                        {
+                            var _Upload_status = await Context.GetData<WindUploadStatus>(qry).ConfigureAwait(false);
+                            if (_Upload_status.Count > 0)
+                            {
+                                string upqry = "update upload_status";
+                                await Context.ExecuteNonQry<int>(upqry).ConfigureAwait(false);
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "check upload_status table data : " + e.ToString();
+                        }*/
                     }
                     catch(Exception e)
                     {
@@ -7413,6 +7453,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string site = "";
             int site_id = 0;
             string date = "";
+            int import_batch_id = 0;
             List<CheckUpdateManualBd> _dateSite = new List<CheckUpdateManualBd>();
 
             foreach (var unit in _importedData)
@@ -7422,8 +7463,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     site = unit.site;
                     site_id = unit.site_id;
                     date = unit.date.ToString("yyyy-MM-dd");
+                    import_batch_id = unit.import_batch_id;
                 }
-                bool recordExists = _dateSite.Any(x => x.site == unit.site && x.site_id == unit.site_id && x.date == unit.date.ToString("yyyy-MM-dd"));
+                bool recordExists = _dateSite.Any(x => x.site == unit.site && x.site_id == unit.site_id && x.import_batch_id == unit.import_batch_id && x.date == unit.date.ToString("yyyy-MM-dd"));
 
                 if (!recordExists)
                 {
@@ -7432,6 +7474,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         site_id = unit.site_id,
                         site = unit.site,
                         date = unit.date.ToString("yyyy-MM-dd"),
+                        import_batch_id = unit.import_batch_id,
                     });
                 }
                 values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.wtg + "','" + unit.wind_speed + "','" + unit.kwh + "','" + unit.kwh_afterlineloss + "','" + unit.feeder + "','" + unit.ma_contractual + "','" + unit.ma_actual + "','" + unit.iga + "','" + unit.ega + "'," + unit.ega_b + ", " + unit.ega_c + ",'" + unit.plf + "','" + unit.plf_afterlineloss + "','" + unit.capacity_kw + "','" + unit.grid_hrs + "','" + unit.lull_hrs + "','" + unit.operating_hrs + "','" + unit.unschedule_hrs + "','" + unit.unschedule_num + "','" + unit.schedule_hrs + "','"+ unit.schedule_num + "','" + unit.others + "','" + unit.others_num + "','" + unit.igbdh + "','" + unit.igbdh_num + "','" + unit.egbdh + "','" + unit.egbdh_num + "','"+ unit.load_shedding + "','" + unit.load_shedding_num + "','1','" + unit.import_batch_id+"'),";
@@ -7510,7 +7553,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if(finalResult == 5)
             {
                 //function call for check and update Manual breakdowns.
-                int updateres = await CheckAndUpdateManualBd(_dateSite);
+                int updateres = await CheckAndUpdateManualBd(_dateSite, approvedBy, approvedByName, status);
                 if (updateres == 1)
                 {
                     finalResult = 7;
@@ -7597,9 +7640,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             string qry1 = " insert into daily_gen_summary_solar ( state, site, site_id, date, location_name, ghi, poa, expected_kwh, inv_kwh, plant_kwh, inv_pr, plant_pr, ma, iga, ega, ega_b, ega_c, inv_plf_ac, inv_plf_dc, plant_plf_ac, plant_plf_dc, pi, prod_hrs, lull_hrs_bd, usmh_bs, smh_bd, oh_bd, igbdh_bd, egbdh_bd, load_shedding_bd, total_bd_hrs, usmh, smh, oh, igbdh, egbdh, load_shedding, total_losses,	 approve_status, inv_kwh_afterloss, plant_kwh_afterloss, inv_plf_afterloss, plant_plf_afterloss, import_batch_id ) values";
             string values = "";
+            List<SolarImportSiteDate> _dateSite = new List<SolarImportSiteDate>();
 
             foreach (var unit in _importedData)
             {
+                bool recordExists = _dateSite.Any(x => x.site == unit.site && x.site_id == unit.site_id && x.date == unit.date.ToString("yyyy-MM-dd"));
+                string allSite = "";
+                string allSiteId = "";
+                string allDate = "";
+
+                if (!recordExists)
+                {
+                    allSite += unit.site_id;
+                    allSiteId += unit.site;
+                    allDate += unit.date.ToString("yyyy-MM-dd");
+                    _dateSite.Add(new SolarImportSiteDate
+                    {
+                        site_id = unit.site_id,
+                        site = unit.site,
+                        date = unit.date.ToString("yyyy-MM-dd"),
+                    });
+                }
 
                 values += "('" + unit.state + "','" + unit.site + "','" + unit.site_id + "','" + unit.date.ToString("yyyy-MM-dd") + "','" + unit.inverter + "','" + unit.ghi + "','" + unit.poa + "','" + unit.expected_kwh + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.inv_pr + "','" + unit.plant_pr + "','" + unit.ma + "','" + unit.iga + "','" + unit.ega + "','" + unit.ega_b + "','" + unit.ega_c + "','" + unit.inv_plf_ac+ "','" + unit.inv_plf_dc + "','" + unit.plant_plf_ac + "','" + unit.plant_plf_dc + "','" + unit.pi + "','" + unit.prod_hrs + "','" + unit.lull_hrs_bd + "','" + unit.usmh_bd + "','" + unit.smh_bd + "','" + unit.oh_bd+ "','" + unit.igbdh_bd + "','" + unit.egbdh_bd + "','" + unit.load_shedding_bd + "','" + unit.total_bd_hrs + "','" + unit.usmh + "','" + unit.smh + "','" + unit.oh + "','" + unit.igbdh + "','" + unit.egbdh + "','" + unit.load_shedding + "','" + unit.total_losses + "','1','" + unit.inv_act_afterloss + "','" + unit.plant_act_afterloss + "','" + unit.inv_plf_afterloss + "','" + unit.plant_plf_afterloss + "','"+unit.import_batch_id+"'),";
             }
@@ -7665,6 +7726,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     updateBatchRes = await Context.ExecuteNonQry<int>(query).ConfigureAwait(false);
                     finalResult = 4;
                     approval_InformationLog("Update query : " + query);
+                    //DGR_v3
+                    int returnRes5 = 0;
+                    List<SolarUploadingFileGeneration3> approvalList = new List<SolarUploadingFileGeneration3>();
+                    string qry7 = "SELECT gen.import_batch_id, COUNT(*) AS gen_count, t1.pyro1_count, t2.pyro15_count FROM daily_gen_summary_solar AS gen LEFT JOIN (SELECT COUNT(*) AS pyro1_count, import_batch_id FROM uploading_pyranometer_1_min_solar WHERE import_batch_id IN(" + dataId + ") GROUP BY import_batch_id) AS t1 ON t1.import_batch_id = gen.import_batch_id LEFT JOIN (SELECT COUNT(*) AS pyro15_count, import_batch_id FROM uploading_pyranometer_15_min_solar WHERE import_batch_id IN(" + dataId + ") GROUP BY import_batch_id) AS t2 ON t2.import_batch_id = gen.import_batch_id WHERE gen.import_batch_id IN(" + dataId + ") GROUP BY import_batch_id";
+                    // approvalList = await Context.GetData<SolarUploadingFileGeneration3>(qry7).ConfigureAwait(false);
+                    try
+                    {
+
+                        approvalList = await Context.GetData<SolarUploadingFileGeneration3>(qry7).ConfigureAwait(false);
+                        returnRes5 = await Upload_StatusOperationSolar(approvalList, approvedBy, approvedByName, status, 2);
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while updating values in import_batches table, due to : " + e.ToString();
+                        return 0;
+                    }
                 }
                 catch(Exception e)
                 {
@@ -7710,6 +7787,24 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             info = " SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
             LogInfo(0, 1, 5, functionName, info, backend);
+            if (finalResult != 0 || finalResult > 0)
+            {
+                int returnRes = 0;
+                try
+                {
+                    //returnRes = await Upload_StatusOperation(dataId, approvedBy, approvedByName, status, 2);
+                    foreach (var uni in _dateSite)
+                    {
+                        returnRes = await CalculateDailyExpectedSolar(uni.site_id.ToString(), uni.date, uni.date);
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception in executing UploadStatusOperations function, due to : " + e.ToString();
+                    await LogError(0, 1, 5, functionName, msg, backend);
+                    return 0;
+                }
+            }
 
             return finalResult;
         }
@@ -12049,6 +12144,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if (UpdateReconWSAndOtherRes == 8)
                 {
+                    //DGR_v3
+                    string convDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                    int tmlcount = await WindTMLRecordCount(convDate, site_id, type, set.Count, 0);
+                    //DGR_v2
                     finalResult = 5;
                     ReferenceWtgHash.Clear();
                 }
@@ -12297,6 +12396,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 {
                                     deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
                                     deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
+                                    //DGR_v3
+                                    if (deleteTmdDataRes > 0)
+                                    {
+                                        string conDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                                        int tmlcount = await WindTMLRecordCount(conDate, site_id, type, deleteTmdDataRes, 1);
+                                        if (tmlcount > 0)
+                                        {
+                                            finalResult = 5;
+                                        }
+                                    }
+                                    //DGR_v2
                                     tmlMsg = "deleteFromTMDQry Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDQry;
                                     //TML_InfoLog(tmlMsg);
                                     finalResult = 1;
@@ -12364,6 +12474,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         deleteFromTMDQry += " AND wtg_id IN( " + deleteFromTMDValues.Substring(0, (deleteFromTMDValues.Length - 1)) + ") ;";
                         deleteTmdDataRes = await Context.ExecuteNonQry<int>(deleteFromTMDQry).ConfigureAwait(false);
+                        //DGR_v3
+                        if (deleteTmdDataRes > 0)
+                        {
+                            string conDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                            int tmlcount = await WindTMLRecordCount(conDate, site_id, type, set.Count, 1);
+                            if (tmlcount > 0)
+                            {
+                                finalResult = 500;
+                            }
+                        }
+                        //DGR_v2
                         finalResult = 1;
                         tmlMsg = "deleteFromTMDValues Query completed at " + DateTime.Now + " QUERY :- " + deleteFromTMDValues;
                         //TML_InfoLog(tmlMsg);
@@ -16318,7 +16439,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //function for checking and updating manualbreakdowns.
-        internal async Task<int> CheckAndUpdateManualBd(List<CheckUpdateManualBd> _dateSite)
+        internal async Task<int> CheckAndUpdateManualBd(List<CheckUpdateManualBd> _dateSite, int approvedBy, string approvedByName, int status)
         {
             int result = 0;
             int finalResult = 0;
@@ -16328,10 +16449,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 List<InsertWindTMLData> _DataTML = new List<InsertWindTMLData>();
                 try
                 {
+                    int returnRes1 = 0;
                     _DataTML = await Context.GetData<InsertWindTMLData>(checkTMLDataQry).ConfigureAwait(false);
                     if (_DataTML.Count > 0)
                     {
                         unit.isTmlData = 1;
+                        //TML data Inserted before the Automation upload/ approve.
+                        //fetch from upload status and update the particular record with DGR data.
+                        returnRes1 = await Upload_StatusOperation(Convert.ToString(unit.import_batch_id), approvedBy, approvedByName, status, 1, 1);
+                    }
+                    else
+                    {
+                        //TML file is uploaded after Automation file.
+                        returnRes1 = await Upload_StatusOperation(Convert.ToString(unit.import_batch_id), approvedBy, approvedByName, status, 1);
                     }
                 }
                 catch (Exception e)
@@ -16365,6 +16495,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }            
             return result;
         }
+
         
         //Function for bulk updating BDs of TML records.
         internal async Task<List<CheckUpdateManualBd>> BulkMapBdToTML(string fromDate, string toDate)
@@ -16397,7 +16528,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //After Site date list is created. Call the check and map bd function.
             if (_dateSite.Count > 0)
             {
-                int updateres = await CheckAndUpdateManualBd(_dateSite);
+                int updateres = await CheckAndUpdateManualBd(_dateSite,2000, "TMLBulkUpload", 1);
                 if (updateres == 1)
                 {
                     result = 7;
@@ -16410,6 +16541,1077 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             return _dateSite;
+        }
+
+        //DGR VERSION 3 FUNCTIONS
+        //Solar uploadstatus
+        internal async Task<int> Upload_StatusOperationSolar(List<SolarUploadingFileGeneration3> approvalList, int approvedBy, string approvedByName, int status, int type)
+        {
+            //SolarOrWind = 2 Solar, 1= Wind;
+
+            int finalResult = 0;
+            string updateqry = "";
+            foreach (SolarUploadingFileGeneration3 approvaldata in approvalList)
+            {
+                int automation = 0;
+                int pyrano1min = 0;
+                int pyrano15min = 0;
+                if (approvaldata.gen_count > 0)
+                {
+                    automation = 1;
+                }
+                if (approvaldata.pyro1_count > 0)
+                {
+                    pyrano1min = 1;
+                }
+                if (approvaldata.pyro15_count > 0)
+                {
+                    pyrano15min = 1;
+                }
+
+                updateqry = "Update upload_status set type=  " + type + ", automation = " + automation + ", pyranometer1min=" + pyrano1min + ", pyranometer15min = " + pyrano15min + ", approved_by=" + approvedBy + " where  import_batch_id=" + approvaldata.import_batch_id + "";
+                try
+                {
+                    int insertResult = await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
+                    finalResult = 2;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                    //await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+            }
+            return finalResult;
+
+            /*if (SolarOrWind == 2)
+            {
+                List<ImportBatchesForUploadStatus> _importBatchesData = new List<ImportBatchesForUploadStatus>();
+                string fetchImportBatchesQry = "SELECT import_batch_id, import_type, site_id, import_date, data_date, imported_by, approved_by, is_approved FROM import_batches WHERE import_batch_id IN(" + dataId + ");";
+                string UpdateInsertQryStart = "INSERT INTO upload_status (type, site_id, import_date, data_date, approved_by, uploaded_by, import_batch_id, automation, approve_count) VALUES ";
+                string insertValues = "";
+                string updateValues = "";
+                string finalUpdateInsertQuery = "";
+
+                try
+                {
+                    _importBatchesData = await Context.GetData<ImportBatchesForUploadStatus>(fetchImportBatchesQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+                if (finalResult == 1)
+                {
+                    foreach(var unit in _importBatchesData)
+                    {
+                        string importDateCon = Convert.ToDateTime(unit.import_date).ToString("yyyy-MM-dd");
+                        insertValues = "(" + unit.import_type + ", " + unit.site_id + ", '" + importDateCon + "', '" + unit.data_date + "', " + unit.approved_by + ", " + unit.imported_by + ", " + unit.import_batch_id + ", 1, 1)";
+                        updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', approved_by = " + unit.approved_by +", uploaded_by = " + unit.imported_by + ", import_batch_id = " + unit.import_batch_id + ", automation = 1, approve_count = approve_count + 1;";
+                        finalUpdateInsertQuery += UpdateInsertQryStart + insertValues + updateValues;
+                    }
+
+                    try
+                    {
+                        int insertResult = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                        await LogError(0, 1, 7, functionName, msg, backend);
+                        finalResult = 0;
+                        return finalResult;
+                    }
+                }
+            }*/
+            /*else if (SolarOrWind == 1)
+            {
+                List<ImportBatchesForUploadStatus> _importBatchesData = new List<ImportBatchesForUploadStatus>();
+                string fetchImportBatchesQry = "SELECT import_batch_id, import_type, site_id, import_date, data_date, imported_by, approved_by, is_approved FROM import_batches WHERE import_batch_id IN(" + dataId + ");";
+                string UpdateInsertQryStart = "INSERT INTO upload_status (type, site_id, import_date, data_date, approved_by, uploaded_by, import_batch_id, automation, approve_count) VALUES ";
+                string insertValues = "";
+                string updateValues = "";
+                string finalUpdateInsertQuery = "";
+
+                try
+                {
+                    _importBatchesData = await Context.GetData<ImportBatchesForUploadStatus>(fetchImportBatchesQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+                if (finalResult == 1)
+                {
+                    foreach (var unit in _importBatchesData)
+                    {
+                        string importDateCon = Convert.ToDateTime(unit.import_date).ToString("yyyy-MM-dd");
+                        insertValues = "(" + unit.import_type + ", " + unit.site_id + ", '" + importDateCon + "', '" + unit.data_date + "', " + unit.approved_by + ", " + unit.imported_by + ", " + unit.import_batch_id + ", 1, 1)";
+                        updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', approved_by = " + unit.approved_by + ", uploaded_by = " + unit.imported_by + ", import_batch_id = " + unit.import_batch_id + ", automation = 1, approve_count = approve_count + 1;";
+                        finalUpdateInsertQuery += UpdateInsertQryStart + insertValues + updateValues;
+                    }
+
+                    try
+                    {
+                        int insertResult = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                        await LogError(0, 1, 7, functionName, msg, backend);
+                        finalResult = 0;
+                        return finalResult;
+                    }
+                }
+            }*/
+            // return finalResult;
+        }
+        //Wind Upload status.
+        internal async Task<int> Upload_StatusOperation(string dataId, int approvedBy, string approvedByName, int status, int SolarOrWind, int approval = 0)
+        {
+            //SolarOrWind = 2 Solar, 1= Wind;
+            int finalResult = 0;
+            string functionName = "Upload_StatusOperation";
+            if (SolarOrWind == 1)
+            {
+                List<ImportBatchesForUploadStatus> _importBatchesData = new List<ImportBatchesForUploadStatus>();
+                string fetchImportBatchesQry = "SELECT import_batch_id, import_type, site_id, import_date, data_date, imported_by, approved_by, is_approved FROM import_batches WHERE import_batch_id IN(" + dataId + ");";
+                string UpdateInsertQryStart = "INSERT INTO upload_status (type, site_id, import_date, data_date, approved_by, uploaded_by, import_batch_id, automation, approve_count) VALUES ";
+                string insertValues = "";
+                string updateValues = "";
+                string finalUpdateInsertQuery = "";
+
+                try
+                {
+                    _importBatchesData = await Context.GetData<ImportBatchesForUploadStatus>(fetchImportBatchesQry).ConfigureAwait(false);
+                    finalResult = 1;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    finalResult = 0;
+                    return finalResult;
+                }
+                if (finalResult == 1)
+                {
+                    foreach (var unit in _importBatchesData)
+                    {
+                        string importDateCon = Convert.ToDateTime(unit.import_date).ToString("yyyy-MM-dd");
+                        insertValues = "(" + unit.import_type + ", " + unit.site_id + ", '" + importDateCon + "', '" + unit.data_date + "', " + unit.approved_by + ", " + unit.imported_by + ", " + unit.import_batch_id + ", 1, 1)";
+                        updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', approved_by = " + unit.approved_by + ", uploaded_by = " + unit.imported_by + ", import_batch_id = " + unit.import_batch_id + ", automation = 1, approve_count = approve_count + 1;";
+                        finalUpdateInsertQuery += UpdateInsertQryStart + insertValues + updateValues;
+                    }
+
+                    try
+                    {
+                        int insertResult = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                        finalResult = 2;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while inserting or updating record in upload_status table ,due to : " + e.ToString();
+                        await LogError(0, 1, 7, functionName, msg, backend);
+                        finalResult = 0;
+                        return finalResult;
+                    }
+                }
+            }
+
+            return finalResult;
+        }
+        //Get the total wtgs for a particaular site and count of tml samples should be present.
+        internal async Task<int> WindTMLRecordCount(string date, int site_id, int type, int dataCount, int isDelete)
+        {
+            //isDelete: 0 don't delete, isDelete: 1 delete count from uploading file status table.
+            string functionName = "WindTMLRecordCount";
+            int returnResult = 0;
+            //Case 1 :- all tml files uploaded at once. simple import in table.
+            //Case 2 :- few wtgs left. (left but not duplicate) add to the existing count in the table.
+            //Case 3 :- reimport of files all wtgs delete and update the count in the table.
+            //Case 4 :- reimport the files few duplicate few new.
+
+            //SELECT COUNT(*) FROM `location_master` WHERE site_master_id = 217;
+            string fetchQry = "SELECT COUNT(*) as realCount FROM location_master WHERE site_master_id =" + site_id + ";";
+            List<TMLCountComparision> _CountData = new List<TMLCountComparision>();
+            try
+            {
+                _CountData = await Context.GetData<TMLCountComparision>(fetchQry).ConfigureAwait(false);
+                returnResult = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching wtg count from database, due to : " + e.ToString();
+                await LogError(0, 1, 7, functionName, msg, backend);
+                return 0;
+            }
+
+            if (isDelete == 1)
+            {
+                List<TMLCountComparision> _countData = new List<TMLCountComparision>();
+                int expected_TML = 0;
+                int actual_TML = 0;
+                int wtg_count = 0;
+
+                try
+                {
+                    string fetchActualCount = "SELECT expected_TML, actual_TML, wtg_count FROM upload_status WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+
+                    _countData = await Context.GetData<TMLCountComparision>(fetchActualCount).ConfigureAwait(false);
+                    if (_countData.Count > 0)
+                    {
+                        expected_TML = (int)_countData[0].expected_TML;
+                        actual_TML = (int)_countData[0].actual_TML;
+                        wtg_count = (int)_countData[0].wtg_count;
+
+                        if (actual_TML > dataCount)
+                        {
+                            dataCount = actual_TML - dataCount;
+                        }
+                        else if (actual_TML < dataCount)
+                        {
+                            dataCount = dataCount - actual_TML;
+                        }
+                        //else
+                        //{
+                        //    dataCount = dataCount;
+                        //}
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching count records from upload_status table " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                }
+                try
+                {
+                    //string deleteQry = "UPDATE upload_status SET actual_TML = actual_TML - " + dataCount + " WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    //string deleteQry = "UPDATE upload_status SET actual_TML = " + dataCount + " WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    string deleteQry = "UPDATE upload_status SET actual_TML = 0 WHERE data_date='" + date + "' AND site_id IN(" + site_id + ") AND type = 1 AND TML_uploaded = 1;";
+                    int delRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting actual count, due to : " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
+            }
+            else
+            {
+                //Check if automation file is uploaded or not. If uploaded simply update the TML count. If not uploaded then Insert into the table.
+                List<TMLCountComparision> _getData = new List<TMLCountComparision>();
+                try
+                {
+                    string fetchUploadStatus = $"SELECT upload_status_id FROM upload_status WHERE data_date=' {date} ' AND site_id IN({ site_id }) AND type = 1;";
+                    _getData = await Context.GetData<TMLCountComparision>(fetchUploadStatus).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching upload_status previous data if any, due to : " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
+                try
+                {
+                    if (_CountData.Count > 0)
+                    {
+                        int realCount = Convert.ToInt32(_CountData[0].realCount);
+                        int actualCount = dataCount;
+                        int expectedCount = realCount * 144;
+                        int difference = expectedCount - actualCount;
+                        bool automationData = false;
+
+                        if (difference == 0)
+                        {
+                            DateTime today = DateTime.Now;
+                            string importDateCon = today.ToString("yyyy-MM-dd");
+                            string finalUpdateInsertQuery = "";
+                            if (_getData.Count > 0)
+                            {
+                                //DGR automation data already present.
+                                finalUpdateInsertQuery = $"UPDATE upload_status SET import_date = '{importDateCon}', data_date = '{date}', TML_uploaded = 1, expected_TML= {expectedCount}, actual_TML = {actualCount}, wtg_count = {realCount} WHERE upload_status_id = {_getData[0].upload_status_id}";
+                                automationData = true;
+                            }
+                            else
+                            {
+                                string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                                string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ");";
+                                string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML =" + actualCount + ", wtg_count=" + realCount;
+                                finalUpdateInsertQuery = updateQuery1 + insertValues;
+                            }
+                            try
+                            {
+                                int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                                //if (_getData.Count > 0)
+                                //{
+                                //    int resUpdateInsert = await Context.ExecuteNonQry<int>(dataAvailable).ConfigureAwait(false);
+                                //}
+                                //else
+                                //{
+                                //    int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                                //}
+                                returnResult = 2;
+                                if (automationData)
+                                {
+                                    int DailyData = await CalculateDailyExpected(site_id.ToString(), date);
+                                    returnResult = 3;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+                                await LogError(0, 1, 7, functionName, msg, backend);
+                                return 0;
+                            }
+                        }
+                        else if (difference > 0)
+                        {
+                            DateTime today = DateTime.Now;
+                            string importDateCon = today.ToString("yyyy-MM-dd");
+                            string updateQuery1 = "INSERT INTO upload_status (type, site_id, import_date, data_date, TML_uploaded, expected_TML, actual_TML, wtg_count) VALUES ";
+                            string insertValues = "(1, " + site_id + ", '" + importDateCon + "', '" + date + "', 1, " + expectedCount + ", " + actualCount + ", " + realCount + ")";
+                            string updateValues = " ON DUPLICATE KEY UPDATE import_date ='" + importDateCon + "', TML_uploaded = 1, expected_TML = " + expectedCount + ", actual_TML = actual_TML +" + actualCount + ", wtg_count=" + realCount;
+                            string finalUpdateInsertQuery = updateQuery1 + insertValues + updateValues;
+                            try
+                            {
+                                int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
+                                returnResult = 2;
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = "Exception while updating in upload_status table, due to : " + e.ToString();
+                                await LogError(0, 1, 7, functionName, msg, backend);
+                                return 0;
+                            }
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while calculating expected and actual data count, due to : " + e.ToString();
+                    await LogError(0, 1, 7, functionName, msg, backend);
+                    return 0;
+                }
+            }
+            return returnResult;
+        }
+
+        //Fetch Heat Map data from upload_status table.
+        internal async Task<List<Dictionary<string, object>>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType)
+        {
+
+            List<DateTime> allDates = new List<DateTime>();
+            for (DateTime date = Convert.ToDateTime(fromDate); date <= Convert.ToDateTime(toDate); date = date.AddDays(1))
+                allDates.Add(date);
+            List<String> allDates1 = new List<String>();
+            for (DateTime date = Convert.ToDateTime(fromDate); date <= Convert.ToDateTime(toDate); date = date.AddDays(1))
+            {
+                string tempDate = Convert.ToString(Convert.ToDateTime(date).ToString("yyyy-MM-dd"));
+                allDates1.Add(tempDate);
+            }
+
+
+            var resultMap = new Dictionary<string, List<Dictionary<string, object>>>();
+            //upload_status has 2 as solar site, 
+
+            if (siteType == 1)
+            {
+                List<HeatMapData2> _HeatMapData = new List<HeatMapData2>();
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.TML_uploaded,t1.expected_TML,t1.actual_TML,t1.wtg_count FROM upload_status as t1 join site_master as t2 on t2.site_master_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+
+                try
+                {
+                    _HeatMapData = await Context.GetData<HeatMapData2>(qry).ConfigureAwait(false);
+
+                    foreach (HeatMapData2 heatmap in _HeatMapData)
+                    {
+                        string siteName = heatmap.site;
+                        if (!resultMap.ContainsKey(siteName))
+                        {
+                            resultMap[siteName] = new List<Dictionary<string, object>>();
+                        }
+                        string date = heatmap.data_date.ToString("yyyy-MM-dd");
+                        int approveCount = heatmap.approve_count;
+                        int automation = heatmap.automation;
+                        int tml_uploaded = heatmap.TML_uploaded;
+                        int expected_tml = heatmap.expected_TML;
+                        int actual_tml = heatmap.actual_TML;
+                        int total_wtg_count = heatmap.wtg_count;
+
+                        IDictionary<string, object> dictionary = new Dictionary<string, object>();
+                        dictionary.Add(new KeyValuePair<string, object>("date", date));
+                        dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
+                        dictionary.Add(new KeyValuePair<string, object>("uploded_tml", tml_uploaded));
+                        dictionary.Add(new KeyValuePair<string, object>("expected_tml", expected_tml));
+                        dictionary.Add(new KeyValuePair<string, object>("actual_tml", actual_tml));
+                        dictionary.Add(new KeyValuePair<string, object>("wtg_count", total_wtg_count));
+                        /* Dictionary<string, object> dataEntry = new Dictionary<string, object>
+                        {
+                            { date, approveCount }
+                        };
+                        resultMap[siteName].Add(dataEntry);*/
+                        resultMap[siteName].Add((Dictionary<string, object>)dictionary);
+                    }
+                    //Convert resultMap to the desired format
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                }
+            }
+            else
+            {
+                List<HeatMapData1> _HeatMapData = new List<HeatMapData1>();
+                //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.approve_count FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '"+ toDate + "' and t1.site_id in ("+site+") and type = '"+ siteType + "' GROUP BY t1.site_id, t1.data_date";
+
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+
+                try
+                {
+                    _HeatMapData = await Context.GetData<HeatMapData1>(qry).ConfigureAwait(false);
+
+                    /* foreach (HeatMapData1 heatmap in _HeatMapData)
+                    {
+                        string siteName = heatmap.site;
+                        if (!resultMap.ContainsKey(siteName))
+                        {
+                            resultMap[siteName] = new List<Dictionary<string, object>>();
+                        }
+                        string date = heatmap.data_date.ToString("yyyy-MM-dd");
+                        int approveCount = heatmap.approve_count;
+                    
+                        Dictionary<string, object> dataEntry = new Dictionary<string, object>
+                        {
+                            { date, approveCount }
+                        };
+                        resultMap[siteName].Add(dataEntry);
+                    }*/
+
+
+                    /* List<HeatMapData1> resultListNew = new List<HeatMapData1>();
+
+                     foreach (var dateStr in allDates1)
+                     {
+                         var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
+
+                         if (entry != null)
+                         {
+                             // Date present in heatmapData, add the entry as is
+                             resultListNew.Add(entry);
+                         }
+                         else
+                         {
+                             // Date not present, create a new entry with default values
+                             HeatMapData1 newEntry = new HeatMapData1
+                             {
+                                 data_date = dateStr,
+                                 site = "Alote",
+                                 site_id = 3,
+                                 pyranometer15min = -1,
+                                 pyranometer1min = -1,
+                                 automation = -1
+                             };
+                             resultListNew.Add(newEntry);
+                         }
+                     }*/
+                    //int haresh = 1;
+                    //foreach (var dateStr in allDates1)
+                    //{
+                    foreach (HeatMapData1 heatmap in _HeatMapData)
+                    {
+                        bool found = false;
+                        string siteName = heatmap.site;
+                        if (!resultMap.ContainsKey(siteName))
+                        {
+                            resultMap[siteName] = new List<Dictionary<string, object>>();
+                        }
+                        // var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
+                        string date = heatmap.data_date.ToString("yyyy-MM-dd");
+                        // Check if the date is in the list of allDates1
+
+
+
+                        if (allDates1.Contains(date))
+                        {
+                            int approveCount = heatmap.approve_count;
+                            int automation = heatmap.automation;
+                            int pyrano15min = heatmap.pyranometer15min;
+                            int pyrano1min = heatmap.pyranometer1min;
+
+                            IDictionary<string, object> dictionary = new Dictionary<string, object>
+                            {
+                                { "date", date },
+                                { "autonation", automation },
+                                { "pyranometer15min", pyrano15min },
+                                { "pyranometer1min", pyrano1min }
+                            };
+
+                            resultMap[siteName].Add((Dictionary<string, object>)dictionary);
+                        }
+                        else
+                        {
+                            // If the date is missing, add it with default values
+                            foreach (var missingDate in GetDateRange(fromDate, toDate))
+                            {
+                                IDictionary<string, object> dictionary = new Dictionary<string, object>
+                                {
+                                    { "date", missingDate },
+                                    { "autonation", -1 },
+                                    { "pyranometer15min", -1 },
+                                    { "pyranometer1min", -1 }
+                                };
+
+                                resultMap[siteName].Add((Dictionary<string, object>)dictionary);
+                            }
+                        }
+
+                        /* foreach (var dateStr in allDates1)
+                         {
+                             if (dateStr == date)
+                             {
+                                 found = true;
+
+                                 break;
+                             }
+
+                         }
+                         int approveCount = 0;
+                         int automation = 0;
+                         int pyrano15min =0;
+                         int pyrano1min =0;
+                         IDictionary<string, object> dictionary = new Dictionary<string, object>();
+                         //if (date == element && heatmap.selected == 0)
+                         //{
+                         if (found)
+                         {
+
+                             approveCount = heatmap.approve_count;
+                             automation = heatmap.automation;
+                             pyrano15min = heatmap.pyranometer15min;
+                             pyrano1min = heatmap.pyranometer1min;
+
+                             dictionary.Add(new KeyValuePair<string, object>("date", date));
+                             dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
+                             dictionary.Add(new KeyValuePair<string, object>("pyranometer15min", pyrano15min));
+                             dictionary.Add(new KeyValuePair<string, object>("pyranometer1min", pyrano1min));
+
+                         }
+                         else
+                         {
+
+                                 approveCount = -1;
+                                 automation = -1;
+                                 pyrano15min = -1;
+                                 pyrano1min = -1;
+                                 //IDictionary<string, object> dictionary = new Dictionary<string, object>();
+                                 dictionary.Add(new KeyValuePair<string, object>("date", "2024-01-06"));
+                                 dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
+                                 dictionary.Add(new KeyValuePair<string, object>("pyranometer15min", pyrano15min));
+                                 dictionary.Add(new KeyValuePair<string, object>("pyranometer1min", pyrano1min));
+                          }*/
+
+                        //}
+
+                        /* Dictionary<string, object> dataEntry = new Dictionary<string, object>
+                        {
+                            { date, approveCount }
+                        };
+                        resultMap[siteName].Add(dataEntry);*/
+                        // resultMap[siteName].Add((Dictionary<string, object>)dictionary);
+                    }
+                    //}
+
+
+                    //Convert resultMap to the desired format
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception caught while fetching records from import batches, due to :" + e.ToString();
+                }
+            }
+            var resultList = resultMap.Select(kvp => new Dictionary<string, object>
+            {
+                { "site", kvp.Key },
+                { "data", kvp.Value }
+            }).ToList();
+            return resultList;
+        }
+        // Function to generate a sequence of dates between two given dates.
+        IEnumerable<string> GetDateRange(string startDate, string endDate)
+        {
+            DateTime start = DateTime.Parse(startDate);
+            DateTime end = DateTime.Parse(endDate);
+            for (DateTime date = start; date <= end; date = date.AddDays(1))
+            {
+                yield return date.ToString("yyyy-MM-dd");
+            }
+        }
+        //wind Expected vs actual daily basis calculation function.
+        internal async Task<int> CalculateDailyExpected(string site, string data_date)
+        {
+            string functionName = "CalculateDailyExpected";
+            int returnRes = 0;
+            API_ErrorLog("CalculateDailyExpected Called with parameters : site : " + site + " and data_date : " + data_date);
+            List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
+            List<ExpectedVsActualDaily> _tmlAllData = new List<ExpectedVsActualDaily>();
+            //string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
+            //string todate = Convert.ToDateTime(toDate).ToString("dd-MMM-yy");
+            string tmrFilter = "Date(Time_stamp) = '" + data_date + "'";
+            double target_sum = 0;
+            double lineloss_percentage = 0;
+            double allSum = 0;
+            int wtgNumber = 0;
+            try
+            {
+                if (!string.IsNullOrEmpty(site))
+                {
+                    tmrFilter += " and site_id IN(" + site + ") ";
+                }
+                /*
+
+                SELECT site_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, SUM(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, SUM(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, SUM(kwh) as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id IN(222) AND date >= '2024-01-28' AND date <= '2024-01-28' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE DATE(Time_stamp) BETWEEN '2024-01-28' AND '2024-01-28' AND site_id IN (222) GROUP BY WTGs;
+                 
+                 */
+                //string fetchLossQry = "SELECT CASE WHEN all_bd = 'Load Shedding' THEN 'loadShedding' ELSE all_bd END as all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
+                string AllTMLDataQuery = $"SELECT site_id, wtg_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, AVG(avg_wind_speed) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, AVG(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
+
+                try
+                {
+                    API_ErrorLog("INFO******* AllTMLDataQuery : " + AllTMLDataQuery);
+                    _tmlAllData = await Context.GetData<ExpectedVsActualDaily>(AllTMLDataQuery).ConfigureAwait(false);
+                    returnRes = 1;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching records from uploading_file_tmr_data , due to  : " + e.ToString();
+                    API_ErrorLog("ERROR******* " + msg);
+                    LogError(0, 2, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching records from tml_data table for daily calculation wtgs wise, due to  : " + e.ToString();
+                API_ErrorLog("ERROR******* " + msg);
+                LogError(0, 2, 5, functionName, msg, backend);
+                return returnRes;
+            }
+
+            if (_tmlAllData.Count > 0)
+            {
+                //Fetch the WTG count from location master table.
+                string wtgCountQuery = $"SELECT COUNT(*) AS wtg_number FROM location_master WHERE site_master_id IN({site}) AND status = 1;";
+                try
+                {
+                    API_ErrorLog("INFO******* Wtg count query : "+ wtgCountQuery);
+                    List<ExpectedVsActualDaily> wtgCount = new List<ExpectedVsActualDaily>();
+                    wtgCount = await Context.GetData<ExpectedVsActualDaily>(wtgCountQuery).ConfigureAwait(false);
+                    if (wtgCount.Count > 0)
+                    {
+                        wtgNumber = Convert.ToInt32(wtgCount[0].wtg_number);
+                    }
+                    returnRes = 2;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching wtg count from the location master table, due to : " + e.ToString();
+                    API_ErrorLog("ERROR******* " + msg);
+                    LogError(0, 2, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+
+                //Fetch target sum from daily target kpi.
+                string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id =" + site + " AND date = '" + data_date + "';";
+                try
+                {
+                    API_ErrorLog("INFO******* fetch target query : " + fetchTargetQry);
+                    _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchTargetQry).ConfigureAwait(false);
+                    returnRes = 3;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while Fetching target sum form daily_target_kpi, due to : " + e.ToString();
+                    API_ErrorLog("ERROR******* " + msg);
+                    LogError(0, 2, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+                if (_tmlDataList.Count > 0)
+                {
+                    try
+                    {
+                        foreach (var unit in _tmlDataList)
+                        {
+                            target_sum = unit.target_sum;
+                        }
+                        target_sum /= wtgNumber;
+                        returnRes = 4;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while Extracting target sum from _tmlDataList, due to : " + e.ToString();
+                        API_ErrorLog("ERROR******* " + msg);
+                        LogError(0, 2, 5, functionName, msg, backend);
+                        return returnRes;
+
+                    }
+                }
+                _tmlDataList.Clear();
+
+                //Actual from daily generation summary.
+                //SELECT wtg, site_id, SUM(kwh) as controller_kwh FROM `daily_gen_summary` WHERE site_id IN(222) AND date >= '2024-01-28' AND date <= '2024-01-28' GROUP BY wtg;
+                //Already got in main tml data by joining above query.
+
+                //Fetch the lineloss from the monthly lineloss table.
+                string dataMonth = Convert.ToDateTime(data_date).ToString("MM");
+                string dataYear = Convert.ToDateTime(data_date).ToString("yyyy");
+
+                string fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id =" + site + " AND month_no = " + dataMonth + " AND year =" + dataYear + ";";
+                try
+                {
+                    API_ErrorLog("INFO******* fetch lineloss query : " + fetchLinelossPerQry);
+                    _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
+                    returnRes = 5;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
+                    API_ErrorLog("ERROR******* " + msg);
+                    LogError(0, 2, 5, functionName, msg, backend);
+                    return returnRes;
+
+                }
+                if (_tmlDataList.Count > 0)
+                {
+                    try
+                    {
+                        foreach (var unit in _tmlDataList)
+                        {
+                            lineloss_percentage = unit.line_loss_per;
+                        }
+                        returnRes = 6;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
+                        API_ErrorLog("ERROR******* " + msg);
+                        LogError(0, 2, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+                _tmlDataList.Clear();
+
+
+                //After fetching all the required data from various tables finally calculating the data.
+                string insertQry = "INSERT INTO daily_expected_vs_actual (site_id, data_date, wtg_id, wtg, tml_count, actual_wind_speed, actual_active_power, recon_wind_speed, expected_power, usmh_loss, smh_loss, others_loss, igbd_loss, egbd_loss, loadshedding_loss, pcd_loss, lull_loss, nc_loss, healthcheck_loss, setup_loss, initialization_loss, startup_loss, controller_kwh, lineloss_mu, jmr_kwh, target_kwh, adjusted_expected, difference_expected, ma, iga, ega_a, ega_b, ega_c) VALUES";
+                string insertValues = "";
+                string finalinsertQuery = "";
+                foreach (var uni in _tmlAllData)
+                {
+                    uni.target_kwh = target_sum;
+                    uni.expected_power = (uni.expected_power/6)/ 1000000;
+                    string dateTem = Convert.ToDateTime(uni.data_date).ToString("yyyy-MM-dd");
+                    uni.data_date = dateTem;
+
+                    //lineloss calculation.
+                    double lineloss = lineloss_percentage / 100;
+                    double temp = (lineloss * uni.controller_kwh) * -1; //6;
+                    uni.lineloss_mu = temp / 1000000;
+
+                    //calculating jmr kwh
+                    uni.jmr_kwh = (uni.controller_kwh / 1000000) + uni.lineloss_mu;
+
+                    //Calculating the difference
+                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss + uni.lineloss_mu;
+                    uni.difference_expected = uni.jmr_kwh - allSum;
+                    if (uni.difference_expected != 0)
+                    {
+                        uni.adjusted_expected = uni.expected_power + uni.difference_expected;
+                    }
+                    else
+                    {
+                        uni.adjusted_expected = uni.expected_power;
+                    }
+
+                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
+                }
+                finalinsertQuery = insertQry + insertValues;
+                finalinsertQuery = finalinsertQuery.Substring(0, (finalinsertQuery.Length - 1)) + ";";
+
+                bool isDelete = false;
+                try
+                {
+                    //Delete previous data if any.
+                    string deleteQry = $"DELETE FROM daily_expected_vs_actual WHERE site_id IN({site}) AND data_date = '{data_date}';";
+                    API_ErrorLog("INFO******* Delete query : " + deleteQry);
+                    int delres = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                    isDelete = true;
+                    returnRes = 7;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting previous records if any, due to : " + e.ToString();
+                    API_ErrorLog("ERROR******* " + msg);
+                    LogError(0, 2, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+
+                if (isDelete)
+                {
+                    API_ErrorLog("INFO******* insert query : " + finalinsertQuery);
+                    int insertRes = await Context.ExecuteNonQry<int>(finalinsertQuery).ConfigureAwait(false);
+                    returnRes = 8;
+                    API_ErrorLog("INFO******* Inserted data successfully.");
+                }
+            }
+            else
+            {
+                return 1000; //No data retrived from the tml data. i.e. no data in tml data for respective date site.
+            }
+
+            _tmlDataList.Clear();
+
+            return returnRes;
+        }
+        internal async Task<int> CalculateDailyExpectedSolar(string site, string fromDate, string toDate)
+        {
+            string functionName = "GetSolarExpectedReport";
+            int returnRes = 0;
+            bool AOPDataAdded = false;
+            bool TopliningDataAdded = false;
+            string insertDates = "";
+
+            string filter = "";
+            int chkfilter = 0;
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                chkfilter = 1;
+                filter += " where t1.date>='" + fromDate + "' and t1.date<='" + toDate + "' ";
+            }
+            if (!string.IsNullOrEmpty(site))
+            {
+                if (chkfilter == 0) filter += " where ";
+                else
+                {
+                    filter += " and ";
+                }
+                filter += " t1.site_id in (" + site + ") ";
+            }
+
+            string aopQuery = "";
+            string topliningQuery = "";
+            //AOP query..
+            //aopQuery = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega_a, avg(t1.ega_b) as ega_b, avg(t1.ega_c) as ega_c,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+
+            aopQuery = $"SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh) AS usmh, SUM(smh) AS smh, SUM(oh) AS others, SUM(igbdh) AS igbd, SUM(egbdh) AS egbd, SUM(load_shedding) AS loadShedding, SUM(total_losses) AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date { filter } GROUP BY t1.site, t1.date;";
+            
+            // toplining query...
+            topliningQuery = "SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma, AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh)/t2.pr*t2.toplining_PR AS usmh, SUM(smh)/t2.pr*t2.toplining_PR AS smh, SUM(oh)/t2.pr*t2.toplining_PR AS others, SUM(igbdh)/t2.pr*t2.toplining_PR AS igbd, SUM(egbdh)/t2.pr*t2.toplining_PR AS egbd, SUM(load_shedding)/t2.pr*t2.toplining_PR AS loadShedding, SUM(total_losses)/t2.pr*t2.toplining_PR AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date " + filter + " GROUP BY t1.site, t1.date ";
+
+            List<ExpectedVsActualSolarDaily> AOPData = new List<ExpectedVsActualSolarDaily>();
+            List<ExpectedVsActualSolarDaily> TopLiningData = new List<ExpectedVsActualSolarDaily>();
+            try
+            {
+                AOPData = await Context.GetData<ExpectedVsActualSolarDaily>(aopQuery).ConfigureAwait(false);
+                returnRes = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table for AOP, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+            if(AOPData.Count > 0)
+            {
+                try
+                {
+                    TopLiningData = await Context.GetData<ExpectedVsActualSolarDaily>(topliningQuery).ConfigureAwait(false);
+                    returnRes = 2;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table for Toplining, due to : " + e.ToString();
+                    //API_ErrorLog(msg);
+                    LogError(0, 1, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+            }
+            
+
+            string viewQry = "create or replace view expected_temp_view as SELECT t1.date,t3.site_master_solar_id as site_id, t3.site,t3.spv,(t3.ac_capacity*1000) as capacity,SUM(t1.inv_kwh) as kwh,t2.LineLoss,SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100) as kwh_afterloss,((SUM(t1.inv_kwh)-SUM(t1.inv_kwh)*(t2.LineLoss/100))/((t3.ac_capacity*1000)*24))*100 as plf_afterloss FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year = year(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id group by t1.date ,t1.site";
+            try
+            {
+                await Context.ExecuteNonQry<int>(viewQry).ConfigureAwait(false);
+                returnRes = 3;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while creating temp view, due to : " + e.ToString();
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+
+            string viweFetchQry = "SELECT date,site, site_id, kwh_afterloss as inv_kwh, plf_afterloss as plant_kwh, LineLoss AS lineloss FROM `expected_temp_view` where date between '" + fromDate + "' and '" + toDate + "' and site_id IN(" + site + ");";
+            List<SolarExpectedvsActual> newdata = new List<SolarExpectedvsActual>();
+            try
+            {
+                newdata = await Context.GetData<SolarExpectedvsActual>(viweFetchQry).ConfigureAwait(false);
+                returnRes = 4;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching records from expected_temp_view, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+
+            try
+            {
+                //For AOP data.
+                foreach (var _dataElement in AOPData)
+                {
+                    try
+                    {
+                        foreach (var _actualData in newdata)
+                        {
+                            if (_dataElement.data_date == _actualData.date && _dataElement.site_id == _actualData.site_id)
+                            {
+                                string tempDate = $"'{Convert.ToDateTime(_dataElement.data_date).ToString("yyyy-MM-dd")}',";
+                                insertDates += tempDate;
+                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
+                                _dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                //_dataElement.inv_kwh = _actualData.inv_kwh;
+                                _dataElement.jmr_kwh = _actualData.plant_kwh;
+                                //_dataElement.lineloss = _actualData.lineloss;
+                                double lineloss = _actualData.lineloss / 100;
+                                double temp = (lineloss * _dataElement.inv_kwh) * -1; //6;
+                                _dataElement.lineloss = temp / 1000000;
+                            }
+                        }
+                        returnRes = 5;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while adding actual value to the main list, due to : " + e.ToString();
+                        //API_ErrorLog(msg);
+                        LogError(0, 1, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+                returnRes = 6;
+                AOPDataAdded = true;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while inserting data into main AOP list, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+            try
+            {
+                //For Toplining data.
+                foreach (var _dataElement in TopLiningData)
+                {
+                    try
+                    {
+                        foreach (var _actualData in newdata)
+                        {
+                            if (_dataElement.data_date == _actualData.date && _dataElement.site_id == _actualData.site_id)
+                            {
+                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
+                                _dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                //_dataElement.inv_kwh = _actualData.inv_kwh;
+                                _dataElement.jmr_kwh = _actualData.plant_kwh;
+                                //_dataElement.lineloss = _actualData.lineloss;
+                                double lineloss = _actualData.lineloss / 100;
+                                double temp = (lineloss * _dataElement.inv_kwh) * -1; //6;
+                                _dataElement.lineloss = temp / 1000000;
+                            }
+                        }
+                        returnRes = 7;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Exception while adding actual value to the main toplining list, due to : " + e.ToString();
+                        //API_ErrorLog(msg);
+                        LogError(0, 1, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+                returnRes = 8;
+                TopliningDataAdded = true;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while inserting data into main list, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+                return returnRes;
+            }
+
+            //block for doing insert operation in daily expected data.
+            if (TopliningDataAdded && AOPDataAdded)
+            {
+                //delete logic will be common for aop and Toplining.
+                insertDates = insertDates.Substring(0, (insertDates.Length - 1)) + "";
+                try
+                {
+                    string deleteQry = $"DELETE FROM daily_expected_vs_actual_solar WHERE site_id IN({site}) AND data_date IN({insertDates});";
+                    int delRes = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
+                    returnRes = 9;
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while deleting previous data from daily_expected_vs_actual_solar table due to, " + e.ToString();
+                    LogError(0, 1, 5, functionName, msg, backend);
+                    return returnRes;
+                }
+                if(returnRes == 9)
+                {
+                    string insertStartingQuery = "INSERT INTO daily_expected_vs_actual_solar (site_id, data_date, target, expected_power, usmh, smh, others, igbd, egbd, loadShedding, pr, inv_kwh, lineloss, jmr_kwh, ma, iga, ega_a, ega_b, ega_c, aop_top) VALUES ";
+                    string aopValues = "";
+                    string topliningValues = "";
+
+                    foreach (var unit in AOPData)
+                    {
+                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {unit.ma}, {unit.iga}, {unit.ega_a}, {unit.ega_b}, {unit.ega_c}, 0),";
+                    }
+                    foreach (var unit in TopLiningData)
+                    {
+                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {unit.ma}, {unit.iga}, {unit.ega_a}, {unit.ega_b}, {unit.ega_c}, 1),";
+                    }
+                    string finalInsertQuery = insertStartingQuery + aopValues + topliningValues.Substring(0, (topliningValues.Length - 1)) + ";";
+
+                    try
+                    {
+                        int insertRes = await Context.ExecuteNonQry<int>(finalInsertQuery).ConfigureAwait(false);
+                        returnRes = 10;
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while inserting data into daily_expected_vs_actual_solar table due to, " + e.ToString();
+                        LogError(0, 1, 5, functionName, msg, backend);
+                        return returnRes;
+                    }
+                }
+            }
+
+            return returnRes;
         }
     }
 }

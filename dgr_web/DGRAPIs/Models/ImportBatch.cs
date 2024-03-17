@@ -26,5 +26,16 @@ namespace DGRAPIs.Models
         public int import_batch_id { get; set; }
         public int is_approved { get; set; }
     }
+    public class ImportBatchesForUploadStatus
+    {
+        public int import_batch_id { get; set; } //batch_id generated in this table.
+        public int import_type { get; set; } //Solar =1, wind = 2
+        public int site_id { get; set; }
+        public dynamic import_date { get; set; }
+        public dynamic data_date { get; set; }
+        public int imported_by { get; set; } //login table id i.e. userid
+        public int approved_by { get; set; } //user id of admin
+        public int is_approved { get; set; } // 0 waiting, 1 approved, 2 rejected
 
+    }
 }

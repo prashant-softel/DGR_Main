@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace DGRAPIs.Controllers
 {
@@ -2803,5 +2806,35 @@ namespace DGRAPIs.Controllers
 
 
         #endregion
+		[Route("CalculateDailyExpected")]
+        [HttpGet]
+        public async Task<IActionResult> CalculateDailyExpected(string site, string data_date)
+        {
+            try
+            {
+                var data = await _dgrBs.CalculateDailyExpected(site, data_date);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("CalculateDailyExpectedSolar")]
+        [HttpGet]
+        public async Task<IActionResult> CalculateDailyExpectedSolar(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.CalculateDailyExpectedSolar(site, fromDate, toDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

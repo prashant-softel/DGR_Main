@@ -17,6 +17,12 @@ namespace DGRAPIs.Models
         public dynamic plant_act { get; set; }
         public dynamic pi { get; set; }
     }
+    public class SolarImportSiteDate
+    {
+        public int site_id { get; set; }
+        public string site { get; set; }
+        public string date { get; set; }
+    }
 
     public class SolarUploadingFileGeneration2
     {
@@ -65,6 +71,16 @@ namespace DGRAPIs.Models
         public double egbdh { get; set; }
         public double load_shedding { get; set; }
         public double total_losses { get; set; }
+        public int import_batch_id { get; set; }
+
+    }
+    public class SolarUploadingFileGeneration3
+    {
+        public Int64 gen_count { get; set; }
+        public Int64 pyro1_count { get; set; }
+        public Int64 pyro15_count { get; set; }
+        public int site_id { get; set; }
+
         public int import_batch_id { get; set; }
 
     }

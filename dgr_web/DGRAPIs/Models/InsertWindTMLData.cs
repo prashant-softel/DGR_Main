@@ -69,8 +69,16 @@ namespace DGRAPIs.Models
         public string date { get; set; }
         public int isTmlData { get; set; }
         public int dataUpdated { get; set; }
+        public int import_batch_id { get; set; }
     }
-
+    public class TMLCountComparision
+    {
+        public Int64 realCount { get; set; }
+        public Int64 expected_TML { get; set; }
+        public Int64 actual_TML { get; set; }
+        public Int64 wtg_count { get; set; }
+        public int upload_status_id { get; set; }
+    }
     public class GetWindTMLGraphData
     {
         public string all_bd { get; set; }
@@ -96,5 +104,43 @@ namespace DGRAPIs.Models
         public double lossUSMH_final { get; set; }
         public double loadShedding { get; set; }
         public int monthlyData { get; set; }
+    }
+	public class ExpectedVsActualDaily
+    {
+        public string all_bd { get; set; }
+        public int site_id { get; set; }
+        public dynamic data_date { get; set; }
+        public Int64 wtg_id { get; set; }
+        public string wtg { get; set; }
+        public Int64 wtg_number { get; set; }
+        public Int64 tml_count { get; set; }
+        public double actual_wind_speed { get; set; }
+        public double actual_active_power { get; set; }
+        public double recon_wind_speed { get; set; }
+        public double expected_power { get; set; }
+        public double usmh_loss { get; set; }
+        public double smh_loss { get; set; }
+        public double others_loss { get; set; }
+        public double igbd_loss { get; set; }
+        public double egbd_loss { get; set; }
+        public double loadshedding_loss { get; set; }
+        public double pcd_loss { get; set; }
+        public double lull_loss { get; set; }
+        public double nc_loss { get; set; }
+        public double healthcheck_loss { get; set; }
+        public double setup_loss { get; set; }
+        public double initialization_loss { get; set; }
+        public double startup_loss { get; set; }
+        public double controller_kwh { get; set; }
+        public double lineloss_mu { get; set; }
+        public double jmr_kwh { get; set; }
+        public double target_kwh { get; set; }
+        public double adjusted_expected { get; set; }
+        public double difference_expected { get; set; }
+        public double ma { get; set; }
+        public double iga { get; set; }
+        public double ega_a { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
     }
 }

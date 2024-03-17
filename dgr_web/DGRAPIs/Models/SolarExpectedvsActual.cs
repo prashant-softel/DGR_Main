@@ -19,7 +19,7 @@ namespace DGRAPIs.Models
         public double inv_kwh { get; set; }
         public double plant_kwh { get; set; }
 
-
+        public double lineloss { get; set; }
         public double pr { get; set; }
         public double toplining_PR { get; set; }
 
@@ -49,6 +49,29 @@ namespace DGRAPIs.Models
         public double Pexpected { get; set; }
         public double target { get; set; }
 
+    }
 
+    public class ExpectedVsActualSolarDaily
+    {
+        public int site_id { get; set; }
+        public dynamic data_date { get; set; }
+        public double target { get; set; }
+        public double expected_power { get; set; }
+        public double usmh { get; set; }
+        public double smh { get; set; }
+        public double others { get; set; }
+        public double igbd { get; set; }
+        public double egbd { get; set; }
+        public double loadShedding { get; set; }
+        public double pr { get; set; }
+        public double inv_kwh { get; set; }
+        public double lineloss { get; set; }
+        public double jmr_kwh { get; set; }
+        public double ma { get; set; }
+        public double iga { get; set; }
+        public double ega_a { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
+        public int aop_top { get; set; }
     }
 }
