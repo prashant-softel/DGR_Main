@@ -4399,11 +4399,34 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             }
             string qry = " insert into uploading_file_generation_solar (date, site, site_id, inverter, inv_act, plant_act, pi, import_batch_id) values";
             string values = "";
+            string uploadStatusValues = "";
             foreach (var unit in set)
             {
-                values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.inverter + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.pi + "','" + batchId + "'),";
+                try
+                {
+                    values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.inverter + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.pi + "','" + batchId + "'),";
+                    uploadStatusValues = $"(2, {unit.site_id}, CURDATE(), '{unit.date}', 0, {batchId}, 0, 1, 1, 1, 1, 0, 0, 0),";
+                }
+                catch(Exception e)
+                {
+
+                }
+
             }
             qry += values;
+            //DGR_v3 function hereafter..
+            // Upload status query for  heat map 
+            string query1 = "insert into upload_status (type, site_id,  import_date, data_date, uploaded_by, import_batch_id, TML_uploaded, automation, pyranometer1min, pyranometer15min, approve_count, expected_TML, actual_TML, wtg_count) values ";
+            try
+            {
+                query1 += uploadStatusValues;
+                await Context.ExecuteNonQry<int>(query1.Substring(0, (query1.Length - 1)) + ";").ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due while deleting tracker_loss records from table, due to :" + e.ToString();
+                //return 0;
+            }
 
             return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
         }
@@ -17164,7 +17187,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
             string functionName = "CalculateDailyExpected";
             int returnRes = 0;
-            API_ErrorLog("CalculateDailyExpected Called with parameters : site : " + site + " and data_date : " + data_date);
+            //API_ErrorLog("CalculateDailyExpected Called with parameters : site : " + site + " and data_date : " + data_date);
             List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
             List<ExpectedVsActualDaily> _tmlAllData = new List<ExpectedVsActualDaily>();
             //string fdate = Convert.ToDateTime(fromDate).ToString("dd-MMM-yy");
@@ -17190,22 +17213,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 try
                 {
-                    API_ErrorLog("INFO******* AllTMLDataQuery : " + AllTMLDataQuery);
+                    //API_ErrorLog("INFO******* AllTMLDataQuery : " + AllTMLDataQuery);
                     _tmlAllData = await Context.GetData<ExpectedVsActualDaily>(AllTMLDataQuery).ConfigureAwait(false);
                     returnRes = 1;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while fetching records from uploading_file_tmr_data , due to  : " + e.ToString();
-                    API_ErrorLog("ERROR******* " + msg);
-                    LogError(0, 2, 5, functionName, msg, backend);
+                    //API_ErrorLog("ERROR******* " + msg);
+                    //LogError(0, 2, 5, functionName, msg, backend);
                     return returnRes;
                 }
             }
             catch (Exception e)
             {
                 string msg = "Exception while fetching records from tml_data table for daily calculation wtgs wise, due to  : " + e.ToString();
-                API_ErrorLog("ERROR******* " + msg);
+                //API_ErrorLog("ERROR******* " + msg);
                 LogError(0, 2, 5, functionName, msg, backend);
                 return returnRes;
             }
@@ -17216,7 +17239,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string wtgCountQuery = $"SELECT COUNT(*) AS wtg_number FROM location_master WHERE site_master_id IN({site}) AND status = 1;";
                 try
                 {
-                    API_ErrorLog("INFO******* Wtg count query : "+ wtgCountQuery);
+                    //API_ErrorLog("INFO******* Wtg count query : "+ wtgCountQuery);
                     List<ExpectedVsActualDaily> wtgCount = new List<ExpectedVsActualDaily>();
                     wtgCount = await Context.GetData<ExpectedVsActualDaily>(wtgCountQuery).ConfigureAwait(false);
                     if (wtgCount.Count > 0)
@@ -17228,7 +17251,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 catch (Exception e)
                 {
                     string msg = "Exception while fetching wtg count from the location master table, due to : " + e.ToString();
-                    API_ErrorLog("ERROR******* " + msg);
+                    //API_ErrorLog("ERROR******* " + msg);
                     LogError(0, 2, 5, functionName, msg, backend);
                     return returnRes;
                 }
@@ -17237,14 +17260,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id =" + site + " AND date = '" + data_date + "';";
                 try
                 {
-                    API_ErrorLog("INFO******* fetch target query : " + fetchTargetQry);
+                    //API_ErrorLog("INFO******* fetch target query : " + fetchTargetQry);
                     _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchTargetQry).ConfigureAwait(false);
                     returnRes = 3;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while Fetching target sum form daily_target_kpi, due to : " + e.ToString();
-                    API_ErrorLog("ERROR******* " + msg);
+                    //API_ErrorLog("ERROR******* " + msg);
                     LogError(0, 2, 5, functionName, msg, backend);
                     return returnRes;
                 }
@@ -17262,7 +17285,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     catch (Exception e)
                     {
                         string msg = "Exception while Extracting target sum from _tmlDataList, due to : " + e.ToString();
-                        API_ErrorLog("ERROR******* " + msg);
+                        //API_ErrorLog("ERROR******* " + msg);
                         LogError(0, 2, 5, functionName, msg, backend);
                         return returnRes;
 
@@ -17281,14 +17304,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id =" + site + " AND month_no = " + dataMonth + " AND year =" + dataYear + ";";
                 try
                 {
-                    API_ErrorLog("INFO******* fetch lineloss query : " + fetchLinelossPerQry);
+                    //API_ErrorLog("INFO******* fetch lineloss query : " + fetchLinelossPerQry);
                     _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
                     returnRes = 5;
                 }
                 catch (Exception e)
                 {
                     string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
-                    API_ErrorLog("ERROR******* " + msg);
+                    //API_ErrorLog("ERROR******* " + msg);
                     LogError(0, 2, 5, functionName, msg, backend);
                     return returnRes;
 
@@ -17306,7 +17329,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     catch (Exception e)
                     {
                         string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
-                        API_ErrorLog("ERROR******* " + msg);
+                        //API_ErrorLog("ERROR******* " + msg);
                         LogError(0, 2, 5, functionName, msg, backend);
                         return returnRes;
                     }
@@ -17355,7 +17378,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     //Delete previous data if any.
                     string deleteQry = $"DELETE FROM daily_expected_vs_actual WHERE site_id IN({site}) AND data_date = '{data_date}';";
-                    API_ErrorLog("INFO******* Delete query : " + deleteQry);
+                    //API_ErrorLog("INFO******* Delete query : " + deleteQry);
                     int delres = await Context.ExecuteNonQry<int>(deleteQry).ConfigureAwait(false);
                     isDelete = true;
                     returnRes = 7;
@@ -17363,17 +17386,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 catch (Exception e)
                 {
                     string msg = "Exception while deleting previous records if any, due to : " + e.ToString();
-                    API_ErrorLog("ERROR******* " + msg);
+                    //API_ErrorLog("ERROR******* " + msg);
                     LogError(0, 2, 5, functionName, msg, backend);
                     return returnRes;
                 }
 
                 if (isDelete)
                 {
-                    API_ErrorLog("INFO******* insert query : " + finalinsertQuery);
+                    //API_ErrorLog("INFO******* insert query : " + finalinsertQuery);
                     int insertRes = await Context.ExecuteNonQry<int>(finalinsertQuery).ConfigureAwait(false);
                     returnRes = 8;
-                    API_ErrorLog("INFO******* Inserted data successfully.");
+                    //API_ErrorLog("INFO******* Inserted data successfully.");
                 }
             }
             else
@@ -17415,10 +17438,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //AOP query..
             //aopQuery = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega_a, avg(t1.ega_b) as ega_b, avg(t1.ega_c) as ega_c,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
 
-            aopQuery = $"SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh) AS usmh, SUM(smh) AS smh, SUM(oh) AS others, SUM(igbdh) AS igbd, SUM(egbdh) AS egbd, SUM(load_shedding) AS loadShedding, SUM(total_losses) AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date { filter } GROUP BY t1.site, t1.date;";
+            aopQuery = $"SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh) AS usmh, SUM(smh) AS smh, SUM(oh) AS others, SUM(igbdh) AS igbd, SUM(egbdh) AS egbd, SUM(load_shedding) AS loadShedding, SUM(total_losses) AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date { filter } GROUP BY t1.site, t1.date;";
             
             // toplining query...
-            topliningQuery = "SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma, AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh)/t2.pr*t2.toplining_PR AS usmh, SUM(smh)/t2.pr*t2.toplining_PR AS smh, SUM(oh)/t2.pr*t2.toplining_PR AS others, SUM(igbdh)/t2.pr*t2.toplining_PR AS igbd, SUM(egbdh)/t2.pr*t2.toplining_PR AS egbd, SUM(load_shedding)/t2.pr*t2.toplining_PR AS loadShedding, SUM(total_losses)/t2.pr*t2.toplining_PR AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date " + filter + " GROUP BY t1.site, t1.date ";
+            topliningQuery = "SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma, AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh)/t2.pr*t2.toplining_PR AS usmh, SUM(smh)/t2.pr*t2.toplining_PR AS smh, SUM(oh)/t2.pr*t2.toplining_PR AS others, SUM(igbdh)/t2.pr*t2.toplining_PR AS igbd, SUM(egbdh)/t2.pr*t2.toplining_PR AS egbd, SUM(load_shedding)/t2.pr*t2.toplining_PR AS loadShedding, SUM(total_losses)/t2.pr*t2.toplining_PR AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date " + filter + " GROUP BY t1.site, t1.date ";
 
             List<ExpectedVsActualSolarDaily> AOPData = new List<ExpectedVsActualSolarDaily>();
             List<ExpectedVsActualSolarDaily> TopLiningData = new List<ExpectedVsActualSolarDaily>();
