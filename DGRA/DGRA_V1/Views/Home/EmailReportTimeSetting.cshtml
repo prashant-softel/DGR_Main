@@ -381,7 +381,7 @@
             console.log("username : ", username, " role : ", role, " user_id : ", user_id);
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay +'& firstReminderTime=' + firstReminderTime + '& secondReminderTime=' + secondReminderTime + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay +'&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr) {

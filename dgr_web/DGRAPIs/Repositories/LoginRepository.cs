@@ -19,6 +19,8 @@ namespace DGRAPIs.Repositories
     {
         private int approve_status = 0;
         private object json;
+         const int report = 1;
+        const int reminder = 2;
 
         public LoginRepository(MYSQLDBHelper sqlDBHelper) : base(sqlDBHelper)
         {
@@ -154,7 +156,7 @@ namespace DGRAPIs.Repositories
             
         }
 
-        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay, string username, int user_id, string role)
+        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay, string firstReminderTime, string secondReminderTime, string username, int user_id, string role)
         {
             
             int finalRes = 1;
@@ -228,7 +230,34 @@ namespace DGRAPIs.Repositories
                     finalRes = 0;
                     return finalRes;
                 }
-
+                try
+                {
+                    MyConfig["Timer:firstDgrReminderTime"] = firstReminderTime;
+                    jsonObject["Timer"]["firstDgrReminderTime"] = firstReminderTime;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing first Dgr uploading Reminder time, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+                try
+                {
+                    MyConfig["Timer:secondDgrReminderTime"] = secondReminderTime;
+                    jsonObject["Timer"]["secondDgrReminderTime"] = secondReminderTime;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing second Dgr uploading Reminder time, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
             }
             catch(Exception e)
                 {
@@ -240,7 +269,7 @@ namespace DGRAPIs.Repositories
             {
                 try
                 {
-                    string insertTimingsDataQry = "INSERT INTO email_report_timings_log (daily_report, wind_weekly, solar_weekly, wind_weekly_day, solar_weekly_day, updated_by_name, updated_by_id, updated_by_role) VALUES ( '" + dailytime + "', '" + windweeklytime + "', '" + solarweeklytime + "', '" + windWeekDay + "', '" + solarWeekDay + "', '" + username + "', " + user_id + ", '" + role + "' );" ;
+                    string insertTimingsDataQry = "INSERT INTO email_report_timings_log (daily_report, wind_weekly, solar_weekly, wind_weekly_day, solar_weekly_day, first_dgr_reminder,second_dgr_reminder,updated_by_name, updated_by_id, updated_by_role) VALUES ( '" + dailytime + "', '" + windweeklytime + "', '" + solarweeklytime + "', '" + windWeekDay + "', '" + solarWeekDay + "', '" + firstReminderTime + "', '" + secondReminderTime + "','" + username + "', " + user_id + ", '" + role + "' );" ;
                     insertTimeDataRes = await Context.ExecuteNonQry<int>(insertTimingsDataQry).ConfigureAwait(false);
 
                 }

@@ -24,8 +24,8 @@ namespace DGRAPIs.Controllers
                
                 List<string> AddTo = new List<string>();
                 MailRequest request = new MailRequest();
-                AddTo.Add("sujitkumar0304@gmail.com");
-                AddTo.Add("prashant@softeltech.in");
+                //AddTo.Add("sujitkumar0304@gmail.com");
+               //AddTo.Add("prashant@softeltech.in");
                 //request.ToEmail = "sujitkumar0304@gmail.com";
                 request.Subject = "test";
                 request.Body = "hello";
