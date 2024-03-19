@@ -982,6 +982,12 @@ namespace DGRA_V1.Controllers
             return View();
         }
         [TypeFilter(typeof(SessionValidation))]
+        public ActionResult heatMap()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+        [TypeFilter(typeof(SessionValidation))]
         public ActionResult WindTmlView()
         {
             TempData["notification"] = "";
