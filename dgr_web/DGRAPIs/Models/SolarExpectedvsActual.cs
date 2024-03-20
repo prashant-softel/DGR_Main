@@ -17,6 +17,7 @@ namespace DGRAPIs.Models
         public double poa { get; set; }
         public double expected_kwh { get; set; }
         public double inv_kwh { get; set; }
+        public double jmr_kwh { get; set; }
         public double plant_kwh { get; set; }
 
         public double lineloss { get; set; }

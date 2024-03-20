@@ -4539,7 +4539,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         foreach (var unit in set)
                         {
                             siteId = unit.site_id;
-                            data_date = unit.date;
+                            data_date = Convert.ToString(unit.date);
                             values += "('" + unit.site_name + "','" + unit.site_id + "','" + unit.date + "','" + unit.wtg + "','" + unit.wtg_id + "','" + unit.wind_speed + "','" + unit.grid_hrs + "','" + unit.operating_hrs + "','" + unit.lull_hrs + "','" + unit.kwh + "','" + batchId + "'),";
                         }
                         qry += values;
@@ -17487,7 +17487,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 return returnRes;
             }
 
-            string viweFetchQry = "SELECT date,site, site_id, kwh_afterloss as inv_kwh, plf_afterloss as plant_kwh, LineLoss AS lineloss FROM `expected_temp_view` where date between '" + fromDate + "' and '" + toDate + "' and site_id IN(" + site + ");";
+            string viweFetchQry = "SELECT date,site, site_id, kwh_afterloss as jmr_kwh, plf_afterloss as plant_kwh, LineLoss AS lineloss FROM `expected_temp_view` where date between '" + fromDate + "' and '" + toDate + "' and site_id IN(" + site + ");";
             List<SolarExpectedvsActual> newdata = new List<SolarExpectedvsActual>();
             try
             {
@@ -17515,14 +17515,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             {
                                 string tempDate = $"'{Convert.ToDateTime(_dataElement.data_date).ToString("yyyy-MM-dd")}',";
                                 insertDates += tempDate;
-                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
-                                _dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others - _dataElement.igbd - _dataElement.egbd - _dataElement.loadShedding);
+                                //_dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                _dataElement.pr = (_actualData.jmr_kwh - total_bd) / 1000000;
                                 //_dataElement.inv_kwh = _actualData.inv_kwh;
-                                _dataElement.jmr_kwh = _actualData.plant_kwh;
+                                _dataElement.inv_kwh = _dataElement.inv_kwh / 1000000;
+                                _dataElement.jmr_kwh = _actualData.jmr_kwh / 1000000;
                                 //_dataElement.lineloss = _actualData.lineloss;
                                 double lineloss = _actualData.lineloss / 100;
                                 double temp = (lineloss * _dataElement.inv_kwh) * -1; //6;
                                 _dataElement.lineloss = temp / 1000000;
+                                _dataElement.expected_power = _dataElement.expected_power /1000000;
+                                _dataElement.usmh = _dataElement.usmh /1000000;
+                                _dataElement.smh = _dataElement.smh /1000000;
+                                _dataElement.others = _dataElement.others /1000000;
+                                _dataElement.igbd = _dataElement.igbd /1000000;
+                                _dataElement.egbd = _dataElement.egbd /1000000;
+                                _dataElement.loadShedding = _dataElement.loadShedding /1000000;
                             }
                         }
                         returnRes = 5;
@@ -17557,13 +17566,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             if (_dataElement.data_date == _actualData.date && _dataElement.site_id == _actualData.site_id)
                             {
                                 double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
-                                _dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                //_dataElement.pr = _dataElement.inv_kwh - total_bd;
+                                _dataElement.pr = (_actualData.jmr_kwh - total_bd) / 1000000;
                                 //_dataElement.inv_kwh = _actualData.inv_kwh;
-                                _dataElement.jmr_kwh = _actualData.plant_kwh;
+                                _dataElement.inv_kwh = _dataElement.inv_kwh / 1000000;
+                                _dataElement.jmr_kwh = _actualData.jmr_kwh / 1000000;
                                 //_dataElement.lineloss = _actualData.lineloss;
                                 double lineloss = _actualData.lineloss / 100;
                                 double temp = (lineloss * _dataElement.inv_kwh) * -1; //6;
                                 _dataElement.lineloss = temp / 1000000;
+                                _dataElement.expected_power = _dataElement.expected_power / 1000000;
+                                _dataElement.usmh = _dataElement.usmh / 1000000;
+                                _dataElement.smh = _dataElement.smh / 1000000;
+                                _dataElement.others = _dataElement.others / 1000000;
+                                _dataElement.igbd = _dataElement.igbd / 1000000;
+                                _dataElement.egbd = _dataElement.egbd / 1000000;
+                                _dataElement.loadShedding = _dataElement.loadShedding / 1000000;
                             }
                         }
                         returnRes = 7;
