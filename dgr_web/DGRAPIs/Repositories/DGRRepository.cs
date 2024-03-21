@@ -8608,16 +8608,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (!string.IsNullOrEmpty(site))
             {
                 filter += "AND t1.site_id in (" + site + ")";
-                filter2 += " site_id in (" + site + ")";// and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
+                filter2 += " site_id in (" + site + ") AND ";// and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
             }
             if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
             {
                 //filter += " and t1.site_id IN(" + spvsiteList + ") ";
                 filter += "AND t1.site_id in (" + spvsiteList + ")";
-                filter2 += " site_id in (" + spvsiteList + ")";// and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
+                filter2 += " site_id in (" + spvsiteList + ") AND ";// and t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'";
             }
             filter += " AND t1.date >= '" + fromDate + "' and t1.date <= '" + toDate + "'"; /*group by site_id,bd_type*/
-            filter2 += " AND date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
+            filter2 += " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
 
             string qry = "SELECT t1.date,t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg ,(HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop_num  FROM uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.bd_type_id in (1,2) AND t1.total_stop > '04:00:00'" + filter ;
