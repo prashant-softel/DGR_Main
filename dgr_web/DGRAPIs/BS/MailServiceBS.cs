@@ -30,7 +30,8 @@ namespace DGRAPIs.BS
         //    _mailSettings = mailSettings.Value;
         //}
         //public async Task<List<MailResponse>> SendEmailAsync(MailRequest mailRequest)
-        public static async Task<List<MailResponse>> SendEmailAsync(MailRequest mailRequest, MailSettings _mailSettings)
+        //DGR_v3 Email_report changes
+		public static async Task<List<MailResponse>> SendEmailAsync(MailRequest mailRequest, MailSettings _mailSettings,int withoutSetTime)
         {
             try
             {
@@ -41,6 +42,8 @@ namespace DGRAPIs.BS
                 time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:DailyReportTime")));
                 time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:WeeklyReportTime")));
                 time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar")));
+                time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:firstDgrReminderTime")));
+                time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:secondDgrReminderTime")));
 
                 var timeNow = DateTime.Now.TimeOfDay;
                 //daily mail
@@ -90,7 +93,7 @@ namespace DGRAPIs.BS
                 {
                     TimeSpan endTime = schduledTime.Add(TimeSpan.FromMinutes(8)) ;
                     //if ((schduledTime >= approxTime) && (schduledTime <= timeNow))
-                    if ((timeNow >= schduledTime) && (timeNow <= endTime))
+                    if (((timeNow >= schduledTime) && (timeNow <= endTime)) || withoutSetTime == 1)
                     {
                         using var smtp = new MailKit.Net.Smtp.SmtpClient();
                         smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);

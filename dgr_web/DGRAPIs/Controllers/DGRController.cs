@@ -2853,6 +2853,23 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //DGR_v3 Email_report changes
+        [Route("dgrUploadingReminder")]
+        [HttpGet]
+        public async Task<IActionResult> dgrUploadingReminder()
+        {
+            try
+            {
+                var data = await _dgrBs.dgrUploadingReminder();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 }

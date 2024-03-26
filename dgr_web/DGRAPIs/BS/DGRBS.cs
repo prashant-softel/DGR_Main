@@ -201,6 +201,8 @@ namespace DGRAPIs.BS
         Task<List<Dictionary<string, object>>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
 		Task<int> CalculateDailyExpected(string site, string data_date);
         Task<int> CalculateDailyExpectedSolar(string site, string fromDate, string toDate);
+        //DGR_v3 Email_report changes
+        Task<int> dgrUploadingReminder();
     }
     public class DGRBS : IDGRBS
     {
@@ -2772,6 +2774,22 @@ namespace DGRAPIs.BS
                 throw;
             }
 
+        }
+        //DGR_v3 Email_report changes
+        public async Task<int> dgrUploadingReminder()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.dgrUploadingReminder();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

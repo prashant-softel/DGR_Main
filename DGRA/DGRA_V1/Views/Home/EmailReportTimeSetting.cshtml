@@ -153,6 +153,85 @@
 
     </section>
 
+    <div class="card-header">
+        <h3 class="card-title  text-center">DGR uploading reminders</h3>
+    </div>
+    <div style="display: flex; position: fixed; z-index: 9999;">
+        <div id="loader" class="loader center" style="display:none; "></div>
+    </div>
+
+    <section class="content-header">
+    </section>
+
+
+    <section class="content">
+        <div class="card">
+            <div class="card-body">
+                <div class="" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 40%">
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem">
+                        @*<div class="">
+                            <div class="">Daily Report Time : <strong id="dailyTime"> </strong> </div>
+                        </div>*@
+                        <div class="">
+                            <label class="">1st Reminder : <strong id="firstReminderTime"></strong> </label>
+                        </div>
+                        @*<div class="">
+                            <label class="">Solar Weekly Report Time : <strong id="solarWeeklyTime">  </strong></label>
+                        </div>*@
+                    </div>
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem">
+                        
+                        <div class="">
+                            <label class="">2st Reminder : <strong id="secondReminderTime"></strong> </label>
+                        </div>
+                        @*<div class="">
+                            <label class="">Solar Weekly Report Day : <strong id="solarWeeklyDay"> </strong> </label>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title  text-center">Update DGR uploading reminders</h3>
+            </div>
+            <div class="card-body">
+                <div class="" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20%; padding-left: 10%; padding-right: 10%; width:100%;">
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem; width: 100%">
+                        
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class="" style="width: 100%">1st Reminder : </label>
+                            <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="firstReminder" name="firstReminder" placeholder="Enter First Reminder Time ">
+                        </div>
+                       
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem; width: 100%">
+                        
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class="" style="width: 100%">2st Reminder : </label>
+                            <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="secondReminder" name="secondReminder" placeholder="Enter Second Reminder Time ">
+                        
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-sm-6"></div>
+            </div>
+            <div class="row"><p><br></p></div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+
+                <div class="col-sm-2"><button type="button" class="btn btn-block btn-success" onclick="UpdateReminder()">Update</button></div>
+                <div class="col-sm-2"> <button type="button" class="btn btn-block btn-danger" onclick="CancelReminder()">Cancel</button></div>
+                <div class="col-sm-4"></div>
+            </div>
+            <div class="row"><p><br></p></div>
+        </div>
+
+    </section>
+
+
 </div>
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -192,6 +271,8 @@
     var temp3 = "";
     var temp4 = "";
     var temp5 = "";
+    var temp6 = "";
+    var temp7 = "";
 
     function GetEmailTime() {
         console.log("Inside GetEmialTime function.");
@@ -200,6 +281,8 @@
         var solarWeeklyTime = document.getElementById("solarWeeklyTime");
         var windWeeklyDay = document.getElementById("windWeeklyDay");
         var solarWeeklyDay = document.getElementById("solarWeeklyDay");
+        var firstReminderTime = document.getElementById("firstReminderTime");
+        var secondReminderTime = document.getElementById("secondReminderTime");
 
         $.ajax({
             type: "POST",
@@ -218,12 +301,16 @@
                     temp3 = result[0].solar_weekly.toString();
                     temp4 = result[0].wind_weekly_day.toString();
                     temp5 = result[0].solar_weekly_day.toString();
+                    temp6 = result[0].first_dgr_reminder.toString();
+                    temp7 = result[0].second_dgr_reminder.toString();
                     //console.log(temp1, " ", temp2, " ", temp3, " ", temp4, " ", temp5);
                     dailyTime.innerHTML = temp1;
                     windWeeklyTime.innerHTML = temp2;
                     solarWeeklyTime.innerHTML = temp3;
                     windWeeklyDay.innerHTML = temp4;
                     solarWeeklyDay.innerHTML = temp5;
+                    firstReminderTime.innerHTML = temp6;
+                    secondReminderTime.innerHTML = temp7;
                 }
             }
         });
@@ -247,9 +334,98 @@
         var dailytime = document.getElementById("dailyReport").value;
         var windWeeklyTime = document.getElementById("windWeeklyReport").value;
         var solarWeeklyTime = document.getElementById("solarWeeklyReport").value;
+        var firstReminderTime = document.getElementById("firstReminder").value;
+        var secondReminderTime = document.getElementById("secondReminder").value;
+
         if (dailytime === "" && windWeeklyTime === "" && solarWeeklyTime === "" && windWeekDay === "" && solarWeekDay === "") {
             alert("Please enter data...!");
+            if (loader.display == "flex") {
+                loader.display = "none";
+            }
         } else {
+            if (dailytime !== "") {
+                dailytime = dailytime;
+            } else {
+                dailytime = temp1;
+            }
+            if (windWeeklyTime !== "") {
+                windWeeklyTime = windWeeklyTime;
+            } else {
+                windWeeklyTime = temp2;
+            }
+            if (solarWeeklyTime !== "") {
+                solarWeeklyTime = solarWeeklyTime;
+            } else {
+                solarWeeklyTime = temp3;
+            }
+            if (windWeekDay !== "") {
+                windWeekDay = windWeekDay;
+            } else {
+                windWeekDay = temp4;
+            }
+            if (solarWeekDay !== "") {
+                solarWeekDay = solarWeekDay;
+            } else {
+                solarWeekDay = temp5;
+            }
+            if (firstReminderTime !== "") {
+                firstReminderTime = firstReminderTime;
+            } else {
+                firstReminderTime = temp6;
+            }
+            if (secondReminderTime !== "") {
+                secondReminderTime = secondReminderTime;
+            } else {
+                secondReminderTime = temp7;
+            }
+            console.log("username : ", username, " role : ", role, " user_id : ", user_id);
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay +'&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    console.log("hello result of api "+result);
+                    if (result == 1) {
+                        loader.display = "none";
+                        alert("Updated successfully!");
+                        //location.href = "/Home/Dashbord";
+                        GetEmailTime();
+                        Cancel();
+                    }
+                }
+            });
+        }
+    }
+    function UpdateReminder() {
+        if (loader.display == "none") {
+            loader.display = "flex";
+        }
+        if (loader.display == "flex") {
+            loader.display = "flex";
+        }
+        var dailytime = document.getElementById("dailyReport").value;
+        var windWeeklyTime = document.getElementById("windWeeklyReport").value;
+        var solarWeeklyTime = document.getElementById("solarWeeklyReport").value;
+        var firstReminderTime = document.getElementById("firstReminder").value;
+        var secondReminderTime = document.getElementById("secondReminder").value;
+
+        if (firstReminderTime === "" && secondReminderTime === "") {
+            alert("Please enter data...!");
+            if (loader.display == "flex") {
+                loader.display = "none";
+            }
+        } else {
+            if (firstReminderTime !== "") {
+                firstReminderTime = firstReminderTime;
+            } else {
+                firstReminderTime = temp6;
+            }
+            if (secondReminderTime !== "") {
+                secondReminderTime = secondReminderTime;
+            } else {
+                secondReminderTime = temp7;
+            }
             if (dailytime !== "") {
                 dailytime = dailytime;
             } else {
@@ -278,7 +454,7 @@
             console.log("username : ", username, " role : ", role, " user_id : ", user_id);
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime +"&username=" + username + "&user_id=" + user_id + "&role=" + role,
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr) {
@@ -308,6 +484,17 @@
         swt.value = "";
         wwd.value = "";
         swd.value = "";
+
+    }
+
+    function CancelReminder() {
+        console.log("Inside cancel function.");
+        var fr = document.getElementById("firstReminder");
+        var sr = document.getElementById("secondReminder");
+        
+
+        fr.value = "";
+        sr.value = "";
 
     }
 
