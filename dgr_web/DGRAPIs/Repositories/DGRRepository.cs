@@ -6423,7 +6423,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
         internal async Task<List<SolarDailyTargetKPI>> GetSolarDailyTargetKPI(string fromDate, string todate, string site)
         {
             string filter = "site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
-            string qry = @"SELECT fy,date, sites,site_id,ghi,poa ,gen_nos ,ma,iga,ega ,pr,plf ,Toplining_kWh ,Toplining_MA ,Toplining_IGA Toplining_EGA ,Toplining_PR ,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF  FROM daily_target_kpi_solar  where "+filter;
+            string qry = @"SELECT fy,date, sites,site_id,ghi,poa ,gen_nos as kWh ,ma,iga,ega ,pr,plf ,Toplining_kWh ,Toplining_MA ,Toplining_IGA, Toplining_EGA ,Toplining_PR ,Toplining_PLF,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF  FROM daily_target_kpi_solar  where " + filter;
             return await Context.GetData<SolarDailyTargetKPI>(qry).ConfigureAwait(false);
 
         }
