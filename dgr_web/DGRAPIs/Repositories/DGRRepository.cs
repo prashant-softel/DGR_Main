@@ -4405,7 +4405,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 try
                 {
                     values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.inverter + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.pi + "','" + batchId + "'),";
-                    uploadStatusValues = $"(2, {unit.site_id}, CURDATE(), '{unit.date}', 0, {batchId}, 0, 1, 1, 1, 1, 0, 0, 0),";
+                    uploadStatusValues = $"(2, {unit.site_id}, CURDATE(), '{unit.date}', 0, {batchId}, 0, 1, 1, 1, 0, 0, 0, 0),";
                 }
                 catch(Exception e)
                 {
@@ -7904,6 +7904,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (res > 0)
             {
                 string query = "UPDATE `import_batches` SET `approval_date` = NOW(),`approved_by`= " + approvedBy + ",`is_approved`=" + status + ",`approved_by_name`='" + approvedByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
+                string uploadStatusQry = $"UPDATE upload_status SET approve_count = approve_count+1, approved_by={approvedBy} WHERE import_batch_id IN({dataId})";
                 int updateBatchRes = 0;
                 try
                 {
@@ -7914,6 +7915,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     finalResult = 4;
                     approval_InformationLog("Update query : " + query);
                     //DGR_v3
+                    //Heatmap
+                    int updateUploadStatus = await Context.ExecuteNonQry<int>(uploadStatusQry).ConfigureAwait(false);
+                    finalResult = 5;
                     int returnRes5 = 0;
                     List<SolarUploadingFileGeneration3> approvalList = new List<SolarUploadingFileGeneration3>();
                     string qry7 = "SELECT gen.import_batch_id, COUNT(*) AS gen_count, t1.pyro1_count, t2.pyro15_count FROM daily_gen_summary_solar AS gen LEFT JOIN (SELECT COUNT(*) AS pyro1_count, import_batch_id FROM uploading_pyranometer_1_min_solar WHERE import_batch_id IN(" + dataId + ") GROUP BY import_batch_id) AS t1 ON t1.import_batch_id = gen.import_batch_id LEFT JOIN (SELECT COUNT(*) AS pyro15_count, import_batch_id FROM uploading_pyranometer_15_min_solar WHERE import_batch_id IN(" + dataId + ") GROUP BY import_batch_id) AS t2 ON t2.import_batch_id = gen.import_batch_id WHERE gen.import_batch_id IN(" + dataId + ") GROUP BY import_batch_id";
@@ -17384,7 +17388,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 List<HeatMapData1> _HeatMapData = new List<HeatMapData1>();
                 //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.approve_count FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '"+ toDate + "' and t1.site_id in ("+site+") and type = '"+ siteType + "' GROUP BY t1.site_id, t1.data_date";
 
-                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' AND approve_count !=0 GROUP BY t1.site_id, t1.data_date";
 
                 try
                 {

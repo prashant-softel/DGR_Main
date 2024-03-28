@@ -374,11 +374,10 @@
             let machineId = localStorage.getItem('MachineId');
 
             if (!machineId) {
-                machineId = crypto.randomUUID(); // production 
-                //machineId = "";             // Development server 
+                //machineId = crypto.randomUUID(); // production
+                machineId = "";             // Development server
                 localStorage.setItem('MachineId', machineId);
             }
-
             return machineId;
         }
     </script>
