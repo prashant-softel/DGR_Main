@@ -6405,7 +6405,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 }
 
             }
-            string qry = @"SELECT fy,month,site,wind_speed as WindSpeed,kwh,ma,iga,ega,plfToplining_kWh ,Toplining_MA ,Toplining_IGA Toplining_EGA ,Toplining_PR ,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF FROM monthly_target_kpi" + filter;
+            string qry = @"SELECT fy,month,site,wind_speed as WindSpeed,kwh,ma,iga,ega,plf FROM monthly_target_kpi" + filter;
 
             return await Context.GetData<WindMonthlyTargetKPI>(qry).ConfigureAwait(false);
 
