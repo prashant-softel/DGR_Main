@@ -64,6 +64,7 @@ namespace DGRAPIs.Repositories
             _FinancialYear.Add(new FinancialYear { financial_year = "2021-22" });
             _FinancialYear.Add(new FinancialYear { financial_year = "2022-23" });
             _FinancialYear.Add(new FinancialYear { financial_year = "2023-24" });
+            _FinancialYear.Add(new FinancialYear { financial_year = "2024-25" });
             return _FinancialYear;
 
         }
