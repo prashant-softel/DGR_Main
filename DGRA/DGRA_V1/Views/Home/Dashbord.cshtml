@@ -745,9 +745,12 @@
          });
         site = site != "" ? site.slice(0, -1) : site;
         //var FY = $('select#fy option:selected').val();
-        var FY = fyear;
+       
         //console.log("Hello"+FY);
         var date = GetPreviousDate();
+
+        fyear = getFinancialYear(new Date(date));
+        var FY = fyear;
         //console.log("PeviousDate" + date);
         $.ajax({
             type: "GET",
@@ -1006,8 +1009,12 @@
         solar_site = solar_site != "" ? solar_site.slice(0, -1) : solar_site;
 
         //var FY = $('select#fy option:selected').val();
-        var FY = fyear;
+
+       
         var date = GetPreviousDate();
+        //console.log(date);
+        fyear = getFinancialYear(new Date(date));
+        var FY = fyear;
         $.ajax({
             type: "GET",
            // url: "/Dashboard/GetSolarDashboardDataByLastDay?FY=" + FY + "&sites=" + solar_site + "&date=" + date,
