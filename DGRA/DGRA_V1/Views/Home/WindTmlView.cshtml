@@ -181,9 +181,11 @@
 <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
 @*<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>*@
 <script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -367,6 +369,64 @@
          /*GetWTG(false);*/
     }
 
+    function exportToExcel() {
+
+        result = exceldata;
+        var columns = [
+            "Date", "Site", "WTG", "From Time", "To Time", "Avg Active Power", "Avg Wind Speed", "Restructive WTG", "Expected Power"
+            , "Deviation kW", "Loss kWh", "Manual Breakdown ", "All Breakdown"
+        ];
+
+        var rows = [];
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var status = "";
+            if (result[i].status_code === 1) {
+                status = "Missing";
+            }
+            if (result[i].status_code === 0) {
+                status = "Available";
+            }
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(result[i].site);
+            row.push(formattedDate);
+            row.push( result[i].wtGs);
+            row.push(toHoursAndMinutes(result[i].from_time.totalSeconds));
+            row.push(toHoursAndMinutes(result[i].to_time.totalSeconds));
+            row.push(result[i].avg_active_power);
+            row.push(result[i].avg_wind_speed);
+            row.push(result[i].restructive_WTG);
+            row.push(result[i].plC_max);
+            row.push(result[i].plC_min);
+            row.push(result[i].plc_state_code);
+            row.push(status);
+            row.push(result[i].recon_wind_speed);
+            row.push(result[i].exp_power_kw);
+            row.push(result[i].deviation_kw);
+            row.push(result[i].loss_kw);
+            row.push(result[i].manual_bd);
+            row.push(result[i].all_bd);
+
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Wind Expected Vs Actual");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind Expected Vs Actual.xlsx");
+
+    }
     function getTableData() {
 
         let site_id = "";
@@ -447,6 +507,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
                         var status = "";
                         if (result[i].status_code === 1) {
@@ -538,8 +599,17 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');

@@ -80,14 +80,63 @@
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
-
+    var exceldata;
     window.onload = function () {
 
 
         getSiteData();
     }
+
+    function exportToExcel() {
+
+        result = exceldata;
+        var columns = [
+            "Country", "Site", "SPV", "State", "Model", "DOC", "Capacity", "WTG", "Total_MW", "Tariff", "GBI", "Total_Tariff"
+            , "LL_Compensation"
+        ];
+
+        var rows = [];
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].doc, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(result[i].country);
+            row.push(result[i].site);
+            row.push(result[i].spv);
+            row.push(result[i].state);
+            row.push(result[i].model);
+            row.push(formattedDate);
+            row.push(result[i].capacity_mw);
+            row.push(result[i].wtg);
+            row.push(result[i].total_mw);
+            row.push(result[i].tarrif);
+            row.push(result[i].gbi);
+            row.push(result[i].total_tarrif);
+            row.push(result[i].ll_compensation);
+        
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Wind Site Master");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind Site Master.xlsx");
+
+    }
+
     function getSiteData() {
         var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -122,6 +171,7 @@
 
             tbl += '</tr></thead>';
             if (result.length > 0) {
+                    exceldata = result;
                 for (var i = 0; i < result.length; i++) {
                     var formattedDate = moment(result[i].doc, 'YYYY/MM/DD').format('DD-MM-YYYY');
 
@@ -169,23 +219,31 @@
                 responsive: true,
                 pageLength: 50,
 
-                buttons: [
-                    {
-                        extend: 'excel',
-                        title: 'Wind Site Master',
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'csv',
-                        title: 'Wind Site Master',
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    'colvis'
-                ]
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Wind Site Master',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Wind Site Master',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
             $(".dt-buttons").addClass('btn-group flex-wrap');
             $(".dt-buttons > button").addClass('btn btn-secondary');

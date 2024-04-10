@@ -60,4 +60,26 @@ namespace DGRAPIs.Models
         public dynamic mod_temp { get; set; }
         public string weather_type { get; set; }
     }
+    public class SolarUploadingPyranoMeter1Min_1a
+    {
+      	public  int import_batch_id  { get; set; }
+    	public int site_id 	{ get; set; }
+
+        public string site { get; set; }
+
+        public dynamic date_time { get; set; }
+		public double ghi_1 { get; set; }
+		public double ghi_2 { get; set; }
+		public double poa_1 { get; set; }
+		public double poa_2 { get; set; }
+		public double poa_3 { get; set; }
+        public double poa_4 { get; set; }
+        public double poa_5 { get; set; }
+        public double poa_6 { get; set; }
+        public double poa_7 { get; set; }
+        public double avg_ghi { get; set; }
+        public double avg_poa { get; set; }
+        public double amb_temp { get; set; }
+        public double mod_temp { get; set; }
+    }
 }

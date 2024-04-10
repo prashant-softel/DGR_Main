@@ -2,6 +2,7 @@
 using DGRA_V1.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System;
+//using ClosedXML.Excel;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
 
 namespace DGRA_V1.Controllers
 {
@@ -450,6 +452,59 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
+        //public IActionResult ExportdatabaseSolar(string importId)
+        //{
+        //    try
+        //    {
+        //        var apiUrl = _idapperRepo.GetAppSettingValue("API_URL");
+        //        var url = $"{apiUrl}/api/DGR/DownloadExcelsolar?importId={importId}";
 
+        //        // Create an HttpWebRequest
+        //        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+        //        // Get the response from the server
+        //        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+        //        {
+        //            // Check the status code to ensure a successful response
+        //            if (response.StatusCode == HttpStatusCode.OK)
+        //            {
+        //                // Read the response stream (assuming it's a binary file)
+        //                using (Stream responseStream = response.GetResponseStream())
+        //                {
+        //                    // Read the stream into a byte array
+        //                    using (MemoryStream memoryStream = new MemoryStream())
+        //                    {
+        //                        responseStream.CopyTo(memoryStream);
+        //                        byte[] excelData = memoryStream.ToArray();
+
+        //                        // Check if data is present
+        //                        if (excelData == null || excelData.Length == 0)
+        //                        {
+        //                            TempData["notification"] = "Data Not Present!";
+        //                            return Content("Data Not Present!", "text/plain");
+        //                        }
+
+        //                        // Set the Content-Disposition header for file download
+        //                        Response.Headers.Add("Content-Disposition", "attachment; filename=Solar.xlsx");
+
+        //                        // Return the Excel data as a file "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        //                        return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","Solar.xlsx");
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                TempData["notification"] = $"Unexpected response status: {response.StatusCode}";
+        //                return Content($"Unexpected response status: {response.StatusCode}", "text/plain");
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["notification"] = "An error occurred while exporting data!";
+        //        return Content(ex.Message, "text/plain");
+        //    }
+        //}
+       
     }
 }

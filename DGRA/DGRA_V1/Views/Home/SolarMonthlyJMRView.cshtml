@@ -111,9 +111,10 @@
 <script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
-
+    var exceldata;
     window.onload = function () {
         var state = "";
         var spv = "";
@@ -171,6 +172,64 @@
                 });
             }
         });
+    }
+
+    function exportToExcel() {
+
+        console.log(exceldata)
+        result = exceldata;
+
+        var columns = [
+            "FY", "Site", "Plant Selection", "Controller kwh INV", "Scheduled Unit kwh", "Export kwh", "Import kwh", "Net Export kwh", "Export kVah", "Import kVah", "Export kVarh log", "Import kVarh log",
+            "Export kVarh lead", "Import kVah lead", "JMR Date", "JMR Month", "JMR Year", "Line Loss", "Line Loss(%)", " kVarh(%)"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var tempDate = new Date(result[i].jmR_date);
+            var formattedDate = moment(result[i].jmR_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            // var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
+            row.push(result[i].fy);
+            row.push(result[i].site);
+            row.push(result[i].plant_Section);
+            row.push(result[i].controller_KWH_INV);
+            row.push(result[i].scheduled_Units_kWh);
+            row.push(result[i].export_kWh);
+            row.push(result[i].import_kWh);
+            row.push(result[i].net_Export_kWh);
+            row.push(result[i].export_kVAh);
+            row.push(result[i].import_kVAh);
+            row.push(result[i].export_kVArh_lag);
+            row.push(result[i].import_kVArh_lag);
+            row.push(result[i].export_kVArh_lead);
+            row.push(result[i].import_kVArh_lead);
+            row.push(formattedDate);
+            row.push(result[i].jmR_Month);
+            row.push(result[i].jmR_Year);
+            row.push(result[i].lineLoss);
+            row.push(result[i].line_Loss_percentage);
+            row.push(result[i].rkvH_percentage);
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar Monthly JMR");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar Monthly JMR.xlsx");
+
     }
     function getReport() {
         let site_id = "";
@@ -234,6 +293,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
                         var tempDate = new Date(result[i].jmR_date);
                         var formattedDate = moment(result[i].jmR_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
@@ -301,8 +361,16 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');

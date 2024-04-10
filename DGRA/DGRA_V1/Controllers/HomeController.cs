@@ -466,12 +466,14 @@ namespace DGRA_V1.Controllers
 
         }
         [TypeFilter(typeof(SessionValidation))]
-        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string username, int user_id, string role)
+        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime ,string username, int user_id, string role)
         {
             var line = "";
             try
             {
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/EmailReportTimeChangeSetting?dailytime=" + dailytime + "&windweeklytime=" + windweeklytime + "&solarweeklytime=" + solarweeklytime + "&windweekday=" + windweekday + "&solarweekday=" + solarweekday+ "&username=" + username + "&user_id=" + user_id + "&role=" + role;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/EmailReportTimeChangeSetting?dailytime=" + dailytime + "&windweeklytime=" + windweeklytime + "&solarweeklytime=" + solarweeklytime + "&windweekday=" + windweekday + "&solarweekday=" + solarweekday +
+                    "&firstReminderTime=" + firstReminderTime + "&secondReminderTime=" + secondReminderTime +
+                    "&username=" + username + "&user_id=" + user_id + "&role=" + role;
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {

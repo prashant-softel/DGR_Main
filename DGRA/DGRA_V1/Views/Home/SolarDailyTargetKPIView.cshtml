@@ -30,18 +30,11 @@
 <!-- DataTables -->
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
 <!--<link href="~/Content/theme/plugins/datatables/fixedHeader.dataTables.min.css" rel="stylesheet" />-->
 <link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
 <!-- Content Wrapper. Contains page content -->
-<style>
-    table.dataTable tbody tr > .dtfc-fixed-left, table.dataTable tbody tr > .dtfc-fixed-right {
-        z-index: 1;
-        background-color: white  !important;
-    }
-    </style>
 <div class="content-wrapper">
     <section class="content">
         <div class="card">
@@ -98,7 +91,6 @@
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
 <script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
@@ -109,7 +101,9 @@
 <script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -145,6 +139,56 @@
 
         });
     }
+
+
+    function exportToExcel() {
+
+        console.log(exceldata)
+        result = exceldata;
+
+        var columns = [
+            "FY", "Date", "Site", "GHI", "POA", "kWh ",
+                "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(result[i].fy || 0);
+            row.push(formattedDate);
+            row.push(result[i].sites || 0);
+            row.push(result[i].ghi || 0);
+            row.push(result[i].poa || 0);
+            row.push(result[i].kWh || 0);
+            row.push(result[i].ma || 0);
+            row.push(result[i].iga || 0);
+            row.push(result[i].ega || 0);
+            row.push(result[i].pr || 0);
+            row.push(result[i].plf || 0);
+            
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar Daily Target KPI");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar Daily Target KPI.xlsx");
+
+    }
+
 
     function getReport() {
 
@@ -187,6 +231,9 @@
                 tbl += '<th style="white-space: nowrap;">EGA (%)</th>';
                 tbl += '<th style="white-space: nowrap;">PR (%)</th>';
                 tbl += '<th style="white-space: nowrap;">PLF (%)</th>';
+		tbl += '<th>P50 </th>';
+                tbl += '<th>P75 </th>';
+                tbl += '<th>P90 </th>';
                 tbl += '<th style="white-space: nowrap;">Toplining_kWh (in MU)</th>';
                 tbl += '<th style="white-space: nowrap;">Toplining _MA (%)</th>';
                 tbl += '<th style="white-space: nowrap;">Toplining_IGA (%)</th>';
@@ -202,6 +249,7 @@
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
 
                         if (result[i].kWh == '') {
@@ -223,6 +271,9 @@
                         tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].ega && result[i].ega != null ? result[i].ega.toFixed(2) : 0) + '</td>';
                         tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].pr && result[i].pr != null ? result[i].pr.toFixed(2) : 0) + '</td>';
                         tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plf && result[i].plf != null ? result[i].plf.toFixed(2) : 0) + '</td>';
+			tbl += '<td class="text-right">' + (result[i].p50 || 0).toFixed(2) + '</td>';
+			tbl += '<td class="text-right">' + (result[i].p75 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].p90 || 0).toFixed(2) + '</td>';
                         tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_kWh && result[i].toplining_kWh != null ? result[i].toplining_kWh.toFixed(2) : 0) + '</td>';
                         tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_MA && result[i].toplining_MA != null ? result[i].toplining_MA.toFixed(2) : 0) + '</td>';
                         tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_IGA && result[i].toplining_IGA != null ? result[i].toplining_IGA.toFixed(2) : 0) + '</td>';
@@ -278,8 +329,17 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
@@ -292,7 +352,7 @@
                     }
                 });
                 document.getElementById("loader").style.display = 'none';
-               // $('#example1').removeClass('dataTable');
+                $('#example1').removeClass('dataTable');
             }
         });
     }

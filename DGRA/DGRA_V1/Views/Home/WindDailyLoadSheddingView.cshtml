@@ -111,9 +111,11 @@
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 
 <script type="text/javascript">
+    var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -147,6 +149,55 @@
             }
 
         });
+    }
+
+
+    function exportToExcel() {
+       
+        console.log(exceldata)
+        result = exceldata;
+
+        var columns = [
+            "Site", "Date", "Start Time", "End Time", "Total Time",
+            "Permissible Load(MW)", "Generation loss in kwh due to Load shedding"
+        ];
+
+        var rows = [];
+
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            var permissible = (result[i].permissible_Load_MW !== null && result[i].permissible_Load_MW !== undefined) ? result[i].permissible_Load_MW : "-";
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            row.push(result[i].site);
+            row.push(formattedDate);
+            row.push(result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes']);
+            row.push(result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes']);
+            row.push(result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes']);
+            row.push(permissible);
+            row.push(result[i].gen_loss_kWh);
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+
+        var headerStyle = {
+            font: { bold: true }
+        };
+        XLSX.utils.book_append_sheet(wb, ws, "Wind Daily Load Shedding View");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind Daily Load Shedding View.xlsx");
+     
     }
 
     function getReport() {
@@ -184,6 +235,7 @@
                 tbl += '<thead class="tbl-head"><tr><th>Site</th><th style="width:100px">Date</th><th>Start Time</th><th>End Time</th><th>Total Time</th><th>Permissible Load (MW)</th><th>Generation loss in kWh due to Load shedding</th></tr></thead><tbody>';
 
                 if (result.length > 0) {
+                    exceldata = result;
                     for (var i = 0; i < result.length; i++) {
 
                         var permissible = (result[i].permissible_Load_MW !== null && result[i].permissible_Load_MW !== undefined) ? result[i].permissible_Load_MW : "-";
@@ -242,8 +294,17 @@
                                 columns: ':visible'
                             }
                         },
-                        'colvis'
-                    ]
+
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');

@@ -53167,6 +53167,11 @@ table.dataTable thead tr > .dtfc-fixed-left {
     position: sticky !important;
     z-index: 1;
 }
+/*Excel Icon Size */
+.fa-file-excel
+{
+    font-size:20px;
+}
 /*
 .dataTables_scrollBody {
     margin-top: -8px;

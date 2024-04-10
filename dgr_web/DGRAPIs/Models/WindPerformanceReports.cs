@@ -34,7 +34,7 @@ namespace DGRAPIs.Models
     }
     public class WindOpertionalHead
     {
-        
+        public float site_count { get; set; }
         public float spv_count { get; set; }
         public double capacity { get; set; }
 

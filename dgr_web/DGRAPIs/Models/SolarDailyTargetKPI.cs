@@ -31,6 +31,9 @@ namespace DGRAPIs.Models
         public dynamic Inv_kWh { get; set; }
         public dynamic Inv_PR { get; set; }
         public dynamic Inv_PLF { get; set; }
+        public dynamic P50 { get; set; }
+        public dynamic P75 { get; set; }
+        public dynamic P90 { get; set; }
 
      }
 }

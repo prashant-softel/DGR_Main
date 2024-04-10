@@ -120,4 +120,46 @@ namespace DGRAPIs.Models
         public double capacity_mw { get; set; }
         public double kwh { get; set; }
     }
+    public class WindUploadingFilegeneration1a
+    {
+        public string site_name { get; set; }
+    	public dynamic date{ get; set; }
+		public string wtg { get; set; }
+    	public double wind_speed { get; set; }
+		public double grid_hrs { get; set; }
+		public double operating_hrs  { get; set; }
+		public double lull_hrs { get; set; }
+		public double kwh { get; set; } 
+        public double kwh_afterlineloss { get; set; }
+        public double capacity_kw { get; set; }
+        public double kwh_afterloss { get; set; }
+        public double ma_contractual { get; set; }
+        public double ma_actual { get; set; }
+        public double iga { get; set; }
+        public double ega { get; set; }
+        public double ega_b { get; set; }
+        public double ega_c { get; set; }
+        public double plf { get; set; }
+        public double plf_afterlineloss { get; set; }
+        public dynamic unschedule_hrs { get; set; }
+        public double unschedule_num { get; set; }
+        public dynamic schedule_hrs { get; set; }
+        public double schedule_num { get; set; }
+        public dynamic others { get; set; }
+        public double others_num { get; set; }
+        public  dynamic igbdh { get; set; }
+        public double igbdh_num { get; set; }
+        public dynamic egbdh { get; set; }
+        public double egbdh_num { get; set; }
+        public dynamic load_shedding { get; set; }
+        public double load_shedding_num { get; set; }
+        public string spv_name { get; set; }
+        public dynamic last_modified_on { get; set; }
+    }
+    public class WindUploadStatus
+    {
+        public int upload_status_id { get; set; }
+      
+
+    }
 }

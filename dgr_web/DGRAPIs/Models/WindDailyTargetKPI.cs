@@ -17,6 +17,9 @@ namespace DGRAPIs.Models
         public dynamic IGA { get; set; }
         public dynamic EGA { get; set; }
         public dynamic PLF { get; set; }
-  
+        public dynamic P50 { get; set; }
+        public dynamic P75 { get; set; }
+        public dynamic P90 { get; set; }
+
     }
 }
