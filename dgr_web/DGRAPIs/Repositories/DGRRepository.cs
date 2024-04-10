@@ -64,6 +64,7 @@ namespace DGRAPIs.Repositories
             _FinancialYear.Add(new FinancialYear { financial_year = "2021-22" });
             _FinancialYear.Add(new FinancialYear { financial_year = "2022-23" });
             _FinancialYear.Add(new FinancialYear { financial_year = "2023-24" });
+            _FinancialYear.Add(new FinancialYear { financial_year = "2024-25" });
             return _FinancialYear;
 
         }
@@ -14956,7 +14957,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         //GetWindTMLGraphData
-        internal async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly = 0)
+        internal async Task<List<GetWindTMLGraphData>> GetWindTMLGraphDataOld(string site, string fromDate, string toDate, int isAdmin, int isYearly = 0)
         {
             string functionName = "GetWindTMLGraphData";
             //if (site.Contains(',') || isYearly == 0)
@@ -15628,7 +15629,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
 
         // Actual vs Expected Function 
-        internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
+        internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReportOld(string site, string fromDate, string toDate, string prType)
         {     
             bool GetFrom15Min = false;
             bool CombineReport = false;
@@ -18492,6 +18493,96 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             return returnRes;
+        }
+        internal async Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly = 0)
+        {
+            string functionName = "GetWindTMLGraphData";
+            List<GetWindTMLGraphData> _dailyBasisDataList = new List<GetWindTMLGraphData>();
+            string tmrFilter = "data_date >= '" + fromDate + "'  and data_date <= '" + toDate + "'";
+            int monthlyData = 0; //0 for monthly and 100 for yearly.
+            if(isYearly == 1)
+            {
+                monthlyData = 100;
+            }
+            try
+            {
+                if (!string.IsNullOrEmpty(site))
+                {
+                    tmrFilter += " and site_id IN(" + site + ") ";
+                }
+            }catch(Exception e)
+            {
+                string msg = "Exception due to : " + e.Message;
+            }
+            try
+            {
+                string fetchQry = $"SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
+
+                _dailyBasisDataList = await Context.GetData<GetWindTMLGraphData>(fetchQry).ConfigureAwait(false);
+
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching data from daily basis actual vs actual table : " + e.Message;
+            }
+            try
+            {
+                if (_dailyBasisDataList.Count > 0)
+                {
+                    _dailyBasisDataList[0].monthlyData = monthlyData;
+                }
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while setting the flag of monthly or yearly, due to : " + e.Message;
+            }
+            return _dailyBasisDataList;
+        }
+        internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
+        {
+            string functionName = "GetSolarExpectedReport";
+
+            string filter = "";
+            int chkfilter = 0;
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                chkfilter = 1;
+                filter += " WHERE data_date>='" + fromDate + "' and data_date<='" + toDate + "' ";
+            }
+            if (!string.IsNullOrEmpty(site))
+            {
+                if (chkfilter == 0) filter += " where ";
+                else
+                {
+                    filter += " and ";
+                    filter += " site_id IN (" + site + ")";
+                }
+
+            }
+
+            string qry1 = "";
+            if (prType == "AOP")
+            {
+                qry1 = $"SELECT site_id AS site_id, data_date AS date, pr AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS aga_a, ega_b AS ega_b, ega_c AS ega_c, usmh AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 0;";
+            }
+            else if (prType == "toplining")
+            {
+                qry1 = $"SELECT site_id AS site_id, data_date AS date, pr AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS aga_a, ega_b AS ega_b, ega_c AS ega_c, usmh AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 1;";
+
+            }
+            List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
+            try
+            {
+                data = await Context.GetData<SolarExpectedvsActual>(qry1).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while getting data from daily_gen_summary and daily_target_kpi_solar table, due to : " + e.ToString();
+                //API_ErrorLog(msg);
+                LogError(0, 1, 5, functionName, msg, backend);
+
+            }
+            return data;
         }
 
         // Tanvi's Changes.

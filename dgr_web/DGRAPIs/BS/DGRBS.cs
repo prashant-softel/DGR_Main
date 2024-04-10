@@ -199,7 +199,14 @@ namespace DGRAPIs.BS
         //Task<WindOpertionalHead> GetOperationHeadData(string site);
 		//DGR V3.
         Task<List<Dictionary<string, object>>> GetHeatMapData(string site, string fromDate, string toDate, int isAdmin, int siteType);
-		Task<int> CalculateDailyExpected(string site, string data_date);
+
+        Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly);
+        Task<List<OPSPV>> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly);
+        Task<int> OPCommentsInsert(List<OPComments> set);
+        Task<int> OPCommentsEdit(List<OPComments> set);
+        Task<int> OPCommentsDelete(List<OPComments> set);
+        Task<List<OPComments>> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly);
+        Task<int> CalculateDailyExpected(string site, string data_date);
         Task<int> CalculateDailyExpectedSolar(string site, string fromDate, string toDate);
         //DGR_v3 Email_report changes
         Task<int> dgrUploadingReminder();
@@ -2742,6 +2749,99 @@ namespace DGRAPIs.BS
                 throw;
             }
 
+        }
+
+        public async Task<List<OPSite>> OPGetSiteListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPGetSiteListForEdit(month_no, year, siteType, bdTypes, isMonthly);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<OPSPV>> OPGetSpvListForEdit(string month_no, string year, int siteType, int bdTypes, int isMonthly)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPGetSpvListForEdit(month_no, year, siteType, bdTypes, isMonthly);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        //Task<List<OPComments>> OPCommentsInsert(List<OPComments> set);
+        public async Task<int> OPCommentsInsert(List<OPComments> set)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPCommentsInsert(set);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> OPCommentsEdit(List<OPComments> set)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPCommentsEdit(set);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> OPCommentsDelete(List<OPComments> set)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.OPCommentsDelete(set);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<List<OPComments>> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetOPComments(site_id, month_no, year, spv, siteType, isSPV, bdType, isDisplay, isMonthly);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
         public async Task<int> CalculateDailyExpected(string site, string data_date)
         {

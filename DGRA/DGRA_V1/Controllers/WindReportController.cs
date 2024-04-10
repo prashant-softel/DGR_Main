@@ -17,6 +17,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using System.Threading;
 
 namespace DGRA_V1.Controllers
 {
@@ -752,6 +754,207 @@ namespace DGRA_V1.Controllers
             {
                 TempData["notification"] = "Data Not Presents !";
             }
+            return Content(line, "application/json");
+        }
+
+        //DGR Version 3 functions.
+        public async Task<IActionResult> OPGetSiteListForEdit(int month_no, int year, int siteType, int bdTypes, int isMonthly)
+        {
+            string line = "";
+
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPGetSiteListForEdit?month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&bdTypes=" + bdTypes + "&isMonthly=" + isMonthly;
+                // var url = "http://localhost:23835/api/DGR/GetSiteList?state="+ statedata + "&spvdata="+ spvdata;
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+
+        }
+        public async Task<IActionResult> OPGetSpvListForEdit(int month_no, int year, int siteType, int bdTypes, int isMonthly)
+        {
+            string line = "";
+
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPGetSpvListForEdit?month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&bdTypes=" + bdTypes + "&isMonthly=" + isMonthly;
+                // var url = "http://localhost:23835/api/DGR/GetSiteList?state="+ statedata + "&spvdata="+ spvdata;
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+
+        }
+
+        public async Task<IActionResult> GetOPComments(int month_no, int year, int siteType, string site_id, int isSPV, string spv, int bdType, int isDisplay, int isMonthly)
+        {
+            string line = "";
+            //?month_no =' + monthNo + '&year=' + year + '&siteType=' + 2 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetOPComments?month_no=" + month_no + "&year=" + year + "&siteType=" + siteType + "&spv=" + spv + "&site_id=" + site_id + "&bdType=" + bdType + "&isDisplay=" + isDisplay + "&isMonthly=" + isMonthly + "&isSpv=" + isSPV;
+
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OPACM([FromBody] List<OPComments> ACMFinalData)
+        {
+            string line = "";
+            //string ty = typeof(ACMFinalData).ToString();
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPCommentsInsert";
+
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    // Convert acmDataList to JSON
+                    var json = JsonConvert.SerializeObject(ACMFinalData);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Make the POST request using HttpClient
+                    var response = await client.PostAsync(url, data);
+                    // Check if the request was successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content
+                        line = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["notification"] = "Error making API request";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Present!";
+            }
+
+            return Content(line, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OPECM([FromBody] List<OPComments> ECMFinalData)
+        {
+            string line = "";
+            //string ty = typeof(ACMFinalData).ToString();
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPCommentsEdit";
+
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    // Convert acmDataList to JSON
+                    var json = JsonConvert.SerializeObject(ECMFinalData);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Make the POST request using HttpClient
+                    var response = await client.PostAsync(url, data);
+                    // Check if the request was successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content
+                        line = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["notification"] = "Error making API request";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Present!";
+            }
+
+            return Content(line, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OPDCM([FromBody] List<OPComments> ECMFinalData)
+        {
+            string line = "";
+            //string ty = typeof(ACMFinalData).ToString();
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/OPCommentsDelete";
+
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    // Convert acmDataList to JSON
+                    var json = JsonConvert.SerializeObject(ECMFinalData);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Make the POST request using HttpClient
+                    var response = await client.PostAsync(url, data);
+                    // Check if the request was successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content
+                        line = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["notification"] = "Error making API request";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Present!";
+            }
+
             return Content(line, "application/json");
         }
 
