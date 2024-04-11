@@ -18939,7 +18939,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             try
             {
-                string fetchQry = $"SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
+                string fetchQry = $"SELECT SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
 
                 _dailyBasisDataList = await Context.GetData<GetWindTMLGraphData>(fetchQry).ConfigureAwait(false);
 
