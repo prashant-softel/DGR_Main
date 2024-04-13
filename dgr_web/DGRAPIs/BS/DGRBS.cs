@@ -65,7 +65,7 @@ namespace DGRAPIs.BS
         Task<int> PowerExpected(string site, string fromDate, string toDate, string logFileName);
         Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType);
         Task<List<SolarTrackerLoss>> GetSolarTrackerLoss(string site, string fromDate, string toDate);
-        Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
+        Task<List<dailyBasisFetch>> GetWindTMLData(string site, string fromDate, string toDate);
         Task<List<GetPowerCurveData>> GetWindPowerCurveData(string site, string fromDate, string toDate);
         Task<List<GetPowerCurveData>> GetWindTmlPowerCurveData(string site, string fromDate, string toDate, string wtgs);
         Task<List<GetWindTMLGraphData>> GetWindTMLGraphData(string site, string fromDate, string toDate, int isAdmin, int isYearly);
@@ -2619,7 +2619,7 @@ namespace DGRAPIs.BS
         }
 
         //Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate);
-        public async Task<List<InsertWindTMLData>> GetWindTMLData(string site, string fromDate, string toDate)
+        public async Task<List<dailyBasisFetch>> GetWindTMLData(string site, string fromDate, string toDate)
         {
             try
             {

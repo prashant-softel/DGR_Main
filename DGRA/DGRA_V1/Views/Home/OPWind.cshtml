@@ -140,7 +140,7 @@
                             <div class="">
                                 <div>
                                     <div id="dataNotPresentDiv" style="display: flex; justify-content: center; align-items: center;">
-                                        <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
+                                        <h5 id="dataNotPresent" style="display: none; color: #007bff;"></h5>
                                     </div>
                                     <div style="position: relative;">
                                         <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
@@ -644,7 +644,7 @@
             for (var i = 0; i < result.length; i++) {
             expected_final = result[i].expected_final;
             lineloss_final = result[i].lineloss_final;
-            target_final = result[i].target_final /1000000;
+            target_final = result[i].target_final;
             lossUSMH_final = result[i].lossUSMH_final;
             lossSMH_final = result[i].lossSMH_final;
             lossNC_final = result[i].lossNC_final;
@@ -654,24 +654,33 @@
             lossPCD_final = result[i].lossPCD_final;
             actual_final = result[i].actual_final;
             loadShedding = result[i].loadShedding;
-            isMonthlyDataPresent = Number(result[i].monthlyData);
+            //isMonthlyDataPresent = Number(result[i].monthlyData);
 
-            if (isMonthlyDataPresent != 100) {
-            document.getElementById("dataNotPresentDiv").style.display = "none";
-            document.getElementById("Waterfall").style.display = "flex";
-            CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
-            } else {
-            var division = document.getElementById("dataNotPresent");
-            division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
-            division.style.display = "flex";
-            document.getElementById("dataNotPresentDiv").style.display = "flex";
-            document.getElementById("Waterfall").style.display = "none";
-            }
+                document.getElementById("dataNotPresentDiv").style.display = "none";
+                document.getElementById("Waterfall").style.display = "flex";
+                CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+
+            //if (isMonthlyDataPresent != 100) {
+            //document.getElementById("dataNotPresentDiv").style.display = "none";
+            //document.getElementById("Waterfall").style.display = "flex";
+            //CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+            //} else {
+            //var division = document.getElementById("dataNotPresent");
+            //division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+            //division.style.display = "flex";
+            //document.getElementById("dataNotPresentDiv").style.display = "flex";
+            //document.getElementById("Waterfall").style.display = "none";
+            //}
             }
             }
             else {
 
-            // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+                // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+                var division = document.getElementById("dataNotPresent");
+                division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+                division.style.display = "flex";
+                document.getElementById("dataNotPresentDiv").style.display = "flex";
+                document.getElementById("Waterfall").style.display = "none";
             }
             }
             });
@@ -726,7 +735,7 @@
 
             expected_final = result[i].expected_final;
             lineloss_final = result[i].lineloss_final;
-            target_final = result[i].target_final /1000000;
+            target_final = result[i].target_final;
             lossUSMH_final = result[i].lossUSMH_final;
             lossSMH_final = result[i].lossSMH_final;
             lossNC_final = result[i].lossNC_final;
@@ -741,6 +750,7 @@
             }
             }
             else {
+                document.getElementById("loader").style.display = 'none';
 
             // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
             }

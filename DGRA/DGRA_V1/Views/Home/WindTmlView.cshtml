@@ -486,24 +486,27 @@
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th  style="width: 10%;">Site</th>';
+                tbl += '<th  style="width: 5%;">Site</th>';
                 tbl += '<th style="width: 7%;">Date</th>';
                 tbl += '<th>WTG</th>';
-                tbl += '<th>From Time</th>';
-                tbl += '<th>To Time</th>';
-                tbl += '<th>Avg Active Power</th>';
-                tbl += '<th>Avg Wind Speed</th>';
-                tbl += '<th>Restructive WTG</th>';
-                tbl += '<th style="width: 10%;">PLC Max</th>';
-                tbl += '<th style="width: 10%;">PLC Min</th>';
-                tbl += '<th>PLC State Code</th>';
-                tbl += '<th>Status</th>';
-                tbl += '<th>Reconstructed Windspeed</th>';
-                tbl += '<th>Expected Power</th>';
-                tbl += '<th>Deviation kW</th>';
-                tbl += '<th>Loss kWh</th>';
-                tbl += '<th>Manual Breakdown </th>';
-                tbl += '<th>All Breakdown</th>';
+                tbl += '<th>TML Count</th>';
+                tbl += '<th>Wind Speed</th>';
+                tbl += '<th>Target Energy (MU)</th>';
+                tbl += '<th>Actual Energy (MU)</th>';
+                tbl += '<th>Expected Energy (MU)</th>';
+                tbl += '<th>USMH Loss</th>';
+                tbl += '<th>SMH Loss</th>';
+                tbl += '<th>Other Loss</th>';
+                tbl += '<th>IGBD Loss</th>';
+                tbl += '<th>EGBD Loss</th>';
+                tbl += '<th>Loadshedding Loss</th>';
+                tbl += '<th>PCD</th>';
+                tbl += '<th>Lineloss</th>';
+                tbl += '<th>MA</th>';
+                tbl += '<th>IGA</th>';
+                tbl += '<th>EGA_A</th>';
+                tbl += '<th>EGA_B</th>';
+                tbl += '<th>EGA_C</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -518,23 +521,26 @@
                         }
                         tbl += '<tr>';
                        tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].date + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].wtGs + '</td>';
-                        tbl += '<td  class="text-center">' + toHoursAndMinutes(result[i].from_time.totalSeconds) + '</td>';
-                        tbl += '<td class="text-center">' + toHoursAndMinutes(result[i].to_time.totalSeconds) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].avg_active_power.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].avg_wind_speed.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].restructive_WTG + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_max + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plC_min + '</td>';
-                        tbl += '<td class="text-center">' + result[i].plc_state_code + '</td>';
-                       tbl += '<td class="text-center">' + status + '</td>';
-                       tbl += '<td class="text-center">' + result[i].recon_wind_speed.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].exp_power_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].deviation_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].loss_kw.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].manual_bd + '</td>';
-                       tbl += '<td class="text-center">' + result[i].all_bd + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].data_date + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].wtg + '</td>';
+                        tbl += '<td  class="text-center">' + result[i].tml_count + '</td>';
+                        tbl += '<td class="text-center">' + result[i].actual_wind_speed + '</td>';
+                       tbl += '<td class="text-center">' + result[i].target_kwh.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].actual_active_power.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].adjusted_expected.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + (result[i].usmh_loss+result[i].initialization_loss).toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].smh_loss.toFixed(2) + '</td>';
+                        tbl += '<td class="text-center">' + result[i].others_loss.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].igbd_loss.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].egbd_loss.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].loadshedding_loss.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].pcd_loss.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].lineloss_mu.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].ma.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].iga.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].ega_a.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].ega_b.toFixed(2) + '</td>';
+                       tbl += '<td class="text-center">' + result[i].ega_c.toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -688,7 +694,7 @@
 
                         expected_final = result[i].expected_final;
                         lineloss_final = result[i].lineloss_final;
-                        target_final = result[i].target_final /1000000;
+                        target_final = result[i].target_final;
                         lossUSMH_final = result[i].lossUSMH_final;
                         lossSMH_final = result[i].lossSMH_final;
                         lossNC_final = result[i].lossNC_final;
@@ -698,19 +704,23 @@
                         lossPCD_final = result[i].lossPCD_final;
                         actual_final = result[i].actual_final;
                         loadShedding = result[i].loadShedding;
-                        isMonthlyDataPresent = Number(result[i].monthlyData);
+                        //isMonthlyDataPresent = Number(result[i].monthlyData);
 
-                        if (isMonthlyDataPresent != 100) {
-                            document.getElementById("dataNotPresentDiv").style.display = "none";
-                            document.getElementById("Waterfall").style.display = "flex";
-                            CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
-                        } else {
-                            var division = document.getElementById("dataNotPresent");
-                            division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
-                            division.style.display = "flex";
-                            document.getElementById("dataNotPresentDiv").style.display = "flex";
-                            document.getElementById("Waterfall").style.display = "none";
-                        }
+                        document.getElementById("dataNotPresentDiv").style.display = "none";
+                        document.getElementById("Waterfall").style.display = "flex";
+                        CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+
+                        //if (isMonthlyDataPresent != 100) {
+                        //    document.getElementById("dataNotPresentDiv").style.display = "none";
+                        //    document.getElementById("Waterfall").style.display = "flex";
+                        //    CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                        //} else {
+                        //    var division = document.getElementById("dataNotPresent");
+                        //    division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+                        //    division.style.display = "flex";
+                        //    document.getElementById("dataNotPresentDiv").style.display = "flex";
+                        //    document.getElementById("Waterfall").style.display = "none";
+                        //}
 
                         //console.log("-------------------------------------------");
                         //console.log("Expected : ", expected_final);
@@ -743,6 +753,12 @@
                 else {
 
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
+
+                    var division = document.getElementById("dataNotPresent");
+                    division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
+                    division.style.display = "flex";
+                    document.getElementById("dataNotPresentDiv").style.display = "flex";
+                    document.getElementById("Waterfall").style.display = "none";
                 }
             }
         });
@@ -817,7 +833,7 @@
 
                         expected_final = result[i].expected_final;
                         lineloss_final = result[i].lineloss_final;
-                        target_final = result[i].target_final /1000000;
+                        target_final = result[i].target_final;
                         lossUSMH_final = result[i].lossUSMH_final;
                         lossSMH_final = result[i].lossSMH_final;
                         lossNC_final = result[i].lossNC_final;
@@ -860,7 +876,7 @@
                     }
                 }
                 else {
-
+                    document.getElementById("loader").style.display = 'none';
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
             }
