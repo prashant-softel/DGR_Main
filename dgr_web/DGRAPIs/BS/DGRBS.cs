@@ -208,6 +208,7 @@ namespace DGRAPIs.BS
         Task<List<OPComments>> GetOPComments(string site_id, int month_no, int year, string spv, int siteType, int isSPV, int bdType, int isDisplay, int isMonthly);
         Task<int> CalculateDailyExpected(string site, string data_date);
         Task<int> CalculateDailyExpectedSolar(string site, string fromDate, string toDate);
+        Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate);
         //DGR_v3 Email_report changes
         Task<int> dgrUploadingReminder();
     }
@@ -2866,6 +2867,22 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.CalculateDailyExpectedSolar(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.BulkCalculateDailyWindExpected(site, fromDate, toDate);
 
                 }
             }

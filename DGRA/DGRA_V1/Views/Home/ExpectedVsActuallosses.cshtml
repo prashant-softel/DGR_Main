@@ -459,9 +459,9 @@
                         tbl += '<td class="text-right">' + (result[i].load_shedding).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (pr_value).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].inv_kwh).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + ma.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].ma).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].iga).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].ega_a).toFixed(2) + '</td>';
                         tbl += '</tr>';
                         //console.log("Actual : " + result[i].inv_kwh);
                         cnt++;

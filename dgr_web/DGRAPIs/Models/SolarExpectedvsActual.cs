@@ -27,7 +27,7 @@ namespace DGRAPIs.Models
 
         public double ma { get; set; }
         public double iga { get; set; }
-        public double ega { get; set; }
+        public double ega_a { get; set; }
 
         public double prod_hrs { get; set; }
         public double lull_hrs_bd { get; set; }

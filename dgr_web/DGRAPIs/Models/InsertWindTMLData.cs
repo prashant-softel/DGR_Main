@@ -179,4 +179,10 @@ namespace DGRAPIs.Models
         public double ega_b { get; set; }
         public double ega_c { get; set; }
     }
+    public class ExpectedResult
+    {
+        public int site_id { get; set; }
+        public string status { get;set; }
+        public string date { get; set; }
+    }
 }

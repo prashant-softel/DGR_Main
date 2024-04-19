@@ -2804,38 +2804,6 @@ namespace DGRAPIs.Controllers
             }
         }
 
-
-        #endregion
-		[Route("CalculateDailyExpected")]
-        [HttpGet]
-        public async Task<IActionResult> CalculateDailyExpected(string site, string data_date)
-        {
-            try
-            {
-                var data = await _dgrBs.CalculateDailyExpected(site, data_date);
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
-        [Route("CalculateDailyExpectedSolar")]
-        [HttpGet]
-        public async Task<IActionResult> CalculateDailyExpectedSolar(string site, string fromDate, string toDate)
-        {
-            try
-            {
-                var data = await _dgrBs.CalculateDailyExpectedSolar(site, fromDate, toDate);
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
         //DGR Version 3.
         //GetWindTMLGraphData
         [Route("GetHeatMapData")]
@@ -2967,6 +2935,54 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("CalculateDailyExpected")]
+        [HttpGet]
+        public async Task<IActionResult> CalculateDailyExpected(string site, string data_date)
+        {
+            try
+            {
+                var data = await _dgrBs.CalculateDailyExpected(site, data_date);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("CalculateDailyExpectedSolar")]
+        [HttpGet]
+        public async Task<IActionResult> CalculateDailyExpectedSolar(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.CalculateDailyExpectedSolar(site, fromDate, toDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("BulkCalculateDailyWindExpected")]
+        [HttpGet]
+        //Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate)
+        public async Task<IActionResult> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.BulkCalculateDailyWindExpected(site, fromDate, toDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
         //DGR_v3 Email_report changes
         [Route("dgrUploadingReminder")]
         [HttpGet]
@@ -2984,6 +3000,6 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        #endregion
     }
 }

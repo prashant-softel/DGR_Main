@@ -733,8 +733,6 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
         }
         internal async Task<List<SolarDashboardData>> GetSolarDashboardData(string startDate, string endDate, string FY, string sites,bool monthly =false)
         {
-
-           
             string groupby = "";
             string groupby1 = "";
             string groupby2 = "";
@@ -850,9 +848,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                     catch (Exception ex)
                     {
                         string msg = ex.Message;
-
                     }
-
                 }
             }
             string qry9 = "create or replace view temp_view_tar as select t1.date,t1.site_id, t1.sites as Site , t1.poa, gen_nos from daily_target_kpi_solar t1, daily_gen_summary_solar t2 where t1.date = t2.date and t1.site_id = t2.site_id and "
@@ -905,7 +901,6 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                         _solarData.tarIR = _solarData3.tarIR;
                     }
                 }
-
             }
             int cnt = 0;
             foreach (SolarDashboardData _solarData in _SolarDashboardData8)
@@ -946,8 +941,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                         if (_SolarDashboardData8.IndexOf(_solarData) != _SolarDashboardData8.Count - 1)
                         {
                             last = current;
-                        }
-                       
+                        }                       
                     }
 
                     total_capacity += _solarData.ac_capacity;
@@ -965,9 +959,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                                 _solarData4.IR = total_capActIR / total_capacity;
                             }
                         }
-
                     }
-
                 }                
                 else
                 {
@@ -1021,9 +1013,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                         }
 
                     }
-                    }
-                   
-                
+                    }              
             }
 
 
@@ -18796,6 +18786,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             if (_dataElement.data_date == _actualData.date && _dataElement.site_id == _actualData.site_id)
                             {
+                                string tempDate = $"'{Convert.ToDateTime(_dataElement.data_date).ToString("yyyy-MM-dd")}',";
+                                insertDates += tempDate;
                                 double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
                                 //_dataElement.pr = _dataElement.inv_kwh - total_bd;
                                 _dataElement.pr = (_actualData.jmr_kwh - total_bd) / 1000000;
@@ -18931,200 +18923,202 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 string msg = "Exception while setting the flag of monthly or yearly, due to : " + e.Message;
             }
-            if(finalRes == 3)
-            {
-                try
-                {
-                    //To fetch controller kwh from daily_gen_summary table and degrade it with lineloss.
-                    //(SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg)
-                    try
-                    {
-                        //fetch controllerkwh from daily_gen_summary.
-                        string fetchController_kwhQry = "SELECT ";
-                    }
-                    catch(Exception e)
-                    {
+            //if(finalRes == 3)
+            //{
+            //    try
+            //    {
+            //        //To fetch controller kwh from daily_gen_summary table and degrade it with lineloss.
+            //        //(SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg)
+            //        try
+            //        {
+            //            //fetch controllerkwh from daily_gen_summary.
+            //            string fetchController_kwhQry = "SELECT ";
+            //        }
+            //        catch(Exception e)
+            //        {
 
-                    }
-                    List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
-                    double actual_active_power = 0;
-                    double target_sum = 0;
-                    double gen_actual_active_power = 0;
-                    double lineloss_percentage = 0;
-                    double lineloss_final = 0;
-                    _tmlDataList.Clear();
+            //        }
+            //        List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
+            //        double actual_active_power = 0;
+            //        double target_sum = 0;
+            //        double gen_actual_active_power = 0;
+            //        double lineloss_percentage = 0;
+            //        double lineloss_final = 0;
+            //        _tmlDataList.Clear();
 
-                    //Actual from Generation table :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
-                    string fetchGenActualQry = "";
-                    List<GetWindTMLGraphData> _tmlActualGenYearly = new List<GetWindTMLGraphData>();
-                    if (isYearly == 1)
-                    {
-                        fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power, site_id FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date), site_id;";
-                        try
-                        {
-                            _tmlActualGenYearly = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = "Exception while Fetching Generation active power sum for yearly form daily_gen_summary, due to : " + e.ToString();
-                            //API_ErrorLog(msg);
-                            LogError(0, 2, 5, functionName, msg, backend);
+            //        //Actual from Generation table :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
+            //        string fetchGenActualQry = "";
+            //        List<GetWindTMLGraphData> _tmlActualGenYearly = new List<GetWindTMLGraphData>();
+            //        if (isYearly == 1)
+            //        {
+            //            fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power, site_id FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date), site_id;";
+            //            try
+            //            {
+            //                _tmlActualGenYearly = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
+            //            }
+            //            catch (Exception e)
+            //            {
+            //                string msg = "Exception while Fetching Generation active power sum for yearly form daily_gen_summary, due to : " + e.ToString();
+            //                //API_ErrorLog(msg);
+            //                LogError(0, 2, 5, functionName, msg, backend);
 
-                        }
-                    }
-                    else
-                    {
-                        fetchGenActualQry = "SELECT SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
+            //            }
+            //        }
+            //        else
+            //        {
+            //            fetchGenActualQry = "SELECT SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
 
-                        try
-                        {
-                            _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = "Exception while Fetching Generation active power sum form daily_gen_summary, due to : " + e.ToString();
-                            //API_ErrorLog(msg);
-                            LogError(0, 2, 5, functionName, msg, backend);
+            //            try
+            //            {
+            //                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
+            //            }
+            //            catch (Exception e)
+            //            {
+            //                string msg = "Exception while Fetching Generation active power sum form daily_gen_summary, due to : " + e.ToString();
+            //                //API_ErrorLog(msg);
+            //                LogError(0, 2, 5, functionName, msg, backend);
 
-                        }
-                        if (_tmlDataList.Count > 0)
-                        {
-                            try
-                            {
-                                foreach (var unit in _tmlDataList)
-                                {
-                                    gen_actual_active_power = unit.gen_actual_active_power;
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                string msg = "Exception while Extracting Generation active power sum from _tmlDataList, due to : " + e.ToString();
-                                //API_ErrorLog(msg);
-                                LogError(0, 2, 5, functionName, msg, backend);
+            //            }
+            //            if (_tmlDataList.Count > 0)
+            //            {
+            //                try
+            //                {
+            //                    foreach (var unit in _tmlDataList)
+            //                    {
+            //                        gen_actual_active_power = unit.gen_actual_active_power;
+            //                    }
+            //                }
+            //                catch (Exception e)
+            //                {
+            //                    string msg = "Exception while Extracting Generation active power sum from _tmlDataList, due to : " + e.ToString();
+            //                    //API_ErrorLog(msg);
+            //                    LogError(0, 2, 5, functionName, msg, backend);
 
-                            }
-                        }
-                        _tmlDataList.Clear();
-                    }
+            //                }
+            //            }
+            //            _tmlDataList.Clear();
+            //        }
 
-                    //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
-                    //              line_loss_per * actual / 1000000.
-                    string toMonth = Convert.ToDateTime(toDate).ToString("MM");
-                    string fromMonth = Convert.ToDateTime(fromDate).ToString("MM");
-                    string fromYear = Convert.ToDateTime(fromDate).ToString("yyyy");
-                    string toYear = Convert.ToDateTime(toDate).ToString("yyyy");
-                    string fetchLinelossPerQry = "";
-                    List<GetWindTMLGraphData> _tmlLineLossForYearly = new List<GetWindTMLGraphData>();
-                    if (isYearly == 1)
-                    {
-                        //fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
-                        fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
+            //        //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
+            //        //              line_loss_per * actual / 1000000.
+            //        string toMonth = Convert.ToDateTime(toDate).ToString("MM");
+            //        string fromMonth = Convert.ToDateTime(fromDate).ToString("MM");
+            //        string fromYear = Convert.ToDateTime(fromDate).ToString("yyyy");
+            //        string toYear = Convert.ToDateTime(toDate).ToString("yyyy");
+            //        string fetchLinelossPerQry = "";
+            //        List<GetWindTMLGraphData> _tmlLineLossForYearly = new List<GetWindTMLGraphData>();
+            //        if (isYearly == 1)
+            //        {
+            //            //fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
+            //            fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
 
-                        try
-                        {
-                            _tmlLineLossForYearly = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = "Exception while fetching lineloss percentage for yearly from mothly_uploading_lineloss, due to : " + e.ToString();
-                            //API_ErrorLog(msg);
-                            LogError(0, 2, 5, functionName, msg, backend);
+            //            try
+            //            {
+            //                _tmlLineLossForYearly = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
+            //            }
+            //            catch (Exception e)
+            //            {
+            //                string msg = "Exception while fetching lineloss percentage for yearly from mothly_uploading_lineloss, due to : " + e.ToString();
+            //                //API_ErrorLog(msg);
+            //                LogError(0, 2, 5, functionName, msg, backend);
 
-                        }
-                    }
-                    else
-                    {
-                        fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") ;";
-                        // fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ")  AND year IN(" + fromYear + "," + toYear + ") ;";
+            //            }
+            //        }
+            //        else
+            //        {
+            //            fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") ;";
+            //            // fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ")  AND year IN(" + fromYear + "," + toYear + ") ;";
 
-                        try
-                        {
-                            _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
-                            //API_ErrorLog(msg);
-                            LogError(0, 2, 5, functionName, msg, backend);
+            //            try
+            //            {
+            //                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
+            //            }
+            //            catch (Exception e)
+            //            {
+            //                string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
+            //                //API_ErrorLog(msg);
+            //                LogError(0, 2, 5, functionName, msg, backend);
 
-                        }
-                        if (_tmlDataList.Count > 0)
-                        {
-                            try
-                            {
-                                foreach (var unit in _tmlDataList)
-                                {
-                                    lineloss_percentage = unit.line_loss_per;
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
-                                //API_ErrorLog(msg);
-                                LogError(0, 2, 5, functionName, msg, backend);
+            //            }
+            //            if (_tmlDataList.Count > 0)
+            //            {
+            //                try
+            //                {
+            //                    foreach (var unit in _tmlDataList)
+            //                    {
+            //                        lineloss_percentage = unit.line_loss_per;
+            //                    }
+            //                }
+            //                catch (Exception e)
+            //                {
+            //                    string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
+            //                    //API_ErrorLog(msg);
+            //                    LogError(0, 2, 5, functionName, msg, backend);
 
-                            }
-                        }
-                        _tmlDataList.Clear();
-                    }
-                    double lineLossForYearly = 0;
-                    double actPowerForYearly = 0;
-                    if (isYearly == 1)
-                    {
-                        foreach (var _element in _tmlActualGenYearly)
-                        {
-                            foreach (var _innerElement in _tmlLineLossForYearly)
-                            {
-                                if (_element.month_no == _innerElement.month_no && _element.site_id == _innerElement.site_id)
-                                {
-                                    double lineloss = _innerElement.line_loss_per / 100;
-                                    double temp = (lineloss * _element.gen_actual_active_power) * -1; //6;
-                                    lineloss_final = temp / 1000000;
-                                    lineLossForYearly += lineloss_final;
+            //                }
+            //            }
+            //            _tmlDataList.Clear();
+            //        }
+            //        double lineLossForYearly = 0;
+            //        double actPowerForYearly = 0;
+            //        if (isYearly == 1)
+            //        {
+            //            foreach (var _element in _tmlActualGenYearly)
+            //            {
+            //                foreach (var _innerElement in _tmlLineLossForYearly)
+            //                {
+            //                    if (_element.month_no == _innerElement.month_no && _element.site_id == _innerElement.site_id)
+            //                    {
+            //                        double lineloss = _innerElement.line_loss_per / 100;
+            //                        double temp = (lineloss * _element.gen_actual_active_power) * -1; //6;
+            //                        lineloss_final = temp / 1000000;
+            //                        lineLossForYearly += lineloss_final;
 
-                                    double actGenPowertemp = (_element.gen_actual_active_power / 1000000) + lineloss_final;
-                                    actPowerForYearly += actGenPowertemp;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //if (lineloss_percentage > 0)
-                        //{
-                        double lineloss = lineloss_percentage / 100;
-                        double temp = (lineloss * gen_actual_active_power) * -1; //6;
-                        lineloss_final = temp / 1000000;
-                        _tmlDataList.Clear();
-                    }
+            //                        double actGenPowertemp = (_element.gen_actual_active_power / 1000000) + lineloss_final;
+            //                        actPowerForYearly += actGenPowertemp;
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        else
+            //        {
+            //            //if (lineloss_percentage > 0)
+            //            //{
+            //            double lineloss = lineloss_percentage / 100;
+            //            double temp = (lineloss * gen_actual_active_power) * -1; //6;
+            //            lineloss_final = temp / 1000000;
+            //            _tmlDataList.Clear();
+            //        }
 
-                    try
-                    {
-                        _tmlDataList.Clear();
-                        if(_dailyBasisDataList.Count > 0)
-                        {
-                            if(isYearly == 1)
-                            {
-                                _dailyBasisDataList[0].lineloss_final = lineLossForYearly;
-                                _dailyBasisDataList[0].actual_final = actPowerForYearly;
-                            }
-                            else
-                            {
-                                _dailyBasisDataList[0].lineloss_final = lineloss_final;
-                                _dailyBasisDataList[0].actual_final = (gen_actual_active_power + (lineloss_percentage / 100)) / 1000000;
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        string msg = "Exception while inserting final Values into _tmlDataList, due to : " + e.ToString();
-                    }
-                }
-                catch (Exception e)
-                {
-                    string msg = "Exception while degrading lineloss, due to : " + e.Message;
-                }
-            }
+            //        try
+            //        {
+            //            _tmlDataList.Clear();
+            //            if(_dailyBasisDataList.Count > 0)
+            //            {
+            //                if(isYearly == 1)
+            //                {
+            //                    _dailyBasisDataList[0].lineloss_final = lineLossForYearly;
+            //                    _dailyBasisDataList[0].actual_final = actPowerForYearly;
+            //                }
+            //                else
+            //                {
+            //                    _dailyBasisDataList[0].lineloss_final = lineloss_final;
+            //                    double temps = ((lineloss_percentage/100) * gen_actual_active_power) * -1; //6;
+            //                    double lineloss_final_new = temps / 1000000;
+            //                    _dailyBasisDataList[0].actual_final = (gen_actual_active_power / 1000000) + lineloss_final_new;
+            //                }
+            //            }
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            string msg = "Exception while inserting final Values into _tmlDataList, due to : " + e.ToString();
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        string msg = "Exception while degrading lineloss, due to : " + e.Message;
+            //    }
+            //}
             return _dailyBasisDataList;
         }
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
@@ -19152,11 +19146,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry1 = "";
             if (prType == "AOP")
             {
-                qry1 = $"SELECT site_id AS site_id, data_date AS date, pr AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS aga_a, ega_b AS ega_b, ega_c AS ega_c, usmh AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 0;";
+                qry1 = $"SELECT site_id AS site_id, data_date AS date, target AS target, (pr/1000000) AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS ega_a, ega_b AS ega_b, ega_c AS ega_c, (usmh/1000000) AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 0;";
             }
             else if (prType == "toplining")
             {
-                qry1 = $"SELECT site_id AS site_id, data_date AS date, pr AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS aga_a, ega_b AS ega_b, ega_c AS ega_c, usmh AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 1;";
+                qry1 = $"SELECT site_id AS site_id, data_date AS date, target AS target, (pr/1000000) AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS ega_a, ega_b AS ega_b, ega_c AS ega_c, (usmh/1000000) AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 1;";
 
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
@@ -19203,6 +19197,122 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             }
             return _windTMLDataList;
+        }
+        internal async Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate)
+        {
+            List<ExpectedResult> _ReturnData = new List<ExpectedResult>();
+            List<string> dateRange = new List<string>();
+            List<ExpectedResult> _siteIdData = new List<ExpectedResult>();
+            try
+            {
+                DateTime startDate = DateTime.Parse(fromDate);
+                DateTime endDate = DateTime.Parse(toDate);
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateRange.Add(date.ToString("yyyy-MM-dd"));
+                }
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while generating dates between from and to dates, due to : " + e.Message;
+            }
+            
+
+            if (site is null || site == "")
+            {
+                //fetch site_ids
+                string siteFetchQry = "SELECT site_master_id AS site_id FROM site_master;";
+                try
+                {
+                    _siteIdData = await Context.GetData<ExpectedResult>(siteFetchQry).ConfigureAwait(false);
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while fetching site_ids from masters table, due to : " + e.Message;
+                }
+            }
+            else
+            {
+                //site_id is included while call.
+                if (site.Contains(","))
+                {
+                    string[] siteIds = site.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string siteIdStr in siteIds)
+                    {
+                        if (int.TryParse(siteIdStr.Trim(), out int siteId))
+                        {
+                            ExpectedResult result = new ExpectedResult
+                            {
+                                site_id = siteId
+                            };
+                            _siteIdData.Add(result);
+                        }
+                    }
+                }
+                else
+                {
+                    //single site_id
+                    if (int.TryParse(site.Trim(), out int singleSiteId))
+                    {
+                        ExpectedResult result = new ExpectedResult
+                        {
+                            site_id = singleSiteId
+                        };
+                        _siteIdData.Add(result);
+                    }
+                }
+            }
+
+            //date List and siteList is ready iterate both and call the api for daily calculation.
+            try
+            {
+                foreach(var dateUnit in dateRange)
+                {
+                    foreach(var siteUnit in _siteIdData)
+                    {
+                        int funcRes = 0;
+                        try
+                        {
+                            funcRes = await CalculateDailyExpected(Convert.ToString(siteUnit.site_id), dateUnit);
+                            string status = "";
+                            if(funcRes == 8)
+                            {
+                                status = "Success.";
+                            }
+                            if(funcRes == 1000)
+                            {
+                                status = "TML data is not uploaded for this day and site. Please upload TML first and then call this API.";
+                            }
+                            ExpectedResult tempData = new ExpectedResult
+                            {
+                                site_id = siteUnit.site_id,
+                                date = dateUnit,
+                                status = status
+                            };
+                            _ReturnData.Add(tempData);
+                        }
+                        catch(Exception e)
+                        {
+                            string msg = "Exception while calling the function of calculation, due to : " + e.Message;
+                            ExpectedResult tempData = new ExpectedResult
+                            {
+                                site_id = siteUnit.site_id,
+                                date = dateUnit,
+                                status = msg
+                            };
+                            _ReturnData.Add(tempData);
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while Iteratively calling the function, due to " + e.Message;
+                return _ReturnData;
+            }
+
+            return _ReturnData;
         }
 
         // Tanvi's Changes.
