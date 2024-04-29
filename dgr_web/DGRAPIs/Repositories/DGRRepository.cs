@@ -19380,6 +19380,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 //AddToWind = new List<string>();
                 //AddToWind.Add("tanvi@softeltech.in");
+                //AddToWind.Add("haresh@softeltech.in");
+
                 request.ToEmail = AddToWind;
                 //request.CcEmail = AddCc;
                 request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
@@ -19425,8 +19427,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     PPT_ErrorLog("From DGR Repository: Inside dgrUploadingReminder function : Exception Caught while fetching and adding To emails : Due to : " + msg);
                 }
 
-               // AddToSolar = new List<string>();
-               // AddToSolar.Add("tanvi@softeltech.in");
+                //AddToSolar = new List<string>();
+                //AddToSolar.Add("tanvi@softeltech.in");
                 request.ToEmail = AddToSolar;
                 //request.CcEmail = AddCc;
                 request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
