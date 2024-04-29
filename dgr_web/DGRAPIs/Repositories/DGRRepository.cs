@@ -3834,7 +3834,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 //}
 
                 PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains soalr " + fname);
-                    qry = "select useremail from login where To_Weekly_Solar = 1;";
+                    qry = "select useremail from login where To_Weekly_Solar = 1  AND active_user = 1;";
                     try
                     {
                         List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
@@ -3849,7 +3849,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         string msg = e.ToString();
                         PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
                     }
-                    qry = "select useremail from login where Cc_Weekly_Solar = 1;";
+                    qry = "select 
+                        from login where Cc_Weekly_Solar = 1  AND active_user = 1;";
                     try
                     {
                         List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
@@ -3883,7 +3884,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                  //}
  
                  PPT_InformationLog("From DGR Repository : Inside MailSend function for Weekly Mail Send : Weekly Mail File contains wind");
-                    qry = "select useremail from login where To_Weekly_Wind = 1;";
+                    qry = "select useremail from login where To_Weekly_Wind = 1  AND active_user = 1;";
                     try
                     {
                         List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
@@ -3898,7 +3899,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         string msg = e.ToString();
                         PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
                     }
-                    qry = "select useremail from login where Cc_Weekly_Wind = 1;";
+                    qry = "select useremail from login where Cc_Weekly_Wind = 1 AND active_user = 1;";
                     try
                     {
                         List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
@@ -7964,7 +7965,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     foreach (var sites in sitelist)
                     {
-                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id} ;";
+                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id}  AND login.active_user = 1 ;";
                         try
                         {
                             AddToWind.Add(sites.useremail);
@@ -8083,7 +8084,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     foreach (var sites in sitelist)
                     {
 
-                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id} ;";
+                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id}  AND login.active_user = 1;";
 
                         try
                         {
@@ -8371,7 +8372,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     foreach (var sites in sitelist)
                     {
-                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id} ;";
+                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id}  AND login.active_user = 1;";
                         try
                         {
                             AddTo.Add(sites.useremail);
@@ -8470,7 +8471,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             foreach (var sites in sitelist)
                             {
-                                string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id} ;";
+                                string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id}  AND login.active_user = 1;";
                                 try
                                 {
                                     AddTo.Add(sites.useremail);
@@ -8555,7 +8556,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     foreach (var sites in sitelist)
                     {
-                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id} ;";
+                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id}  AND login.active_user = 1;";
                         try
                         {
                             AddTo.Add(sites.useremail);
@@ -12587,7 +12588,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
                 PPT_InformationLog("MailDailySend function : Contains solar file");
-                qry = "select useremail from login where To_Daily_Solar = 1;";
+                qry = "select useremail from login where To_Daily_Solar = 1 AND active_user = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
@@ -12595,7 +12596,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     PPT_InformationLog("MailDailySend function : Added solar to email : " + item.useremail);
 
                 }
-                qry = "select useremail from login where Cc_Daily_Solar = 1;";
+                qry = "select useremail from login where Cc_Daily_Solar = 1  AND active_user = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 if (data3 != null)
                 {
@@ -12622,7 +12623,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 PPT_InformationLog("MailDailySend function : Contains wind file");
 
-                qry = "select useremail from login where to_daily_wind = 1;";
+                qry = "select useremail from login where to_daily_wind = 1  AND active_user = 1;";
                 List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 foreach (var item in data2)
                 {
@@ -12630,7 +12631,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     PPT_InformationLog("MailDailySend function : Added wind to email : " + item.useremail);
 
                 }
-                qry = "select useremail from login where Cc_Daily_Wind = 1;";
+                qry = "select useremail from login where Cc_Daily_Wind = 1  AND active_user = 1;";
                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 if (data3 != null)
                 {
@@ -19362,7 +19363,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (var site in sitelist)
             {
-                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 1 and identity = {site.id} ;";
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 1 and identity = {site.id}  AND login.active_user = 1;";
                 try
                 {
                     List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
@@ -19411,7 +19412,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (var site in solarSitelist)
             {
-                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id} ;";
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id}  AND login.active_user = 1;";
                 try
                 {
                     List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
