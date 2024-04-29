@@ -3849,8 +3849,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         string msg = e.ToString();
                         PPT_ErrorLog("From DGR Repository: Inside MailSend function for Weekly Mail Send : Exception Caught while fetching and adding To emails : Due to : " + msg);
                     }
-                    qry = "select 
-                        from login where Cc_Weekly_Solar = 1  AND active_user = 1;";
+                    qry = "select useremail from login where Cc_Weekly_Solar = 1  AND active_user = 1;";
                     try
                     {
                         List<UserLogin> data3 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
