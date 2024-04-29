@@ -263,29 +263,21 @@
                                     <li style="display: flex;"><span class="box green"> </span>&nbsp;&nbsp;&nbsp;&nbsp;Complete data uploaded</li>
                                 </ul>
 
-                                    <!--<div class='box black'>&nbsp;&nbsp;</div>All data missing <br>
-                                    <div class='box gray '></div>Wating for approval <br>
-                                    <div class='box orange'></div>Partial uploaded <br>
-                                    <div class='box green '></div>Complete data uploaded-->
                                 </span>
                             
                         </div>
-                               <!-- <div class='box black infotool'>-1 <span class="infotext">All data missing</span></div>&nbsp;
-                                <div class='box gray infotool'>0 <span class="infotext">Wating for approval</span></div>&nbsp;
-                                <div class='box red infotool'>1 <span class="infotext">2 table data missing</span></div>&nbsp;
-                                <div class='box orange infotool'>2 <span class="infotext">1 table data missing</span></div>&nbsp;
-                                <div class='box green infotool'>3 <span class="infotext">Complete data uploaded </span></div>-->
+                               
                     </div>
                 </div>
                 <br>
                 <div class="col-sm-12">
-                    <div id="HeatMap" style="overflow-x: auto; width: 100%; height: 400px;"></div>
-                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
+                    <div id="HeatMap" style="width: 100%;"></div>
+                   
                 </div>
 
                 <div class="col-sm-12">
-                    <div id="HeatMapTest" style="overflow-x: auto; width: 100%; height: 400px;"></div>
-                    <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
+                    <div id="HeatMapTest" style="width: 100%;"></div>
+                   
                 </div>
 
                 <div id="LogData"></div>
@@ -315,6 +307,7 @@
 <!-- DataTables  & Plugins -->
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
 
 <script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
@@ -505,7 +498,7 @@
             datatype: "html",
             success: function (result, status, xhr) {
                 //console.log(result);
-                var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline">';
+                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 100%;">';
                 tbl += '<thead  class="tbl-head">';
                 tbl += '<tr><th >Site</th>';
                 for (var h = 0; h < datelist.length; h++) {
@@ -672,6 +665,26 @@
                 }
                 tbl += '</tbody ></table >';
                 $("#HeatMap").html("").html(tbl);
+                $('#example1').DataTable({
+                    dom: 'Bfrtip',
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: false,
+                    lengthChange: false,
+                    autoWidth: true,
+                    paging: false,
+                    lengthChange: false,
+                    searching: false,
+                    ordering: false,
+                    info: false,
+                    autoWidth: true,
+                    pageLength: 50,
+                    buttons: [
+                       
+                    ],
+                    
+                });
+               
             }
         });
 
