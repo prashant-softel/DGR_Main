@@ -1453,11 +1453,12 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
         {
 
             string filter = " (date >= '" + fromDate + "'  and date<= '" + toDate + "') ";
-            string tmrFilter = "DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ";
+            //string tmrFilter = "DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ";
+            string tmrFilter = "det.data_date >= '" + fromDate + "' AND det.data_data <= '" + toDate + "' ";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += "and site_master_id IN(" + site + ") ";
-                tmrFilter += " AND site_id IN (" + site + ")";
+                tmrFilter += " AND det.site_id IN (" + site + ")";
             }
             else
             {
@@ -1479,7 +1480,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                         //filter += " and site in(" + sitesnames + ")";
 
                         filter += " and t1.state IN(" + statenames + ") ";
-                        tmrFilter += " and sm.state IN(" + statenames + ") ";
+                        tmrFilter += " AND sm.state IN(" + statenames + ") ";
 
                     }
 
@@ -1527,7 +1528,8 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     //filter += " and site in(" + sitesnames + ")";
 
                     filter += " and t1.wtg IN(" + wtgnames + ") ";
-                    tmrFilter += " AND WTGs IN(" + wtgnames + ") AND( manual_bd != '' OR manual_bd IS NOT NULL)"; //changed all_bd -> manual_bd
+                    //tmrFilter += " AND WTGs IN(" + wtgnames + ") AND( manual_bd != '' OR manual_bd IS NOT NULL)"; //changed all_bd -> manual_bd
+                    tmrFilter += " AND det.wtg IN(" + wtgnames + ")"; //changed all_bd -> manual_bd
                     //filter += " where state='" + state + "' and spv='" + spv + "'";
                 }
 
@@ -1538,17 +1540,17 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             if (reportType == "WTG")
             {
                 filter += " group by t1.date, t1.wtg ";
-                tmrFilter += " GROUP BY date(Time_stamp), WTGs, manual_bd "; //changed all_bd -> manual_bd 
-                groupBy = " WTGs ";
-                join = " tml.WTGs = gen.wtg ";
+                //tmrFilter += " GROUP BY date(Time_stamp), WTGs, manual_bd "; //changed all_bd -> manual_bd 
+                groupBy = " det.wtg ";
+                join = " tml.wtg = gen.wtg ";
 
             }
             if (reportType == "Site")
             {
                 filter += " group by t1.date, t1.site ";
-                tmrFilter += " GROUP BY date(Time_stamp), site, manual_bd "; // changed all_bd -> manual_bd
-                groupBy = " site ";
-                join = " tml.tmlSite = gen.site ";
+                //tmrFilter += " GROUP BY date(Time_stamp), site, manual_bd "; // changed all_bd -> manual_bd
+                groupBy = " det.site ";
+                join = " tml.site_id = gen.site_id ";
 
             }
             string qry = "";
@@ -1560,6 +1562,84 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             //qry = "select * from ( SELECT t1.date,t2.country,t1.state,t2.spv,t1.site,t2.capacity_mw ,t1.wtg,wind_speed,kwh,plf,ma_actual,ma_contractual,iga,ega,ega_b,ega_c,grid_hrs,lull_hrs,production_hrs ,unschedule_hrs,unschedule_num, schedule_hrs,schedule_num,others,others_num,igbdh,igbdh_num,egbdh,egbdh_num ,load_shedding,load_shedding_num FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where "+ filter + ") as gen left Join(select Time_stamp,site as tmlSite,WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select Time_stamp, site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT Time_stamp,site_id, sm.site, WTGs, CASE WHEN all_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN all_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN all_bd = 'Others' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN all_bd = 'IGBDH' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN all_bd = 'EGBDH' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN all_bd = 'Load Shedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where " + tmrFilter + " ) as tabletml group by date(Time_stamp), " + groupBy + ") as tml) as tml on  date(tml.Time_stamp) = gen.date and " + join +"; ";
             
             qry = "select * from ( SELECT t1.date,t2.country,t1.state,t2.spv,t1.site,t2.capacity_mw ,t1.wtg,wind_speed,kwh,plf,ma_actual,ma_contractual,iga,ega,ega_b,ega_c,grid_hrs,lull_hrs,production_hrs ,unschedule_hrs,unschedule_num, schedule_hrs,schedule_num,others,others_num,igbdh,igbdh_num,egbdh,egbdh_num ,load_shedding,load_shedding_num FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where "+ filter + ") as gen left Join(select Time_stamp,site as tmlSite,WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select Time_stamp, site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT Time_stamp,site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where " + tmrFilter + " ) as tabletml group by date(Time_stamp), " + groupBy + ") as tml) as tml on  date(tml.Time_stamp) = gen.date and " + join +"; ";
+            //qry = $"select gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss from ( SELECT t1.date,t2.country,t1.state,t2.spv,t1.site, t1.site_id,t2.capacity_mw ,t1.wtg, wind_speed, kwh, plf, ma_actual, ma_contractual, iga, ega, ega_b, ega_c, grid_hrs, lull_hrs, production_hrs, unschedule_hrs, unschedule_num, schedule_hrs, schedule_num, others, others_num, igbdh, igbdh_num, egbdh, egbdh_num, load_shedding, load_shedding_num FROM daily_gen_summary t1 LEFT JOIN site_master t2 on t1.site_id = t2.site_master_id WHERE {filter}) as gen LEFT JOIN(SELECT det.site_id, det.data_date, det.wtg_id, det.wtg, (det.usmh_loss +det.healthcheck_loss) AS usmh_loss, det.smh_loss, det.others_loss, det.igbd_loss, det.egbd_loss, det.loadshedding_loss, det.pcd_loss, det.lull_loss, det.nc_loss, det.setup_loss, det.initialization_loss, det.startup_loss FROM daily_expected_vs_actual AS det LEFT JOIN site_master AS sm ON det.site_id = sm.site_master_id  WHERE {tmrFilter} GROUP BY {groupBy}) as tml ON tml.data_date = gen.date and {join} and tml.site_id = gen.site_id; ";
+            //DGR_v3 new daily basis table.
+            qry = $@"SELECT
+	gen.*,
+    tml.usmh_loss,
+    tml.smh_loss,
+    tml.others_loss,
+    tml.igbd_loss AS igbdh_loss,
+    tml.egbd_loss AS egbdh_loss,
+    tml.loadshedding_loss AS loadShedding_loss
+FROM 
+	(SELECT
+     	t1.date,
+     	t2.country,
+     	t1.state,
+     	t2.spv,
+     	t1.site,
+     	t1.site_id,
+     	t2.capacity_mw,
+     	t1.wtg,
+     	wind_speed,
+     	kwh,
+     	plf,
+     	ma_actual,
+     	ma_contractual,
+     	iga,
+     	ega,
+     	ega_b,
+     	ega_c,
+     	grid_hrs,
+     	lull_hrs,
+     	production_hrs,
+     	unschedule_hrs,
+     	unschedule_num,
+     	schedule_hrs,
+     	schedule_num,
+     	others,
+     	others_num,
+     	igbdh,
+     	igbdh_num,
+     	egbdh,
+     	egbdh_num,
+     	load_shedding,
+     	load_shedding_num
+	FROM
+     	daily_gen_summary t1
+    LEFT JOIN 
+     	site_master t2 on t1.site_id = t2.site_master_id 
+    WHERE {filter}
+    ) AS gen
+LEFT JOIN
+	(SELECT 
+     	det.site_id,
+     	det.data_date,
+     	det.wtg_id,
+     	det.wtg,
+     	(det.usmh_loss + det.healthcheck_loss) AS usmh_loss,
+     	det.smh_loss,
+     	det.others_loss,
+     	det.igbd_loss,
+     	det.egbd_loss,
+     	det.loadshedding_loss,
+     	det.pcd_loss,
+     	det.lull_loss,
+     	det.nc_loss,
+     	det.setup_loss,
+     	det.initialization_loss,
+     	det.startup_loss 
+     FROM 
+     	daily_expected_vs_actual det
+     LEFT JOIN
+     	site_master sm
+     ON 
+     	det.site_id = sm.site_master_id  
+     WHERE 
+     	det.data_date >= '{fromDate}' AND det.data_date <= '{toDate}' AND det.site_id IN({site}) GROUP BY {groupBy}
+    ) as tml
+ON tml.data_date = gen.date AND {join} AND tml.site_id = gen.site_id; ";
 
             List <WindDailyGenReports> _windDailyGenReports = new List<WindDailyGenReports>();
              _windDailyGenReports = await Context.GetData<WindDailyGenReports>(qry).ConfigureAwait(false);
@@ -1819,7 +1899,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             //sitewisewinddaily
 
             string filter = " (date >= '" + fromDate + "'  and date<= '" + toDate + "') and t2.country = '" + country + "' ";
-            string tmrFilter = "DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ";
+            string tmrFilter = "det.data_date >= '" + fromDate + "' AND det.data_date <= '" + toDate + "' ";
             int chkfilter = 0;
             if (!string.IsNullOrEmpty(state))
             {
@@ -1868,7 +1948,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             {
 
                 filter += " and t1.site_id in (" + site + ")";
-                tmrFilter += " AND site_id IN (" + site + ")";
+                tmrFilter += " AND det.site_id IN (" + site + ")";
 
                 chkfilter = 1;
             }
@@ -1888,7 +1968,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                     wtgnames = wtgnames.TrimEnd(',');
                     filter += " and t1.wtg IN(" + wtgnames + ") ";
-                    tmrFilter += " AND WTGs IN(" + wtgnames + ") ";
+                    tmrFilter += " AND det.wtg IN(" + wtgnames + ") ";
                 }
             }
             //if (!string.IsNullOrEmpty(month) && month != "All~")
@@ -1910,14 +1990,21 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             //    tmrFilter += months.TrimEnd(',') + ")";
             //}
 
-            tmrFilter += " AND (manual_bd != '' OR manual_bd IS NOT NULL) GROUP BY  date(Time_stamp),site, manual_bd"; // all_bd -> manual_bd
-            string qry = ""; 
+            tmrFilter += " GROUP BY  det.data_date,det.site_id"; // all_bd -> manual_bd
+            string qry = "";
             //qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(wind_speed)/count(*)) as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c, sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs, sum(unschedule_num) as unschedule_num, sum(schedule_num) as schedule_num, sum (others_num) as others_num, sum(igbdh_num) as igbdh_num, sum(egbdh_num) as egbdh_num, sum(load_shedding_num) as load_shedding_num	 FROM daily_gen_summary t1 left join site_master t2 on t1.site_id=t2.site_master_id where " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
             //qry = "SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_num, sum(t1.schedule_num) as schedule_num, sum(t1.others_num) as others_num, sum(t1.igbdh_num) as igbdh_num, sum(t1.egbdh_num) as egbdh_num, sum(t1.load_shedding_num) as load_shedding_num, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs , COALESCE(usmh.loss, 0) AS usmh_loss, COALESCE(smh.loss, 0) AS smh_loss, COALESCE(others.loss, 0) AS others_loss, COALESCE(IGBDH.loss, 0) AS igbdh_loss, COALESCE(EGBDH.loss, 0) AS egbdh_loss, COALESCE(loadShedding.loss, 0) AS loadShedding_loss, (COALESCE(usmh.loss,0) + COALESCE(smh.loss,0) + COALESCE(others.loss, 0) + COALESCE(IGBDH.loss, 0) + COALESCE(EGBDH.loss, 0) + COALESCE(loadShedding.loss, 0)) AS total_loss FROM daily_gen_summary t1 left join site_master t2 on t1.site_id=t2.site_master_id LEFT JOIN (SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS usmh ON t1.site = usmh.site AND usmh.all_bd = 'USMH' LEFT JOIN ( SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS smh ON t1.site = smh.site AND smh.all_bd = 'SMH' LEFT JOIN ( SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS others ON t1.site = others.site AND others.all_bd = 'Others' LEFT JOIN ( SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS IGBDH ON t1.site = IGBDH.site AND IGBDH.all_bd = 'IGBDH' LEFT JOIN ( SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS EGBDH ON t1.site = EGBDH.site AND EGBDH.all_bd = 'EGBDH' LEFT JOIN ( SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id WHERE " + tmrFilter + ") AS loadShedding ON t1.site = loadShedding.site AND loadShedding.all_bd = 'Load Shedding' WHERE " + filter + " group by t1.date, t1.state, t2.spv, t1.site ORDER BY t1.site, t1.date, t1.wtg;";
 
             //qry = "select * from (SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_num, sum(t1.schedule_num) as schedule_num, sum(t1.others_num) as others_num, sum(t1.igbdh_num) as igbdh_num, sum(t1.egbdh_num) as egbdh_num, sum(t1.load_shedding_num) as load_shedding_num, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.site ,t1.date ORDER BY t1.site, year, t1.wtg) as gen left Join (select Time_stamp, site as tmlSite, usmh_loss, smh_loss, others_loss, egbdh_loss, loadShedding_loss from(select Time_stamp,site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT Time_stamp,site_id, sm.site, WTGs, CASE WHEN all_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN all_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN all_bd = 'Others' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN all_bd = 'IGBDH' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN all_bd = 'EGBDH' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN all_bd = 'Load Shedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where " + tmrFilter + ") as tabletml group by site ,date(Time_stamp)) as tml) as tml on tml.tmlSite = gen.site and date(tml.Time_stamp) = gen.date;";
-            
-            qry = "select * from (SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_num, sum(t1.schedule_num) as schedule_num, sum(t1.others_num) as others_num, sum(t1.igbdh_num) as igbdh_num, sum(t1.egbdh_num) as egbdh_num, sum(t1.load_shedding_num) as load_shedding_num, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.site ,t1.date ORDER BY t1.date, t1.site) as gen left Join (select Time_stamp, site as tmlSite, usmh_loss, smh_loss, others_loss,igbdh_loss, egbdh_loss, loadShedding_loss from(select Time_stamp,site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT Time_stamp,site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where " + tmrFilter + ") as tabletml group by site ,date(Time_stamp)) as tml) as tml on tml.tmlSite = gen.site and date(tml.Time_stamp) = gen.date;";
+
+            //qry = "select * from (SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_num, sum(t1.schedule_num) as schedule_num, sum(t1.others_num) as others_num, sum(t1.igbdh_num) as igbdh_num, sum(t1.egbdh_num) as egbdh_num, sum(t1.load_shedding_num) as load_shedding_num, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.site ,t1.date ORDER BY t1.date, t1.site) as gen left Join (select Time_stamp, site as tmlSite, usmh_loss, smh_loss, others_loss,igbdh_loss, egbdh_loss, loadShedding_loss from(select Time_stamp,site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT Time_stamp,site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where " + tmrFilter + ") as tabletml group by site ,date(Time_stamp)) as tml) as tml on tml.tmlSite = gen.site and date(tml.Time_stamp) = gen.date;";
+
+            //DGR_v3 new daily basis table.
+            qry = $@"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM 
+(SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site,t1.site_id, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_num, sum(t1.schedule_num) as schedule_num, sum(t1.others_num) as others_num, sum(t1.igbdh_num) as igbdh_num, sum(t1.egbdh_num) as egbdh_num, sum(t1.load_shedding_num) as load_shedding_num, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where {filter} group by t1.state, t2.spv, t1.site ,t1.date ORDER BY t1.date, t1.site) as gen 
+LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter}) AS tml on tml.site_id = gen.site_id and tml.data_date = gen.date;";
+
+
             //where  t1.approve_status="+approve_status+" and " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
 
             return await Context.GetData<WindDailyGenReports2>(qry).ConfigureAwait(false);
@@ -2094,7 +2181,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += sites.TrimEnd(',') + ")";
-                tmrFilter += " site_id IN(" + sites.TrimEnd(',') + ")";
+                tmrFilter += " det.site_id IN(" + sites.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
             
@@ -2122,7 +2209,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     string year = (Int32.Parse(fy) + 1).ToString();
                     string Qyear = (monthno > 3) ? fy : year;
                     filter += "( month(date) = " + spmonth[i] + " and year(date) = '" + Qyear + "' )";
-                    tmrFilter += " (MONTH(Time_stamp) = " + spmonth[i] + " AND YEAR(Time_stamp) = " + Qyear + ") ";
+                    tmrFilter += " (MONTH(data_date) = " + spmonth[i] + " AND YEAR(data_date) = " + Qyear + ") ";
                 }
                 filter += ") ";
                 tmrFilter += ") ";
@@ -2136,7 +2223,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     tmrFilter += " AND ";
                 }
                 filter += " month(date) in ( " + month + " )";
-                tmrFilter += " MONTH(Time_stamp) IN(" + month + ")";
+                tmrFilter += " MONTH(data_date) IN(" + month + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(state) && state != "All~")
@@ -2144,7 +2231,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if (chkfilter == 1) 
                 { 
                     filter += " and ";
-                    tmrFilter += " and ";
+                    tmrFilter += " AND ";
 
                 }
                 // filter += "t1.state in (" + state + ")";
@@ -2205,7 +2292,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += " WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += " det.wtg IN(" + wtgs.TrimEnd(',') + ")";
             }
 
             //            string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site,
@@ -2238,7 +2325,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             //tmlQry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where "+ filter + "  group by t1.state, t2.spv, t1.wtg , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen left Join (select WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN all_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN all_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN all_bd = 'Others' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN all_bd = 'IGBDH' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN all_bd = 'EGBDH' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN all_bd = 'Load Shedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where  " + tmrFilter + " GROUP BY WTGs, all_bd) as tabletml group by WTGs) as tml) as tml on tml.WTGs = gen.wtg; ";
             
-            tmlQry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id  "+ filter + "  group by t1.state, t2.spv, t1.wtg , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen left Join (select WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id   " + tmrFilter + " GROUP BY WTGs, manual_bd) as tabletml group by WTGs) as tml) as tml on tml.WTGs = gen.wtg; ";
+            //tmlQry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id  "+ filter + "  group by t1.state, t2.spv, t1.wtg , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen left Join (select WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id   " + tmrFilter + " GROUP BY WTGs, manual_bd) as tabletml group by WTGs) as tml) as tml on tml.WTGs = gen.wtg; ";
+
+            //DGR_v3 new daily basis table.
+            tmlQry = $@"select gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id {filter} group by t1.state, t2.spv, t1.wtg , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen 
+LEFT JOIN (SELECT det.site_id AS site_id, det.wtg_id AS wtg_id, det.wtg AS wtg, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id {tmrFilter} GROUP BY det.wtg) AS tml on tml.wtg = gen.wtg;";
 
 
 
@@ -2284,7 +2375,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += sites.TrimEnd(',') + ")";
-                tmrFilter += " site_id IN(" + sites.TrimEnd(',') + ")";
+                tmrFilter += " det.site_id IN(" + sites.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
 
@@ -2313,7 +2404,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     string year = (Int32.Parse(fy) + 1).ToString();
                     string Qyear = (monthno > 3) ? fy : year;
                     filter += "( month(date) = " + spmonth[i] + " and year(date) = '" + Qyear + "' )";
-                    tmrFilter += "( MONTH(Time_stamp) = " + spmonth[i] + " AND YEAR(Time_stamp) = " + Qyear + " )";
+                    tmrFilter += "( MONTH(det.data_date) = " + spmonth[i] + " AND YEAR(det.data_date) = " + Qyear + " )";
                 }
                 filter += ") ";
                 tmrFilter += ") ";
@@ -2329,7 +2420,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 }
 
                 filter += "  month(date) in ( " + month + " )";
-                tmrFilter += "  MONTH(Time_stamp) IN(" + month + " )";
+                tmrFilter += "  MONTH(det.data_date) IN(" + month + " )";
                 chkfilter = 1;
             }
             //if (!string.IsNullOrEmpty(country) && country != "All~")
@@ -2419,11 +2510,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += "  WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += "  det.wtg IN(" + wtgs.TrimEnd(',') + ")";
                 chkfilter = 1;
 
             }
-            tmrFilter += " GROUP BY manual_bd, MONTH(Time_stamp)"; //changed all_bd -> manual_bd;
+            tmrFilter += " GROUP BY MONTH(det.data_date), det.site_id"; //changed all_bd -> manual_bd;
 
             //string qry = @"SELECT year(date)as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site,
             string qry = "";
@@ -2433,7 +2524,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             //qry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,t2.total_mw ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.site , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen left Join (select site as tmlSite, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN all_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN all_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN all_bd = 'Others' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN all_bd = 'IGBDH' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN all_bd = 'EGBDH' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN all_bd = 'Load Shedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id where  " + tmrFilter + ") as tabletml group by site ) as tml) as tml on tml.tmlSite = gen.site;";
             
-            qry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,t2.total_mw ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id " + filter + "  group by t1.state, t2.spv, t1.site , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen left Join (select site as tmlSite, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id   " + tmrFilter + ") as tabletml group by site ) as tml) as tml on tml.tmlSite = gen.site;";
+            //qry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,t2.total_mw ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id " + filter + "  group by t1.state, t2.spv, t1.site , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen left Join (select site as tmlSite, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id   " + tmrFilter + ") as tabletml group by site ) as tml) as tml on tml.tmlSite = gen.site;";
+
+            //DGR_v3 new daily basis table.
+            qry = $@"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.site_id, t1.wtg ,t2.total_mw ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id {filter} group by t1.state, t2.spv, t1.site , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) AS gen 
+LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id {tmrFilter}) AS tml on tml.site_id = gen.site_id;";
             //where  t1.approve_status="+approve_status+" and " + filter + " group by t1.state, t2.spv, t1.site , month(t1.date)";
 
             return await Context.GetData<WindDailyGenReports2>(qry).ConfigureAwait(false);
@@ -2454,7 +2549,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             if (!string.IsNullOrEmpty(fromDate) && fromDate != "All")
             {
                 filter += "(t1.date >= '" + fromDate + "'  and t1.date<= '" + toDate + "')";
-                tmrFilter += "DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ";
+                tmrFilter += "det.data_date >= '" + fromDate + "' AND det.data_date <= '" + toDate + "' ";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(state) && state != "All~")
@@ -2520,7 +2615,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += sites.TrimEnd(',') + ")";
-                tmrFilter += "  site_id IN(" + sites.TrimEnd(',') + ")";
+                tmrFilter += "  det.site_id IN(" + sites.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(wtg) && wtg != "All~")
@@ -2541,7 +2636,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += "  WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += "  det.wtg IN(" + wtgs.TrimEnd(',') + ")";
             }
             if (!string.IsNullOrEmpty(month) && month != "All~")
             {
@@ -2563,7 +2658,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += months.TrimEnd(',') + ")";
-                tmrFilter += "  MONTH(Time_stamp) = IN(" + months.TrimEnd(',') + ")";
+                tmrFilter += "  MONTH(det.data_date) = IN(" + months.TrimEnd(',') + ")";
             }
 
 
@@ -2575,7 +2670,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             //qry = "select * from ( SELECT year(date) as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*)) as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*)) as plf, (sum(ma_actual)/count(*)) as ma_actual, (sum(ma_contractual)/count(*)) as ma_contractual, (sum(iga)/count(*)) as iga, (sum(ega)/count(*)) as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs) as grid_hrs, sum(lull_hrs) as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.wtg ORDER BY t1.site, year, t1.wtg) as gen left Join(select WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN all_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN all_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN all_bd = 'Others' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN all_bd = 'IGBDH' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN all_bd = 'EGBDH' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN all_bd = 'Load Shedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id where  " + tmrFilter + " GROUP BY WTGs, all_bd) as tabletml group by WTGs) as tml) as tml on tml.WTGs = gen.wtg; ";
             
-            qry = "select * from ( SELECT year(date) as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*)) as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*)) as plf, (sum(ma_actual)/count(*)) as ma_actual, (sum(ma_contractual)/count(*)) as ma_contractual, (sum(iga)/count(*)) as iga, (sum(ega)/count(*)) as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs) as grid_hrs, sum(lull_hrs) as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.wtg ORDER BY t1.site, year, t1.wtg) as gen left Join(select WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id where  " + tmrFilter + " GROUP BY WTGs, manual_bd) as tabletml group by WTGs) as tml) as tml on tml.WTGs = gen.wtg; ";
+            //qry = "select * from ( SELECT year(date) as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*)) as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*)) as plf, (sum(ma_actual)/count(*)) as ma_actual, (sum(ma_contractual)/count(*)) as ma_contractual, (sum(iga)/count(*)) as iga, (sum(ega)/count(*)) as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs) as grid_hrs, sum(lull_hrs) as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.wtg ORDER BY t1.site, year, t1.wtg) as gen left Join(select WTGs, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id where  " + tmrFilter + " GROUP BY WTGs, manual_bd) as tabletml group by WTGs) as tml) as tml on tml.WTGs = gen.wtg; ";
+
+            //DGR_v3 new daily basis table.
+            qry = @$"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM ( SELECT year(date) as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*)) as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*)) as plf, (sum(ma_actual)/count(*)) as ma_actual, (sum(ma_contractual)/count(*)) as ma_contractual, (sum(iga)/count(*)) as iga, (sum(ega)/count(*)) as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs) as grid_hrs, sum(lull_hrs) as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where {filter} group by t1.state, t2.spv, t1.wtg ORDER BY t1.site, year, t1.wtg) as gen 
+LEFT JOIN(SELECT det.site_id AS site_id, det.wtg_id AS witg_id, det.wtg AS wtg, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter} GROUP BY det.wtg) AS tml on tml.wtg = gen.wtg;";
             //where  t1.approve_status=" + approve_status + " and " + filter + " group by t1.state, t2.spv, t1.wtg ";
             try
             {
@@ -2601,7 +2700,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
             if (!string.IsNullOrEmpty(fromDate) && fromDate != "All")
             {
                 filter += "(t1.date >= '" + fromDate + "'  and t1.date<= '" + toDate + "')";
-                tmrFilter += "DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ";
+                tmrFilter += "det.data_date >= '" + fromDate + "' AND det.data_date <= '" + toDate + "' ";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(state) && state != "All~")
@@ -2633,7 +2732,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if (chkfilter == 1)
                 {
                     filter += " and ";
-                    tmrFilter += " and ";
+                    tmrFilter += " AND ";
                 }                // filter += "t2.spv in (" + spv + ")";
                 string[] spspv = spv.Split(",");
                 filter += "t2.spv in (";
@@ -2655,7 +2754,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if (chkfilter == 1)
                 {
                     filter += " and ";
-                    tmrFilter += " and ";
+                    tmrFilter += " AND ";
                 }
                 // filter += "t1.site in (" + site + ")";
                 string[] spsite = site.Split("~");
@@ -2669,7 +2768,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += sites.TrimEnd(',') + ")";
-                tmrFilter += " site_id IN(" + sites.TrimEnd(',') + ")";
+                tmrFilter += " det.site_id IN(" + sites.TrimEnd(',') + ")";
                 chkfilter = 1;
             }
             if (!string.IsNullOrEmpty(wtg) && wtg != "All~")
@@ -2677,7 +2776,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if (chkfilter == 1)
                 {
                     filter += " and ";
-                    tmrFilter += " and ";
+                    tmrFilter += " AND ";
                 }
                 // filter += "t1.wtg in (" + wtg + ")";
                 string[] spwtg = wtg.Split(",");
@@ -2691,7 +2790,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += wtgs.TrimEnd(',') + ")";
-                tmrFilter += "  WTGs IN(" + wtgs.TrimEnd(',') + ")";
+                tmrFilter += "  det.wtg IN(" + wtgs.TrimEnd(',') + ")";
                 chkfilter = 1;
 
             }
@@ -2700,7 +2799,7 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                 if (chkfilter == 1)
                 {
                     filter += " and ";
-                    tmrFilter += " and ";
+                    tmrFilter += " AND ";
                 }
 
                 string[] spmonth = month.Split("~");
@@ -2714,11 +2813,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
                     }
                 }
                 filter += months.TrimEnd(',') + ")";
-                tmrFilter += "  MONTH(Time_stamp) IN(" + months.TrimEnd(',') + ")";
+                tmrFilter += "  MONTH(data_date) IN(" + months.TrimEnd(',') + ")";
                 chkfilter = 1;
 
             }
-            tmrFilter += " AND (manual_bd != '' OR manual_bd IS NOT NULL)  GROUP BY site, all_bd"; //changed all_bd -> manual_bd;
+            tmrFilter += "GROUP BY det.site_id"; //changed all_bd -> manual_bd;
 
             string qry = ""; 
             
@@ -2726,7 +2825,11 @@ left join monthly_line_loss_solar t2 on t2.site=t1.site and t2.month=DATE_FORMAT
 
             //qry = "SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_hrs, sum(t1.schedule_num) as schedule_hrs, sum(t1.others_num) as others, sum(t1.igbdh_num) as igbdh, sum(t1.egbdh_num) as egbdh, sum(t1.load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs , COALESCE(usmh.loss, 0) AS usmh_loss, COALESCE(smh.loss, 0) AS smh_loss, COALESCE(others.loss, 0) AS others_loss, COALESCE(IGBDH.loss, 0) AS igbdh_loss, COALESCE(EGBDH.loss, 0) AS egbdh_loss, COALESCE(loadShedding.loss, 0) AS loadShedding_loss, (COALESCE(usmh.loss,0) + COALESCE(smh.loss,0) + COALESCE(others.loss, 0) + COALESCE(IGBDH.loss, 0) + COALESCE(EGBDH.loss, 0) + COALESCE(loadShedding.loss, 0)) AS total_loss FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS usmh ON t1.site = usmh.site AND usmh.all_bd = 'USMH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS smh ON t1.site = smh.site AND smh.all_bd = 'SMH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS others ON t1.site = others.site AND others.all_bd = 'Others' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS IGBDH ON t1.site = IGBDH.site AND IGBDH.all_bd = 'IGBDH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS EGBDH ON t1.site = EGBDH.site AND EGBDH.all_bd = 'EGBDH' LEFT JOIN(SELECT t4.site, t5.spv as spv, t4.WTGs, t4.all_bd, SUM(t4.loss_kw) AS loss FROM `uploading_file_tmr_data` t4 LEFT JOIN site_master t5 ON t4.site_id = t5.site_master_id  " + tmrFilter + ") AS loadShedding ON t1.site = loadShedding.site AND loadShedding.all_bd = 'Load Shedding'  " + filter + " group by t1.site ORDER BY t1.site, t1.date, t1.wtg; ";
 
-            qry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_hrs, sum(t1.schedule_num) as schedule_hrs, sum(t1.others_num) as others, sum(t1.igbdh_num) as igbdh, sum(t1.egbdh_num) as egbdh, sum(t1.load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.site ORDER BY t1.site) as gen left Join(select site as tmlSite, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where " + tmrFilter + ") as tabletml group by site ) as tml) as tml on tml.tmlSite = gen.site ;";
+            //qry = "select * from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_hrs, sum(t1.schedule_num) as schedule_hrs, sum(t1.others_num) as others, sum(t1.igbdh_num) as igbdh, sum(t1.egbdh_num) as egbdh, sum(t1.load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where " + filter + "  group by t1.state, t2.spv, t1.site ORDER BY t1.site) as gen left Join(select site as tmlSite, usmh_loss, smh_loss, others_loss, igbdh_loss, egbdh_loss, loadShedding_loss from(select site_id, site, WTGs, sum(usmh_loss) as usmh_loss, sum(smh_loss) as smh_loss, sum(others_loss) as others_loss, sum(igbdh_loss) as igbdh_loss, sum(egbdh_loss) as egbdh_loss, sum(loadShedding_loss) as loadShedding_loss from(SELECT site_id, sm.site, WTGs, CASE WHEN manual_bd = 'USMH' THEN sum(loss_kw) ELSE 0 END AS usmh_loss, CASE WHEN manual_bd = 'SMH' THEN sum(loss_kw) ELSE 0 END AS smh_loss, CASE WHEN manual_bd = 'OthersHour' THEN sum(loss_kw) ELSE 0 END AS others_loss, CASE WHEN manual_bd = 'IGBD' THEN sum(loss_kw) ELSE 0 END AS igbdh_loss, CASE WHEN manual_bd = 'EGBD' THEN sum(loss_kw) ELSE 0 END AS egbdh_loss, CASE WHEN manual_bd = 'LoadShedding' THEN sum(loss_kw) ELSE 0 END AS loadShedding_loss FROM uploading_file_tmr_data left join site_master as sm on uploading_file_tmr_data.site_id = sm.site_master_id  where " + tmrFilter + ") as tabletml group by site ) as tml) as tml on tml.tmlSite = gen.site ;";
+            //DGR_v3 new daily basis table.
+
+            qry = $@"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t1.site_id, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_hrs, sum(t1.schedule_num) as schedule_hrs, sum(t1.others_num) as others, sum(t1.igbdh_num) as igbdh, sum(t1.egbdh_num) as egbdh, sum(t1.load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where {filter} group by t1.state, t2.spv, t1.site ORDER BY t1.site) as gen 
+LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter}) AS tml ON tml.site_id = gen.site_id;";
 
             //where  t1.approve_status=" + approve_status + " and " + filter + " group by t1.state, t2.spv, t1.site  ";
             try
@@ -19130,7 +19233,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
                 chkfilter = 1;
-                filter += " WHERE data_date>='" + fromDate + "' and data_date<='" + toDate + "' ";
+                filter += " WHERE t1.data_date>='" + fromDate + "' and t1.data_date<='" + toDate + "' ";
             }
             if (!string.IsNullOrEmpty(site))
             {
@@ -19138,7 +19241,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 else
                 {
                     filter += " and ";
-                    filter += " site_id IN (" + site + ")";
+                    filter += " t1.site_id IN (" + site + ")";
                 }
 
             }
@@ -19146,11 +19249,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry1 = "";
             if (prType == "AOP")
             {
-                qry1 = $"SELECT site_id AS site_id, data_date AS date, target AS target, (pr/1000000) AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS ega_a, ega_b AS ega_b, ega_c AS ega_c, (usmh/1000000) AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 0;";
+                qry1 = $"SELECT t1.site_id AS site_id, t2.site AS site, t1.data_date AS date, t1.target AS target, t1.pr AS toplining_PR, t1.inv_kwh AS inv_kwh, t1.ma AS ma, t1.iga AS iga, t1.ega_a AS ega_a, t1.ega_b AS ega_b, t1.ega_c AS ega_c, t1.usmh AS usmh, t1.smh AS smh, t1.others AS oh, t1.igbd AS igbdh, t1.egbd AS egbdh, t1.loadShedding AS load_shedding, t1.expected_power AS Pexpected FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id {filter} AND t1.aop_top = 0;";
             }
             else if (prType == "toplining")
             {
-                qry1 = $"SELECT site_id AS site_id, data_date AS date, target AS target, (pr/1000000) AS toplining_PR, inv_kwh AS inv_kwh, ma AS ma, iga AS iga, ega_a AS ega_a, ega_b AS ega_b, ega_c AS ega_c, (usmh/1000000) AS usmh, smh AS smh, others AS oh, igbd AS igbdh, egbd AS egbdh, loadShedding AS load_shedding, expected_power AS Pexpected FROM daily_expected_vs_actual_solar {filter} AND aop_top = 1;";
+                qry1 = $"SELECT t1.site_id AS site_id, t2.site AS site, t1.data_date AS date, t1.target AS target, t1.pr AS toplining_PR, t1.inv_kwh AS inv_kwh, t1.ma AS ma, t1.iga AS iga, t1.ega_a AS ega_a, t1.ega_b AS ega_b, t1.ega_c AS ega_c, t1.usmh AS usmh, t1.smh AS smh, t1.others AS oh, t1.igbd AS igbdh, t1.egbd AS egbdh, t1.loadShedding AS load_shedding, t1.expected_power AS Pexpected FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id {filter} AND t1.aop_top = 1;";
 
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
