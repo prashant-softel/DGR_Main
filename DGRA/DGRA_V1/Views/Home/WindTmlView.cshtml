@@ -490,23 +490,23 @@
                 tbl += '<th style="width: 7%;">Date</th>';
                 tbl += '<th>WTG</th>';
                 tbl += '<th>TML Count</th>';
-                tbl += '<th>Wind Speed</th>';
+                tbl += '<th>WindSpeed (m/s)</th>';
                 tbl += '<th>Target Energy (MU)</th>';
-                tbl += '<th>Actual Energy (MU)</th>';
-                tbl += '<th>Expected Energy (MU)</th>';
-                tbl += '<th>USMH Loss</th>';
-                tbl += '<th>SMH Loss</th>';
-                tbl += '<th>Other Loss</th>';
-                tbl += '<th>IGBD Loss</th>';
-                tbl += '<th>EGBD Loss</th>';
-                tbl += '<th>Loadshedding Loss</th>';
-                tbl += '<th>PCD</th>';
-                tbl += '<th>Lineloss</th>';
-                tbl += '<th>MA</th>';
-                tbl += '<th>IGA</th>';
-                tbl += '<th>EGA_A</th>';
-                tbl += '<th>EGA_B</th>';
-                tbl += '<th>EGA_C</th>';
+                tbl += '<th>Actual<br> Energy (MU)</th>';
+                tbl += '<th>Expected<br> Energy (MU)</th>';
+                tbl += '<th>USMH_Loss<br> (MU)</th>';
+                tbl += '<th>SMH_Loss<br> (MU)</th>';
+                tbl += '<th>OH_Loss<br> (MU)</th>';
+                tbl += '<th>IGBD_Loss<br> (MU)</th>';
+                tbl += '<th>EGBD_Loss<br> (MU)</th>';
+                tbl += '<th>LS_Loss<br> (MU)</th>';
+                tbl += '<th>PCD<br> (MU)</th>';
+                tbl += '<th>Lineloss<br> (MU)</th>';
+                tbl += '<th>MA<br> (%)</th>';
+                tbl += '<th>IGA<br> (%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -616,10 +616,31 @@
                             }
                         },
                     ],
+                    initComplete: function () {
+                        this.api().columns().header().to$().each(function () {
+                            //$(this).attr('title', 'title for ' + $(this).text())
+                            if ($(this).text() == "EGA_A(%) i") {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA_B(%) i") {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA_C(%) i") {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 //$('#example1').wrap("<div class='scrolledTable'></div>");
                 //document.getElementById("wms_comparision").style.display = 'block';
                 //$('#example1').removeClass('dataTable');
