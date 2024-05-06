@@ -393,19 +393,21 @@
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th style="width: 12%;">Date</th>';
                 tbl += '<th>Site</th>';
-                tbl += '<th>Target</th>';
+                tbl += '<th>Target<br> Energy (MU)</th>';
                 tbl += '<th>Expected</th>';
-                tbl += '<th>USMH</th>';
-                tbl += '<th>SMH</th>';
-                tbl += '<th>Other</th>';
-                tbl += '<th>IGBD</th>';
-                tbl += '<th>EGBD</th>';
+                tbl += '<th>USMH_Loss<br> (MU)</th>';
+                tbl += '<th>SMH_Loss<br> (MU)</th>';
+                tbl += '<th>OH_Loss<br> (MU)</th>';
+                tbl += '<th>IGBD_Loss<br> (MU)</th>';
+                tbl += '<th>EGBD_Loss<br> (MU)</th>';
                 tbl += '<th>Curtaiment</th>';
-                tbl += '<th>PR</th>';
-                tbl += '<th>Actual</th>';
-                tbl += '<th>MA (%)<span class="information">i<span></th>';
-                tbl += '<th>IGA (%) <span class="information">i<span></th>';
-                tbl += '<th>EGA (%) <span class="information">i<span></th>';
+                tbl += '<th>PR<br> (MU)</th>';
+                tbl += '<th>Actual<br> (MU)</th>';
+                tbl += '<th>MA<br> (%)<span class="information">i<span></th>';
+                tbl += '<th>IGA<br> (%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                     let total_target = 0;
@@ -462,6 +464,8 @@
                         tbl += '<td class="text-right">' + (result[i].ma).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].iga).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].ega_a).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].ega_b).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].ega_c).toFixed(2) + '</td>';
                         tbl += '</tr>';
                         //console.log("Actual : " + result[i].inv_kwh);
                         cnt++;
@@ -550,6 +554,13 @@
             $(".dt-buttons").addClass('btn-group flex-wrap');
             $(".dt-buttons > button").addClass('btn btn-secondary');
             $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
             //$('#example1').wrap("<div class='scrolledTable'></div>");
             getYearlyReport();
         }

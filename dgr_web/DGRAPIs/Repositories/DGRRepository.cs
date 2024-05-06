@@ -3366,16 +3366,16 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
 
             string filter = "";
-            string tmlFilter = " DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "'";
+            string tmlFilter = " t1.data_date >= '" + fromDate + "' AND t1.data_date <= '" + todate + "'";
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + site + ") ";
-                //tmlFilter += " t1.site_id IN(" + site + ")";
+                tmlFilter += " AND t1.site_id IN(" + site + ")";
             }
             if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + spvsiteList + ") ";
-                //tmlFilter += " t1.site_id IN(" + site + ")";
+                tmlFilter += " AND t1.site_id IN(" + site + ")";
 
             }
 
@@ -3434,7 +3434,9 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                 string msg = "Exception while retrieving data for UI display, due to : " + e.ToString();
             }
             List<WindPerformanceReports> tmlData = new List<WindPerformanceReports>();
-            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE " + tmlFilter + " GROUP BY t1.site_id";
+            //string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE " + tmlFilter + " GROUP BY t1.site_id";
+
+            string tmlQry = $"SELECT t1.site_id, SUM(t1.adjusted_expected) AS exp_power, t2.site, t2.spv FROM daily_expected_vs_actual t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE {tmlFilter} GROUP BY t1.site_id;";
             try
             {
                 tmlData = await Context.GetData<WindPerformanceReports>(tmlQry).ConfigureAwait(false);
@@ -3483,11 +3485,13 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
         {
             string filtersite = "";
             string spvsiteList = "";
+            string tmlFilter = "";
             if (!string.IsNullOrEmpty(spv) && spv != "All" && string.IsNullOrEmpty(site))
             {
                 string[] spspv = spv.Split(",");
                 filtersite += "  spv in (";
                 string spvs = "";
+                
                 for (int i = 0; i < spspv.Length; i++)
                 {
                     if (!string.IsNullOrEmpty(spspv[i].ToString()))
@@ -3496,6 +3500,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                     }
                 }
                 filtersite += spvs.TrimEnd(',') + ")";
+                tmlFilter += " t2.spv IN(" + spvs.TrimEnd(',') + ")";
                 string masterquery = "SELECT site_master_id FROM `site_master` where " + filtersite;
                 List<WindSiteMaster> sitelist = new List<WindSiteMaster>();
                 sitelist = await Context.GetData<WindSiteMaster>(masterquery).ConfigureAwait(false);
@@ -3510,7 +3515,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string filter = "";
             string filter2 = "";
-            string tmlFilter = "";
+            
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + site + ") ";
@@ -3523,7 +3528,14 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                 //tmlFilter += " t1.site_id IN(" + site + ")";
                 filter += " and t1.site_id IN(" + spvsiteList + ") ";
                 filter2 += " where site_master_id IN(" + spvsiteList + ") ";
-                tmlFilter += " t1.site_id IN(" + spvsiteList + ")";
+                if (tmlFilter == "")
+                {
+                    tmlFilter += " t1.site_id IN(" + spvsiteList + ")";
+                }
+                else
+                {
+                    tmlFilter += " AND t1.site_id IN(" + spvsiteList + ")";
+                }
             }
             string qry1 = "create or replace view temp_viewSPV as select t1.date, t1.site_id, t2.site, t3.spv,t1.kwh, t1.wind_speed, t1.plf, t1.ma, t1.iga, t1.ega" +
                 " from daily_target_kpi t1, daily_gen_summary t2, site_master t3 " +
@@ -3629,7 +3641,9 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             }
             List<WindPerformanceReports> tmlData = new List<WindPerformanceReports>();
             //SELECT t1.site, t1.site_id, t1.WTGs, t2.spv FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= "2023-04-06" AND DATE(t1.Time_stamp) <= "2023-04-06" GROUP BY t2.spv;
-            string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "' GROUP BY t2.spv";
+            //string tmlQry = "SELECT t1.site, t1.site_id, t1.WTGs, t2.spv, SUM(t1.exp_power_kw) as exp_power FROM `uploading_file_tmr_data` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE DATE(t1.Time_stamp) >= '" + fromDate + "' AND DATE(t1.Time_stamp) <= '" + todate + "' GROUP BY t2.spv";
+            //SELECT t1.site_id, SUM(t1.expected_power) AS exp_power, t2.spv FROM `daily_expected_vs_actual` t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE t1.data_date >= "2024-02-23" AND t1.data_date <= "2024-02-23" AND t1.site_id IN(227) GROUP BY t2.spv;
+            string tmlQry = $"SELECT t1.site_id, SUM(t1.adjusted_expected) AS exp_power, t2.spv FROM daily_expected_vs_actual t1 LEFT JOIN site_master t2 ON t1.site_id = t2.site_master_id WHERE t1.data_date >= '{fromDate}' AND t1.data_date <= '{todate}' AND {tmlFilter} GROUP BY t2.spv;";
             try
             {
                 tmlData = await Context.GetData<WindPerformanceReports>(tmlQry).ConfigureAwait(false);
