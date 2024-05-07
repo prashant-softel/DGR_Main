@@ -2968,7 +2968,7 @@
                 tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PR (%)</th>';
 
-                tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
+                //tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
 
                 tbl += '<th colspan="3" class="text-center">MA Actual (%)</th><th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr>';
@@ -2997,9 +2997,9 @@
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
 
-                tbl += '<th>Tar</th>';
-                tbl += '<th>Act</th>';
-                tbl += '<th>Var (%)</th>';
+                //tbl += '<th>Tar</th>';
+                //tbl += '<th>Act</th>';
+                //tbl += '<th>Var (%)</th>';
 
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
@@ -3247,9 +3247,9 @@
                         tbl += '<td class="text-right">' + act_prval.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
 
-                        tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].tar_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_ma.toFixed(2) + '</td>';
@@ -3361,9 +3361,9 @@
                     tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
 
-                    tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
-                    tbl += '<td class="text-right"><b>' + avg_act_TCpr.toFixed(2) + '</b></td>';
-                    tbl += '<td class="text-right"><b>' + avg_TCpr_var.toFixed(2) + '</b></td>';
+                    //tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
+                    //tbl += '<td class="text-right"><b>' + avg_act_TCpr.toFixed(2) + '</b></td>';
+                    //tbl += '<td class="text-right"><b>' + avg_TCpr_var.toFixed(2) + '</b></td>';
 
                     tbl += '<td class="text-right"><b>' + avg_tar_ma.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ma.toFixed(2) + '</b></td>';
@@ -3488,40 +3488,40 @@
                                         else if (columnIdx == 22) {
                                             return 'PR (%)  Var (%) ';
                                         }
+                                        //else if (columnIdx == 23) {
+                                        //    return 'Temp Corr. PR (%)  Tar';
+                                        //}
+                                        //else if (columnIdx == 24) {
+                                        //    return 'Temp Corr. PR (%)  Act ';
+                                        //}
+                                        //else if (columnIdx == 25) {
+                                        //    return 'Temp Corr. PR (%)  Var (%) ';
+                                        //}
                                         else if (columnIdx == 23) {
-                                            return 'Temp Corr. PR (%)  Tar';
-                                        }
-                                        else if (columnIdx == 24) {
-                                            return 'Temp Corr. PR (%)  Act ';
-                                        }
-                                        else if (columnIdx == 25) {
-                                            return 'Temp Corr. PR (%)  Var (%) ';
-                                        }
-                                        else if (columnIdx == 26) {
                                             return 'MA (%)  Tar';
                                         }
-                                        else if (columnIdx == 27) {
+                                        else if (columnIdx == 24) {
                                             return 'MA (%)  Act ';
                                         }
-                                        else if (columnIdx == 28) {
+                                        else if (columnIdx == 25) {
                                             return 'MA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 29) {
+                                        else if (columnIdx == 26) {
                                             return 'IGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 30) {
+                                        else if (columnIdx == 27) {
                                             return 'IGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 31) {
+                                        else if (columnIdx == 28) {
                                             return 'IGA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 32) {
+                                        else if (columnIdx == 29) {
                                             return 'EGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 33) {
+                                        else if (columnIdx == 30) {
                                             return 'EGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 34) {
+                                        else if (columnIdx == 31) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -3611,40 +3611,40 @@
                                         else if (columnIdx == 22) {
                                             return 'PR (%)  Var (%) ';
                                         }
+                                        //else if (columnIdx == 23) {
+                                        //    return 'Temp Corr. PR (%)  Tar';
+                                        //}
+                                        //else if (columnIdx == 24) {
+                                        //    return 'Temp Corr. PR (%)  Act ';
+                                        //}
+                                        //else if (columnIdx == 25) {
+                                        //    return 'Temp Corr. PR (%)  Var (%) ';
+                                        //}
                                         else if (columnIdx == 23) {
-                                            return 'Temp Corr. PR (%)  Tar';
-                                        }
-                                        else if (columnIdx == 24) {
-                                            return 'Temp Corr. PR (%)  Act ';
-                                        }
-                                        else if (columnIdx == 25) {
-                                            return 'Temp Corr. PR (%)  Var (%) ';
-                                        }
-                                        else if (columnIdx == 26) {
                                             return 'MA (%)  Tar';
                                         }
-                                        else if (columnIdx == 27) {
+                                        else if (columnIdx == 24) {
                                             return 'MA (%)  Act ';
                                         }
-                                        else if (columnIdx == 28) {
+                                        else if (columnIdx == 25) {
                                             return 'MA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 29) {
+                                        else if (columnIdx == 26) {
                                             return 'IGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 30) {
+                                        else if (columnIdx == 27) {
                                             return 'IGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 31) {
+                                        else if (columnIdx == 28) {
                                             return 'IGA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 32) {
+                                        else if (columnIdx == 29) {
                                             return 'EGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 33) {
+                                        else if (columnIdx == 30) {
                                             return 'EGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 34) {
+                                        else if (columnIdx == 31) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -3723,40 +3723,40 @@
                                else if (idx == 22) {
                                    return 'PR (%)  Var (%) ';
                                }
+                               //else if (idx == 23) {
+                               //    return 'Temp Corr. PR (%)  Tar';
+                               //}
+                               //else if (idx == 24) {
+                               //    return 'Temp Corr. PR (%)  Act ';
+                               //}
+                               //else if (idx == 25) {
+                               //    return 'Temp Corr. PR (%)  Var (%) ';
+                               //}
                                else if (idx == 23) {
-                                   return 'Temp Corr. PR (%)  Tar';
-                               }
-                               else if (idx == 24) {
-                                   return 'Temp Corr. PR (%)  Act ';
-                               }
-                               else if (idx == 25) {
-                                   return 'Temp Corr. PR (%)  Var (%) ';
-                               }
-                               else if (idx == 26) {
                                    return 'MA (%)  Tar';
                                }
-                               else if (idx == 27) {
+                               else if (idx == 24) {
                                    return 'MA (%)  Act ';
                                }
-                               else if (idx == 28) {
+                               else if (idx == 25) {
                                    return 'MA (%)  Var (%) ';
                                }
-                               else if (idx == 29) {
+                               else if (idx == 26) {
                                    return 'IGA (%)  Tar';
                                }
-                               else if (idx == 30) {
+                               else if (idx == 27) {
                                    return 'IGA (%)  Act ';
                                }
-                               else if (idx == 31) {
+                               else if (idx == 28) {
                                    return 'IGA (%)  Var (%) ';
                                }
-                               else if (idx == 32) {
+                               else if (idx == 29) {
                                    return 'EGA (%)  Tar';
                                }
-                               else if (idx == 33) {
+                               else if (idx == 30) {
                                    return 'EGA (%)  Act ';
                                }
-                               else if (idx == 34) {
+                               else if (idx == 31) {
                                    return 'EGA (%)  Var (%) ';
                                }
                                else {
@@ -4467,7 +4467,7 @@
                 tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PR (%)</th>';
 
-                tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
+                //tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
 
                 tbl += '<th colspan="3" class="text-center">MA Actual (%)</th><th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr>';
@@ -4496,9 +4496,9 @@
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
 
-                tbl += '<th>Tar</th>';
-                tbl += '<th>Act</th>';
-                tbl += '<th>Var (%)</th>';
+                //tbl += '<th>Tar</th>';
+                //tbl += '<th>Act</th>';
+                //tbl += '<th>Var (%)</th>';
 
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
@@ -4759,9 +4759,9 @@
                         tbl += '<td class="text-right">' + act_prval.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + plf_var.toFixed(2) + '</td>';
 
-                        tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].tar_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_ma.toFixed(2) + '</td>';
@@ -4878,9 +4878,9 @@
                     tbl += '<td class="text-right"><b>' + avg_act_pr.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_pr_var.toFixed(2) + '</b></td>';
 
-                    tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
-                    tbl += '<td class="text-right"><b>' + avg_act_TCpr.toFixed(2) + '</b></td>';
-                    tbl += '<td class="text-right"><b>' + avg_TCpr_var.toFixed(2) + '</b></td>';
+                    //tbl += '<td class="text-right"><b>' + avg_tar_pr.toFixed(2) + '</b></td>';
+                    //tbl += '<td class="text-right"><b>' + avg_act_TCpr.toFixed(2) + '</b></td>';
+                    //tbl += '<td class="text-right"><b>' + avg_TCpr_var.toFixed(2) + '</b></td>';
 
                     tbl += '<td class="text-right"><b>' + avg_tar_ma.toFixed(2) + '</b></td>';
                     tbl += '<td class="text-right"><b>' + avg_act_ma.toFixed(2) + '</b></td>';
@@ -4997,40 +4997,40 @@
                                         else if (columnIdx == 22) {
                                             return 'PR (%)  Var (%) ';
                                         }
+                                        //else if (columnIdx == 23) {
+                                        //    return 'Temp Corr. PR (%)  Tar';
+                                        //}
+                                        //else if (columnIdx == 24) {
+                                        //    return 'Temp Corr. PR (%)  Act ';
+                                        //}
+                                        //else if (columnIdx == 25) {
+                                        //    return 'Temp Corr. PR (%)  Var (%) ';
+                                        //}
                                         else if (columnIdx == 23) {
-                                            return 'Temp Corr. PR (%)  Tar';
-                                        }
-                                        else if (columnIdx == 24) {
-                                            return 'Temp Corr. PR (%)  Act ';
-                                        }
-                                        else if (columnIdx == 25) {
-                                            return 'Temp Corr. PR (%)  Var (%) ';
-                                        }
-                                        else if (columnIdx == 26) {
                                             return 'MA (%)  Tar';
                                         }
-                                        else if (columnIdx == 27) {
+                                        else if (columnIdx == 24) {
                                             return 'MA (%)  Act ';
                                         }
-                                        else if (columnIdx == 28) {
+                                        else if (columnIdx == 25) {
                                             return 'MA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 29) {
+                                        else if (columnIdx == 26) {
                                             return 'IGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 30) {
+                                        else if (columnIdx == 27) {
                                             return 'IGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 31) {
+                                        else if (columnIdx == 28) {
                                             return 'IGA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 32) {
+                                        else if (columnIdx == 29) {
                                             return 'EGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 33) {
+                                        else if (columnIdx == 30) {
                                             return 'EGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 34) {
+                                        else if (columnIdx == 31) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -5119,40 +5119,40 @@
                                         else if (columnIdx == 22) {
                                             return 'PR (%)  Var (%) ';
                                         }
+                                        //else if (columnIdx == 23) {
+                                        //    return 'Temp Corr. PR (%)  Tar';
+                                        //}
+                                        //else if (columnIdx == 24) {
+                                        //    return 'Temp Corr. PR (%)  Act ';
+                                        //}
+                                        //else if (columnIdx == 25) {
+                                        //    return 'Temp Corr. PR (%)  Var (%) ';
+                                        //}
                                         else if (columnIdx == 23) {
-                                            return 'Temp Corr. PR (%)  Tar';
-                                        }
-                                        else if (columnIdx == 24) {
-                                            return 'Temp Corr. PR (%)  Act ';
-                                        }
-                                        else if (columnIdx == 25) {
-                                            return 'Temp Corr. PR (%)  Var (%) ';
-                                        }
-                                        else if (columnIdx == 26) {
                                             return 'MA (%)  Tar';
                                         }
-                                        else if (columnIdx == 27) {
+                                        else if (columnIdx == 24) {
                                             return 'MA (%)  Act ';
                                         }
-                                        else if (columnIdx == 28) {
+                                        else if (columnIdx == 25) {
                                             return 'MA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 29) {
+                                        else if (columnIdx == 26) {
                                             return 'IGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 30) {
+                                        else if (columnIdx == 27) {
                                             return 'IGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 31) {
+                                        else if (columnIdx == 28) {
                                             return 'IGA (%)  Var (%) ';
                                         }
-                                        else if (columnIdx == 32) {
+                                        else if (columnIdx == 29) {
                                             return 'EGA (%)  Tar';
                                         }
-                                        else if (columnIdx == 33) {
+                                        else if (columnIdx == 30) {
                                             return 'EGA (%)  Act ';
                                         }
-                                        else if (columnIdx == 34) {
+                                        else if (columnIdx == 31) {
                                             return 'EGA (%)  Var (%) ';
                                         }
                                         else {
@@ -5233,40 +5233,40 @@
                                 else if (idx == 22) {
                                     return 'PR (%)  Var (%) ';
                                 }
+                                //else if (idx == 23) {
+                                //    return 'Temp Corr. PR (%)  Tar';
+                                //}
+                                //else if (idx == 24) {
+                                //    return 'Temp Corr. PR (%)  Act ';
+                                //}
+                                //else if (idx == 25) {
+                                //    return 'Temp Corr. PR (%)  Var (%) ';
+                                //}
                                 else if (idx == 23) {
-                                    return 'Temp Corr. PR (%)  Tar';
-                                }
-                                else if (idx == 24) {
-                                    return 'Temp Corr. PR (%)  Act ';
-                                }
-                                else if (idx == 25) {
-                                    return 'Temp Corr. PR (%)  Var (%) ';
-                                }
-                                else if (idx == 26) {
                                     return 'MA (%)  Tar';
                                 }
-                                else if (idx == 27) {
+                                else if (idx == 24) {
                                     return 'MA (%)  Act ';
                                 }
-                                else if (idx == 28) {
+                                else if (idx == 25) {
                                     return 'MA (%)  Var (%) ';
                                 }
-                                else if (idx == 29) {
+                                else if (idx == 26) {
                                     return 'IGA (%)  Tar';
                                 }
-                                else if (idx == 30) {
+                                else if (idx == 27) {
                                     return 'IGA (%)  Act ';
                                 }
-                                else if (idx == 31) {
+                                else if (idx == 28) {
                                     return 'IGA (%)  Var (%) ';
                                 }
-                                else if (idx == 32) {
+                                else if (idx == 29) {
                                     return 'EGA (%)  Tar';
                                 }
-                                else if (idx == 33) {
+                                else if (idx == 30) {
                                     return 'EGA (%)  Act ';
                                 }
-                                else if (idx == 34) {
+                                else if (idx == 31) {
                                     return 'EGA (%)  Var (%) ';
                                 }
                                 else {
