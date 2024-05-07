@@ -6320,6 +6320,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string expDailyFilter = $" t1.data_date >='{fromDate}' AND t1.data_date <= '{todate}'";
             string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
             string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
 
@@ -6328,10 +6329,12 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             if (!string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + site + ") ";
+                expDailyFilter += $" AND t1.site_id IN({site})";
             }
             if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + spvsiteList + ") ";
+                expDailyFilter += $" AND t1.site_id IN({spvsiteList})";
                 //tmlFilter += " t1.site_id IN(" + site + ")";
 
             }
@@ -6399,6 +6402,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             //    LogError(0, 1, 5, functionName, msg, backend);
             //}
             string getPower = "";
+            /*
             if (GetFrom15Min)
             {
                 if (CombineReport)
@@ -6421,8 +6425,9 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             {
                 //For getting Expectd power form 1 minute data. Here divide by 60
                 getPower = "  select t2.site, SUM(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by site_id";
-            }
-
+            }*/
+            //DGR_v3 new table 
+            getPower = $"SELECT t2.site, SUM(t1.expected_power) AS expected_kwh FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE {expDailyFilter} AND t1.aop_top = 1 GROUP BY t1.site_id";
 
 
             string getTempCorrPr = "SELECT t2.site, t1.site_id, SUM(t1.jmrTempPR) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t1.site_id;";
@@ -6484,7 +6489,6 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                     if (_dataelement.site == _tempdataelement.site)
                     {
                         _dataelement.expected_kwh = _tempdataelement.expected_kwh;
-                        _dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
                     }
                 }
                 foreach (SolarPerformanceReports1 _tempdataelement in dataTempCorrPr)
@@ -6566,6 +6570,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
             string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string expDailyFilter = $" t1.data_date >='{fromDate}' AND t1.data_date <= '{todate}'";
             string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
             string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
             string filter = "";
@@ -6574,11 +6579,13 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             {
                 filter += " and t1.site_id IN(" + site + ") ";
                 filter2 += " where site_master_solar_id	 IN(" + site + ") ";
+                expDailyFilter += $" AND t1.site_id IN({site})";
             }
             if (!string.IsNullOrEmpty(spv) && string.IsNullOrEmpty(site))
             {
                 filter += " and t1.site_id IN(" + spvsiteList + ") ";
                 filter2 += " where site_master_solar_id	 IN(" + spvsiteList + ") ";
+                expDailyFilter += $" AND t1.site_id IN({spvsiteList})";
 
             }
             string qry1 = "create or replace view temp_viewSPV as select t1.date, t1.site_id, t2.site, t3.spv,t1.gen_nos, t1.ghi, t1.poa, t1.plf,t1.pr, t1.ma, t1.iga, t1.ega" +
@@ -6700,6 +6707,7 @@ AS subquery;";
             data = await Context.GetData<SolarPerformanceReports1>(newQery).ConfigureAwait(false);
 
             string getPower = "";
+            /*
             if (GetFrom15Min)
             {
                 //For 15 min data calculation.
@@ -6723,9 +6731,10 @@ AS subquery;";
             {
                 //For 1 min data calculation.
                 getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
-            }
-            
-            
+            } */
+            //DGR_v3 dailybasis changes.
+            getPower = $"SELECT t2.site, t2.spv, SUM(t1.expected_power) AS expected_kwh FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE {expDailyFilter} AND t1.aop_top = 1 GROUP BY t2.spv";
+
             List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
             string functionName = "GetSolarPerformanceReportBySPVWise";
             try
