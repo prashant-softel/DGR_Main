@@ -104,12 +104,22 @@
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                             <input type="text" class="form-control float-right col-sm-6" value="" id="daterange" name="daterange">
-                            @*<input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2023-09" style="border: 1px solid #aaa" />*@
+                            <input type="text" class="form-control float-right col-sm-6" value="" id="daterange" name="daterange">
+                             @*<input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2023-09" style="border: 1px solid #aaa" />*@
 
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3" id="type_select_div" style="position: relative; display: flex; justify-content: start; align-items: start;">
+                            <label class="col-sm-3 col-form-label">Type : </label>
+                            <select class="form-control col-sm-9" id="TypeSelect" placeholder="Select Type" onchange="TypeChnage()" value="" style="height: 40px; margin-left: 10px; ">
+                                <option value="0">Select Type</option>
+                                <option value="1">SPV Wise</option>
+                                <option value="2">Site Wise</option>
+                            </select>
+                        <div style="padding: 10px; display: flex; justify-content: start; align-items: flex-start; position: absolute; top: 0px;" >
+                        </div>
+                    </div>
+                    <div class="col-sm-3"  id="spv_select_div"  style="display: none;">
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-sm-2 col-form-label text-right">SPV : </label>
@@ -117,7 +127,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3"  id="site_select_div" style="display: none;">
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-sm-2 col-form-label text-right">Site : </label>
@@ -144,13 +154,13 @@
                                     </div>
                                     <div style="position: relative;">
                                         <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
-                                        <div id="Waterfall" style="width: 100%; z-index: 1; padding-left: 6%;"></div>
+                                        <div id="Waterfall" style="width: 100%; z-index: 1; overflow-y: auto;"></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div style="position: relative;">
                                         <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
-                                        <div id="WaterfallYearly" style="width: 100%; z-index: 1; padding-left: 6%;"></div>
+                                        <div id="WaterfallYearly" style="width: 100%; z-index: 1; overflow-y: auto;"></div> @*padding-left: 6%;*@
                                     </div>
                                      @*<div class="card-title text-center"> Yearly </div>
                                         <div id="WaterfallYearly" style="width: 100%;"></div>*@
@@ -170,13 +180,13 @@
                                     </div>
 
                                     <!-- Monthly Section -->
-                                    <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 50%; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
-                                        <div class="scrollable-container" id="monthlyComments" style="display: block; height: 100%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
+                                    <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
+                                        <div class="scrollable-container" id="monthlyComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
                                             <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DMC_Other" style="display: block; cursor: default;"></div>
                                         </div>
-                                        <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
+                                        <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                              @*Scrollable division*@
 
                                              @*Entire content division with BDtype site and reason.*@
@@ -220,7 +230,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="scrollable-container" id="monthlyEdit" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                        <div class="scrollable-container" id="monthlyEdit" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                             <div id="ECM" style="overflow: hidden;">
                                                 <div id="backBtnECM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
                                                     <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
@@ -233,8 +243,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ECM_BDSelect" onchange="EMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="1">EGB</option>
                                                         <option value="2">BD</option>
+                                                        <option value="1">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -243,7 +253,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="scrollable-container" id="monthlyDelete" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                        <div class="scrollable-container" id="monthlyDelete" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                             <div id="DCM" style="overflow: hidden;">
                                                 <div id="backBtnDCM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
                                                     <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
@@ -255,8 +265,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="DCM_BDSelect" onchange="DMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="1">EGB</option>
                                                         <option value="2">BD</option>
+                                                        <option value="1">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -285,13 +295,13 @@
                                     </div>
 
                                     <!-- Yearly Section -->
-                                    <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 50%; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
-                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 100%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
+                                    <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
+                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
                                             <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
                                         </div>
-                                        <div class="scrollable-container" id="yearAdd" style="display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
+                                        <div class="scrollable-container" id="yearAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                              @*Scrollable division*@
 
                                              @*Entire content division with BDtype site and reason.*@
@@ -335,7 +345,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="scrollable-container" id="yearEdit" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                        <div class="scrollable-container" id="yearEdit" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                             <div id="ECY" style="overflow: hidden;">
                                                 <div id="backBtnECY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
                                                     <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
@@ -348,8 +358,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ECY_BDSelect" onchange="EYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="1">EGB</option>
                                                         <option value="2">BD</option>
+                                                        <option value="1">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -357,7 +367,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="scrollable-container" id="yearDelete" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                        <div class="scrollable-container" id="yearDelete" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                             <div id="DCY" style="overflow: hidden;">
                                                 <div id="backBtnDCY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
                                                     <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
@@ -369,8 +379,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="DCY_BDSelect" onchange="DYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="1">EGB</option>
                                                         <option value="2">BD</option>
+                                                        <option value="1">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -427,6 +437,24 @@
 
     var isSPV = 0; //0 = SPV, 1= Site.
     var siteType = 2; //site_type = 1 Solar, 2 : Wind
+
+    function TypeChnage() {
+        var spvDivEle = document.getElementById("spv_select_div");
+        var siteDivEle = document.getElementById("site_select_div");
+        var typeSelect = document.getElementById("TypeSelect").value;
+        if (typeSelect === "1") {
+            console.log("SPV wise Type selected");
+            isSPV = 0;
+            siteDivEle.style.display = "none";
+            spvDivEle.style.display = "block";
+        }
+        else if (typeSelect === "2") {
+            console.log("Site wise Type selected");
+            isSPV = 1;
+            spvDivEle.style.display = "none";
+            siteDivEle.style.display = "block";
+        }
+    }
 
     $(document).ready(function () {
         $('#daterange').daterangepicker({
@@ -488,8 +516,13 @@
             site_id += $(this).val() + ",";
         });
         site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        if (site_id == "" || site_id == null) {
-            alert("Please select site ");
+        //if (site_id == "" || site_id == null) {
+        //    alert("Please select site ");
+        //    return false;
+        //}
+        var typeSelect = document.getElementById("TypeSelect").value;
+        if (typeSelect === "" || typeSelect === 0) {
+            alert("Please Select Type First.");
             return false;
         }
 
@@ -507,16 +540,17 @@
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
 
-        if (spv == "") {
-            isSPV = 1;
-            //console.log("So you will be seeing Data site wise.");
-        } else {
-            isSPV = 0;
-            //console.log("So you will be seeing Data spv wise.");
-        }
+        //if (spv == "") {
+        //    isSPV = 1;
+        //    //console.log("So you will be seeing Data site wise.");
+        //} else {
+        //    isSPV = 0;
+        //    //console.log("So you will be seeing Data spv wise.");
+        //}
+
         // Function call to get the comments data. Display Monthly Comments (DMC).
-        DMC(site_id, spv, nDval, false);
-        DYC(site_id, spv, nDval);
+        DMC(site_id, isSPV, nDval, false);
+        DYC(site_id, isSPV, nDval);
 
         //Function call to get the chart data monthly.
         getChartData(site_id, fromDate, toDate); //Haresh Uncomment this afterwadrs for getting charts again.
@@ -1121,7 +1155,7 @@
             //Functions for onclick functionality of buttons. 6 functions.
     //ALL for Display Monthly Comments. (DMC).
     // Display monthly commets main function.
-    function DMC(site_id, spv, nDval, afterUpdate) {
+    function DMC(site_id, isSPV, nDval, afterUpdate) {
         var mDisplay = document.getElementById("monthlyComments");
         var mAdd = document.getElementById("monthlyAdd");
         var mEdit = document.getElementById("monthlyEdit");
@@ -1133,13 +1167,13 @@
         mDelete.style.display = "none";
 
         console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
-        if (spv == "") {
-            isSPV = 1;
-            //console.log("So you will be seeing Data site wise.");
-        } else {
-            isSPV = 0;
-            //console.log("So you will be seeing Data spv wise.");
-        }
+        //if (spv == "") {
+        //    isSPV = 1;
+        //    //console.log("So you will be seeing Data site wise.");
+        //} else {
+        //    isSPV = 0;
+        //    //console.log("So you will be seeing Data spv wise.");
+        //}
 
         //0 = SPV, 1= Site.
         var temDate = nDval.split("-");
@@ -1397,7 +1431,7 @@
             //console.log("ACM_info array after inserting BD set.");
             //console.log(ACM_info);
         } else {
-            showToast('No BDs to Add', 5000, 'monthlyAdd');
+            showToast('No BDs to Add', 5000, 'monthlyAdd', false);
         }
 
     }
@@ -1554,7 +1588,7 @@
             //console.log(ACM_info);
         }
         else {
-            showToast('No sites to Add', 5000, 'monthlyAdd');
+            showToast('No sites to Add', 5000, 'monthlyAdd', false);
         }
 
     }
@@ -1682,7 +1716,7 @@
         mainACM_div.innerHTML = "";
 
         var RefreshContent = '';
-        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACM_info_div"> <p id = "ACM_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i></div> < div id = "ACM_info_div" > <p id="ACM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div > <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACM_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
 
         mainACM_div.innerHTML = RefreshContent;
         ACM_info = [];
@@ -1780,7 +1814,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = ECMSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Edit";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -1803,9 +1837,10 @@
     function createUI(element, Destcontainer, index) {
         var commentContainer = document.createElement('div');
         commentContainer.className = 'comment-container';
+        commentContainer.style = "width: 100%;";
 
         var siteLabel = document.createElement('label');
-        siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); display: inline-block; overflow: hidden;";
+        siteLabel.style = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); display: inline-block; overflow: hidden;";
         //"width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;"
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
@@ -1825,7 +1860,7 @@
         var commentInput = document.createElement('input');
         commentInput.className = 'comment-input';
         commentInput.type = 'text';
-        commentInput.style = "margin-left: 10px; width: 370px; height: 35px; border: 1px solid #ccc; vertical-align: top;";
+        commentInput.style = "margin-left: 10px; width: 65%; height: 35px; border: 1px solid #ccc; vertical-align: top;";
         element.comment = element.comment.replace(/<br>/g, ";");
         commentInput.value = element.comment;
         commentInput.id = "ECMInput_" + index;
@@ -1888,7 +1923,7 @@
         }else {
             // No changes, call toast function
             console.log("No changes in comments. Calling the toast function.");
-            showToast("No Changes to Update.", 7000, "ECM");
+            showToast("No Changes to Update.", 7000, "ECM", false);
         }
     }
 
@@ -1969,7 +2004,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = DCMSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Delete";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -1997,7 +2032,7 @@
         commentContainer.style.alignItems = 'center';
 
         var siteLabel = document.createElement('label');
-        siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.style.cssText = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         //siteLabel.textContent = element.site;
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
@@ -2015,7 +2050,7 @@
         element.label_id = "DCMLabel" + index;
 
         var CommentLabel = document.createElement('label');
-        CommentLabel.style.cssText = "width: 340px; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        CommentLabel.style.cssText = "width: 65%; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         CommentLabel.textContent = element.comment;
         CommentLabel.id = "DCMLabel" + index;
         element.comment_id = "DCMComment" + index;
@@ -2096,7 +2131,7 @@
             });
         } else {
             // No changes, call toast function
-            showToast("No Comments Selected to Delete.", 7000, "DCM");
+            showToast("No Comments Selected to Delete.", 7000, "DCM", false);
         }
 
     }
@@ -2118,13 +2153,13 @@
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
                 DMC(site_id, spv, nDval, true);
-                showToast("Comments Updated successfully.", 5000, "monthlyComments");
+                showToast("Comments Updated successfully.", 5000, "monthlyComments", true);
             } else if (functionality == "Add") {
                 DMC(site_id, spv, nDval, true);
-                showToast("Comments Added successfully.", 5000, "monthlyComments");
+                showToast("Comments Added successfully.", 5000, "monthlyComments", true);
             } else if (functionality == "Delete") {
                 DMC(site_id, spv, nDval, true);
-                showToast("Comments Deleted successfully.", 5000, "monthlyComments");
+                showToast("Comments Deleted successfully.", 5000, "monthlyComments", true);
             }
         }
         if (isUpdateCancel == "Cancel") {
@@ -2152,7 +2187,7 @@
 
     //ALL for Display Year Comments. (DYC).
     // Display year commets main function.
-    function DYC(site_id, spv, nDval) {
+    function DYC(site_id, isSPV, nDval) {
         var yDisplay = document.getElementById("yearComments");
         var yAdd = document.getElementById("yearAdd");
         var yEdit = document.getElementById("yearEdit");
@@ -2164,13 +2199,13 @@
         yDelete.style.display = "none";
 
         //console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
-        if (spv == "") {
-            isSPV = 1;
-            //console.log("So you will be seeing Data site wise.");
-        } else {
-            isSPV = 0;
-            //console.log("So you will be seeing Data spv wise.");
-        }
+        //if (spv == "") {
+        //    isSPV = 1;
+        //    //console.log("So you will be seeing Data site wise.");
+        //} else {
+        //    isSPV = 0;
+        //    //console.log("So you will be seeing Data spv wise.");
+        //}
 
         //0 = SPV, 1= Site.
         var temDate = nDval.split("-");
@@ -2405,7 +2440,7 @@
             //console.log("ACY_info array after inserting BD set.");
             //console.log(ACY_info);
         } else {
-            showToast('No BDs to Add', 5000, 'yearAdd');
+            showToast('No BDs to Add', 5000, 'yearAdd', false);
         }
 
     }
@@ -2551,7 +2586,7 @@
             //console.log(ACY_info);
         }
         else {
-            showToast('No sites to Add', 5000, 'yearAdd');
+            showToast('No sites to Add', 5000, 'yearAdd', false);
         }
 
     }
@@ -2678,7 +2713,7 @@
         mainACY_div.innerHTML = "";
 
         var RefreshContent = '';
-        RefreshContent = '<div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACY_info_div"> <p id = "ACY_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACY_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACY_sitesM1_1" style="height: 40px;"></select> <input id="ACY_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+        RefreshContent = '<div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACY_info_div"> <p id = "ACY_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div><div id="ACY_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACY_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACY_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
 
         mainACY_div.innerHTML = RefreshContent;
         ACY_info = [];
@@ -2775,7 +2810,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = ECYSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Edit";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -2798,9 +2833,10 @@
     function createUIYear(element, Destcontainer, index) {
         var commentContainer = document.createElement('div');
         commentContainer.className = 'comment-container';
+        commentContainer.style = "width:100%;";
 
         var siteLabel = document.createElement('label');
-        siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.style = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
             var marquee = document.createElement('marquee');
@@ -2819,7 +2855,7 @@
         var commentInput = document.createElement('input');
         commentInput.className = 'comment-input';
         commentInput.type = 'text';
-        commentInput.style = "margin-left: 10px; width: 370px; height: 35px; border: 1px solid #ccc; vertical-align: top;";
+        commentInput.style = "margin-left: 10px; width: 65%; height: 35px; border: 1px solid #ccc; vertical-align: top;";
         element.comment = element.comment.replace(/<br>/g, ";");
         commentInput.value = element.comment;
         //commentInput.value = element.comment;
@@ -2883,7 +2919,7 @@
         } else {
             // No changes, call toast function
             console.log("No changes in comments. Calling the toast function. Year");
-            showToast("No Changes to Update.", 7000, "ECY");
+            showToast("No Changes to Update.", 7000, "ECY", false);
         }
     }
 
@@ -2963,7 +2999,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = DCYSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Delete";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -2991,7 +3027,7 @@
         commentContainer.style.alignItems = 'center';
 
         var siteLabel = document.createElement('label');
-        siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.style.cssText = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
             var marquee = document.createElement('marquee');
@@ -3008,7 +3044,7 @@
         element.label_id = "DCYLabel" + index;
 
         var CommentLabel = document.createElement('label');
-        CommentLabel.style.cssText = "width: 340px; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        CommentLabel.style.cssText = "width: 65%; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         CommentLabel.textContent = element.comment;
         CommentLabel.id = "DCYLabel" + index;
         element.comment_id = "DCYComment" + index;
@@ -3090,7 +3126,7 @@
             });
         } else {
             // No changes, call toast function
-            showToast("No Comments Selected to Delete.", 7000, "DCY");
+            showToast("No Comments Selected to Delete.", 7000, "DCY", false);
         }
     }
 
@@ -3111,13 +3147,13 @@
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
                 DYC(site_id, spv, nDval);
-                showToast("Comments Updated successfully.", 5000, "yearComments");
+                showToast("Comments Updated successfully.", 5000, "yearComments", true);
             } else if (functionality == "Add") {
                 DYC(site_id, spv, nDval);
-                showToast("Comments Added successfully.", 5000, "yearComments");
+                showToast("Comments Added successfully.", 5000, "yearComments", true);
             } else if (functionality == "Delete") {
                 DYC(site_id, spv, nDval);
-                showToast("Comments Deleted successfully.", 5000, "yearComments");
+                showToast("Comments Deleted successfully.", 5000, "yearComments", true);
             }
         }
         if (isUpdateCancel == "Cancel") {
@@ -3163,7 +3199,7 @@
         };
     }
 
-    function showToast(message, duration, division) {
+    function showToast(message, duration, division, SuccessFailure) {
         // Create the toast element with inline styles
         var toast = document.createElement('div');
         toast.innerHTML = message + '<span onclick="closeToastByClick()" style="cursor: pointer; position: absolute; top: 0; right: 0; padding: 5px;">&times;</span>';
@@ -3172,7 +3208,11 @@
         toast.style.top = '50%';
         toast.style.left = '50%';
         toast.style.transform = 'translate(-50%, -50%)';
-        toast.style.backgroundColor = '#ee403d';
+        if (SuccessFailure) {
+            toast.style.backgroundColor = '#86c466';
+        } else {
+            toast.style.backgroundColor = '#ee403d';
+        }
         toast.style.color = '#ffffff';
         toast.style.padding = '15px';
         toast.style.borderRadius = '5px';
