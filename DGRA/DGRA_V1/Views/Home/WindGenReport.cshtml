@@ -434,9 +434,9 @@
     var exceldata1;
     var exceldata2;
     var exceldata3;
-     var exceldata4;
-     var exceldata5;
-     var exceldata6;
+    var exceldata4;
+    var exceldata5;
+    var exceldata6;
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     var windUserAccess ="@Html.Raw(windSiteList.TrimEnd(','))";
     $(document).ready(function () {
@@ -703,7 +703,7 @@
         }
          $('select#stateM option:selected').each(function () {
             state_id += $(this).val() + ",";
-            console.log($(this).val());
+            //console.log($(this).val());
         });
         state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
 
@@ -1002,7 +1002,6 @@
                 tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                 tbl += '<th>Gen_Hrs</th>';
                 tbl += '<th>Lull_Hrs</th>';
-
                 tbl += '<th>USMH</th>';
                 tbl += '<th>SMH</th>';
                 tbl += '<th>Others</th>';
@@ -1010,8 +1009,6 @@
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>LS</th>';
                 tbl += '<th>Total_BD</th>';
-
-
                 tbl += '<th>USMH_Loss</th>';
                 tbl += '<th>SMH_Loss</th>';
                 tbl += '<th>Others_Loss</th>';
@@ -1020,30 +1017,14 @@
                 tbl += '<th>LS_Loss</th>';
                 tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
-
                 if (result.length > 0) {
                     exceldata1 = result;
-                    //result.sort(function (a, b) {
-                    //    var dateA = new Date(a.date);
-                    //    var dateB = new Date(b.date);
-                    //    return dateA - dateB;
-                    //});
-
                     var total_losses = 0;
                     var total_hourse = 0;
                     for (var i = 0; i < result.length; i++) {
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
                         total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-
-                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
-                        //var dateOnly = result[i].date.split("T")[0];
-                        //var splitDate = dateOnly.split("-");
-                        //var finalDate = splitDate[2] + "-" + splitDate[1] + "-" + splitDate[0];
-                        //console.log("Date : " + formattedDate + ", Site : " + result[i].site + ", WTG : " + result[i].wtg);
-                        //console.log("USMH : " + result[i].unschedule_num + " SMH : " + result[i].schedule_num);
-                        //console.log(" Others : " + result[i].others_num + " IGBDH : " + result[i].igbdh_num + " EGBD : " + result[i].egbdh_num + " load Shedding : " + result[i].load_shedding_num);
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -1070,15 +1051,6 @@
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
-
-                        //tbl += '<td  class="text-right">' + result[i].usmh_loss.toFixed(2) + '</td>';
-                        //tbl += '<td  class="text-right">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        //tbl += '<td  class="text-right">' + result[i].others_loss.toFixed(2) + '</td>';
-                        //tbl += '<td  class="text-right">' + result[i].igbdh_loss.toFixed(2) + '</td>';
-                        //tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
-                        //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
-                        //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
-
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
@@ -1196,7 +1168,7 @@
             state += $(this).val() + ",";
         });
         state = state != "" ? state.slice(0, -1) : state;
-        console.log("selected  states :" + state);
+        //console.log("selected  states :" + state);
         let spv = "";
         $('select#spv option:selected').each(function () {
             spv += $(this).val() + ",";
@@ -1267,13 +1239,11 @@
 
                 if (result.length > 0) {
                     exceldata2 = result;
-                    console.log(exceldata2);
                     var total_losses = 0;
                     var total_hourse = 0;
                     for (var i = 0; i < result.length; i++) {
 
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
                         total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
 
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
@@ -1320,9 +1290,9 @@
                         tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
-                        console.log(typeof (result[i].usmh_loss));
-                        console.log(Math.abs(parseFloat(result[i].usmh_loss)));
-                        console.log(Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2));
+                        //console.log(typeof (result[i].usmh_loss));
+                        //console.log(Math.abs(parseFloat(result[i].usmh_loss)));
+                        //console.log(Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2));
                     }
                 }
                 else {
@@ -1536,7 +1506,7 @@
 
                         //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
                         total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-                        console.log("Total BD", total_hourse);
+                        //console.log("Total BD", total_hourse);
                         //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + year + '</td>';
@@ -2124,7 +2094,7 @@
                         },
                         'colvis',
                         {
-                          
+
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
 
@@ -2368,7 +2338,7 @@
                             className: 'btn ml-1   ',
 
                             action: function () {
-                                yearlyexportToExcelwtgwise();
+                                yearlyexportToExcelsitewise();
                             }
                         },
                     ],
@@ -2412,463 +2382,418 @@
 
         result = exceldata1;
         var columns = [
-            "Date", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others","IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "Others_Loss", "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", "Total_Loss"
+            "Date", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh",
+            "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C",
+            "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others", "IGBDH", "EGBDH",
+            "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "Others_Loss", "IGBDH_Loss",
+            "EGBDH_Loss", "LS_Loss", "Total_Loss"
         ];
-        console.log(exceldata1);
+        //console.log(exceldata1);
         var rows = [];
-        for (var i = 0; i < result.length; i++) {
+        var total_losses = 0;
+        var total_hourse = 0;
+        for (var i = 0; i < result.length; i++)
+        {
             var row = [];
-            var total_losses = 0;
-            var total_hourse = 0;
-            for (var i = 0; i < result.length; i++) {
+            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+            total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
 
-                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-
-                row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
-                row.push(result[i].country);
-                row.push(result[i].state);
-                row.push(result[i].spv);
-                row.push(result[i].site);
-                row.push(result[i].wtg);
-                row.push(result[i].wind_speed);
-                row.push(result[i].kwh);
-                row.push(result[i].plf);
-                row.push(result[i].ma_actual);
-                row.push(result[i].ma_contractual);
-                row.push(result[i].iga);
-                row.push(result[i].ega);
-                row.push(result[i].ega_b);
-                row.push(result[i].ega_c);
-                //row.push(result[i].plf);
-                row.push(result[i].grid_hrs);
-                row.push(result[i].lull_hrs);
-                //row.push(result[i].production_hrs);
-                row.push(result[i].unschedule_num);
-                row.push(result[i].schedule_num);
-                row.push(result[i].others_num);
-                row.push(result[i].igbdh_num);
-                row.push(result[i].egbdh_num);
-                row.push(result[i].load_shedding_num);
-                row.push(total_hourse);
-                //row.push(result[i].load_shedding_num);
-                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-                row.push(Math.abs(parseFloat(result[i].smh_loss)));
-                row.push(Math.abs(parseFloat(result[i].others_loss)));
-                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-                row.push(Math.abs(parseFloat(total_losses)));
-
-
-                rows.push(row);
-            }
-
-            var data = [columns].concat(rows);
-            var ws = XLSX.utils.aoa_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "WTGWise Daily Gen Report");
-            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-            function s2ab(s) {
-                var buf = new ArrayBuffer(s.length);
-                var view = new Uint8Array(buf);
-                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Daily Gen Report.xlsx");
-
-
+            row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].wtg);
+            row.push(result[i].wind_speed);
+            row.push(result[i].kwh);
+            row.push(result[i].plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].ma_contractual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            //row.push(result[i].plf);
+            row.push(result[i].grid_hrs);
+            row.push(result[i].lull_hrs);
+            //row.push(result[i].production_hrs);
+            row.push(result[i].unschedule_num);
+            row.push(result[i].schedule_num);
+            row.push(result[i].others_num);
+            row.push(result[i].igbdh_num);
+            row.push(result[i].egbdh_num);
+            row.push(result[i].load_shedding_num);
+            row.push(total_hourse);
+            //row.push(result[i].load_shedding_num);
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+            row.push(Math.abs(parseFloat(result[i].smh_loss)));
+            row.push(Math.abs(parseFloat(result[i].others_loss)));
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+            row.push(Math.abs(parseFloat(total_losses)));
+            rows.push(row);
         }
-
-
+        var data = [columns].concat(rows);
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "WTGWise Daily Gen Report");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Daily Gen Report.xlsx");
     }
-    function dailyexportToExcelsitewise() {
 
+
+    function dailyexportToExcelsitewise()
+    {
         result = exceldata2;
         var columns = [
-            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "Others_Loss", "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", "Total_Loss"
-
-
+            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind",
+            "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C",
+            "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss",
+            "Others_Loss", "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", "Total_Loss"
         ];
-        console.log(result);
+        //console.log(result);
         var rows = [];
-        for (var i = 0; i < result.length; i++) {
+        var total_losses = 0;
+        var total_hourse = 0;
+        for (var i = 0; i < result.length; i++)
+        {
             var row = [];
-            var total_losses = 0;
-            var total_hourse = 0;
-            for (var i = 0; i < result.length; i++) {
-
-                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-                row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
-                row.push(result[i].country);
-                row.push(result[i].state);
-                row.push(result[i].spv);
-                row.push(result[i].site);
-                row.push(result[i].total_mw);
-                row.push(result[i].wind_speed);
-                row.push(result[i].kwh);
-                row.push(result[i].plf);
-                row.push(result[i].ma_actual);
-                row.push(result[i].ma_contractual);
-                row.push(result[i].iga);
-                row.push(result[i].ega);
-                row.push(result[i].ega_b);
-                row.push(result[i].ega_c);
-                row.push(result[i].plf);
-                row.push(result[i].grid_hrs);
-                row.push(result[i].lull_hrs);
-                row.push(result[i].production_hrs);
-                row.push(result[i].unschedule_num);
-                row.push(result[i].schedule_num);
-                row.push(result[i].others_num);
-                row.push(result[i].igbdh_num);
-                row.push(result[i].egbdh_num);
-                row.push(result[i].load_shedding_num);
-                row.push(total_hourse);
-                row.push(result[i].load_shedding_num);
-                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-                row.push(Math.abs(parseFloat(result[i].smh_loss)));
-                row.push(Math.abs(parseFloat(result[i].others_loss)));
-                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-                row.push(Math.abs(parseFloat(total_losses)));
-
-
-                rows.push(row);
-            }
-
-            var data = [columns].concat(rows);
-            var ws = XLSX.utils.aoa_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "SiteWise Daily GenReport");
-            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-            function s2ab(s) {
-                var buf = new ArrayBuffer(s.length);
-                var view = new Uint8Array(buf);
-                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Daily GenReport.xlsx");
-
-
+            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+            total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+            row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].total_mw);
+            row.push(result[i].wind_speed);
+            row.push(result[i].kwh);
+            row.push(result[i].plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].ma_contractual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            //row.push(result[i].plf);
+            row.push(result[i].grid_hrs);
+            row.push(result[i].lull_hrs);
+            //row.push(result[i].production_hrs);
+            row.push(result[i].unschedule_num);
+            row.push(result[i].schedule_num);
+            row.push(result[i].others_num);
+            row.push(result[i].igbdh_num);
+            row.push(result[i].egbdh_num);
+            row.push(result[i].load_shedding_num);
+            row.push(total_hourse);
+            //row.push(result[i].load_shedding_num);
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+            row.push(Math.abs(parseFloat(result[i].smh_loss)));
+            row.push(Math.abs(parseFloat(result[i].others_loss)));
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+            row.push(Math.abs(parseFloat(total_losses)));
+            rows.push(row);
         }
-    }
+        var data = [columns].concat(rows);
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SiteWise Daily GenReport");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+        function s2ab(s)
+        {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Daily GenReport.xlsx");
+}
    function monthlyexportToExcelwtgwise() {
         var year = $('select#fyM option:selected').val();
         result = exceldata3;
         var columns = [
-            "FY","Month", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-
-
+            "FY", "Month", "Country", "State", "SPV", "Site", "WTG",
+            "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A",
+            "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss",
+            'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
         ];
         var rows = [];
-        for (var i = 0; i < result.length; i++) {
+        var total_losses = 0;
+        var total_hourse = 0;
+       for (var i = 0; i < result.length; i++)
+       {
             var row = [];
-            var total_losses = 0;
-            var total_hourse = 0;
-            for (var i = 0; i < result.length; i++) {
-
-                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-                total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-                console.log("Total BD", total_hourse);
-                row.push(year);
-                row.push(result[i].month);
-                row.push(result[i].country);
-                row.push(result[i].state);
-                row.push(result[i].spv);
-                row.push(result[i].site);
-                row.push(result[i].wtg);
-                row.push(result[i].wind_speed);
-                row.push(result[i].kwh);
-                row.push(result[i].plf);
-                row.push(result[i].ma_actual);
-                row.push(result[i].ma_contractual);
-                row.push(result[i].iga);
-                row.push(result[i].ega);
-                row.push(result[i].ega_b);
-                row.push(result[i].ega_c);
-                row.push(result[i].plf);
-                row.push(result[i].grid_hrs);
-                row.push(result[i].lull_hrs);
-                row.push(result[i].production_hrs);
-                row.push(result[i].unschedule_num);
-                row.push(result[i].schedule_num);
-                row.push(result[i].others_num);
-                row.push(result[i].igbdh_num);
-                row.push(result[i].egbdh_num);
-                row.push(result[i].load_shedding_num);
-                row.push(total_hourse);
-                row.push(result[i].load_shedding_num);
-                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-                row.push(Math.abs(parseFloat(result[i].smh_loss)));
-                row.push(Math.abs(parseFloat(result[i].others_loss)));
-                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-                row.push(Math.abs(parseFloat(total_losses)));
-
-
-                rows.push(row);
-            }
-
-            var data = [columns].concat(rows);
-            var ws = XLSX.utils.aoa_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "WTGWise Monthly GenReport");
-            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-            function s2ab(s) {
-                var buf = new ArrayBuffer(s.length);
-                var view = new Uint8Array(buf);
-                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Monthly GenReport.xlsx");
-
-
-        }
+            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+            row.push(year);
+            row.push(result[i].month);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].wtg);
+            row.push(result[i].wind_speed);
+            row.push(result[i].kwh);
+            row.push(result[i].plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].ma_contractual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            //row.push(result[i].plf);
+            row.push(result[i].grid_hrs);
+            row.push(result[i].lull_hrs);
+            //row.push(result[i].production_hrs);
+            row.push(result[i].unschedule_num);
+            row.push(result[i].schedule_num);
+            row.push(result[i].others_num);
+            row.push(result[i].igbdh_num);
+            row.push(result[i].egbdh_num);
+            row.push(result[i].load_shedding_num);
+            row.push(total_hourse);
+            //row.push(result[i].load_shedding_num);
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+            row.push(Math.abs(parseFloat(result[i].smh_loss)));
+            row.push(Math.abs(parseFloat(result[i].others_loss)));
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+            row.push(Math.abs(parseFloat(total_losses)));
+            rows.push(row);
+       }
+       var data = [columns].concat(rows);
+       var ws = XLSX.utils.aoa_to_sheet(data);
+       var wb = XLSX.utils.book_new();
+       XLSX.utils.book_append_sheet(wb, ws, "WTGWise Monthly GenReport");
+       var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+       function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+       }
+       saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Monthly GenReport.xlsx");
     }
     function monthlyexportToExcelsitewise() {
         var year = $('select#fyM option:selected').val();
         result = exceldata4;
         var columns = [
-            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-
-
+            "FY", "Month", "Country" ,"State", "SPV", "Site", "Capacity", "Wind",
+            "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C",
+            "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss",
+            'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
         ];
         var rows = [];
-        for (var i = 0; i < result.length; i++) {
+        var total_losses = 0;
+        var total_hourse = 0;
+        for (var i = 0; i < result.length; i++)
+        {
             var row = [];
-            var total_losses = 0;
-            var total_hourse = 0;
-            for (var i = 0; i < result.length; i++) {
-
-                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-                total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-                console.log("Total BD", total_hourse);
-                row.push(year);
-                row.push(result[i].month);
-                row.push(result[i].country);
-                row.push(result[i].state);
-                row.push(result[i].spv);
-                row.push(result[i].site);
-                row.push(result[i].total_mw);
-                row.push(result[i].wind_speed);
-                row.push(result[i].kwh);
-                row.push(result[i].plf);
-                row.push(result[i].ma_actual);
-                row.push(result[i].ma_contractual);
-                row.push(result[i].iga);
-                row.push(result[i].ega);
-                row.push(result[i].ega_b);
-                row.push(result[i].ega_c);
-                row.push(result[i].plf);
-                row.push(result[i].grid_hrs);
-                row.push(result[i].lull_hrs);
-                row.push(result[i].production_hrs);
-                row.push(result[i].unschedule_num);
-                row.push(result[i].schedule_num);
-                row.push(result[i].others_num);
-                row.push(result[i].igbdh_num);
-                row.push(result[i].egbdh_num);
-                row.push(result[i].load_shedding_num);
-                row.push(total_hourse);
-                row.push(result[i].load_shedding_num);
-                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-                row.push(Math.abs(parseFloat(result[i].smh_loss)));
-                row.push(Math.abs(parseFloat(result[i].others_loss)));
-                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-                row.push(Math.abs(parseFloat(total_losses)));
-
-
-                rows.push(row);
-            }
-
-            var data = [columns].concat(rows);
-            var ws = XLSX.utils.aoa_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "SiteWise Monthly Gen Report");
-            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-            function s2ab(s) {
-                var buf = new ArrayBuffer(s.length);
-                var view = new Uint8Array(buf);
-                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Monthly GenReport.xlsx");
-
-
+            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+              
+            row.push(year);
+            row.push(result[i].month);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].total_mw);
+            row.push(result[i].wind_speed);
+            row.push(result[i].kwh);
+            row.push(result[i].plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].ma_contractual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            //row.push(result[i].plf);
+            row.push(result[i].grid_hrs);
+            row.push(result[i].lull_hrs);
+            //row.push(result[i].production_hrs);
+            row.push(result[i].unschedule_num);
+            row.push(result[i].schedule_num);
+            row.push(result[i].others_num);
+            row.push(result[i].igbdh_num);
+            row.push(result[i].egbdh_num);
+            row.push(result[i].load_shedding_num);
+            row.push(total_hourse);
+            //row.push(result[i].load_shedding_num);
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+            row.push(Math.abs(parseFloat(result[i].smh_loss)));
+            row.push(Math.abs(parseFloat(result[i].others_loss)));
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+            row.push(Math.abs(parseFloat(total_losses)));
+            rows.push(row);
         }
+        var data = [columns].concat(rows);
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SiteWise Monthly Gen Report");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+        function s2ab(s)
+        {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Monthly GenReport.xlsx");
     }
-   
+
     function yearlyexportToExcelwtgwise() {
-        var fyyear = $('select#fyM option:selected').val();
+        var fyyear = $('select#fyY option:selected').val();
         result = exceldata5;
         var columns = [
-            "Date", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-
-
+            "FY", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF",
+            "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs",
+            "USMH", "SMH", "Others", "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss",
+            "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
         ];
         var rows = [];
-        for (var i = 0; i < result.length; i++) {
+        var total_losses = 0;
+        var total_hourse = 0;
+        for (var i = 0; i < result.length; i++)
+        {
             var row = [];
-            var total_losses = 0;
-            var total_hourse = 0;
-            for (var i = 0; i < result.length; i++) {
-
-                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-                total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-                row.push(fyyear);
-                row.push(result[i].month);
-                row.push(result[i].country);
-                row.push(result[i].state);
-                row.push(result[i].spv);
-                row.push(result[i].site);
-                row.push(result[i].wtg);
-                row.push(result[i].wind_speed);
-                row.push(result[i].kwh);
-                row.push(result[i].plf);
-                row.push(result[i].ma_actual);
-                row.push(result[i].ma_contractual);
-                row.push(result[i].iga);
-                row.push(result[i].ega);
-                row.push(result[i].ega_b);
-                row.push(result[i].ega_c);
-                row.push(result[i].plf);
-                row.push(result[i].grid_hrs);
-                row.push(result[i].lull_hrs);
-                row.push(result[i].production_hrs);
-                row.push(result[i].unschedule_num);
-                row.push(result[i].schedule_num);
-                row.push(result[i].others_num);
-                row.push(result[i].igbdh_num);
-                row.push(result[i].egbdh_num);
-                row.push(result[i].load_shedding_num);
-                row.push(total_hourse);
-                row.push(result[i].load_shedding_num);
-                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-                row.push(Math.abs(parseFloat(result[i].smh_loss)));
-                row.push(Math.abs(parseFloat(result[i].others_loss)));
-                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-                row.push(Math.abs(parseFloat(total_losses)));
-
-
-                rows.push(row);
-            }
-
-            var data = [columns].concat(rows);
-            var ws = XLSX.utils.aoa_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "WTGWise Yearly GenReport");
-            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-            function s2ab(s) {
-                var buf = new ArrayBuffer(s.length);
-                var view = new Uint8Array(buf);
-                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise  Yearly GenReport.xlsx");
-
-
+            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+            row.push(fyyear);
+            row.push(result[i].month);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].wtg);
+            row.push(result[i].wind_speed);
+            row.push(result[i].kwh);
+            row.push(result[i].plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].ma_contractual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            //row.push(result[i].plf);
+            row.push(result[i].grid_hrs);
+            row.push(result[i].lull_hrs);
+            //row.push(result[i].production_hrs);
+            row.push(result[i].unschedule_num);
+            row.push(result[i].schedule_num);
+            row.push(result[i].others_num);
+            row.push(result[i].igbdh_num);
+            row.push(result[i].egbdh_num);
+            row.push(result[i].load_shedding_num);
+            row.push(total_hourse);
+            //row.push(result[i].load_shedding_num);
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+            row.push(Math.abs(parseFloat(result[i].smh_loss)));
+            row.push(Math.abs(parseFloat(result[i].others_loss)));
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+            row.push(Math.abs(parseFloat(total_losses)));
+            rows.push(row);
         }
+        var data = [columns].concat(rows);
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "WTGWise Yearly GenReport");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise  Yearly GenReport.xlsx");
     }
+
     function yearlyexportToExcelsitewise() {
-        var fyyear = $('select#fyM option:selected').val();
+        var fyyear = $('select#fyY option:selected').val();
         result = exceldata6;
         var columns = [
-            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-
-
+            "FY", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh",
+            "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs",
+            "Lull_Hrs", "USMH", "SMH", "Others", "IGBDH", "EGBDH", "LS", "Total_BD",
+            "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
         ];
         var rows = [];
-        for (var i = 0; i < result.length; i++) {
+        var total_losses = 0;
+        var total_hourse = 0;
+        for (var i = 0; i < result.length; i++)
+        {
             var row = [];
-            var total_losses = 0;
-            var total_hourse = 0;
-            for (var i = 0; i < result.length; i++) {
-                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-                        total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-                row.push(fyyear);
-                row.push(result[i].month);
-                row.push(result[i].country);
-                row.push(result[i].state);
-                row.push(result[i].spv);
-                row.push(result[i].site);
-                row.push(result[i].total_mw);
-                row.push(result[i].wind_speed);
-                row.push(result[i].kwh);
-                row.push(result[i].plf);
-                row.push(result[i].ma_actual);
-                row.push(result[i].ma_contractual);
-                row.push(result[i].iga);
-                row.push(result[i].ega);
-                row.push(result[i].ega_b);
-                row.push(result[i].ega_c);
-                row.push(result[i].plf);
-                row.push(result[i].grid_hrs);
-                row.push(result[i].lull_hrs);
-                row.push(result[i].production_hrs);
-                row.push(result[i].unschedule_num);
-                row.push(result[i].schedule_num);
-                row.push(result[i].others_num);
-                row.push(result[i].igbdh_num);
-                row.push(result[i].egbdh_num);
-                row.push(result[i].load_shedding_num);
-                row.push(total_hourse);
-                row.push(result[i].load_shedding_num);
-                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-                row.push(Math.abs(parseFloat(result[i].smh_loss)));
-                row.push(Math.abs(parseFloat(result[i].others_loss)));
-                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-                row.push(Math.abs(parseFloat(total_losses)));
-
-
-                rows.push(row);
-            }
-
-            var data = [columns].concat(rows);
-            var ws = XLSX.utils.aoa_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "SiteWise Yearly GenReport");
-            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-            function s2ab(s) {
-                var buf = new ArrayBuffer(s.length);
-                var view = new Uint8Array(buf);
-                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Yearly GenReport.xlsx");
-
-
+            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+            row.push(fyyear);
+            row.push(result[i].month);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].total_mw);
+            row.push(result[i].wind_speed);
+            row.push(result[i].kwh);
+            row.push(result[i].plf);
+            row.push(result[i].ma_actual);
+            row.push(result[i].ma_contractual);
+            row.push(result[i].iga);
+            row.push(result[i].ega);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            //row.push(result[i].plf);
+            row.push(result[i].grid_hrs);
+            row.push(result[i].lull_hrs);
+            //row.push(result[i].production_hrs);
+            row.push(result[i].unschedule_num);
+            row.push(result[i].schedule_num);
+            row.push(result[i].others_num);
+            row.push(result[i].igbdh_num);
+            row.push(result[i].egbdh_num);
+            row.push(result[i].load_shedding_num);
+            row.push(total_hourse);
+            //row.push(result[i].load_shedding_num);
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+            row.push(Math.abs(parseFloat(result[i].smh_loss)));
+            row.push(Math.abs(parseFloat(result[i].others_loss)));
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+            row.push(Math.abs(parseFloat(total_losses)));
+            rows.push(row);
         }
+
+        var data = [columns].concat(rows);
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SiteWise Yearly GenReport");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Yearly GenReport.xlsx");
     }
-    
+
 </script>

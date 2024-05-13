@@ -2785,7 +2785,7 @@
         var columns = [
             "Date", "Country", "State", "SPV", "Site", "Inverter", "DC_Capacity", "AC_Capacity", "GHI", "POA",
             "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
-            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "Plant_PR (%)", "INV_PLF", "Plant_PLF", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
             "EGA_B (%)", "EGA_C (%)","Gen_Hrs",
             "USMH", "SMH","OH",  "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
             "IGBD_Loss", "EGBD_Loss", "LS_Loss","LULL_Loss", "Total_Losses"
@@ -2835,13 +2835,9 @@
             row.push(result[i].lull_hrs);
             row.push(result[i].total_losses);
             rows.push(row);
-
-
-
-        }
+         }
 
         var data = [columns].concat(rows);
-
         var ws = XLSX.utils.aoa_to_sheet(data);
         var wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "SolarDailyGenRep InverterWise");
@@ -2859,28 +2855,27 @@
     }
 
 
-    function DailyexportToExcelGenReportSiteWise() {
-
+    function DailyexportToExcelGenReportSiteWise()
+    {
         console.log(exceldata2)
         result = exceldata2;
-
         var columns = [
             "Date", "Site", "Country", "State", "SPV", "DC_Capacity", "AC_Capacity", "GHI", "POA",
             "Expected_kwh", "INV_kwh", "Plant_kwh", "INV_PR (%)",
-            "Plant_PR (%)", "INV_PLF ", "Plant_PLF ", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
+            "Plant_PR (%)", "INV_PLF", "Plant_PLF", "MA_ACT (%)", "IGA(%)", "EGA_A (%)",
             "EGA_B (%)", "EGA_C (%)", "Gen_Hrs","Lull_Hrs",
             "USMH", "SMH", "OH", "IGBD", "EGDB", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "OH_Loss",
             "IGBD_Loss", "EGBD_Loss", "LS_Loss", "LULL_Loss", "Tracker_Loss", "Total_Loss"
         ];
 
         var rows = [];
-
-        for (var i = 0; i < result.length; i++) {
+        for (var i = 0; i < result.length; i++)
+        {
             var row = [];
             var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
             let totalFinal = result[i].total_losses + result[i].tracker_losses;
             row.push(formattedDate);
-             row.push(result[i].site)
+            row.push(result[i].site)
             row.push(result[i].country);
             row.push(result[i].state);
             row.push(result[i].spv);
@@ -2919,27 +2914,20 @@
             row.push(result[i].tracker_losses);
             row.push(totalFinal);
             rows.push(row);
-
-
-
         }
 
         var data = [columns].concat(rows);
-
         var ws = XLSX.utils.aoa_to_sheet(data);
         var wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "SolarDailyGenRep SiteWise");
         var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
         function s2ab(s) {
             var buf = new ArrayBuffer(s.length);
             var view = new Uint8Array(buf);
             for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
             return buf;
         }
-
         saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarDailyGenRep SiteWise.xlsx");
-
     }
 
 
