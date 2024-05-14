@@ -3385,11 +3385,8 @@
                 $("#reportsDailySPV").html("").html(tbl);
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example8').DataTable({
-                  
                     dom: 'Bfrtip',
-                    fixedHeader: true,
-                    responsive: true,
-                    scrollX: true,
+                    responsive: false,
                     lengthChange: false,
                     autoWidth: true,
                     paging: true,
@@ -3398,9 +3395,8 @@
                     ordering: true,
                     info: true,
                     autoWidth: true,
-                    fixedColumns: {
-                        left: 2
-                    },
+                    responsive: false,
+                    pageLength: 50,
                     //columnDefs: [
                     //    {
                     //        targets: 1,

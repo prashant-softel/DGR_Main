@@ -480,8 +480,8 @@
         const diffTime = Math.abs(d2 - d1);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         console.log(diffDays);
-        if (diffDays > 29) {
-            alert("Allow date selected on 30 or less than");
+        if (diffDays > 30) {
+            alert("Date Range should be equal to and less than 31 days");
             return false;
         }
         
@@ -500,9 +500,9 @@
                 //console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 100%;">';
                 tbl += '<thead  class="tbl-head">';
-                tbl += '<tr><th >Site</th>';
+                tbl += '<tr><th style="width: 23px;text-wrap: nowrap;font-size: 12px!important;padding-left: 1.5px!important;padding-right: 1.5px!important; padding-top: 1.5px !important;padding-bottom: 1.5px!important;">Site</th>';
                 for (var h = 0; h < datelist.length; h++) {
-                    tbl += '<th>' + moment(datelist[h]).format('DD-MMM'); + '</th>';
+                    tbl += '<th style="width: 23px;text-wrap: nowrap;font-size: 12px!important;padding-left: 1.5px!important;padding-right: 1.5px!important; padding-top: 1.5px !important;padding-bottom: 1.5px!important;">' + moment(datelist[h]).format('DD-MMM'); + '</th>';
 
                     fdate = moment(datelist[0]).format('YYYY-MM');
                      days = moment(datelist[0]).format('DD');
