@@ -19469,7 +19469,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string Msg = "Weekly PR Report Generated";
             // private MailServiceBS mailService;
             List<string> AddToWind = new List<string>();
-            List<string> AddToSolar = new List<string>();
 
             //List<string> AddCc = new List<string>();
             MailRequest request = new MailRequest();
@@ -19488,14 +19487,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (var site in sitelist)
             {
+                MailRequest Windrequest = new MailRequest();
+                List<string> AddToWindEach = new List<string>();
                 string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 1 and identity = {site.id}  AND login.active_user = 1;";
                 try
                 {
                     List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    foreach (var item in data2)
+                    if(data2.Count > 0)
                     {
-                        AddToWind.Add(item.useremail);
-                        PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                        foreach (var item in data2)
+                        {
+                            AddToWindEach.Add(item.useremail);
+                            PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                        }
+                    }
+                    else
+                    {
+                        continue;
                     }
                 }
                 catch (Exception e)
@@ -19508,26 +19516,22 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //AddToWind.Add("tanvi@softeltech.in");
                 //AddToWind.Add("haresh@softeltech.in");
 
-                request.ToEmail = AddToWind;
+                Windrequest.ToEmail = AddToWindEach;
                 //request.CcEmail = AddCc;
-                request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
-                request.Body = tb;
+                Windrequest.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                Windrequest.Body = tb;
 
                 try
                 {
-                    var res = await MailService.SendEmailAsync(request, _settings, 0);
+                    var res = await MailService.SendEmailAsync(Windrequest, _settings, 0);
                     PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
                     info = "Dgr Reminder SendEmailAsync function completed";
-                    //await LogInfo(0, 0, 0, functionName, info, backend);
-
                 }
                 catch (Exception e)
                 {
                     string msg = e.Message;
                     PPT_ErrorLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
                     info = "Dgr Reminder SendEmailAsync function failed exception :" + e.Message;
-                    //await LogInfo(0, 0, 0, functionName, info, backend);
-
                 }
             }
 
@@ -19537,14 +19541,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (var site in solarSitelist)
             {
+                MailRequest SolarRequest = new MailRequest();
+                List<string> AddToSolar = new List<string>();
                 string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id}  AND login.active_user = 1;";
                 try
                 {
                     List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    foreach (var item in data2)
+                    if(data2.Count > 0)
                     {
-                        AddToSolar.Add(item.useremail);
-                        PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                        foreach (var item in data2)
+                        {
+                            AddToSolar.Add(item.useremail);
+                            PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                        }
+                    }
+                    else
+                    {
+                        continue;
                     }
                 }
                 catch (Exception e)
@@ -19555,18 +19568,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 //AddToSolar = new List<string>();
                 //AddToSolar.Add("tanvi@softeltech.in");
-                request.ToEmail = AddToSolar;
+                SolarRequest.ToEmail = AddToSolar;
                 //request.CcEmail = AddCc;
-                request.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
-                request.Body = tb;
+                SolarRequest.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                SolarRequest.Body = tb;
 
                 try
                 {
-                    var res = await MailService.SendEmailAsync(request, _settings, 0);
+                    var res = await MailService.SendEmailAsync(SolarRequest, _settings, 0);
                     PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
                     info = "Dgr Reminder SendEmailAsync function completed";
                     //await LogInfo(0, 0, 0, functionName, info, backend);
-
                 }
                 catch (Exception e)
                 {
@@ -19574,7 +19586,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     PPT_ErrorLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
                     info = "Dgr Reminder SendEmailAsync function failed exception :" + e.Message;
                     //await LogInfo(0, 0, 0, functionName, info, backend);
-
                 }
             }
             return 1;

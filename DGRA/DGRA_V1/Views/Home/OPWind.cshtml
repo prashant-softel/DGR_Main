@@ -96,28 +96,26 @@
             </div>
             <div class="card-body d-flex flex-column">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="input-group row">
-                            <label class="col-sm-3 col-form-label">Date Range : </label>
+                            <label class="col-sm-4 col-form-label text-right">Date Range : </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right col-sm-6" value="" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-7" value="" id="daterange" name="daterange">
                              @*<input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2023-09" style="border: 1px solid #aaa" />*@
 
                         </div>
                     </div>
                     <div class="col-sm-3" id="type_select_div" style="position: relative; display: flex; justify-content: start; align-items: start;">
-                            <label class="col-sm-3 col-form-label">Type : </label>
-                            <select class="form-control col-sm-9" id="TypeSelect" placeholder="Select Type" onchange="TypeChnage()" value="" style="height: 40px; margin-left: 10px; ">
+                            <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Type : </label>
+                            <select class="form-control col-sm-9" id="TypeSelect" placeholder="Select Type" onchange="TypeChnage()" value="" style="height: 37px; margin-left: 5px;">
                                 <option value="0">Select Type</option>
                                 <option value="1">SPV Wise</option>
                                 <option value="2">Site Wise</option>
                             </select>
-                        <div style="padding: 10px; display: flex; justify-content: start; align-items: flex-start; position: absolute; top: 0px;" >
-                        </div>
                     </div>
                     <div class="col-sm-3"  id="spv_select_div"  style="display: none;">
                         <div class="form-group">
@@ -710,6 +708,7 @@
                 division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
                 division.style.display = "flex";
                 document.getElementById("dataNotPresentDiv").style.display = "flex";
+                document.getElementById("monthTitle").style.display = "none";
                 document.getElementById("Waterfall").style.display = "none";
             }
             }
@@ -1603,6 +1602,18 @@
         for (var k = 1; k <= bdSetCount; k++) {
             var BDelement = ACM_info[k];
             var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+            //console.log("bdType extracted is : " + bdType + ", type of BD type : " + typeof(bdType));
+            if (bdType === "0") {
+                console.log("BD is null.");
+                var siteIdTemp = Number(document.getElementById((BDelement.siteSelectDD + "_1")).value);
+                //console.log("siteId extracted is : " + siteIdTemp + ", type of BD type : " + typeof (siteIdTemp));
+                if (siteIdTemp === 0) {
+                    console.log("Site is null.");
+                    //toast please enter data first.
+                    showToast('No Data to Save.!', 5000, 'monthlyAdd', false);
+                    return false;
+                }
+            }
 
             var userName =  "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
             var role =  "@HttpContextAccessor.HttpContext.Session.GetString("role")";
@@ -1716,7 +1727,7 @@
         mainACM_div.innerHTML = "";
 
         var RefreshContent = '';
-        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i></div> < div id = "ACM_info_div" > <p id="ACM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div > <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACM_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i></div> <div id="ACM_info_div"><p id="ACM_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p> <p id="ACM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div > <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACM_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
 
         mainACM_div.innerHTML = RefreshContent;
         ACM_info = [];
@@ -2051,7 +2062,7 @@
 
         var CommentLabel = document.createElement('label');
         CommentLabel.style.cssText = "width: 65%; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
-        CommentLabel.textContent = element.comment;
+        CommentLabel.textContent = element.comment.replace(/<br>/g, ";");
         CommentLabel.id = "DCMLabel" + index;
         element.comment_id = "DCMComment" + index;
 
@@ -2122,10 +2133,12 @@
                     //console.log("result after adding : ");
                     //console.log(result);
                     if (Number(result) > 0) {
+                        DCM_index = [];
                         returnHome("Delete", "Update");
                     }
                 },
-                error: function (xhr, status, error) {
+            error: function (xhr, status, error) {
+                    showToast("Error While Deleting comments.", 7000, "DCM", false);
                     console.log("Error:", error);
                 }
             });
@@ -2152,13 +2165,13 @@
 
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
-                DMC(site_id, spv, nDval, true);
+                DMC(site_id, isSPV, nDval, true);
                 showToast("Comments Updated successfully.", 5000, "monthlyComments", true);
             } else if (functionality == "Add") {
-                DMC(site_id, spv, nDval, true);
+                DMC(site_id, isSPV, nDval, true);
                 showToast("Comments Added successfully.", 5000, "monthlyComments", true);
             } else if (functionality == "Delete") {
-                DMC(site_id, spv, nDval, true);
+                DMC(site_id, isSPV, nDval, true);
                 showToast("Comments Deleted successfully.", 5000, "monthlyComments", true);
             }
         }
@@ -2601,6 +2614,18 @@
         for (var k = 1; k <= bdSetCount; k++) {
             var BDelement = ACY_info[k];
             var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+            //console.log("bdType extracted is : " + bdType + ", type of BD type : " + typeof(bdType));
+            if (bdType === "0") {
+                console.log("BD is null.");
+                var siteIdTemp = Number(document.getElementById((BDelement.siteSelectDD + "_1")).value);
+                //console.log("siteId extracted is : " + siteIdTemp + ", type of BD type : " + typeof (siteIdTemp));
+                if (siteIdTemp === 0) {
+                    console.log("Site is null.");
+                    //toast please enter data first.
+                    showToast('No Data to Save.!', 5000, 'yearAdd', false);
+                    return false;
+                }
+            }
 
             var userName = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
             var role = "@HttpContextAccessor.HttpContext.Session.GetString("role")";
@@ -2713,7 +2738,7 @@
         mainACY_div.innerHTML = "";
 
         var RefreshContent = '';
-        RefreshContent = '<div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACY_info_div"> <p id = "ACY_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div><div id="ACY_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACY_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACY_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+        RefreshContent = '<div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACY_info_div"> <p id="ACM_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p> <p id = "ACY_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div><div id="ACY_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACY_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACY_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
 
         mainACY_div.innerHTML = RefreshContent;
         ACY_info = [];
@@ -3045,7 +3070,7 @@
 
         var CommentLabel = document.createElement('label');
         CommentLabel.style.cssText = "width: 65%; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
-        CommentLabel.textContent = element.comment;
+        CommentLabel.textContent = element.comment.replace(/<br>/g, ";");
         CommentLabel.id = "DCYLabel" + index;
         element.comment_id = "DCYComment" + index;
 
@@ -3117,10 +3142,12 @@
                     //console.log("result after adding : ");
                     //console.log(result);
                     if (Number(result) > 0) {
+                        DCY_index = [];
                         returnHomeYear("Delete", "Update");
                     }
                 },
-                error: function (xhr, status, error) {
+            error: function (xhr, status, error) {
+                    showToast("Error While Deleting.", 7000, "DCY", false);
                     console.log("Error:", error);
                 }
             });
@@ -3142,17 +3169,17 @@
         yDelete.style.display = "none";
 
         // Function call to get the comments data. Display Monthly Comments (DYC).
-        DYC(site_id, spv, nDval);
+        //DYC(site_id, isSPV, nDval);
 
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
-                DYC(site_id, spv, nDval);
+                DYC(site_id, isSPV, nDval);
                 showToast("Comments Updated successfully.", 5000, "yearComments", true);
             } else if (functionality == "Add") {
-                DYC(site_id, spv, nDval);
+                DYC(site_id, isSPV, nDval);
                 showToast("Comments Added successfully.", 5000, "yearComments", true);
             } else if (functionality == "Delete") {
-                DYC(site_id, spv, nDval);
+                DYC(site_id, isSPV, nDval);
                 showToast("Comments Deleted successfully.", 5000, "yearComments", true);
             }
         }
