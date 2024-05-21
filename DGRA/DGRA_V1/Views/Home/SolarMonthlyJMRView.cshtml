@@ -180,8 +180,8 @@
         result = exceldata;
 
         var columns = [
-            "FY", "Site", "Plant Selection", "Controller kwh INV", "Scheduled Unit kwh", "Export kwh", "Import kwh", "Net Export kwh", "Export kVah", "Import kVah", "Export kVarh log", "Import kVarh log",
-            "Export kVarh lead", "Import kVah lead", "JMR Date", "JMR Month", "JMR Year", "Line Loss", "Line Loss(%)", " kVarh(%)"
+            "FY", "JMR Month", "Site", "Plant Selection", "Controller kwh INV", "Scheduled Unit kwh", "Export kwh", "Import kwh", "Net Export kwh", "Export kVah", "Import kVah", "Export kVarh log", "Import kVarh log",
+            "Export kVarh lead", "Import kVah lead", "Net Billable kWh","JMR Date", "Line Loss", "Line Loss(%)", " kVarh(%)"
         ];
 
         var rows = [];
@@ -192,6 +192,7 @@
             var formattedDate = moment(result[i].jmR_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
             // var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
             row.push(result[i].fy);
+            row.push(result[i].jmR_Month);
             row.push(result[i].site);
             row.push(result[i].plant_Section);
             row.push(result[i].controller_KWH_INV);
@@ -205,9 +206,10 @@
             row.push(result[i].import_kVArh_lag);
             row.push(result[i].export_kVArh_lead);
             row.push(result[i].import_kVArh_lead);
+            row.push(result[i].net_Billable_kWh);
             row.push(formattedDate);
-            row.push(result[i].jmR_Month);
-            row.push(result[i].jmR_Year);
+            
+            //row.push(result[i].jmR_Year);
             row.push(result[i].lineLoss);
             row.push(result[i].line_Loss_percentage);
             row.push(result[i].rkvH_percentage);
@@ -285,6 +287,7 @@
                 tbl += '<th>Import <br>(kVArh lag)</th>';
                 tbl += '<th>Export <br>(kVArh lead)</th>';
                 tbl += '<th>Import <br>(kVArh lead)</th>';
+                tbl += '<th>Net Billable <br>(kWh)</th>';
                 tbl += '<th>JMR Date</th>';
                 /*tbl += '<th>JMR Year</th>'*/;
                 tbl += '<th>Line Loss</th>';
@@ -314,6 +317,7 @@
                         tbl += '<td  class="text-right">' + result[i].import_kVArh_lag.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].export_kVArh_lead.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].import_kVArh_lead.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].net_Billable_kWh.toFixed(2) + '</td>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
                        
                         /*tbl += '<td class="text-left">' + result[i].jmR_Year + '</td>';*/
