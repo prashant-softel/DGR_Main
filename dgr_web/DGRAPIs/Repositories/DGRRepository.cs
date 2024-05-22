@@ -7291,7 +7291,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
 
             }
 
-            string qry = @"SELECT  fy,site,Plant_Section,Controller_KWH_INV,Scheduled_Units_kWh,Export_kWh,Import_kWh,Net_Export_kWh,Export_kVAh,Import_kVAh,Export_kVArh_lag,Import_kVArh_lag,Export_kVArh_lead,Import_kVArh_lead,JMR_date,JMR_Month,JMR_Year,LineLoss,Line_Loss_percentage,RKVH_percentage,netBillableKwh FROM monthly_jmr " + filter;
+            string qry = @"SELECT  fy,site,Plant_Section,Controller_KWH_INV,Scheduled_Units_kWh,Export_kWh,Import_kWh,Net_Export_kWh,Export_kVAh,Import_kVAh,Export_kVArh_lag,Import_kVArh_lag,Export_kVArh_lead,Import_kVArh_lead,JMR_date,JMR_Month,JMR_Year,LineLoss,Line_Loss_percentage,RKVH_percentage,netBillableKwh,remarks FROM monthly_jmr " + filter;
 
             return await Context.GetData<WindMonthlyJMR1>(qry).ConfigureAwait(false);
         }
@@ -7349,7 +7349,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
 
             }
 
-            string qry = @"SELECT  fy, site, Plant_Section, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage,Net_Billable_kWh FROM monthly_jmr_solar " + filter;
+            string qry = @"SELECT  fy, site, Plant_Section, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage, Net_Billable_kWh,remarks FROM monthly_jmr_solar " + filter;
 
             return await Context.GetData<SolarMonthlyJMR>(qry).ConfigureAwait(false);
         }
@@ -15773,12 +15773,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string fromMonth = Convert.ToDateTime(fromDate).ToString("MM");
             string fromYear = Convert.ToDateTime(fromDate).ToString("yyyy");
             string toYear = Convert.ToDateTime(toDate).ToString("yyyy");
+            string toYear1 = Convert.ToDateTime(toDate).ToString("yy");
+            var fy = fromYear + "-" + toYear1;
             string fetchLinelossPerQry = "";
             List<GetWindTMLGraphData> _tmlLineLossForYearly = new List<GetWindTMLGraphData>();
             if (isYearly == 1)
             {
                 //fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
-                fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
+                fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND fy IN('" +fy+ "') GROUP BY month_no, site_id";
 
                 try
                 {
