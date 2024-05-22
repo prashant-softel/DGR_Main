@@ -57,6 +57,7 @@ namespace DGRAPIs.Models
         public dynamic LineLoss { get; set; }
         public dynamic Line_Loss_percentage { get; set; }
         public dynamic RKVH_percentage { get; set; }
-
+        public dynamic netBillableKwh { get; set; }
+        public string remarks { get; set; }
     }
 }
