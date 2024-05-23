@@ -586,24 +586,30 @@
 
     let select = 0;
 
+    //Function to select or deselect all checkboxes
     function selectAll() {
-        var ele = document.getElementsByName('chk');
-        if (select == 0) {
-            for (var i = 0; i < ele.length; i++) {
-                console.log(ele[i].disable);
-                if (ele[i].type == 'checkbox' && ele[i].disabled == false)
-                    ele[i].checked = true;
-            }
-            select++;
-        }
-        else {
-                for (var i = 0; i < ele.length; i++) {
-                    if (ele[i].type == 'checkbox' && ele[i].disabled == false)
-                        ele[i].checked = false;
+        var ele = document.getElementsByName('chk'); // Get all checkboxes with the name 'chk'
+        var currentlySelected = checkedIds.length;   // Get the current number of selected checkboxes
+        var limit = 7;                               // Define the maximum number of selectable checkboxes
 
+        if (select == 0) {                           // If "select all" is not active
+            for (var i = 0; i < ele.length; i++) {   // Loop through all checkboxes
+                if (ele[i].type == 'checkbox' && ele[i].disabled == false && currentlySelected < limit) {
+                    ele[i].checked = true;           // Check the checkbox
+                    handleCheckboxClick(ele[i]);     // Handle the checkbox click to update state
+                    currentlySelected++;             // Increment the count of selected checkboxes
                 }
-                select--;
             }
+            select++;                                // Mark "select all" as active
+        } else {                                     // If "select all" is active
+            for (var i = 0; i < ele.length; i++) {   // Loop through all checkboxes
+                if (ele[i].type == 'checkbox' && ele[i].disabled == false) {
+                    ele[i].checked = false;          // Uncheck the checkbox
+                    handleCheckboxClick(ele[i]);     // Handle the checkbox click to update state
+                }
+            }
+            select--;                                // Mark "select all" as inactive
+        }
     }
 
 
@@ -1474,22 +1480,30 @@
         if (checkedIds.length === 7) {
             // Disable all other checkboxes
             document.querySelectorAll('.form-check-input:not(:checked)').forEach(function (disabledCheckbox) {
-             //   disabledCheckbox.disabled = true;
+                disabledCheckbox.disabled = true;
             });
-        } else if (checkedIds.length > 7) {
-            // If it's greater than 7, disable all checkboxes and show the toast
-            document.querySelectorAll('.form-check-input:not(:checked)').forEach(function (disabledCheckbox) {
-               disabledCheckbox.disabled = true;
-            });
-            alert("You can select at most 7 sites.");
-           // showToast("You can select at most 7 sites.", true);      
-        } else {
+        }
+        //else if (checkedIds.length > 7) {
+        //    // If it's greater than 7, disable all checkboxes and show the toast
+        //    document.querySelectorAll('.form-check-input:not(:checked)').forEach(function (disabledCheckbox) {
+        //       disabledCheckbox.disabled = true;
+        //    });
+        //    alert("You can select at most 7 sites.");
+        //   // showToast("You can select at most 7 sites.", true);      
+        //}
+        else {
             // Enable all checkboxes
             document.querySelectorAll('.form-check-input').forEach(function (enabledCheckbox) {
                 enabledCheckbox.disabled = false;
             });
 
             // Hide the toast if it was shown
+            showToast("", false);
+        }
+
+        if (checkedIds.length > 7) {
+            showToast("You can select at most 7 sites.", true);
+        } else {
             showToast("", false);
         }
     }
