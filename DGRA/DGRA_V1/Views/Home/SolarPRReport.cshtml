@@ -356,7 +356,8 @@
                             t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0) {
-                            e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            //e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            e_var = ((result[i].act_kwh - result[i].expected_kwh) / (result[i].expected_kwh)) * 100;
                             if (result[i].site == "Maragutti") {
                                 console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
                                 //    console.log(temp_e_var);
@@ -414,7 +415,7 @@
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += Number(result[i].expected_kwh) / 1000000;
+                        total_expected_kwh += Number(result[i].expected_kwh);
                         total_act_kwh += result[i].act_kwh;
                         total_minr += minr;
                         total_tar_ghi += result[i].tar_ghi;
@@ -458,7 +459,7 @@
        row.push(result[i].spv);
         row.push(result[i].capacity);
         row.push(result[i].tar_kwh);
-        row.push(result[i].expected_kwh / 1000000);
+        row.push(result[i].expected_kwh);
         row.push(result[i].act_kwh);
         row.push( t_var);
         row.push(e_var);
@@ -673,7 +674,8 @@
                             t_var = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) / result[i].tar_kwh.toFixed(2)) * 100;
                         }
                         if (result[i].expected_kwh != 0) {
-                            e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            //e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            e_var = ((result[i].act_kwh - result[i].expected_kwh) / (result[i].expected_kwh)) * 100;
                             if (result[i].site == "Maragutti") {
                                 console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
                                 //    console.log(temp_e_var);
@@ -731,7 +733,7 @@
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += Number(result[i].expected_kwh) / 1000000;
+                        total_expected_kwh += Number(result[i].expected_kwh);
                         total_act_kwh += result[i].act_kwh;
                         total_minr += minr;
                         total_tar_ghi += result[i].tar_ghi;
@@ -777,7 +779,7 @@
                         tbl += '<td class="text-left">' + result[i].spv + '</td>';
                         tbl += '<td class="text-right" >' + result[i].capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].tar_kwh.toFixed(2)+ '</td>';
-                        tbl += '<td class="text-right">' + (result[i].expected_kwh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].expected_kwh).toFixed(2) + '</td>';
                         //tbl += '<td class="text-right">-</b></td>';
                         tbl += '<td class="text-right">' + result[i].act_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + t_var.toFixed(2) + '</td>';
@@ -1506,7 +1508,8 @@
                             t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0) {
-                            e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            //e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            e_var = ((result[i].act_kwh - result[i].expected_kwh) / (result[i].expected_kwh)) * 100;
                             //if (result[i].site == "Maragutti") {
                             //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
                             //    console.log(temp_e_var);
@@ -1556,7 +1559,7 @@
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += result[i].expected_kwh/1000000;
+                        total_expected_kwh += result[i].expected_kwh;
                         total_act_kwh += result[i].act_kwh;
                         total_minr += minr;
                         total_tar_ghi += result[i].tar_ghi;
@@ -1602,7 +1605,7 @@
        row.push(result[i].site);
         row.push(result[i].capacity);
         row.push(result[i].tar_kwh);
-        row.push(result[i].expected_kwh / 1000000);
+        row.push(result[i].expected_kwh);
         row.push(result[i].act_kwh);
         row.push( t_var);
         row.push(e_var);
@@ -1823,7 +1826,8 @@
                             t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0) {
-                            e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            //e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            e_var = ((result[i].act_kwh - result[i].expected_kwh) / (result[i].expected_kwh)) * 100;
                             //if (result[i].site == "Maragutti") {
                             //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
                             //    console.log(temp_e_var);
@@ -1873,7 +1877,7 @@
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += result[i].expected_kwh/1000000;
+                        total_expected_kwh += result[i].expected_kwh;
                         total_act_kwh += result[i].act_kwh;
                         total_minr += minr;
                         total_tar_ghi += result[i].tar_ghi;
@@ -1920,7 +1924,7 @@
                         tbl += '<td>' + result[i].site + '</td>';
                         tbl += '<td class="text-right" >' + result[i].capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].tar_kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].expected_kwh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].expected_kwh).toFixed(2) + '</td>';
                         //tbl += '<td class="text-right">-</td>';
                         tbl += '<td class="text-right">' + result[i].act_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + t_var.toFixed(2) + '</td>';

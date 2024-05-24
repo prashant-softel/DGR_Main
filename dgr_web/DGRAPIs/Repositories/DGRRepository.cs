@@ -8113,7 +8113,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         //AddToWind.Add("tanvi@softeltech.in");
                         request.ToEmail = AddToWind;
                         request.CcEmail = AddCcWind;
-                        request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Successful";
+                        request.Subject = $"DGR_Uploading_Status_{dataDate} - {sites.name} - Successful";
                         request.Body = tb;
 
                         try
@@ -8235,7 +8235,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         //AddTo.Add("tanvi@softeltech.in");
                         request.ToEmail = AddTo;
                         request.CcEmail = AddCc;
-                        request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Rejected";
+                        request.Subject = $"DGR_Uploading_Status_{dataDate} - {sites.name} - Rejected";
                         request.Body = tb;
 
                         try
@@ -19475,7 +19475,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //List<string> AddCc = new List<string>();
             MailRequest request = new MailRequest();
 
-            DateTime dt = DateTime.Now;
+            //DateTime dt = DateTime.Now;
+            DateTime dt  = DateTime.Today.AddDays(-1);
             string today = dt.ToString("yyyy-MM-dd");
             //string today = "2023-11-12";
 

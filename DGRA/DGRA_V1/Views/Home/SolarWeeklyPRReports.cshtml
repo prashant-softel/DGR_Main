@@ -2720,7 +2720,8 @@
                     jmr_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                 }
                 if (result[i].expected_kwh != 0 || result[i].expected_kwh) {
-                    e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                    //e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                    e_var = ((result[i].act_kwh - (result[i].expected_kwh)) / (result[i].expected_kwh) * 100);
                 }
                 if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
                     act_prval = 0;
@@ -2810,7 +2811,7 @@
                 total_capacity += result[i].capacity;
                 total_tar_kwh += result[i].tar_kwh;
                 //total_expected_kwh += result[i].expected_kwh;
-                total_expected_kwh += Number(result[i].expected_kwh) / 1000000;
+                total_expected_kwh += Number(result[i].expected_kwh);
                 total_act_kwh += result[i].act_kwh;
                 total_revenue += revenue;
                 total_tar_ghi += result[i].tar_ghi;
@@ -2854,7 +2855,7 @@
             row.push(result[i].spv);
             row.push(result[i].capacity);
             row.push(result[i].tar_kwh);
-            row.push(result[i].expected_kwh / 1000000);
+            row.push(result[i].expected_kwh);
             row.push(result[i].act_kwh);
             row.push(jmr_var);
             row.push(e_var);
@@ -3087,7 +3088,8 @@
                             jmr_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0 || result[i].expected_kwh) {
-                            e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                            //e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                            e_var = ((result[i].act_kwh - (result[i].expected_kwh)) / (result[i].expected_kwh) * 100);
                         }
                         if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
                             act_prval = 0;
@@ -3177,7 +3179,7 @@
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
                         //total_expected_kwh += result[i].expected_kwh;
-                        total_expected_kwh += Number(result[i].expected_kwh) / 1000000;
+                        total_expected_kwh += Number(result[i].expected_kwh);
                         total_act_kwh += result[i].act_kwh;
                         total_revenue += revenue;
                         total_tar_ghi += result[i].tar_ghi;
@@ -3225,7 +3227,7 @@
 
                         tbl += '<td class="text-right">' + result[i].capacity.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].tar_kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].expected_kwh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].expected_kwh).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
@@ -4214,7 +4216,8 @@
                     jmr_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                 }
                 if (result[i].expected_kwh != 0 || result[i].expected_kwh) {
-                    e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                    //e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                    e_var = ((result[i].act_kwh - (result[i].expected_kwh)) / (result[i].expected_kwh) * 100);
                 }
                 if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
                     act_prval = 0;
@@ -4305,7 +4308,7 @@
                         neg_pr_var.push(pr_negative);
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += result[i].expected_kwh/1000000;
+                        total_expected_kwh += result[i].expected_kwh;
                         total_act_kwh += result[i].act_kwh;
                         total_revenue += revenue;
                         total_tar_ghi += result[i].tar_ghi;
@@ -4349,7 +4352,7 @@
             row.push(result[i].site);
             row.push(result[i].capacity);
             row.push(result[i].tar_kwh);
-            row.push(result[i].expected_kwh / 1000000);
+            row.push(result[i].expected_kwh);
             row.push(result[i].act_kwh);
             row.push(jmr_var);
             row.push(e_var);
@@ -4588,7 +4591,8 @@
                             jmr_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0 || result[i].expected_kwh) {
-                            e_var = ((result[i].act_kwh - (result[i].expected_kwh/1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                            //e_var = ((result[i].act_kwh - (result[i].expected_kwh / 1000000)) / (result[i].expected_kwh / 1000000) * 100);
+                            e_var = ((result[i].act_kwh - (result[i].expected_kwh)) / (result[i].expected_kwh) * 100);
                         }
                         if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
                             act_prval = 0;
@@ -4679,7 +4683,7 @@
                         neg_pr_var.push(pr_negative);
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += result[i].expected_kwh/1000000;
+                        total_expected_kwh += result[i].expected_kwh;
                         total_act_kwh += result[i].act_kwh;
                         total_revenue += revenue;
                         total_tar_ghi += result[i].tar_ghi;
@@ -4727,7 +4731,7 @@
                         tbl += '<td class="text-right">' + result[i].capacity.toFixed(2) + '</td>';
 
                         tbl += '<td class="text-right">' + result[i].tar_kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].expected_kwh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].expected_kwh).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].act_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
