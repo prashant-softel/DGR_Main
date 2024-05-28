@@ -713,18 +713,18 @@
                         //console.log("Actual : ", result[i].actual_final);
                         //console.log("Load Shedding : ", result[i].loadShedding);
 
-                        expected_final = result[i].expected_final;
-                        lineloss_final = result[i].lineloss_final;
-                        target_final = result[i].target_final;
-                        lossUSMH_final = result[i].lossUSMH_final;
-                        lossSMH_final = result[i].lossSMH_final;
-                        lossNC_final = result[i].lossNC_final;
-                        lossIGBD_final = result[i].lossIGBD_final;
-                        lossEGBD_final = result[i].lossEGBD_final;
-                        lossLULL_final = result[i].lossLULL_final;
-                        lossPCD_final = result[i].lossPCD_final;
-                        actual_final = result[i].actual_final;
-                        loadShedding = result[i].loadShedding;
+                        expected_final  += result[i].expected_final;
+                        lineloss_final  += result[i].lineloss_final;
+                        target_final    += result[i].target_final;
+                        lossUSMH_final  += result[i].lossUSMH_final;
+                        lossSMH_final   += result[i].lossSMH_final;
+                        lossNC_final    += result[i].lossNC_final;
+                        lossIGBD_final  += result[i].lossIGBD_final;
+                        lossEGBD_final  += result[i].lossEGBD_final;
+                        lossLULL_final  += result[i].lossLULL_final;
+                        lossPCD_final   += result[i].lossPCD_final;
+                        actual_final    += result[i].actual_final;
+                        loadShedding    += result[i].loadShedding;
                         //isMonthlyDataPresent = Number(result[i].monthlyData);
 
                         document.getElementById("dataNotPresentDiv").style.display = "none";
@@ -852,18 +852,18 @@
                        // console.log("Actual : ", result[i].actual_final);
                        // console.log("Load Shedding : ", result[i].loadShedding);
 
-                        expected_final = result[i].expected_final;
-                        lineloss_final = result[i].lineloss_final;
-                        target_final = result[i].target_final;
-                        lossUSMH_final = result[i].lossUSMH_final;
-                        lossSMH_final = result[i].lossSMH_final;
-                        lossNC_final = result[i].lossNC_final;
-                        lossIGBD_final = result[i].lossIGBD_final;
-                        lossEGBD_final = result[i].lossEGBD_final;
-                        lossLULL_final = result[i].lossLULL_final;
-                        lossPCD_final = result[i].lossPCD_final;
-                        actual_final = result[i].actual_final;
-                        loadShedding = result[i].loadShedding;
+                        expected_final  += result[i].expected_final;
+                        lineloss_final  += result[i].lineloss_final;
+                        target_final    += result[i].target_final;
+                        lossUSMH_final  += result[i].lossUSMH_final;
+                        lossSMH_final   += result[i].lossSMH_final;
+                        lossNC_final    += result[i].lossNC_final;
+                        lossIGBD_final  += result[i].lossIGBD_final;
+                        lossEGBD_final  += result[i].lossEGBD_final;
+                        lossLULL_final  += result[i].lossLULL_final;
+                        lossPCD_final   += result[i].lossPCD_final;
+                        actual_final    += result[i].actual_final;
+                        loadShedding    += result[i].loadShedding;
 
                         CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
 

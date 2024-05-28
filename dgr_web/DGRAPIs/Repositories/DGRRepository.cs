@@ -8514,7 +8514,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                         string dataDate = sites.data_date.ToString("dd-MM-yyyy");
                         string tb = "<p style='text-align: left;'>Dear User,<br>";
-                        tb += $"DGR Data Successfully uploaded for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                        tb += $"DGR Data Successfully uploaded for {sites.data_date.ToString("dd-MMM-yyyy")} .</p>";
+
+                        tb += "<br><br><br>";
+                        tb += "<p>Thanks and Regards,<br>";
+                        tb += "O&M - Team</p>";
+                        tb += "<br><br>";
+                        tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
                         //AddTo = new List<string>();
                         //AddTo.Add("tanvi@softeltech.in");
                         request.ToEmail = AddTo;
@@ -19481,8 +19487,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //string today = "2023-11-12";
 
 
-            string tb = "<p style='text-align: left;'>Dear User,<br>";
-            tb += $"This is a remainder email that DGR data is not uploaded for {dt.ToString("dd-MMM-yyyy")} .<p>";
+            string tb = "<p style='text-align: left;'>Dear User,<br><br>";
+            tb += $"This is a reminder email that DGR data is not uploaded for {dt.ToString("dd-MMM-yyyy")} .<p>";
+
+            tb += "<br><br><br>";
+            tb += "<p>Thanks and Regards,<br>";
+            tb += "O&M - Team</p>";
+            tb += "<br><br>";
+            tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+
 
             string windSiteQry = $"SELECT site_master_id as id,site as name FROM site_master as wind left join import_batches  on import_batches.site_id = wind.site_master_id and import_file_type = 1 and date(data_date) = '{today}' and import_type = 1 where site_id is null; ";
 

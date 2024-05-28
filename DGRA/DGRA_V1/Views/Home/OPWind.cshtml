@@ -180,8 +180,8 @@
                                     <!-- Monthly Section -->
                                     <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
                                         <div class="scrollable-container" id="monthlyComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
-                                            <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DMC_BD" style="display: block; cursor: default;"></div>
+                                            <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DMC_Other" style="display: block; cursor: default;"></div>
                                         </div>
                                         <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
@@ -241,8 +241,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ECM_BDSelect" onchange="EMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="2">BD</option>
-                                                        <option value="1">EGB</option>
+                                                        <option value="1">BD</option>
+                                                        <option value="2">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -263,8 +263,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="DCM_BDSelect" onchange="DMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="2">BD</option>
-                                                        <option value="1">EGB</option>
+                                                        <option value="1">BD</option>
+                                                        <option value="2">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -295,8 +295,8 @@
                                     <!-- Yearly Section -->
                                     <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
                                         <div class="scrollable-container" id="yearComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
-                                            <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
+                                            <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
                                         </div>
                                         <div class="scrollable-container" id="yearAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
@@ -356,8 +356,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ECY_BDSelect" onchange="EYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="2">BD</option>
-                                                        <option value="1">EGB</option>
+                                                        <option value="1">BD</option>
+                                                        <option value="2">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -377,8 +377,8 @@
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="DCY_BDSelect" onchange="DYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
                                                         <option value="0">Select BD Type</option>
-                                                        <option value="2">BD</option>
-                                                        <option value="1">EGB</option>
+                                                        <option value="1">BD</option>
+                                                        <option value="2">EGB</option>
                                                         <option value="3">Other</option>
                                                     </select>
                                                 </div>
@@ -494,7 +494,8 @@
         // Return the formatted date range
         return `${formattedStartDate}-${formattedEndDate}`;
     }
-    var bdArray = [{ "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }];
+    //var bdArray = [{ "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }];
+    var bdArray = [{ "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }];
 
     window.onload = function () {
     var state = "";
@@ -1190,14 +1191,14 @@
                     //console.log("Display Result : ");
                     //console.log(result);
 
-                    var EGB = []; //bdType = 1
-                    var BD = []; //bdType = 2
+                    var EGB = []; //bdType = 2
+                    var BD = []; //bdType = 1
                     var Other = []; //bdType = 3
 
                     for (var k = 0; k < result.length; k++) {
-                        if (result[k].bd_type == 1) {
+                        if (result[k].bd_type == 2) {
                             EGB.push(result[k]);
-                        } else if (result[k].bd_type == 2) {
+                        } else if (result[k].bd_type == 1) {
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
@@ -1298,7 +1299,8 @@
     var ACM_info = [
         {
             "bdSetCount": 1,
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+            //"bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
         },
         {
             "mainDiv": "ACM",
@@ -1637,6 +1639,7 @@
                 if (isSPV == 0) {
                     var finalCommentData = document.getElementById((BDelement.siteSelectDD + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
+                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -1656,6 +1659,7 @@
                 } else {
                     var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
+                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -1873,6 +1877,7 @@
         commentInput.type = 'text';
         commentInput.style = "margin-left: 10px; width: 65%; height: 35px; border: 1px solid #ccc; vertical-align: top;";
         element.comment = element.comment.replace(/<br>/g, ";");
+        element.comment = element.comment.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
         commentInput.value = element.comment;
         commentInput.id = "ECMInput_" + index;
         element.input_id = "ECMInput_" + index;
@@ -1886,7 +1891,7 @@
     function ECMSaveButton() {
         //console.log("Edit save button just after save : ");
         //console.log(ECM_data);
-        var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); //userId.
+        var updatedBy = Number("@HttpContextAccessor.HttpContext.Session.GetString("userid")"); 
         var anyChanges = [];
         var ECMFinalData = []
         for (var k = 0; k < ECM_data.length; k++) {
@@ -1898,6 +1903,7 @@
             } else {
                 var finalCommentData = updatedComment.toString();
                 finalCommentData = finalCommentData.replace(/;/g, "<br>");
+                finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
                 ECM_data[k].updated_by = updatedBy;
                 ECM_data[k].updated_comment = finalCommentData;
                 ECM_data[k].isSPV = Number(ECM_data[k].isSPV);
@@ -2241,9 +2247,9 @@
                     var Other = []; //bdType = 3
 
                     for (var k = 0; k < result.length; k++) {
-                        if (result[k].bd_type == 1) {
+                        if (result[k].bd_type == 2) {
                             EGB.push(result[k]);
-                        } else if (result[k].bd_type == 2) {
+                        } else if (result[k].bd_type == 1) {
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
@@ -2330,7 +2336,8 @@
     var ACY_info = [
         {
             "bdSetCount": 1,
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+            //"bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }]
         },
         {
             "mainDiv": "ACY",
@@ -2648,6 +2655,7 @@
                 if (isSPV == 0) {
                     var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
+                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -2667,6 +2675,7 @@
                 } else {
                     var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
+                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -2882,6 +2891,7 @@
         commentInput.type = 'text';
         commentInput.style = "margin-left: 10px; width: 65%; height: 35px; border: 1px solid #ccc; vertical-align: top;";
         element.comment = element.comment.replace(/<br>/g, ";");
+        element.comment = element.comment.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
         commentInput.value = element.comment;
         //commentInput.value = element.comment;
         commentInput.id = "ECYInput_" + index;
@@ -2908,6 +2918,7 @@
             } else {
                 var finalCommentData = updatedComment.toString();
                 finalCommentData = finalCommentData.replace(/;/g, "<br>");
+                finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
                 ECY_data[k].updated_by = updatedBy;
                 ECY_data[k].updated_comment = finalCommentData;
                 ECY_data[k].isSPV = Number(ECY_data[k].isSPV);
