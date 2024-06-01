@@ -4576,10 +4576,12 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
 
             // Trackerloss
             string deleteQry1 = "DELETE FROM uploading_file_tracker_loss WHERE site_id = " + set[0].site_id + " and date = '" + set[0].date + "';";
+            string deleteQry2 = "DELETE FROM upload_status WHERE site_id = " + set[0].site_id + " and data_date = '" + set[0].date + "';";
 
             try
             {
                 await Context.ExecuteNonQry<int>(deleteQry1).ConfigureAwait(false);
+                await Context.ExecuteNonQry<int>(deleteQry2).ConfigureAwait(false);
             }
             catch(Exception e)
             {
@@ -4594,7 +4596,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                 try
                 {
                     values += "('" + unit.date + "','" + unit.site + "','" + unit.site_id + "','" + unit.inverter + "','" + unit.inv_act + "','" + unit.plant_act + "','" + unit.pi + "','" + batchId + "'),";
-                    uploadStatusValues = $"(2, {unit.site_id}, CURDATE(), '{unit.date}', 0, {batchId}, 0, 1, 1, 1, 0, 0, 0, 0),";
+                    uploadStatusValues = $"(2, {unit.site_id}, CURDATE(), '{unit.date}', 0, {batchId}, 0, 0, 0, 0, 0, 0, 0, 0),";
                 }
                 catch(Exception e)
                 {
@@ -8141,6 +8143,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         {
 
             int finalResult = 0;
+            string deleteqry = "delete from upload_status  where import_batch_id IN (" + dataId + ")";
+            await Context.ExecuteNonQry<int>(deleteqry).ConfigureAwait(false);
             string query = "UPDATE `import_batches` SET `rejected_date` = NOW(),`rejected_by`= " + rejectedBy + ",`is_approved`=" + status + ",`rejected_by_name`='" + rejectByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
             string functionName = "SetRejectFlagForImportBatches";
             try
@@ -8549,6 +8553,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         internal async Task<int> SetSolarRejectFlagForImportBatches(string dataId, int rejectedBy, string rejectByName, int status)
         {
             int finalResult = 0;
+            string deleteqry = "delete from upload_status  where import_batch_id IN (" + dataId + ")";
+            await Context.ExecuteNonQry<int>(deleteqry).ConfigureAwait(false);
+
             string query = "UPDATE `import_batches` SET `rejected_date` = NOW(),`rejected_by`= " + rejectedBy + ",`is_approved`=" + status + ",`rejected_by_name`='" + rejectByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
             string functionName = "SetSolarRejectFlagForImportBatches";
             try
@@ -17904,7 +17911,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 List<HeatMapData1> _HeatMapData = new List<HeatMapData1>();
                 //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.approve_count FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '"+ toDate + "' and t1.site_id in ("+site+") and type = '"+ siteType + "' GROUP BY t1.site_id, t1.data_date";
 
-                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' AND approve_count !=0 GROUP BY t1.site_id, t1.data_date";
+                //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' AND approve_count !=0 GROUP BY t1.site_id, t1.data_date";
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
 
                 try
                 {
