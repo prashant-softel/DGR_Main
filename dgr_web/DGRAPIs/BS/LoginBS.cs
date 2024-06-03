@@ -27,7 +27,7 @@ namespace DGRAPIs.BS
         Task<List<HFEPage>> GetPageList(int login_id, int site_type);
         Task<List<UserAccess>> GetWindUserAccess(int login_id,string role);
         Task<List<UserInfomation>> GetEmailAccess(int login_id, int site, int action, string notifications);
-        Task<int> SubmitUserAccess(int login_id, string siteList, string pageList, string reportList, string site_type, int importapproval);
+        Task<int> SubmitUserAccess(int login_id, string siteList, string pageList, string reportList, string site_type, int importapproval,int heatmap);
         //GetUserLoginId
         Task<List<UserInfomation>> GetUserLoginId(string username, string useremail);
 
@@ -189,13 +189,13 @@ namespace DGRAPIs.BS
             }
         }
 
-        public async Task<int> SubmitUserAccess(int login_id, string siteList, string pageList, string reportList, string site_type,int importapproval)
+        public async Task<int> SubmitUserAccess(int login_id, string siteList, string pageList, string reportList, string site_type,int importapproval,int heatmap)
         {
             try
             {
                 using (var repos = new LoginRepository(getDB))
                 {
-                    return await repos.SubmitUserAccess(login_id, siteList, pageList, reportList, site_type, importapproval);
+                    return await repos.SubmitUserAccess(login_id, siteList, pageList, reportList, site_type, importapproval, heatmap);
 
                 }
             }

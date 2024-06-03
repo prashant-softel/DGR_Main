@@ -12,6 +12,7 @@
     int solarView = 0;
     int solarReport = 0;
     int approvalCnt = 0;
+    int heatmapCnt = 0;
 }
 
 @for (int i = 0; i < @usermodel.access_list.Count; i++)
@@ -40,6 +41,10 @@
     if (@usermodel.access_list[i].page_type == 4 && @usermodel.access_list[i].site_type == 0)
     {
         approvalCnt++;
+    }
+    if (@usermodel.access_list[i].page_type == 5 && @usermodel.access_list[i].site_type == 0)
+    {
+        heatmapCnt++;
     }
 
 }
@@ -277,7 +282,7 @@
                                 </li>
                             }
 
-                            @if (approvalCnt > 0 || @HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
+                            @if (heatmapCnt > 0 || @HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
                             {
                                 <li class="nav-item">
                                     <a href="~/Home/heatMap" class="nav-link">

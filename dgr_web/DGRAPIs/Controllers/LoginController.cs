@@ -276,12 +276,12 @@ namespace Login.Controllers
 
         [Route("SubmitUserAccess")]
         [HttpGet]
-        public async Task<IActionResult> SubmitUserAccess(int login_id,string siteList,string pageList, string reportList, string site_type,int importapproval)
+        public async Task<IActionResult> SubmitUserAccess(int login_id,string siteList,string pageList, string reportList, string site_type,int importapproval,int heatmap)
         {
             try
             {
 
-                var data = await _loginBs.SubmitUserAccess(login_id, siteList, pageList, reportList, site_type, importapproval);
+                var data = await _loginBs.SubmitUserAccess(login_id, siteList, pageList, reportList, site_type, importapproval, heatmap);
                 return Ok(data);
             }
             catch (Exception ex)

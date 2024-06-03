@@ -104,10 +104,12 @@
             <div class="row">
                 <div class="col-sm-1"></div>
                 <div class="col-sm-5">
-
                     <div id="importApproval"></div>
-
                 </div>
+                <div class="col-sm-5">
+                    <div id="heatmap"></div>
+                </div>
+                <div class="col-sm-1"></div>
             </div>
             <div class="row">
                 <div class="col-sm-1"></div>
@@ -258,9 +260,11 @@
                 $("#views").html();
                 $("#reports").html();
                 $("#importApproval").html();
+                $("#heatmap").html();
                 if (result.length > 0) {
 
                     var tbl = '<table class="table table-bordered table-striped importApproval-page">';
+                    var tblheatmap = '<table class="table table-bordered table-striped heatmap-page">';
                     var tbl1 = '<table class="table table-bordered table-striped views-page">';
                     tbl1 += '<th><input type="checkbox" disabled="disabled" class="checkAllP" id="checkAllP" onclick="selectAllP()" style="margin-left:10px"></th>';
                     tbl1 += '<th>Pages</th></tr>';
@@ -274,6 +278,11 @@
                             tbl += '<tr><th style="width:5.4rem"><input type="checkbox"  disabled="disabled" class="form-check-input import-pages" id="import" name="import" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></th>';
                             tbl += '<th>' + result[i].display_name + '</th>';
                             tbl += '</tr > ';
+                        }
+                        if (result[i].page_type == 5) {
+                            tblheatmap += '<tr><th style="width:5.4rem"><input type="checkbox"  disabled="disabled" class="form-check-input heatmap-pages" id="heatmap" name="heatmap" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></th>';
+                            tblheatmap += '<th>' + result[i].display_name + '</th>';
+                            tblheatmap += '</tr > ';
                         }
                         if (result[i].page_type == 1) {
                             tbl1 += '<tr><td><input type="checkbox"  disabled="disabled" class="form-check-input view-pages" id="pages" name="chkP" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></td>';
@@ -289,7 +298,9 @@
 
                     }
                     tbl += '</table > ';
+                    tblheatmap += '</table > ';
                     $("#importApproval").html(tbl);
+                    $("#heatmap").html(tblheatmap);
                     tbl1 += '</table > ';
                     $("#views").html(tbl1);
                     tbl2 += '</table > ';
@@ -503,6 +514,7 @@
         }
         document.getElementById("Edit").innerHTML = "Update";
         $("input.import-pages").attr("disabled", false);
+        $("input.heatmap-pages").attr("disabled", false);
         $("input.view-pages").attr("disabled", false);
         $("input.report-pages").attr("disabled", false);
         $("input.notification").attr("disabled", false);
@@ -519,6 +531,7 @@
         console.log("cancel clicked")
         document.getElementById("Edit").innerHTML = "Edit";
         $("input.import-pages").attr("disabled", true);
+        $("input.heatmap-pages").attr("disabled", true);
         $("input.view-pages").attr("disabled", true);
         $("input.report-pages").attr("disabled", true);
         $("input.notification").attr("disabled", true);
@@ -605,6 +618,7 @@
         let page_arr = {};
         let report_arr = {};
         let import_approval = 0;
+        let heatmap = 0;
         $('.view-pages').each(function () {
         var page_id = $(this).attr('data-pageid');
         var isSet = $(this).is(":checked");
@@ -623,8 +637,13 @@
             if (isSet == true) {
                 import_approval = page_id;
             }
-
-
+        });
+        $('.heatmap-pages').each(function () {
+            var page_id = $(this).attr('data-pageid');
+            var isSet = $(this).is(":checked");
+            if (isSet == true) {
+                heatmap = page_id;
+            }
         });
         $('.notification').each(function () {
             var notification_name = $(this).attr('name');
@@ -636,17 +655,11 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + ' &importapproval=' + import_approval,
-           // url: "/Home/SubmitAccess?login_id=" + id + "&site=" + JSON.stringify(site_arr) + "&pages=" + JSON.stringify(page_arr) + "&reports=" + JSON.stringify(report_arr),
-           // url: "/Home/SubmitAccess",
-            //url: '@Url.Action("SubmitAccess", "Home")',
+            url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + ' &importapproval=' + import_approval + '&heatmap=' + heatmap,
             contentType: 'application/json; charset=utf-8',
-            //data: '{"login_id":"' + id + '","site":"' + JSON.stringify(site_arr) + '","pages":"' + JSON.stringify(page_arr) + '","reports":"' + JSON.stringify(report_arr) + '"}',
-            //data: "{'login_id':'" + id + "','site':'" + JSON.stringify(site_arr) + "','pages':'" + JSON.stringify(page_arr) + "','reports':'" + JSON.stringify(report_arr) + "'}",
             dataType: 'json',
             success: function (result, status, xhr) {
                  alert("Success");
-               // location.href = "/Home/WindSiteUserMaster";
                 location.href = '@Url.Action("SiteUserMaster", "Home")';
 
             }

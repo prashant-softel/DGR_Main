@@ -537,7 +537,7 @@ namespace DGRAPIs.Repositories
 
 
         }
-        internal async Task<int> SubmitUserAccess(int login_id, string siteList, string pageList, string reportList, string site_type,int importapproval)
+        internal async Task<int> SubmitUserAccess(int login_id, string siteList, string pageList, string reportList, string site_type,int importapproval,int heatmap)
         {
             var SiteList = new JavaScriptSerializer().Deserialize<dynamic>(siteList);
             var PageList = new JavaScriptSerializer().Deserialize<dynamic>(pageList);
@@ -626,7 +626,7 @@ namespace DGRAPIs.Repositories
             }
             if(site_type != "1" || site_type != "2")
             {
-                string delAccess1 = "DELETE FROM `user_access` WHERE login_id  = '" + login_id + "' AND `site_type` = '0' AND 	category_id = 4";
+                string delAccess1 = "DELETE FROM `user_access` WHERE login_id  = '" + login_id + "' AND `site_type` = '0' AND 	category_id IN (4,5)";
                 await Context.ExecuteNonQry<int>(delAccess1).ConfigureAwait(false);
             }
             if(importapproval > 0)
@@ -634,7 +634,11 @@ namespace DGRAPIs.Repositories
                 string qry4 = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`,`upload_access`) VALUES  ('" + login_id + "', 0, 4, '" + importapproval + "', '0')";
                 await Context.ExecuteNonQry<int>(qry4).ConfigureAwait(false);
             }
-            
+            if (heatmap > 0)
+            {
+                string qry5 = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`,`upload_access`) VALUES  ('" + login_id + "', 0, 5, '" + heatmap + "', '0')";
+                await Context.ExecuteNonQry<int>(qry5).ConfigureAwait(false);
+            }
             if (flag3 == true)
             {
                 qry2 += sitevalues;
