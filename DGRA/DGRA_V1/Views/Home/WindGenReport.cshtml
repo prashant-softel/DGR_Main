@@ -1051,14 +1051,15 @@
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
 
+
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1281,13 +1282,13 @@
                         //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
 
                         tbl += '</tr>';
                         //console.log(typeof (result[i].usmh_loss));
@@ -1542,14 +1543,14 @@
                         //tbl += '<td  class="text-right">' + result[i].egbdh_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
-
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
+                        
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -1785,13 +1786,13 @@
                        //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
                        //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -2039,13 +2040,13 @@
                         //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -2278,14 +2279,13 @@
                         //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
-
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
                     }
                 }
@@ -2425,13 +2425,13 @@
             row.push(result[i].load_shedding_num);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-            row.push(Math.abs(parseFloat(result[i].smh_loss)));
-            row.push(Math.abs(parseFloat(result[i].others_loss)));
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-            row.push(Math.abs(parseFloat(total_losses)));
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
             rows.push(row);
         }
         var data = [columns].concat(rows);
@@ -2495,13 +2495,13 @@
             row.push(result[i].load_shedding_num);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-            row.push(Math.abs(parseFloat(result[i].smh_loss)));
-            row.push(Math.abs(parseFloat(result[i].others_loss)));
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-            row.push(Math.abs(parseFloat(total_losses)));
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
             rows.push(row);
         }
         var data = [columns].concat(rows);
@@ -2564,14 +2564,14 @@
             row.push(result[i].load_shedding_num);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-            row.push(Math.abs(parseFloat(result[i].smh_loss)));
-            row.push(Math.abs(parseFloat(result[i].others_loss)));
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-            row.push(Math.abs(parseFloat(total_losses)));
-            rows.push(row);
+           row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
+           row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
+           row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
+           row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
+           row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
+           row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
+           row.push(Math.abs(parseFloat(total_losses)) * 1000000);
+           rows.push(row);
        }
        var data = [columns].concat(rows);
        var ws = XLSX.utils.aoa_to_sheet(data);
@@ -2633,13 +2633,13 @@
             row.push(result[i].load_shedding_num);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-            row.push(Math.abs(parseFloat(result[i].smh_loss)));
-            row.push(Math.abs(parseFloat(result[i].others_loss)));
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-            row.push(Math.abs(parseFloat(total_losses)));
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
             rows.push(row);
         }
         var data = [columns].concat(rows);
@@ -2702,13 +2702,13 @@
             row.push(result[i].load_shedding_num);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-            row.push(Math.abs(parseFloat(result[i].smh_loss)));
-            row.push(Math.abs(parseFloat(result[i].others_loss)));
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-            row.push(Math.abs(parseFloat(total_losses)));
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
             rows.push(row);
         }
         var data = [columns].concat(rows);
@@ -2771,13 +2771,13 @@
             row.push(result[i].load_shedding_num);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)));
-            row.push(Math.abs(parseFloat(result[i].smh_loss)));
-            row.push(Math.abs(parseFloat(result[i].others_loss)));
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
-            row.push(Math.abs(parseFloat(total_losses)));
+            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
+            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
             rows.push(row);
         }
 

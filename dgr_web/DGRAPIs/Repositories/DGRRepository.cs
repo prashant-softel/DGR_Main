@@ -2002,7 +2002,7 @@ ON tml.data_date = gen.date AND {join} AND tml.site_id = gen.site_id; ";
             //DGR_v3 new daily basis table.
             qry = $@"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM 
 (SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site,t1.site_id, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_num, sum(t1.schedule_num) as schedule_num, sum(t1.others_num) as others_num, sum(t1.igbdh_num) as igbdh_num, sum(t1.egbdh_num) as egbdh_num, sum(t1.load_shedding_num) as load_shedding_num, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where {filter} group by t1.state, t2.spv, t1.site ,t1.date ORDER BY t1.date, t1.site) as gen 
-LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter}) AS tml on tml.site_id = gen.site_id and tml.data_date = gen.date;";
+LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter}) AS tml on tml.site_id = gen.site_id and tml.data_date = gen.date;";
 
 
             //where  t1.approve_status="+approve_status+" and " + filter + " group by t1.date, t1.state, t2.spv, t1.site ";
@@ -2329,7 +2329,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
 
             //DGR_v3 new daily basis table.
             tmlQry = $@"select gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss from ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id {filter} group by t1.state, t2.spv, t1.wtg , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) as gen 
-LEFT JOIN (SELECT det.site_id AS site_id, det.wtg_id AS wtg_id, det.wtg AS wtg, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id {tmrFilter} GROUP BY det.wtg) AS tml on tml.wtg = gen.wtg;";
+LEFT JOIN (SELECT det.site_id AS site_id, det.wtg_id AS wtg_id, det.wtg AS wtg, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id {tmrFilter} GROUP BY det.wtg) AS tml on tml.wtg = gen.wtg;";
 
 
 
@@ -2528,7 +2528,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.wtg_id AS wtg_id, det.wtg AS wtg, 
 
             //DGR_v3 new daily basis table.
             qry = $@"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, DATE_FORMAT(t1.date,'%m') as month_no,t2.country,t1.state,t2.spv,t1.site, t1.site_id, t1.wtg ,t2.total_mw ,(sum(wind_speed)/count(*))as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*))as plf, (sum(ma_actual)/count(*))as ma_actual, (sum(ma_contractual)/count(*))as ma_contractual, (sum(iga)/count(*))as iga, (sum(ega)/count(*))as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs)as grid_hrs, sum(lull_hrs)as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id {filter} group by t1.state, t2.spv, t1.site , month(t1.date) ORDER BY t1.site, year, month_no, t1.wtg) AS gen 
-LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id {tmrFilter}) AS tml on tml.site_id = gen.site_id;";
+LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id {tmrFilter}) AS tml on tml.site_id = gen.site_id;";
             //where  t1.approve_status="+approve_status+" and " + filter + " group by t1.state, t2.spv, t1.site , month(t1.date)";
 
             return await Context.GetData<WindDailyGenReports2>(qry).ConfigureAwait(false);
@@ -2674,7 +2674,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
 
             //DGR_v3 new daily basis table.
             qry = @$"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM ( SELECT year(date) as year,DATE_FORMAT(date,'%M') as month,date,t2.country,t1.state,t2.spv,t1.site, t1.wtg ,(sum(wind_speed)/count(*)) as wind_speed, sum(kwh) as kwh, (sum(plf)/count(*)) as plf, (sum(ma_actual)/count(*)) as ma_actual, (sum(ma_contractual)/count(*)) as ma_contractual, (sum(iga)/count(*)) as iga, (sum(ega)/count(*)) as ega, (sum(ega_b)/count(*))as ega_b, (sum(ega_c)/count(*))as ega_c,  sum(production_hrs) as grid_hrs, sum(lull_hrs) as lull_hrs ,sum(unschedule_num) as unschedule_hrs, sum(schedule_num) as schedule_hrs, sum(others_num) as others, sum(igbdh_num) as igbdh, sum(egbdh_num) as egbdh, sum(load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where {filter} group by t1.state, t2.spv, t1.wtg ORDER BY t1.site, year, t1.wtg) as gen 
-LEFT JOIN(SELECT det.site_id AS site_id, det.wtg_id AS witg_id, det.wtg AS wtg, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter} GROUP BY det.wtg) AS tml on tml.wtg = gen.wtg;";
+LEFT JOIN(SELECT det.site_id AS site_id, det.wtg_id AS witg_id, det.wtg AS wtg, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter} GROUP BY det.wtg) AS tml on tml.wtg = gen.wtg;";
             //where  t1.approve_status=" + approve_status + " and " + filter + " group by t1.state, t2.spv, t1.wtg ";
             try
             {
@@ -2829,7 +2829,7 @@ LEFT JOIN(SELECT det.site_id AS site_id, det.wtg_id AS witg_id, det.wtg AS wtg, 
             //DGR_v3 new daily basis table.
 
             qry = $@"SELECT gen.*, tml.usmh_loss, tml.smh_loss, tml.others_loss, tml.igbd_loss AS igbdh_loss, tml.egbd_loss AS egbdh_loss, tml.loadshedding_loss AS loadShedding_loss FROM ( SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date,t2.country,t1.state,t2.spv,t1.site, t1.site_id, t2.total_mw ,(sum(t1.wind_speed)/count(*)) as wind_speed, sum(t1.kwh) as kwh, (sum(t1.plf)/count(*))as plf, (sum(t1.ma_actual)/count(*))as ma_actual, (sum(t1.ma_contractual)/count(*))as ma_contractual, (sum(t1.iga)/count(*))as iga, (sum(t1.ega)/count(*))as ega, (sum(t1.ega_b)/count(*))as ega_b, (sum(t1.ega_c)/count(*))as ega_c, sum(t1.production_hrs)as grid_hrs, sum(t1.lull_hrs)as lull_hrs, sum(t1.unschedule_num) as unschedule_hrs, sum(t1.schedule_num) as schedule_hrs, sum(t1.others_num) as others, sum(t1.igbdh_num) as igbdh, sum(t1.egbdh_num) as egbdh, sum(t1.load_shedding_num) as load_shedding, (SUM(t1.unschedule_num) + SUM(t1.schedule_num) + SUM(t1.others_num) + SUM(t1.igbdh_num) + SUM(t1.egbdh_num) + SUM(t1.load_shedding_num)) AS total_hrs  FROM daily_gen_summary t1 left join site_master t2 on t1.site_id = t2.site_master_id where {filter} group by t1.state, t2.spv, t1.site ORDER BY t1.site) as gen 
-LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss, SUM(det.pcd_loss) AS pcd_loss, SUM(det.lull_loss) AS lull_loss, SUM(det.nc_loss) AS nc_loss, SUM(det.setup_loss) AS setup_loss, SUM(det.initialization_loss) AS initialization_loss, SUM(det.startup_loss) AS startup_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter}) AS tml ON tml.site_id = gen.site_id;";
+LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id WHERE {tmrFilter}) AS tml ON tml.site_id = gen.site_id;";
 
             //where  t1.approve_status=" + approve_status + " and " + filter + " group by t1.state, t2.spv, t1.site  ";
             try
@@ -8518,7 +8518,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                         string dataDate = sites.data_date.ToString("dd-MM-yyyy");
                         string tb = "<p style='text-align: left;'>Dear User,<br>";
-                        tb += $"DGR Data Successfully uploaded for {sites.data_date.ToString("dd-MMM-yyyy")} .</p>";
+                        tb += $"DGR Data Approved Successfully  for {sites.data_date.ToString("dd-MMM-yyyy")} .</p>";
 
                         tb += "<br><br><br>";
                         tb += "<p>Thanks and Regards,<br>";
@@ -8529,7 +8529,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         //AddTo.Add("tanvi@softeltech.in");
                         request.ToEmail = AddTo;
                         request.CcEmail = AddCc;
-                        request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Successful";
+                        request.Subject = $"DGR Data Approved Successfully  {dataDate} - {sites.name} - Successful";
                         request.Body = tb;
                         try
                         {
@@ -8626,13 +8626,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 }
                                 string dataDate = sites.data_date.ToString("dd-MM-yyyy");
 
-                                string tb = "<p style='text-align: left;'>Dear User,<br>";
-                                tb += $"DGR Data for {sites.data_date.ToString("dd-MMM-yyyy")} is Rejected by Admin .<p>";
+                                string tb = "<p style='text-align: left;'>Dear User,<br><br>";
+                                tb += $"DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
+                                tb += "<br><br><br>";
+                                tb += "<p>Thanks and Regards,<br>";
+                                tb += "O&M - Team</p>";
+                                tb += "<br><br>";
+                                tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
                                 //AddTo = new List<string>();
                                 //AddTo.Add("tanvi@softeltech.in");
                                 request.ToEmail = AddTo;
                                 request.CcEmail = AddCc;
-                                request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Rejected";
+                                request.Subject = $"DGR Data Rejected {dataDate} - {sites.name}";
                                 request.Body = tb;
 
                                 try
@@ -8712,12 +8717,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         string dataDate = sites.data_date.ToString("dd-MM-yyyy");
 
                         string tb = "<p style='text-align: left;'>Dear User,<br>";
-                        tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
-                        //AddTo = new List<string>();
-                        //AddTo.Add("tanvi@softeltech.in");
+                        //tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                        tb += $"DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
+                        tb += "<br><br><br>";
+                        tb += "<p>Thanks and Regards,<br>";
+                        tb += "O&M - Team</p>";
+                        tb += "<br><br>";
+                        tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
                         request.ToEmail = AddTo;
                         request.CcEmail = AddCc;
-                        request.Subject = $"DGR_Uploading_Reminder_{dataDate} - {sites.name} - Rejected";
+                        request.Subject = $"DGR Data Rejected {dataDate} - {sites.name}";
                         request.Body = tb;
 
                         try
@@ -19542,7 +19551,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                 Windrequest.ToEmail = AddToWindEach;
                 //request.CcEmail = AddCc;
-                Windrequest.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                Windrequest.Subject = $"DGR Uploading Reminder {today} - {site.name}";
                 Windrequest.Body = tb;
 
                 try
@@ -19594,7 +19603,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //AddToSolar.Add("tanvi@softeltech.in");
                 SolarRequest.ToEmail = AddToSolar;
                 //request.CcEmail = AddCc;
-                SolarRequest.Subject = $"DGR_Uploading_Reminder_{today} - {site.name}";
+                SolarRequest.Subject = $"DGR Uploading Reminder {today} - {site.name}";
                 SolarRequest.Body = tb;
 
                 try
