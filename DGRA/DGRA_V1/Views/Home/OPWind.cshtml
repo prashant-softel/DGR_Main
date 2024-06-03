@@ -1639,7 +1639,8 @@
                 if (isSPV == 0) {
                     var finalCommentData = document.getElementById((BDelement.siteSelectDD + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
-                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
+                    finalCommentData = finalCommentData.replace(/["']/g, ' ');
+                    var encodedCommentData = encodeURIComponent(finalCommentData);
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -1652,14 +1653,15 @@
                         "isMonthly": isMonthly,
                         "isSPV": Number(isSPV),
                         "spv": document.getElementById((BDelement.siteSelectDD + "_" + j)).value,
-                        "comment": finalCommentData,
+                        "comment": encodedCommentData,
                         "added_by": addedBy,
                         "updated_by": updatedBy,
                     }
                 } else {
                     var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
-                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
+                    finalCommentData = finalCommentData.replace(/["']/g, ' ');
+                    var encodedCommentData = encodeURIComponent(finalCommentData);
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -1671,7 +1673,7 @@
                         "isDeleted": isDeleted,
                         "isMonthly": isMonthly,
                         "isSPV": Number(isSPV),
-                        "comment": finalCommentData,
+                        "comment": encodedCommentData,
                         "added_by": addedBy,
                         "updated_by": updatedBy,
                     }
@@ -1903,9 +1905,11 @@
             } else {
                 var finalCommentData = updatedComment.toString();
                 finalCommentData = finalCommentData.replace(/;/g, "<br>");
-                finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
+                finalCommentData = finalCommentData.replace(/["']/g, ' ');
+                var encodedCommentData = encodeURIComponent(finalCommentData);
                 ECM_data[k].updated_by = updatedBy;
-                ECM_data[k].updated_comment = finalCommentData;
+                //ECM_data[k].comment = encodeURIComponent(ECM_data[k].comment);
+                ECM_data[k].updated_comment = encodedCommentData;
                 ECM_data[k].isSPV = Number(ECM_data[k].isSPV);
                 ECM_data[k].isMonthly = 0; //0 for monthly 1 for yearly.
                 ECM_data[k].isDeleted = 1; //1 active 0 for deleted.
@@ -2655,7 +2659,8 @@
                 if (isSPV == 0) {
                     var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
-                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
+                    finalCommentData = finalCommentData.replace(/["']/g, ' ');
+                    var encodedCommentData = encodeURIComponent(finalCommentData);
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -2668,14 +2673,15 @@
                         "isMonthly": isMonthly,
                         "isSPV": Number(isSPV),
                         "SPV": document.getElementById((BDelement.siteSelectDD + "_" + j)).value,
-                        "comment": finalCommentData,
+                        "comment": encodedCommentData,
                         "added_by": addedBy,
                         "updated_by": updatedBy,
                     }
                 } else {
                     var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
-                    finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
+                    finalCommentData = finalCommentData.replace(/["']/g, ' ');
+                    var encodedCommentData = encodeURIComponent(finalCommentData);
                     eachData = {
                         //month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, comment, added_by, updated_by
                         "month": month,
@@ -2687,7 +2693,7 @@
                         "isDeleted": isDeleted,
                         "isMonthly": isMonthly,
                         "isSPV": Number(isSPV),
-                        "comment": finalCommentData,
+                        "comment": encodedCommentData,
                         "added_by": addedBy,
                         "updated_by": updatedBy,
                     }
@@ -2918,9 +2924,11 @@
             } else {
                 var finalCommentData = updatedComment.toString();
                 finalCommentData = finalCommentData.replace(/;/g, "<br>");
-                finalCommentData = finalCommentData.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
+                finalCommentData = finalCommentData.replace(/["']/g, ' ');
+                var encodedCommentData = encodeURIComponent(finalCommentData);
                 ECY_data[k].updated_by = updatedBy;
-                ECY_data[k].updated_comment = finalCommentData;
+                /*ECY_data[k].comment = encodeURIComponent(ECM_data[k].comment);*/
+                ECY_data[k].updated_comment = encodedCommentData;
                 ECY_data[k].isSPV = Number(ECY_data[k].isSPV);
                 ECY_data[k].isMonthly = 1; //0 for monthly 1 for yearly.
                 ECY_data[k].isDeleted = 1; //1 active 0 for deleted.

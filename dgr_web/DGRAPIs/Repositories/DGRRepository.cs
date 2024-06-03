@@ -18225,11 +18225,13 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     if (_element.isSPV == 1)
                     {
                         string spvTemp = SPV_siteHash[_element.site_id].ToString();
-                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                        string decodedComment = HttpUtility.UrlDecode(_element.comment);
+                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{spvTemp}', {_element.site_id}, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{decodedComment}', {_element.added_by}, {_element.updated_by}),";
                     }
                     else
                     {
-                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{_element.spv}', 0, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{_element.comment}', {_element.added_by}, {_element.updated_by}),";
+                        string decodedComment = HttpUtility.UrlDecode(_element.comment);
+                        insert_values += $"('{_element.month}', {_element.month_no}, {_element.year}, {_element.type}, '{_element.spv}', 0, {_element.bd_type}, 1, {_element.isMonthly}, {_element.isSPV}, '{decodedComment}', {_element.added_by}, {_element.updated_by}),";
                     }
 
                     //site_ids.Add(Convert.ToString(_element.site_id));
@@ -18470,8 +18472,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             foreach (var _upData in set)
             {
+                string decodedComment = HttpUtility.UrlDecode(_upData.updated_comment);
+                string decodedOldComment = HttpUtility.UrlDecode(_upData.comment);
                 //at api side elements required are updated_by, updated_comment, isSPV, comment, site, month_no, year, isMonthly, isDeleted, spv
-                updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE OPC_id = {_upData.opc_id};";
+                updateQry += $"UPDATE OPComments SET comment='{decodedComment}', old_comment='{decodedOldComment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE OPC_id = {_upData.opc_id};";
                 //if (_upData.isSPV == 1)
                 //{
                 //    updateQry += $"UPDATE OPComments SET comment='{_upData.updated_comment}', old_comment='{_upData.comment}', updated_by= {_upData.updated_by}, updated_at = CURRENT_TIMESTAMP WHERE type = {_upData.type} AND isDeleted={_upData.isDeleted} AND site_id = {_upData.site_id} AND isMonthly = {_upData.isMonthly} AND year={_upData.year} AND month_no = {_upData.month_no}  AND bd_type = '{_upData.bd_type}';";
