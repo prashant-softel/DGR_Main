@@ -44,13 +44,13 @@
         display: none !important;
     }
 
-    .modebar .modebar--hover .ease-bg {
+    /*.modebar .modebar--hover .ease-bg {
         display: none !important;
     }
 
     .groups {
         display: none !important;
-    }
+    }*/
     .table-condensed thead tr:nth-child(2),
     .table-condensed tbody td.day {
         display: none;
@@ -158,8 +158,8 @@
                                     </div>
                                     <div class="card-body" style="padding: 0.3rem;">
                                         <!-- Monthly Section -->
-                                        <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
-                                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
+                                        <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 42vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
+                                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 42vh; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
                                                 <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_Other" style="display: block; cursor: default;"></div>
@@ -279,12 +279,12 @@
                         </div>
                         <div class="col-md-5">
                             <div class="card h-90vh w-100" id="commentsSectionYearly" style="display: none; margin-top: 20px">
-                                @*<div class="card-header">
+                                <div class="card-header">
                                     <h3 class="card-title text-center">Reasons For Underperformance</h3>
-                                </div>*@
+                                </div>
                                 <div class="card-body" style="padding: 0.3rem;">
-                                    <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
-                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
+                                    <div class="container" id="yearContainer" style="flex: 1; background-color: #f5f5f5; height: 42vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
+                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 42vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
@@ -403,335 +403,12 @@
          </div>
     </section>
 </div>
-        <!--<div class="content-wrapper">
-            <section class="content">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title text-center">Solar Operational Performance </h3>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="input-group row">
-                                    <label class="col-sm-3.1 col-form-label">Date Range :&nbsp;&nbsp;</label>
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="far fa-calendar-alt"></i>
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-sm-2 col-form-label text-right">SPV : </label>
-                                        <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                        <select class="form-control  col-sm-9" id="site" name="site[]" multiple>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
-                                    <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style="margin-left: -5rem; width: 5rem;">Search</button>
-                                </div>
-                                <div class="col-md-1"></div>
-                            </div>
-
-                        </div>
-                        <hr>-->
-                        <!--<div class="row">
-                            <div class="col-sm-4">
-                                <div class="form-group row">
-                                    <span>PR Type :</span>
-                                    <div class="col-sm-3">
-                                        <div class="custom-control custom-radio " style="padding-left: 42px; margin-top: 3px; ">
-                                            <input class="custom-control-input solar_expected_report_load_el" type="radio" id="customRadio1" name="customRadio" value="1" checked>
-                                            <label for="customRadio1" class="custom-control-label">AOP</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="custom-control custom-radio " style="padding-left: 42px; margin-top: 3px; ">
-                                            <input class="custom-control-input solar_expected_report_load_el" type="radio" id="customRadio2" name="customRadio" value="2">
-                                            <label for="customRadio2" class="custom-control-label">Toplining</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-5"></div>
-                                </div>
-                            </div>-->
-                        <!--<div class="col-sm-8">
-                        </div>
-                    </div>
-                </div>
-
-                <hr>-->
-                <!--<div class="row">
-                    <div class="row w-100">
-                        <div class="col-md-7">
-                            <!-- Left Column of charts -->
-                <!--<div class="">
-                        <div>
-                            <div id="dataNotPresentDiv" style="display: flex; height:300vh; justify-content: center; align-items: center;">
-                                <h3 id="dataNotPresent" style="display: none; color: #007bff;"></h3>
-                            </div>
-                            <div style="position: relative;">
-                                <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
-                                <div id="Waterfall" style="width: 100%; z-index: 1;"></div>
-                           </div>
-                        </div>
-                        <div>
-                            <div style="position: relative;">
-                                <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
-                                <div id="Waterfallyearly" style="width: 100%; z-index: 1;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="commentsSection" style="display: none; margin-top: 20px" class="col-md-5">
-                    <!-- Right column of comments -->
-                <!--<div class="card h-90vh w-100">
-                    <div class="card-header"><h3 class="card-title text-center">Reasons For Underperformance</h3></div>
-                    <div class="card-body">
-                        <div><!-- Other content here -->
-                <!--</div>-->
-                <!-- Monthly Section -->
-                <!--<div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
-                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
-                                <div id="DMC_BD" style="display: block; cursor: default;"></div>
-                                <div id="DMC_EGB" style="display: block; cursor: default;"></div>
-                                <div id="DMC_Other" style="display: block; cursor: default;"></div>
-                            </div>
-                            <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
-                                @*Scrollable division*@
-                                @*Entire content division with BDtype site and reason.*@
-                                <div class="addCommentMonthly" id="ACM" style="overflow: hidden;">
-                                    <div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
-                                        <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
-                                    </div>
-                                    <div id="ACM_info_div">
-                                        <p id="ACM_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p>
-                                        <p id="ACM_info" style="text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
-                                    </div>
-                                    <div class="d-flex justify-content-end" style="padding: 10px;">
-                                        <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
-                                    </div>
-                                    <div id="ACM_siteContainer1">
-                                        <div class="row">
-                                            <div class="col-sm-7">
-                                                <div class="form-group">
-                                                    <div class="row" style="position: relative; width: 100%;">
-                                                        <label class="col-sm-2 col-form-label text-right">Site :</label>
-                                                        <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select>
-                                                        <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()">
-                                            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
-                                            <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
-                                        </div>
-                                        <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)">
-                                            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
-                                            <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br>
-                                <div class="d-flex justify-content-center">
-                                    <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACMSaveData()">Save</button>
-                                    <button style="display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACMCancel()">Cancel</button>
-                                </div>
-                            </div>
-                            <div class="scrollable-container" id="monthlyEdit" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
-                                <div id="ECM" style="overflow: hidden;">
-                                    <div id="backBtnECM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
-                                        <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
-                                    </div>
-                                    <div id="ECM_info_div">
-                                        <p id="ECM_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">EDIT</p>
-                                        <p id="ECM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
-                                    </div>
-                                    <div id="ECM_info"></div>
-                                    <div class="d-flex justify-content-end" style="padding: 10px;">
-                                        <select class="form-control col-sm-4" id="ECM_BDSelect" onchange="EMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
-                                            <option value="0">Select BD Type</option>
-                                            <option value="1">BD</option>
-                                            <option value="2">EGB</option>
-                                            <option value="3">Other</option>
-                                        </select>
-                                    </div>
-                                    <div id="ECM_content"></div>
-                                </div>
-                            </div>
-                            <div class="scrollable-container" id="monthlyDelete" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
-                                <div id="DCM" style="overflow: hidden;">
-                                    <div id="backBtnDCM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
-                                        <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
-                                    </div>
-                                    <div id="DCM_info_div">
-                                        <p id="DCM_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">DELETE</p>
-                                        <p id="DCM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
-                                    </div>
-                                    <div class="d-flex justify-content-end" style="padding: 10px;">
-                                        <select class="form-control col-sm-4" id="DCM_BDSelect" onchange="DMCOnchange()" value="" style="height: 40px; margin-left: 10px;">
-                                            <option value="0">Select BD Type</option>
-                                            <option value="1">BD</option>
-                                            <option value="2">EGB</option>
-                                            <option value="3">Other</option>
-                                        </select>
-                                    </div>
-                                    <div id="DCM_content"></div>
-                                </div>
-                            </div>
-                            <div class="comment-buttons" id="monthCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
-                                <div style="display: flex; gap: 13px;">
-                                    <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAdd()">
-                                        <i class="fas fa-plus" style="font-size: 18px;"></i>
-                                    </div>
-                                    <div style="width: 40.89px; height: 34.76px; position: relative; background: #FFCA5A; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthEdit()">
-                                        <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
-                                    </div>
-                                    <div style="width: 40.89px; height: 34.76px; position: relative; background: #EE403D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthDelete()">
-                                        <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <div>
-                </div>-->
-                <!-- Yearly Section -->
-                <!--<div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
-                      <div class="scrollable-container" id="yearComments" style="display: block; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
-                          <div id="DYC_BD" style="display: block; cursor: default;"></div>
-                          <div id="DYC_EGB" style="display: block; cursor: default;"></div>
-                          <div id="DYC_Other" style="display: block; cursor: default;"></div>
-                      </div>
-                      <div class="scrollable-container" id="yearAdd" style="display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
-                          @*Scrollable division*@
-                          @*Entire content division with BDtype site and reason.*@
-                          <div class="addCommentYear" id="ACY" style="overflow: hidden;">
-                              <div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
-                                  <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
-                              </div>
-                              <div id="ACY_info_div">
-                                  <p id="ACY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p>
-                                  <p id="ACY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
-                              </div>
-                              <div class="d-flex justify-content-end" style="padding: 10px;">
-                                  <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
-                              </div>
-                              <div id="ACY_siteContainer1">
-                                  <div class="row">
-                                     <div class="col-sm-7">
-                                          <div class="form-group">
-                                              <div class="row" style="position: relative; width: 100%;">
-                                                  <label class="col-sm-2 col-form-label text-right">Site :</label>
-                                                  <select class="form-control col-sm-6" value="" id="ACY_sitesM1_1" style="height: 40px;"></select>
-                                                  <input id="ACY_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div class="d-flex justify-content-end">
-                                  <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()">
-                                      <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
-                                      <span style="margin-left: 5px; color: #ffffff;">ADD BD</span>
-                                  </div>
-                                  <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)">
-                                      <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
-                                      <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span>
-                                  </div>
-                              </div>
-                          </div>
-                          <br>
-                          <div class="d-flex justify-content-center">
-                              <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACYSaveData()">Save</button>
-                              <button style="display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACYCancel()">Cancel</button>
-                          </div>
-                      </div>
-                      <div class="scrollable-container" id="yearEdit" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
-                          <div id="ECY" style="overflow: hidden;">
-                          <div id="backBtnECY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
-                              <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
-                          </div>
-                          <div id="ECY_info_div">
-                              <p id="ECY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">EDIT</p>
-                              <p id="ECY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
-                          </div>
-                          <div id="ECY_info"></div>
-                          <div class="d-flex justify-content-end" style="padding: 10px;">
-                              <select class="form-control col-sm-4" id="ECY_BDSelect" onchange="EYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
-                                  <option value="0">Select BD Type</option>
-                                  <option value="1">BD</option>
-                                  <option value="2">EGB</option>
-                                  <option value="3">Other</option>
-                              </select>
-                          </div>
-                          <div id="ECY_content"> </div>
-                      </div>
-                  </div>
-                  <div class="scrollable-container" id="yearDelete" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
-                      <div id="DCY" style="overflow: hidden;">
-                          <div id="backBtnDCY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
-                              <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
-                          </div>
-                          <div id="DCY_info_div">
-                              <p id="DCY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">DELETE</p>
-                              <p id="DCY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
-                          </div>
-                          <div class="d-flex justify-content-end" style="padding: 10px;">
-                              <select class="form-control col-sm-4" id="DCY_BDSelect" onchange="DYCOnchange()" value="" style="height: 40px; margin-left: 10px;">
-                                  <option value="0">Select BD Type</option>
-                                  <option value="1">BD</option>
-                                  <option value="2">EGB</option>
-                                  <option value="3">Other</option>
-                              </select>
-                          </div>
-                          <div id="DCY_content"></div>
-                      </div>
-                  </div
-                 <div class="comment-buttons" id="yearCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
-                      <div style="display: flex; gap: 13px;">
-                          <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAdd()">
-                              <i class="fas fa-plus" style="font-size: 18px;"></i>
-                          </div>
-                          <div style="width: 40.89px; height: 34.76px; position: relative; background: #FFCA5A; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearEdit()">
-                              <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
-                          </div>
-                          <div style="width: 40.89px; height: 34.76px; position: relative; background: #EE403D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearDelete()">
-                              <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
-                          </div>
-                      </div>
-                  </div>
-                </div>-->
-        <!--</div>
-</div>
-        </div>
-    </div>-->
+      
     <br>
     <hr>
     @*<div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>*@
     <div id="loader" class="loader  center" style="display:none"></div>
-    <!--</div>-->
-    <!-- <canvas id="Waterfall" width="600" height="350"></canvas>-->
-    <!--</div>-->
-    @*<div id="water" style="overflow-x: auto; width: 100%; height: 1000px;"></div>*@
-    @*<div id='myDiv'></div>*@
-<!--</section>
+   
 </div>-->
 <!-- /.content-wrapper -->
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
@@ -768,7 +445,7 @@
 <script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <style>
-    .tooltip {
+    /*.tooltip {
         position: relative;
         display: inline-block;
     }
@@ -801,7 +478,7 @@
 
         .tooltip:hover .tooltiptext {
             visibility: visible;
-        }
+        }*/
 </style>
 
 <script type="text/javascript">
