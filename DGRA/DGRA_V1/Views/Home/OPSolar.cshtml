@@ -159,7 +159,7 @@
                                     <div class="card-body" style="padding: 0.3rem;">
                                         <!-- Monthly Section -->
                                         <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
-                                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
+                                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
                                                 <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_Other" style="display: block; cursor: default;"></div>
@@ -284,7 +284,7 @@
                                 </div>*@
                                 <div class="card-body" style="padding: 0.3rem;">
                                     <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
-                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
+                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
@@ -1659,7 +1659,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "EGB_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
                         for (var i = 0; i < EGB.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
@@ -1680,7 +1680,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "BD_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
                         for (var i = 0; i < BD.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
@@ -1701,7 +1701,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "Other_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
                         for (var i = 0; i < Other.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
@@ -2670,7 +2670,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "EGBY_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
                         for (var i = 0; i < EGB.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
@@ -2691,7 +2691,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "BDY_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
                         for (var i = 0; i < BD.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
@@ -2712,7 +2712,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "OtherY_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
                         for (var i = 0; i < Other.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
