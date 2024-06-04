@@ -65,41 +65,49 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="input-group row">
-                            <label class="col-sm-3.1 col-form-label">Date Range :&nbsp;&nbsp;</label>
+                            <label class="col-sm-4 col-form-label text-right">Date Range : </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-7" value="" id="daterange" name="daterange">
+                            @*<input type="month" id="daterang" name="start" min="2018-03" max="@currentYearMonth" value="2023-09" style="border: 1px solid #aaa" />*@
+
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-sm-3" id="type_select_div" style="position: relative; display: flex; justify-content: start; align-items: start;">
+                        <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Type : </label>
+                        <select class="form-control col-sm-9" id="TypeSelect" placeholder="Select Type" onchange="TypeChnage()" value="" style="height: 37px; margin-left: 5px;">
+                            <option value="0">Select Type</option>
+                            <option value="1">SPV Wise</option>
+                            <option value="2">Site Wise</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3" id="spv_select_div" style="display: none;">
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-sm-2 col-form-label text-right">SPV : </label>
-                                <select class="form-control  col-sm-9" id="spv" name="spv[]" onchange="GetSite()" multiple>
-                                </select>
+                                <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-sm-3" id="site_select_div" style="display: none;">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                <select class="form-control  col-sm-9" id="site" name="site[]" multiple>
-                                </select>
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
-                            <button type="button" class="btn btn-block btn-primary solar_expected_report_load_el" style="margin-left: -5rem; width: 5rem;">Search</button>
+                            <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
                         </div>
-                        <div class="col-md-1"></div>
                     </div>
+                    <div class="col-md-1"></div>
                 </div> <!--  Form Control Div Closed -->
                 <hr>
                 <div class="col-md-12">
@@ -148,14 +156,13 @@
                                     </div>
                                     <div class="card-body" style="padding: 0.3rem;">
                                         <!-- Monthly Section -->
-                                        <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
-                                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
+                                        <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
+                                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
                                                 <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_Other" style="display: block; cursor: default;"></div>
                                             </div>
-                                            <!-- Scrolling Division -->
-                                            <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
+                                            <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                                 <div class="addCommentMonthly" id="ACM" style="overflow: hidden;">
                                                     <div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
                                                         <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
@@ -168,16 +175,14 @@
                                                         <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
                                                     </div>
                                                     <div id="ACM_siteContainer1">
-                                                        <div class="row">
-                                                            <div class="col-sm-7">
-                                                                <div class="form-group">
-                                                                    <div class="row" style="position: relative; width: 100%;">
-                                                                        <label class="col-sm-2 col-form-label text-right">Site :</label>
-                                                                        <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select>
-                                                                        <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
-                                                                    </div>
+                                                        <div class="row" style="display: flex; justify-content: center; align-items: center;">
+                                                            <div style="width: 30%;">
+                                                                <div class="row" style="position: relative; padding: 0px; width: 100%">
+                                                                    <label class="col-form-label text-right" style="width: 30%;">Site :</label>
+                                                                    <select value="" id="ACM_sitesM1_1" style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%"></select>
                                                                 </div>
                                                             </div>
+                                                            <input id="ACM_commentInput1_1" type="text" style="width: 65%; height: 35px;">
                                                         </div>
                                                     </div>
                                                     <div class="d-flex justify-content-end">
@@ -196,8 +201,9 @@
                                                     <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACMSaveData()">Save</button>
                                                     <button style="display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACMCancel()">Cancel</button>
                                                 </div>
+
                                             </div>
-                                            <div class="scrollable-container" id="monthlyEdit" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                            <div class="scrollable-container" id="monthlyEdit" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                                 <div id="ECM" style="overflow: hidden;">
                                                     <div id="backBtnECM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
                                                         <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
@@ -215,10 +221,12 @@
                                                             <option value="3">Other</option>
                                                         </select>
                                                     </div>
-                                                    <div id="ECM_content"></div>
+                                                    <div id="ECM_content">
+
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="scrollable-container" id="monthlyDelete" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                            <div class="scrollable-container" id="monthlyDelete" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                                 <div id="DCM" style="overflow: hidden;">
                                                     <div id="backBtnDCM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome('Back', 'Cancel')">
                                                         <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
@@ -235,10 +243,12 @@
                                                             <option value="3">Other</option>
                                                         </select>
                                                     </div>
-                                                    <div id="DCM_content"></div>
+                                                    <div id="DCM_content">
+
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="comment-buttons" id="monthCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 35px; right: 35px; transition: opacity 0.3s ease;">
+                                            <div class="comment-buttons" id="monthCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
                                                 <div style="display: flex; gap: 13px;">
                                                     <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="monthAdd()">
                                                         <i class="fas fa-plus" style="font-size: 18px;"></i>
@@ -267,40 +277,40 @@
                         </div>
                         <div class="col-md-5">
                             <div class="card h-90vh w-100" id="commentsSectionYearly" style="display: none; margin-top: 20px">
-                                <div class="card-header">
+                                @*<div class="card-header">
                                     <h3 class="card-title text-center">Reasons For Underperformance</h3>
-                                </div>
+                                </div>*@
                                 <div class="card-body" style="padding: 0.3rem;">
-                                    <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 40vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
-                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
+                                    <div class="container" id="yearContainer" style="flex: 1; margin-top: 20px; background-color: #f5f5f5; height: 35vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="yearover()" onmouseout="yearout()">
+                                        <div class="scrollable-container" id="yearComments" style="display: block; height: 95%; font-size: 12px; margin: 2px; padding: 0px; overflow-y: auto; cursor: default;">
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
                                         </div>
-                                        <!---- Scrollable content ---->
-                                        <div class="scrollable-container" id="yearAdd" style="display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
+                                        <div class="scrollable-container" id="yearAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
+                                            @*Scrollable division*@
+
+                                            @*Entire content division with BDtype site and reason.*@
                                             <div class="addCommentYear" id="ACY" style="overflow: hidden;">
                                                 <div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
                                                     <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
                                                 </div>
                                                 <div id="ACY_info_div">
-                                                    <p id="ACY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p>
+                                                    <p id="ACY_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p>
                                                     <p id="ACY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
                                                 </div>
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
                                                     <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select>
                                                 </div>
                                                 <div id="ACY_siteContainer1">
-                                                    <div class="row">
-                                                        <div class="col-sm-7">
-                                                            <div class="form-group">
-                                                                <div class="row" style="position: relative; width: 100%;">
-                                                                    <label class="col-sm-2 col-form-label text-right">Site :</label>
-                                                                    <select class="form-control col-sm-6" value="" id="ACY_sitesM1_1" style="height: 40px;"></select>
-                                                                    <input id="ACY_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" />
-                                                                </div>
+                                                    <div class="row" style="display: flex; justify-content: center; align-items: center;">
+                                                        <div style="width: 30%;">
+                                                            <div class="row" style="position: relative; padding: 0px; width: 100%;">
+                                                                <label class="col-form-label text-right" style="width: 30%;">Site :</label>
+                                                                <select value="" id="ACY_sitesM1_1" style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%"></select>
                                                             </div>
                                                         </div>
+                                                        <input id="ACY_commentInput1_1" type="text" style="width: 65%; height: 35px;" />
                                                     </div>
                                                 </div>
                                                 <div class="d-flex justify-content-end">
@@ -319,14 +329,15 @@
                                                 <button style="display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACYSaveData()">Save</button>
                                                 <button style="display: inline-block; background: #ee403d; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;" onclick="ACYCancel()">Cancel</button>
                                             </div>
+
                                         </div>
-                                        <div class="scrollable-container" id="yearEdit" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                        <div class="scrollable-container" id="yearEdit" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                             <div id="ECY" style="overflow: hidden;">
                                                 <div id="backBtnECY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
                                                     <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
                                                 </div>
                                                 <div id="ECY_info_div">
-                                                    <p id="ECY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">EDIT</p>
+                                                    <p id="ECY_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">EDIT</p>
                                                     <p id="ECY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
                                                 </div>
                                                 <div id="ECY_info"></div>
@@ -342,13 +353,13 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="scrollable-container" id="yearDelete" style="overflow: hidden; display: none; height: 36vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
+                                        <div class="scrollable-container" id="yearDelete" style="overflow: hidden; display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center;">
                                             <div id="DCY" style="overflow: hidden;">
                                                 <div id="backBtnDCY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear('Back', 'Cancel')">
                                                     <i class="fas fa-arrow-left" style="font-size: 18px; margin-bottom: 10px;"></i>
                                                 </div>
                                                 <div id="DCY_info_div">
-                                                    <p id="DCY_title" style="font-weight: bold; text-align: center; margin: -6px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">DELETE</p>
+                                                    <p id="DCY_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">DELETE</p>
                                                     <p id="DCY_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p>
                                                 </div>
                                                 <div class="d-flex justify-content-end" style="padding: 10px;">
@@ -364,7 +375,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="comment-buttons" id="yearCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 35px; right: 35px; transition: opacity 0.3s ease;">
+                                        <div class="comment-buttons" id="yearCardButtons" style="display: none; position: absolute; opacity: 75%; bottom: 15px; right: 35px; transition: opacity 0.3s ease;">
                                             <div style="display: flex; gap: 13px;">
                                                 <div style="width: 40.89px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.75;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75" onclick="yearAdd()">
                                                     <i class="fas fa-plus" style="font-size: 18px;"></i>
@@ -810,6 +821,24 @@
     //For Comments variables :
     var isSPV = 0; //0 = SPV, 1= Site.
     var siteType = 2; //site_type = 1 Solar, 2 : Wind
+    function TypeChnage() {
+        var spvDivEle = document.getElementById("spv_select_div");
+        var siteDivEle = document.getElementById("site_select_div");
+        var typeSelect = document.getElementById("TypeSelect").value;
+        if (typeSelect === "1") {
+            console.log("SPV wise Type selected");
+            isSPV = 0;
+            siteDivEle.style.display = "none";
+            spvDivEle.style.display = "block";
+        }
+        else if (typeSelect === "2") {
+            console.log("Site wise Type selected");
+            isSPV = 1;
+            spvDivEle.style.display = "none";
+            siteDivEle.style.display = "block";
+        }
+    }
+
     let site_id = "";
     let spv = "";
     var nDval = "";
@@ -824,6 +853,14 @@
             locale: {
                 format: 'YYYY-MM',
             }
+            });
+        $("#hide").click(function () {
+            $("#chart").hide();
+            $("#show").css('display', 'block');
+        });
+        $("#show").click(function () {
+            $("chart").show();
+            $("#hide").css('display', 'none');
         });
     });
 
@@ -937,7 +974,7 @@
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
 
-        let site_id = "";
+        site_id = "";
         let spv_list = "";
         let prType = "";
         if ($("#customRadio1").prop("checked")) {
@@ -947,7 +984,7 @@
             // do something
             prType = "toplining";
         }
-        var spv = $('select#spv option:selected').each(function () {
+        spv = $('select#spv option:selected').each(function () {
             spv_list += $(this).val() + ",";
         });
         spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
@@ -973,16 +1010,16 @@
         }
         console.log("SIte List", site_id);
 
-        if (spv == "") {
-            isSPV = 1;
-            //console.log("So you will be seeing Data site wise.");
-        } else {
-            isSPV = 0;
-            //console.log("So you will be seeing Data spv wise.");
-        }
+        //if (spv == "") {
+        //    isSPV = 1;
+        //    //console.log("So you will be seeing Data site wise.");
+        //} else {
+        //    isSPV = 0;
+        //    //console.log("So you will be seeing Data spv wise.");
+        //}
         // Function call to get the comments data. Display Monthly Comments (DMC).
-        DMC(site_id, spv, nDval);
-        DYC(site_id, spv, nDval);
+        DMC(site_id, isSPV, nDval, false);
+        DYC(site_id, isSPV, nDval);
 
         $.ajax({
             type: "POST",
@@ -1083,38 +1120,33 @@
     function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
         console.log("Inside monthly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
         Plotly.purge('Waterfall');
+        let total_opExpected = total_expected;
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_egbd = Number(total_egbd) + Number(total_curtaiment);
+
         let t_target = Number(total_target).toFixed(2);
-        let t_expected = Number(total_expected).toFixed(2);
-        let t_usmh = Number(total_usmh * -1).toFixed(2);
-        let t_smh = Number(total_smh * -1).toFixed(2);
-        let t_oh = Number(total_oh * -1).toFixed(2);
-        let t_igbd = Number(total_igbd * -1).toFixed(2);
+        let t_OpExpected = Number(total_opExpected).toFixed(2);
+        let t_bd = Number(total_bd * -1).toFixed(2);
         let t_egbd = Number(total_egbd * -1).toFixed(2);
-        let t_curtaiment = Number(total_curtaiment * -1).toFixed(2);
         let t_pr = Number(total_pr).toFixed(2);
+        let t_oh = Number(total_oh * -1).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
         let data_target = Number(total_target);
-        let data_expected = Number(total_expected);
-        let data_usmh = Number(total_usmh) * -1;
-        let data_smh = Number(total_smh) * -1;
-        let data_oh = Number(total_oh) * -1;
-        let data_igbd = Number(total_igbd) * -1;
+        let data_expected = Number(total_opExpected);
+        let data_bd = Number(total_bd) * -1;
         let data_egbd = Number(total_egbd) * -1;
-        let data_curtaiment = Number(total_curtaiment) * -1;
         let data_pr = Number(total_pr);
+        let data_oh = Number(total_oh) * -1;
         let data_actual = Number(total_actual);
 
         // Percentage Value
         let tar_percentage = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (data_usmh / data_expected) * 100;
-        let smh_percentage = (data_smh / data_expected) * 100;
-        let oh_percentage = (data_oh / data_expected) * 100;
-        let igbd_percentage = (data_igbd / data_expected) * 100;
+        let bd_percentage = (data_bd / data_expected) * 100;
         let egbd_percentage = (data_egbd / data_expected) * 100;
-        let cur_percentage = (data_curtaiment / data_expected) * 100;
         let pr_percentage = (data_pr / data_expected) * 100;
+        let oh_percentage = (data_oh / data_expected) * 100;
         let actul_percentage = ((data_actual) / data_expected) * 100;
 
         //data_pr = 0.4;
@@ -1140,59 +1172,44 @@
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    aMeasure
+                    aMeasure,
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
-                    "Other",
-                    "IGBD",
-                    "EGBD",
-                    "Curtailment",
+                    "BD",
+                    "EGB",
                     "PR",
+                    "Other",
                     "Actual"
                  ],
                 textposition: "outside",
                 //textposition: "inside",
                 text: [
                     t_target,
-                    t_expected,
-                    t_usmh,
-                    t_smh,
-                    t_oh,
-                    t_igbd,
+                    t_OpExpected,
+                    t_bd,
                     t_egbd,
-                    t_curtaiment,
                     t_pr,
+                    t_oh,
                     t_actual
                 ],
                 y: [
                     data_target,
                     data_expected,
-                    data_usmh,
-                    data_smh,
-                    data_oh,
-                    data_igbd,
+                    data_bd,
                     data_egbd,
-                    data_curtaiment,
                     data_pr,
+                    data_oh,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2)+ '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + data_bd.toFixed(4) + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>EGB</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
@@ -1212,14 +1229,18 @@
         ];
         //#86C466 : green. #77CAE7 : blue. #EE403D : red. #14a105 : dark-green.
         //
-        var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
-        if (data_curtaiment > 0) {
-            columnColors[7] = "#14a105";
-            data[0].measure[7].marker = { color: '#14a105' };
-        }
+        var columnColors = [
+            "#86C466", // Target
+            "#7dddff", // Expected
+            "#EE403D", // BD
+            "#EE403D", // EGB
+            "#86C466", // PR
+            "#EE403D", // Other
+            "#7dddff"  // Actual
+        ];
         if (data_pr > 0) {
-            columnColors[8] = "#14a105";
-            data[0].measure[8].marker = { color: '#14a105' };
+            columnColors[4] = "#14a105";
+            data[0].measure[4].marker = { color: '#14a105' };
         }
 
         // Set the marker color for each data point using the columnColors array
@@ -1396,38 +1417,33 @@
 
         console.log("Inside yearly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
         Plotly.purge('Waterfallyearly');
+        let total_opExpected = total_expected;
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_egbd = Number(total_egbd) + Number(total_curtaiment);
+
         let t_target = Number(total_target).toFixed(2);
-        let t_expected = Number(total_expected).toFixed(2);
-        let t_usmh = Number(total_usmh * -1).toFixed(2);
-        let t_smh = Number(total_smh * -1).toFixed(2);
-        let t_oh = Number(total_oh * -1).toFixed(2);
-        let t_igbd = Number(total_igbd * -1).toFixed(2);
+        let t_OpExpected = Number(total_opExpected).toFixed(2);
+        let t_bd = Number(total_bd * -1).toFixed(2);
         let t_egbd = Number(total_egbd * -1).toFixed(2);
-        let t_curtaiment = Number(total_curtaiment * -1).toFixed(2);
         let t_pr = Number(total_pr).toFixed(2);
+        let t_oh = Number(total_oh * -1).toFixed(2);
         let t_actual = Number(total_actual).toFixed(2);
 
         let data_target = Number(total_target);
-        let data_expected = Number(total_expected);
-        let data_usmh = Number(total_usmh *-1) ;
-        let data_smh = Number(total_smh *-1) ;
-        let data_oh = Number(total_oh *-1) ;
-        let data_igbd = Number(total_igbd *-1) ;
-        let data_egbd = Number(total_egbd *-1) ;
-        let data_curtaiment = Number(total_curtaiment *-1) ;
+        let data_expected = Number(total_opExpected);
+        let data_bd = Number(total_bd) * -1;
+        let data_egbd = Number(total_egbd) * -1;
         let data_pr = Number(total_pr);
+        let data_oh = Number(total_oh) * -1;
         let data_actual = Number(total_actual);
 
         // Percentage Value
         let tar_percentage = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage = 100;
-        let usmh_percentage = (data_usmh / data_expected) * 100;
-        let smh_percentage = (data_smh / data_expected) * 100;
-        let oh_percentage = (data_oh / data_expected) * 100;
-        let igbd_percentage = (data_igbd / data_expected) * 100;
+        let bd_percentage = (data_bd / data_expected) * 100;
         let egbd_percentage = (data_egbd / data_expected) * 100;
-        let cur_percentage = (data_curtaiment / data_expected) * 100;
         let pr_percentage = (data_pr / data_expected) * 100;
+        let oh_percentage = (data_oh / data_expected) * 100;
         let actul_percentage = ((data_actual) / data_expected) * 100;
 
 
@@ -1453,60 +1469,45 @@
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    aMeasure
+                    aMeasure,
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
-                    "Other",
-                    "IGBD",
-                    "EGBD",
-                    "Curtailment",
+                    "BD",
+                    "EGB",
                     "PR",
+                    "Other",
                     "Actual"
                 ],
                 textposition: "outside",
                 //textposition: "inside",
                 text: [
                     t_target,
-                    t_expected,
-                    t_usmh,
-                    t_smh,
-                    t_oh,
-                    t_igbd,
+                    t_OpExpected,
+                    t_bd,
                     t_egbd,
-                    t_curtaiment,
                     t_pr,
+                    t_oh,
                     t_actual
                 ],
                 y: [
                     data_target,
                     data_expected,
-                    data_usmh,
-                    data_smh,
-                    data_oh,
-                    data_igbd,
+                    data_bd,
                     data_egbd,
-                    data_curtaiment,
                     data_pr,
+                    data_oh,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
-                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
-                    '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + data_bd.toFixed(4) + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>EGB</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
-                    '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                    '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
                 //    /*'Column: %{x}<br>' +*/
@@ -1580,7 +1581,7 @@
         yearcardButtons.style.display = "none";
     }
     // Display monthly commets main function.
-    function DMC(site_id, spv, nDval) {
+    function DMC(site_id, isSPV, nDval, afterUpdate) {
         var mDisplay = document.getElementById("monthlyComments");
         var mAdd = document.getElementById("monthlyAdd");
         var mEdit = document.getElementById("monthlyEdit");
@@ -1592,13 +1593,13 @@
         mDelete.style.display = "none";
 
         console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
-        if (spv == "") {
-            isSPV = 1;
-            //console.log("So you will be seeing Data site wise.");
-        } else {
-            isSPV = 0;
-            //console.log("So you will be seeing Data spv wise.");
-        }
+        //if (spv == "") {
+        //    isSPV = 1;
+        //    //console.log("So you will be seeing Data site wise.");
+        //} else {
+        //    isSPV = 0;
+        //    //console.log("So you will be seeing Data spv wise.");
+        //}
 
         //0 = SPV, 1= Site.
         var temDate = nDval.split("-");
@@ -1636,13 +1637,27 @@
                     var BD_div = document.getElementById("DMC_BD");
                     var EGB_div = document.getElementById("DMC_EGB");
                     var Other_div = document.getElementById("DMC_Other");
+                    if (afterUpdate) {
+                        var element_egb = document.getElementById("EGB_CC");
+                        if (element_egb) {
+                            element_egb.parentNode.removeChild(element_egb);
+                        }
+                        var element_bd = document.getElementById("BD_CC");
+                        if (element_bd) {
+                            element_bd.parentNode.removeChild(element_bd);
+                        }
+                        var element_other = document.getElementById("Other_CC");
+                        if (element_other) {
+                            element_other.parentNode.removeChild(element_other);
+                        }
+                    }
                     if (EGB.length > 0) {
                         EGB_div.style.display = "flex";
                         var commentDiv = document.createElement("div");
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "EGB_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
                         for (var i = 0; i < EGB.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
@@ -1663,7 +1678,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "BD_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
                         for (var i = 0; i < BD.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
@@ -1684,7 +1699,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "Other_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
                         for (var i = 0; i < Other.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
@@ -1831,7 +1846,7 @@
             //console.log("ACM_info array after inserting BD set.");
             //console.log(ACM_info);
         } else {
-            showToast('No BDs to Add', 5000, 'monthlyAdd');
+            showToast('No BDs to Add', 5000, 'monthlyAdd', false);
         }
 
     }
@@ -1913,7 +1928,7 @@
             var idInput = thisElement.commentInput + "_" + thisElement.siteCount;
             //console.log("Created Site and input ids : " + idSite + " and " + idInput );
 
-            var Newcontent = '<div class="row"> <div class="col-sm-7" > <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select> <input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div > </div >';
+            var Newcontent = '<div class="row" style = "display: flex; justify-content: center; align-items: center;"><div style="width: 30%;" ><div class="row" style="position: relative; padding: 0px; width: 100%"><label class="col-form-label text-right" style="width: 30%;">Site :</label><select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="' + idSite + '" style="height: 40px;"></select></div></div ><input id="' + idInput + '" type="text" style="width: 65%; height: 35px;" /></div > ';
             //'ACM_siteContainer1'
             var containerDestination = thisElement.siteMainDiv;
             var siteContainer = document.getElementById(containerDestination);
@@ -1977,7 +1992,7 @@
             //console.log(ACM_info);
         }
         else {
-            showToast('No sites to Add', 5000, 'monthlyAdd');
+            showToast('No sites to Add', 5000, 'monthlyAdd', false);
         }
     }
 
@@ -1991,6 +2006,17 @@
         for (var k = 1; k <= bdSetCount; k++) {
             var BDelement = ACM_info[k];
             var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+            if (bdType === "0") {
+                console.log("BD is null.");
+                var siteIdTemp = Number(document.getElementById((BDelement.siteSelectDD + "_1")).value);
+                //console.log("siteId extracted is : " + siteIdTemp + ", type of BD type : " + typeof (siteIdTemp));
+                if (siteIdTemp === 0) {
+                    console.log("Site is null.");
+                    //toast please enter data first.
+                    showToast('No Data to Save.!', 5000, 'monthlyAdd', false);
+                    return false;
+                }
+            }
 
             var userName =  "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
             var role =  "@HttpContextAccessor.HttpContext.Session.GetString("role")";
@@ -2106,7 +2132,7 @@
         mainACM_div.innerHTML = "";
 
         var RefreshContent = '';
-        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACM_info_div"> <p id = "ACM_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> <input id="ACM_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+        RefreshContent = '<div id="backBtnACM" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHome(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i></div> <div id="ACM_info_div"><p id="ACM_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p> <p id="ACM_info" style="text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div > <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACM_breakdownSelect1" onchange="ACM_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACM_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACM_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACM_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACM_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="monthAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACM_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSite(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
 
         mainACM_div.innerHTML = RefreshContent;
         ACM_info = [];
@@ -2205,7 +2231,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = ECMSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Edit";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -2228,9 +2254,10 @@
     function createUI(element, Destcontainer, index) {
         var commentContainer = document.createElement('div');
         commentContainer.className = 'comment-container';
+        commentContainer.style = "width: 100%;";
 
         var siteLabel = document.createElement('label');
-        siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); display: inline-block; overflow: hidden;";
+        siteLabel.style = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); display: inline-block; overflow: hidden;";
         //"width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;"
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
@@ -2250,7 +2277,7 @@
         var commentInput = document.createElement('input');
         commentInput.className = 'comment-input';
         commentInput.type = 'text';
-        commentInput.style = "margin-left: 10px; width: 370px; height: 35px; border: 1px solid #ccc; vertical-align: top;";
+        commentInput.style = "margin-left: 10px; width: 65%; height: 35px; border: 1px solid #ccc; vertical-align: top;";
         element.comment = element.comment.replace(/<br>/g, ";");
         element.comment = element.comment.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
         commentInput.value = element.comment;
@@ -2313,7 +2340,7 @@
         }else {
             // No changes, call toast function
             console.log("No changes in comments. Calling the toast function.");
-            showToast("No Changes to Update.", 7000, "ECM");
+            showToast("No Changes to Update.", 7000, "ECM", false);
         }
     }
 
@@ -2395,7 +2422,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = DCMSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Delete";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -2423,7 +2450,7 @@
         commentContainer.style.alignItems = 'center';
 
         var siteLabel = document.createElement('label');
-        siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.style.cssText = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         //siteLabel.textContent = element.site;
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
@@ -2441,7 +2468,7 @@
         element.label_id = "DCMLabel" + index;
 
         var CommentLabel = document.createElement('label');
-        CommentLabel.style.cssText = "width: 340px; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        CommentLabel.style.cssText = "width: 65%; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         CommentLabel.textContent = element.comment;
         CommentLabel.id = "DCMLabel" + index;
         element.comment_id = "DCMComment" + index;
@@ -2516,12 +2543,13 @@
                     }
                 },
                 error: function (xhr, status, error) {
+                    showToast("Error While Deleting comments.", 7000, "DCM", false);
                     console.log("Error:", error);
                 }
             });
         } else {
             // No changes, call toast function
-            showToast("No Comments Selected to Delete.", 7000, "DCM");
+            showToast("No Comments Selected to Delete.", 7000, "DCM", false);
         }
 
     }
@@ -2543,11 +2571,14 @@
 
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
-                showToast("Comments Updated successfully.", 5000, "monthlyComments");
+                DMC(site_id, isSPV, nDval, true);
+                showToast("Comments Updated successfully.", 5000, "monthlyComments", true);
             } else if (functionality == "Add") {
-                showToast("Comments Added successfully.", 5000, "monthlyComments");
+                DMC(site_id, isSPV, nDval, true);
+                showToast("Comments Added successfully.", 5000, "monthlyComments", true);
             } else if (functionality == "Delete") {
-                showToast("Comments Deleted successfully.", 5000, "monthlyComments");
+                DMC(site_id, isSPV, nDval, true);
+                showToast("Comments Deleted successfully.", 5000, "monthlyComments", true);
             }
         }
         if (isUpdateCancel == "Cancel") {
@@ -2575,7 +2606,7 @@
 
     //ALL for Display Year Comments. (DYC).
     // Display year commets main function.
-    function DYC(site_id, spv, nDval) {
+    function DYC(site_id, isSpv, nDval) {
         var yDisplay = document.getElementById("yearComments");
         var yAdd = document.getElementById("yearAdd");
         var yEdit = document.getElementById("yearEdit");
@@ -2587,13 +2618,13 @@
         yDelete.style.display = "none";
 
         //console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
-        if (spv == "") {
-            isSPV = 1;
-            //console.log("So you will be seeing Data site wise.");
-        } else {
-            isSPV = 0;
-            //console.log("So you will be seeing Data spv wise.");
-        }
+        //if (spv == "") {
+        //    isSPV = 1;
+        //    //console.log("So you will be seeing Data site wise.");
+        //} else {
+        //    isSPV = 0;
+        //    //console.log("So you will be seeing Data spv wise.");
+        //}
 
         //0 = SPV, 1= Site.
         var temDate = nDval.split("-");
@@ -2637,7 +2668,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "EGBY_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
                         for (var i = 0; i < EGB.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
@@ -2658,7 +2689,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "BDY_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
                         for (var i = 0; i < BD.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
@@ -2679,7 +2710,7 @@
                         commentDiv.style.marginLeft = "2px";
                         commentDiv.id = "OtherY_CC"; // CC: Comment Content.
 
-                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 12px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
                         for (var i = 0; i < Other.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
@@ -2795,7 +2826,7 @@
             var idInput = thisEle.commentInput + "_" + thisEle.siteCount;
             //console.log("Created Site and input ids : " + idSite + " and " + idInput);
 
-            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACY_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select><input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACY_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACY_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSiteYear(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
+            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACY_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row" style="display: flex; justify-content: center; align-items: center;"><div style="width: 30%;"><div class="row" style="position: relative; padding: 0px; width: 100%;"><label class="col-form-label text-right" style="width: 30%;">Site :</label><select value="" id="' + idSite + '" style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%"></select></div></div><input id="' + idInput + '" type="text" style="width: 65%; height: 35px;"/></div></div><div class="d-flex justify-content-end"><div id="ACY_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="yearAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACY_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSiteYear(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
 
             var bdContainer = document.getElementById('ACY');
 
@@ -2828,7 +2859,7 @@
             //console.log("ACY_info array after inserting BD set.");
             //console.log(ACY_info);
         } else {
-            showToast('No BDs to Add', 5000, 'yearAdd');
+            showToast('No BDs to Add', 5000, 'yearAdd', false);
         }
 
     }
@@ -2910,7 +2941,7 @@
             var idInput = thisElement.commentInput + "_" + thisElement.siteCount;
             //console.log("Created Site and input ids : " + idSite + " and " + idInput );
 
-            var Newcontent = '<div class="row"> <div class="col-sm-7" > <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select> <input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div > </div >';
+            var Newcontent = '<div class="row" style = "display: flex; justify-content: center; align-items: center;"><div style="width: 30%;" ><div class="row" style="position: relative; padding: 0px; width: 100%"><label class="col-form-label text-right" style="width: 30%;">Site :</label><select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="' + idSite + '" style="height: 40px;"></select></div></div ><input id="' + idInput + '" type="text" style="width: 65%; height: 35px;" /></div > ';
             //'ACY_siteContainer1'
             var containerDestination = thisElement.siteMainDiv;
             var siteContainer = document.getElementById(containerDestination);
@@ -2974,7 +3005,7 @@
             //console.log(ACY_info);
         }
         else {
-            showToast('No sites to Add', 5000, 'yearAdd');
+            showToast('No sites to Add', 5000, 'yearAdd', false);
         }
 
     }
@@ -2989,6 +3020,17 @@
         for (var k = 1; k <= bdSetCount; k++) {
             var BDelement = ACY_info[k];
             var bdType = document.getElementById(BDelement.bdSelectDD).value; //BD type of the BD set.
+            if (bdType === "0") {
+                console.log("BD is null.");
+                var siteIdTemp = Number(document.getElementById((BDelement.siteSelectDD + "_1")).value);
+                //console.log("siteId extracted is : " + siteIdTemp + ", type of BD type : " + typeof (siteIdTemp));
+                if (siteIdTemp === 0) {
+                    console.log("Site is null.");
+                    //toast please enter data first.
+                    showToast('No Data to Save.!', 5000, 'yearAdd', false);
+                    return false;
+                }
+            }
 
             var userName = "@HttpContextAccessor.HttpContext.Session.GetString("DisplayName")";
             var role = "@HttpContextAccessor.HttpContext.Session.GetString("role")";
@@ -3105,7 +3147,7 @@
         mainACY_div.innerHTML = "";
 
         var RefreshContent = '';
-        RefreshContent = '<div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACY_info_div"> <p id = "ACY_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div> <div id="ACY_siteContainer1"> <div class="row"> <div class="col-sm-7"> <div class="form-group"> <div class="row" style="position: relative; width: 100%;"> <label class="col-sm-2 col-form-label text-right">Site :</label> <select class="form-control col-sm-6" value="" id="ACY_sitesM1_1" style="height: 40px;"></select> <input id="ACY_commentInput1_1" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;" /> </div> </div> </div> </div> </div> <div class="d-flex justify-content-end"> <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
+        RefreshContent = '<div id="backBtnACY" style="display: block; color: #808080; top: 20px; left: 20px; position: absolute" onclick="returnHomeYear(\'Back\', \'Cancel\')"><i class="fas fa-arrow-left" style = "font-size: 18px; margin-bottom: 10px;" ></i> </div> <div id="ACY_info_div"> <p id="ACM_title" style="font-weight: bold; text-align: center; margin: -3px; font-family: Arial, sans-serif; color: rgb(49, 87, 109)">ADD</p> <p id = "ACY_info" style = "text-align: center; margin: 0; font-family: Arial, sans-serif; color: rgba(102, 102, 102, 0.7)"></p> </div> <div class="d-flex justify-content-end" style="padding: 10px;"> <select class="form-control col-sm-4" id="ACY_breakdownSelect1" onchange="ACY_bd_change(1)" value="" style="height: 40px; margin-left: 10px;"></select> </div><div id="ACY_siteContainer1"> <div class="row" style="display: flex; justify-content: center; align-items: center;"> <div style="width: 30%;"> <div class="row" style="position: relative; padding: 0px; width: 100%"> <label class="col-form-label text-right" style="width: 30%;">Site :</label> <select style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%" value="" id="ACY_sitesM1_1" style="height: 40px;"></select> </div> </div><input id="ACY_commentInput1_1" type="text" style="width: 65%; height: 35px;" /></div> </div> <div class="d-flex justify-content-end"> <div id="ACY_addBD1" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="yearAddBD()"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD BD</span> </div> <div id="ACY_addSite1" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="addSiteYear(1)"> <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i> <span style="margin-left: 5px; color: #ffffff;">ADD SITE</span> </div> </div>';
 
         mainACY_div.innerHTML = RefreshContent;
         ACY_info = [];
@@ -3202,7 +3244,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = ECYSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Edit";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -3225,9 +3267,10 @@
     function createUIYear(element, Destcontainer, index) {
         var commentContainer = document.createElement('div');
         commentContainer.className = 'comment-container';
+        commentContainer.style = "width:100%;";
 
         var siteLabel = document.createElement('label');
-        siteLabel.style = "width: 150px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.style = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
             var marquee = document.createElement('marquee');
@@ -3246,7 +3289,7 @@
         var commentInput = document.createElement('input');
         commentInput.className = 'comment-input';
         commentInput.type = 'text';
-        commentInput.style = "margin-left: 10px; width: 370px; height: 35px; border: 1px solid #ccc; vertical-align: top;";
+        commentInput.style = "margin-left: 10px; width: 65%; height: 35px; border: 1px solid #ccc; vertical-align: top;";
         element.comment = element.comment.replace(/<br>/g, ";");
         element.comment = element.comment.replace(/[`~!#$%^*()_|+\'",<>\{\}\[\]\\\/]/gi, '');
         commentInput.value = element.comment;
@@ -3312,7 +3355,7 @@
         } else {
             // No changes, call toast function
             console.log("No changes in comments. Calling the toast function. Year");
-            showToast("No Changes to Update.", 7000, "ECY");
+            showToast("No Changes to Update.", 7000, "ECY", false);
         }
     }
 
@@ -3393,7 +3436,7 @@
                 var saveButton = document.createElement('button');
                 saveButton.style = "display: inline-block; background: #86C466; padding: 8px 15px; border: none; border-radius: 5px; margin-left: 10px;";
                 saveButton.onclick = DCYSaveButton;
-                saveButton.textContent = "Save";
+                saveButton.textContent = "Delete";
 
                 // Create the Cancel button
                 var cancelButton = document.createElement('button');
@@ -3421,7 +3464,7 @@
         commentContainer.style.alignItems = 'center';
 
         var siteLabel = document.createElement('label');
-        siteLabel.style.cssText = "width: 125px; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        siteLabel.style.cssText = "width: 25%; height: 35px; line-height: 35px; text-align: center; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         var textContent = (isSPV == 0) ? element.spv : element.site;
         if (isSPV == 0) {
             var marquee = document.createElement('marquee');
@@ -3438,7 +3481,7 @@
         element.label_id = "DCYLabel" + index;
 
         var CommentLabel = document.createElement('label');
-        CommentLabel.style.cssText = "width: 340px; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
+        CommentLabel.style.cssText = "width: 65%; margin-left: 10px; height: 35px; line-height: 35px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background-color: #ffffff; border: 1px solid #ccc; display: inline-block;";
         CommentLabel.textContent = element.comment;
         CommentLabel.id = "DCYLabel" + index;
         element.comment_id = "DCYComment" + index;
@@ -3515,12 +3558,13 @@
                     }
                 },
                 error: function (xhr, status, error) {
+                    showToast("Error While Deleting.", 7000, "DCY", false);
                     console.log("Error:", error);
                 }
             });
         } else {
             // No changes, call toast function
-            showToast("No Comments Selected to Delete.", 7000, "DCY");
+            showToast("No Comments Selected to Delete.", 7000, "DCY", false);
         }
     }
 
@@ -3537,15 +3581,18 @@
         yDelete.style.display = "none";
 
         // Function call to get the comments data. Display Monthly Comments (DYC).
-        DYC(site_id, spv, nDval);
+        //DYC(site_id, spv, nDval);
 
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
-                showToast("Comments Updated successfully.", 5000, "yearComments");
+                DYC(site_id, isSPV, nDval);
+                showToast("Comments Updated successfully.", 5000, "yearComments", true);
             } else if (functionality == "Add") {
-                showToast("Comments Added successfully.", 5000, "yearComments");
+                DYC(site_id, isSPV, nDval);
+                showToast("Comments Added successfully.", 5000, "yearComments", true);
             } else if (functionality == "Delete") {
-                showToast("Comments Deleted successfully.", 5000, "yearComments");
+                DYC(site_id, isSPV, nDval);
+                showToast("Comments Deleted successfully.", 5000, "yearComments", true);
             }
         }
         if (isUpdateCancel == "Cancel") {
@@ -3572,7 +3619,7 @@
     }
 
     //Toast generator and display.
-    function showToast(message, duration, division) {
+    function showToast(message, duration, division, SuccessFailure) {
         // Create the toast element with inline styles
         var toast = document.createElement('div');
         toast.innerHTML = message + '<span onclick="closeToastByClick()" style="cursor: pointer; position: absolute; top: 0; right: 0; padding: 5px;">&times;</span>';
@@ -3581,7 +3628,11 @@
         toast.style.top = '50%';
         toast.style.left = '50%';
         toast.style.transform = 'translate(-50%, -50%)';
-        toast.style.backgroundColor = '#ee403d';
+        if (SuccessFailure) {
+            toast.style.backgroundColor = '#86c466';
+        } else {
+            toast.style.backgroundColor = '#ee403d';
+        }
         toast.style.color = '#ffffff';
         toast.style.padding = '15px';
         toast.style.borderRadius = '5px';
@@ -3602,8 +3653,10 @@
 
     function closeToast(toast) {
         // Hide and remove the toast
-        toast.style.display = 'none';
-        toast.parentNode.removeChild(toast);
+        if (toast) {
+            toast.style.display = 'none';
+            toast.parentNode.removeChild(toast);
+        }
     }
 
     function closeToastByClick() {
