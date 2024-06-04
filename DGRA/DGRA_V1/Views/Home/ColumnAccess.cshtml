@@ -1,0 +1,204 @@
+﻿﻿@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@model DGRA_V1.Models.DailyGenSummary
+
+@{
+    ViewData["Title"] = "ColumnAccess";
+}
+
+@{
+    // Get the current year and month
+    var currentYearMonth = DateTime.Now.ToString("yyyy-MM");
+}
+@{
+    string windSiteList = "";
+
+    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+}
+
+@for (int i = 0; i < @usermodel.access_list.Count; i++)
+{
+    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 1)
+    {
+        windSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+<!-- dropdown search -->
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+
+<!-- DataTables  & Plugins -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/dist/js/comman.js"></script>
+<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-center">Column Access</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row" id="type_drop_list" style="position: relative; display: flex; justify-content: start; align-items: start;">
+                                <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Type: </label>
+                                <select class="form-control col-sm-8" id="typeDropdown" placeholder="Select Type" onchange="typeChange()" value="" style="height: 37px; margin-left: 5px;">
+                                    <option value="0">Select Type</option>
+                                    <option value="2">Solar</option>
+                                    <option value="1">Wind</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row" id="pageType_drop_list" style="position: relative; display: flex; justify-content: start; align-items: start;">
+                                <label class="col-sm-3 col-form-label text-right" style="padding-right: 0px;">Page Type: </label>
+                                <select class="form-control col-sm-8" id="pageTypeDropdown" placeholder="Select Page Type" onchange="pageTypeChange()" value="" style="height: 37px; margin-left: 5px;">
+                                    <option value="0">Select Page Type</option>
+                                    <option value="1">Report</option>
+                                    <option value="2">View</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row" id="page_drop_list" style="position: relative; display: flex; justify-content: start; align-items: start;">
+                                <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Page : </label>
+                                <select class="form-control col-sm-8" id="pageDropdown" placeholder="Select Page" onchange="pageChange()" value="" style="height: 37px; margin-left: 5px;">
+                                    <option value="0">Select Page</option>
+                                    <option value="1">SPV Wise</option>
+                                    <option value="2">Site Wise</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row" id="group_drop_list" style="position: relative; display: flex; justify-content: start; align-items: start;">
+                                <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Group : </label>
+                                <select class="form-control col-sm-8" id="groupDropdown" placeholder="Select Group" onchange="groupChnage()" value="" style="height: 37px; margin-left: 5px;">
+                                    <option value="0">Select Group</option>
+                                    <option value="1">SPV Wise</option>
+                                    <option value="2">Site Wise</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="col-md-2">
+                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                            <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
+                        </div>
+                    </div>*@
+                    <div class="col-md-1"></div>
+                </div>
+                <!--  Form Control Div Closed -->
+                <hr>
+                <br>
+                <hr>
+                <div id="loader" class="loader  center" style="display:none"></div>
+            </div> <!-- Main Card Body Closded-->
+        </div> <!--Card Closed -->
+    </section>
+</div>
+
+
+           
+<script type="text/javascript">
+    //Global Variables defination START
+    var type = 0;
+    var pageType = 0;
+    var selectedPage = 0;
+    var selectedGroup = 0;
+    var dataRendered = false;
+
+    //Global Variables defination END.
+
+
+
+    //On Page load functions to trigger START
+    $(document).ready(function () { });
+
+    window.onload = function () { }
+    //On Page load functions to trigger END
+
+
+
+    //Masters data FETCH functions START
+    function getPages() {
+        //trigger api through Home controller and populate it in dropdown options.
+
+    }
+
+    function getGroups() {
+        //take the page_id selected by the user and fetch the groups of that particular page and populate it in dropdown options
+    }
+    //Masters data FETCH functions END
+
+
+    //On changing the pageType options function.
+    function typeChange() {
+        //set the selected type to the type global variable.
+        type = document.getElementById("typeDropdown").value;
+    }
+
+    //On changing the pageType options function.
+    function pageTypeChange() {
+        //set the selected page type to the pageType global variable.
+        pageType = document.getElementById("pageTypeDropdown").value;
+    }
+
+    //On changing the page options function.
+    function pageChange() {
+        //set the selected page_id to the selectedPage global variable.
+        selectedPage = document.getElementById("pageDropdown").value;
+        //call the getGroups function.
+    }
+
+    //On changing the Grouo of the selected page.
+    function groupChnage() {
+        //store the selected group id in the global variable selectedGroup.
+        selectedGroup = document.getElementById("groupDropdown").value;
+        console.log(type, pageType, selectedPage, selectedGroup);
+    }
+
+    //On clicking the search button function.
+    function getReport() {
+        //Get the particular pages's group details.
+        //call the functions for creating the ui for columns as cards with checkbox.
+        console.log("Clicked button.");
+    }
+</script>
