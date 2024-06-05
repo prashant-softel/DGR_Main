@@ -8110,12 +8110,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         string dataDate = sites.data_date.ToString("dd-MM-yyyy");
 
                         string tb = "<p style='text-align: left;'>Dear User,<br>";
-                        tb += $"DGR Data Successfully uploaded for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
-                        //AddToWind = new List<string>();
-                        //AddToWind.Add("tanvi@softeltech.in");
+                        tb += $"<br>DGR Data Approved Successfully for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                        tb += "<br><br>";
+                        tb += "<p>Thanks and Regards,<br>";
+                        tb += "O&M - Team</p>";
+                        tb += "<br>";
+                        tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+
+
                         request.ToEmail = AddToWind;
                         request.CcEmail = AddCcWind;
-                        request.Subject = $"DGR_Uploading_Status_{dataDate} - {sites.name} - Successful";
+                        request.Subject = $"DGR Data Approved Successfully {dataDate} - {sites.name}";
                         request.Body = tb;
 
                         try
@@ -8234,12 +8239,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                         string tb = "<p style='text-align: left;'>Dear User,<br>";
-                        tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
-                        //AddTo = new List<string>();
-                        //AddTo.Add("tanvi@softeltech.in");
+                        tb += $"<br>DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+                        tb += "<br><br>";
+                        tb += "<p>Thanks and Regards,<br>";
+                        tb += "O&M - Team</p>";
+                        tb += "<br>";
+                        tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+
                         request.ToEmail = AddTo;
                         request.CcEmail = AddCc;
-                        request.Subject = $"DGR_Uploading_Status_{dataDate} - {sites.name} - Rejected";
+                        request.Subject = $"DGR Data Rejected {dataDate} - {sites.name}";
                         request.Body = tb;
 
                         try
@@ -8518,18 +8527,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         }
                         string dataDate = sites.data_date.ToString("dd-MM-yyyy");
                         string tb = "<p style='text-align: left;'>Dear User,<br>";
-                        tb += $"DGR Data Approved Successfully  for {sites.data_date.ToString("dd-MMM-yyyy")} .</p>";
-
-                        tb += "<br><br><br>";
+                        tb += $"<br>DGR Data Approved Successfully  for {sites.data_date.ToString("dd-MMM-yyyy")} .</p>";
+                        tb += "<br><br>";
                         tb += "<p>Thanks and Regards,<br>";
                         tb += "O&M - Team</p>";
-                        tb += "<br><br>";
+                        tb += "<br>";
                         tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
                         //AddTo = new List<string>();
                         //AddTo.Add("tanvi@softeltech.in");
                         request.ToEmail = AddTo;
                         request.CcEmail = AddCc;
-                        request.Subject = $"DGR Data Approved Successfully  {dataDate} - {sites.name} - Successful";
+                        request.Subject = $"DGR Data Approved Successfully  {dataDate} - {sites.name}";
                         request.Body = tb;
                         try
                         {
@@ -8626,12 +8634,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 }
                                 string dataDate = sites.data_date.ToString("dd-MM-yyyy");
 
-                                string tb = "<p style='text-align: left;'>Dear User,<br><br>";
-                                tb += $"DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
-                                tb += "<br><br><br>";
+                                string tb = "<p style='text-align: left;'>Dear User,<br>";
+                                tb += $"<br>DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
+                                tb += "<br><br>";
                                 tb += "<p>Thanks and Regards,<br>";
                                 tb += "O&M - Team</p>";
-                                tb += "<br><br>";
+                                tb += "<br>";
                                 tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
                                 //AddTo = new List<string>();
                                 //AddTo.Add("tanvi@softeltech.in");
@@ -8718,11 +8726,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                         string tb = "<p style='text-align: left;'>Dear User,<br>";
                         //tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
-                        tb += $"DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
-                        tb += "<br><br><br>";
+                        tb += $"<br>DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
+                        tb += "<br><br>";
                         tb += "<p>Thanks and Regards,<br>";
                         tb += "O&M - Team</p>";
-                        tb += "<br><br>";
+                        tb += "<br>";
                         tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
                         request.ToEmail = AddTo;
                         request.CcEmail = AddCc;
@@ -11910,6 +11918,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             tb += "</tbody></table>";
             tb += "</br>";
+            tb += "<p>Thanks and Regards,<br>";
+            tb += "O&M - Team</p>";
+            tb += "<br>";
+            tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
 
             try
             {
@@ -12609,6 +12621,10 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             tb += "</table>";
             tb += "</br>";
+            tb += "<p>Thanks and Regards,<br>";
+            tb += "O&M - Team</p>";
+            tb += "<br>";
+            tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
             try
             {
                 PPT_InformationLog("MailDailySend before function call from repository for solar");
