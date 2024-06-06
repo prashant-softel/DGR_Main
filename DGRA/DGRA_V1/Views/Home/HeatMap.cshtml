@@ -194,9 +194,9 @@
             </div>
             <div class="card-body">
                 <div class="row" style="margin-bottom: -6px;">
-                    <div class="col-md-3" style=" margin-left: -30px;">
+                    <div class="col-md-3" style="margin-left: 15px;">
                         <div class="input-group row">
-                            <label class="col-sm-3 col-form-label text-right">Date : </label>
+                            <label class="col-sm-3.1 col-form-label text-right">Date Range :&nbsp;&nbsp; </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
@@ -205,7 +205,7 @@
                             <input type="text" class="form-control float-right col-sm-9" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-md-3" style="margin-left: 10px;">
+                    <div class="col-md-3" style="margin-left: 0px;">
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-sm-3 col-form-label text-right">Site Type : </label>
@@ -246,8 +246,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2" style="margin-left:0rem;">
-                        <div class="col-md-4"><button type="button" class="btn btn-block btn-primary" onclick="DummyGetReport()" style="float: left; width: 5rem; line-height: 1.3; ">Search</button></div>
+                    <div class="col-md-2">
+                        <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
+                            <button type="button" class="btn btn-block btn-primary " style="margin-left: -5rem; width: 5rem; line-height: 1.3;" onclick="DummyGetReport()">Search</button>
+                            <!--<button type="button" class="btn btn-block btn-danger" onclick="clearRecords()" style="margin-left:-5rem; width: 5rem;">Clear</button>-->
+                        </div>
+                        <div class="col-md-1"></div>
+                        <!--<button type="button" class="btn btn-block btn-primary" onclick="DummyGetReport()" style="float: left; width: 5rem; line-height: 1.3; ">Search</button>
+                    </div>-->
                     </div>
                 </div>
                 

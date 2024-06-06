@@ -444,7 +444,7 @@
                         let pr_value = 0;
                         let total_breakdown = 0;
                         total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
-                        pr_value = result[i].inv_kwh - total_breakdown;
+                        pr_value = result[i].jmr_kwh - total_breakdown;
 
                         var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
@@ -460,7 +460,7 @@
                         tbl += '<td class="text-right">' + (result[i].egbdh).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].load_shedding).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (pr_value).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].inv_kwh).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].jmr_kwh).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].ma).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].iga).toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + (result[i].ega_a).toFixed(2) + '</td>';
@@ -474,7 +474,7 @@
                         total_usmh += (result[i].usmh);
                         total_smh += (result[i].smh);
                         total_oh += (result[i].oh);
-                        total_actual += (result[i].inv_kwh);
+                        total_actual += (result[i].jmr_kwh);
                         total_pr += pr_value;
                         total_igbd += (result[i].igbdh);
                         total_egbd += (result[i].egbdh);
@@ -827,14 +827,14 @@ function getYearlyReport()
                 for (var i = 0; i < result.length; i++) {
                     let pr_value = 0;
                     let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
-                    pr_value = result[i].inv_kwh - total_breakdown;
+                    pr_value = result[i].jmr_kwh - total_breakdown;
                     cnt++;
                     total_target += result[i].target;
                     total_expected += (result[i].pexpected);
                     total_usmh += (result[i].usmh);
                     total_smh += (result[i].smh);
                     total_oh += (result[i].oh);
-                    total_actual += (result[i].inv_kwh);
+                    total_actual += (result[i].jmr_kwh);
                     total_pr += (pr_value);
                     total_igbd += (result[i].igbdh);
                     total_egbd += (result[i].egbdh);

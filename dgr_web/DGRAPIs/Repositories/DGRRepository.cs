@@ -19319,11 +19319,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string qry1 = "";
             if (prType == "AOP")
             {
-                qry1 = $"SELECT t1.site_id AS site_id, t2.site AS site, t1.data_date AS date, t1.target AS target, t1.pr AS toplining_PR, t1.inv_kwh AS inv_kwh, t1.ma AS ma, t1.iga AS iga, t1.ega_a AS ega_a, t1.ega_b AS ega_b, t1.ega_c AS ega_c, t1.usmh AS usmh, t1.smh AS smh, t1.others AS oh, t1.igbd AS igbdh, t1.egbd AS egbdh, t1.loadShedding AS load_shedding, t1.expected_power AS Pexpected FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id {filter} AND t1.aop_top = 0;";
+                qry1 = $"SELECT t1.site_id AS site_id, t2.site AS site, t1.data_date AS date, t1.target AS target, t1.pr AS toplining_PR, t1.inv_kwh AS inv_kwh,t1.jmr_kwh as jmr_kwh, t1.ma AS ma, t1.iga AS iga, t1.ega_a AS ega_a, t1.ega_b AS ega_b, t1.ega_c AS ega_c, t1.usmh AS usmh, t1.smh AS smh, t1.others AS oh, t1.igbd AS igbdh, t1.egbd AS egbdh, t1.loadShedding AS load_shedding, t1.expected_power AS Pexpected FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id {filter} AND t1.aop_top = 0;";
             }
             else if (prType == "toplining")
             {
-                qry1 = $"SELECT t1.site_id AS site_id, t2.site AS site, t1.data_date AS date, t1.target AS target, t1.pr AS toplining_PR, t1.inv_kwh AS inv_kwh, t1.ma AS ma, t1.iga AS iga, t1.ega_a AS ega_a, t1.ega_b AS ega_b, t1.ega_c AS ega_c, t1.usmh AS usmh, t1.smh AS smh, t1.others AS oh, t1.igbd AS igbdh, t1.egbd AS egbdh, t1.loadShedding AS load_shedding, t1.expected_power AS Pexpected FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id {filter} AND t1.aop_top = 1;";
+                qry1 = $"SELECT t1.site_id AS site_id, t2.site AS site, t1.data_date AS date, t1.target AS target, t1.pr AS toplining_PR, t1.inv_kwh AS inv_kwh,t1.jmr_kwh as jmr_kwh, t1.ma AS ma, t1.iga AS iga, t1.ega_a AS ega_a, t1.ega_b AS ega_b, t1.ega_c AS ega_c, t1.usmh AS usmh, t1.smh AS smh, t1.others AS oh, t1.igbd AS igbdh, t1.egbd AS egbdh, t1.loadShedding AS load_shedding, t1.expected_power AS Pexpected FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id {filter} AND t1.aop_top = 1;";
 
             }
             List<SolarExpectedvsActual> data = new List<SolarExpectedvsActual>();
