@@ -6356,7 +6356,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                 LogError(0, 1, 5, functionName, msg, backend);
             }
             string qry2 = " select site, site_id, sum(gen_nos) as tar_kwh," +
-                " sum(ghi)/count(ghi) as tar_ghi, sum(poa)/count(poa) as tar_poa, sum(plf)/count(plf) as tar_plf," +
+                " sum(ghi) as tar_ghi, sum(poa) as tar_poa, sum(plf)/count(plf) as tar_plf," +
                 " sum(pr)/count(pr) as tar_pr, sum(ma)/count(ma) as tar_ma, sum(iga)/count(iga) as tar_iga, sum(ega)/count(ega) as tar_ega " +
                 "from temp_view group by site ";
             List<SolarPerformanceReports1> tempdata = new List<SolarPerformanceReports1>();
@@ -19026,11 +19026,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                     foreach (var unit in AOPData)
                     {
-                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 + ((unit.usmh + unit.smh) / unit.expected_power)}, {100 + (unit.igbd / unit.expected_power)}, {100 + ((unit.egbd + unit.loadShedding) / unit.expected_power)}, {100 + (unit.egbd / unit.expected_power)}, {100 + (unit.loadShedding / unit.expected_power)}, 0),";
+                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - ((unit.usmh + unit.smh) / unit.expected_power)}, {100 - (unit.igbd / unit.expected_power)}, {100 - ((unit.egbd + unit.loadShedding) / unit.expected_power)}, {100 - (unit.egbd / unit.expected_power)}, {100 - (unit.loadShedding / unit.expected_power)}, 0),";
                     }
                     foreach (var unit in TopLiningData)
                     {
-                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 + ((unit.usmh + unit.smh) / unit.expected_power)}, {100 + (unit.igbd/unit.expected_power)}, {100 + ((unit.egbd + unit.loadShedding)/unit.expected_power)}, {100 + (unit.egbd /unit.expected_power)}, {100 + (unit.loadShedding/unit.expected_power)}, 1),";
+                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - ((unit.usmh + unit.smh) / unit.expected_power)}, {100 - (unit.igbd/unit.expected_power)}, {100 - ((unit.egbd + unit.loadShedding)/unit.expected_power)}, {100 - (unit.egbd /unit.expected_power)}, {100 - (unit.loadShedding/unit.expected_power)}, 1),";
                     }
                     string finalInsertQuery = insertStartingQuery + aopValues + topliningValues.Substring(0, (topliningValues.Length - 1)) + ";";
 
