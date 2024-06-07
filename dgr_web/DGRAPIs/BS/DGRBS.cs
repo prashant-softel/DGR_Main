@@ -210,7 +210,7 @@ namespace DGRAPIs.BS
         Task<int> CalculateDailyExpectedSolar(string site, string fromDate, string toDate);
         Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate);
         //DGR_v3 Email_report changes
-        Task<int> dgrUploadingReminder();
+        //Task<int> dgrUploadingReminder();
     }
     public class DGRBS : IDGRBS
     {
@@ -2893,20 +2893,20 @@ namespace DGRAPIs.BS
 
         }
         //DGR_v3 Email_report changes
-        public async Task<int> dgrUploadingReminder()
-        {
-            try
-            {
-                using (var repos = new DGRRepository(getDB))
-                {
-                    return await repos.dgrUploadingReminder();
+        //public async Task<int> dgrUploadingReminder()
+        //{
+        //    try
+        //    {
+        //        using (var repos = new DGRRepository(getDB))
+        //        {
+        //            return await repos.dgrUploadingReminder();
 
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
     }
 }

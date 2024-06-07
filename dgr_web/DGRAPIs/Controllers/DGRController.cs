@@ -2984,22 +2984,22 @@ namespace DGRAPIs.Controllers
         }
 
         //DGR_v3 Email_report changes
-        [Route("dgrUploadingReminder")]
-        [HttpGet]
-        public async Task<IActionResult> dgrUploadingReminder()
-        {
-            try
-            {
-                var data = await _dgrBs.dgrUploadingReminder();
-                return Ok(data);
+        //[Route("dgrUploadingReminder")]
+        //[HttpGet]
+        //public async Task<IActionResult> dgrUploadingReminder()
+        //{
+        //    try
+        //    {
+        //        var data = await _dgrBs.dgrUploadingReminder();
+        //        return Ok(data);
 
-            }
-            catch (Exception ex)
-            {
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                return BadRequest(ex.Message);
-            }
-        }
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
         #endregion
     }
 }
