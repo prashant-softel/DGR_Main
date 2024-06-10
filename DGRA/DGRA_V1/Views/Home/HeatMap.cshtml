@@ -563,7 +563,7 @@
                         
                        
                         if (cnt <= 9) {
-                            currentDate = new Date(fdate + `-${cnt < datalengh ? '0' + cnt : cnt}`).toISOString().split('T')[0];
+                            currentDate = new Date(fdate + '-'+(cnt < datalengh ? '0' + cnt :'0' +cnt)).toISOString().split('T')[0];
                             //cnt = cnt++;
                         }
                         else {
