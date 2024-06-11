@@ -211,6 +211,14 @@ namespace DGRAPIs.BS
         Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate);
         //DGR_v3 Email_report changes
         Task<int> dgrUploadingReminder();
+
+        //COLUMN ACCESS START
+        Task<List<PageData>> GetPageList(int type, int pageType);
+        Task<List<GroupData>> GetGroupList_CA(int page_id);
+        Task<List<ColumnData>> GetCGColumns_CA(int page_id);
+        Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name);
+
+        //COLUMN ACCESS END
     }
     public class DGRBS : IDGRBS
     {
@@ -2908,5 +2916,70 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+
+        //COLUMN ACCESS START
+
+        public async Task<List<PageData>> GetPageList(int type, int pageType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetPageList(type, pageType);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<GroupData>> GetGroupList_CA(int page_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetGroupList_CA(page_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<ColumnData>> GetCGColumns_CA(int page_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCGColumns_CA(page_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.CreateGroup_CA(set, page_id, group_name);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        //COLUMN ACCESS END
     }
 }

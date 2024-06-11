@@ -3000,6 +3000,83 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //DGR_v3 COLUMN ACCESS CODE START
+
+        [Route("GetPageList")]
+        [HttpGet]
+        public async Task<IActionResult> GetPageList(int type, int pageType)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetPageList(type, pageType);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        [Route("GetGroupList_CA")]
+        [HttpGet]
+        public async Task<IActionResult> GetGroupList_CA(int page_id)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetGroupList_CA(page_id);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        [Route("GetCGColumns_CA")]
+        [HttpGet]
+        public async Task<IActionResult> GetCGColumns_CA(int page_id)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetCGColumns_CA(page_id);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        [Route("CreateGroup_CA")]
+        [HttpPost]
+        public async Task<IActionResult> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.CreateGroup_CA(set, page_id, group_name);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        //COLUMN ACCESS CODE END
         #endregion
     }
 }

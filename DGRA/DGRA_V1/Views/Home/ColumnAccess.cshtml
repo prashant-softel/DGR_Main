@@ -1,7 +1,6 @@
 ﻿﻿@using Newtonsoft.Json;
 @using Microsoft.AspNetCore.Http;
 @inject IHttpContextAccessor HttpContextAccessor
-@model DGRA_V1.Models.DailyGenSummary
 
 @{
     ViewData["Title"] = "ColumnAccess";
@@ -60,7 +59,33 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
+<style>
 
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px; /* Space between cards */
+    }
+
+    .card-custom {
+        border-radius: 10px;
+        padding: 5px 10px;
+        display: flex;
+        justify-items: center;
+        gap: 2px;
+        border: 1px solid #ddd;
+    }
+
+        .card-custom input {
+            margin-right: 8px;
+        }
+
+        .card-custom label {
+            flex: 1; /* Let the label take remaining space */
+            white-space: nowrap; /* Prevent label from wrapping */
+        }
+
+</style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <section class="content">
@@ -88,8 +113,8 @@
                                 <label class="col-sm-3 col-form-label text-right" style="padding-right: 0px;">Page Type: </label>
                                 <select class="form-control col-sm-8" id="pageTypeDropdown" placeholder="Select Page Type" onchange="pageTypeChange()" value="" style="height: 37px; margin-left: 5px;">
                                     <option value="0">Select Page Type</option>
-                                    <option value="1">Report</option>
-                                    <option value="2">View</option>
+                                    <option value="2">Report</option>
+                                    <option value="1">View</option>
                                 </select>
                             </div>
                         </div>
@@ -106,18 +131,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <div class="row" id="group_drop_list" style="position: relative; display: flex; justify-content: start; align-items: start;">
-                                <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Group : </label>
-                                <select class="form-control col-sm-8" id="groupDropdown" placeholder="Select Group" onchange="groupChnage()" value="" style="height: 37px; margin-left: 5px;">
-                                    <option value="0">Select Group</option>
-                                    <option value="1">SPV Wise</option>
-                                    <option value="2">Site Wise</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                     @*<div class="col-md-2">
                         <div style="display: flex; flex-direction: row; justify-content: center; gap: 10%">
                             <button type="button" class="btn btn-block btn-primary" onclick="getReport()" style="margin-left:-5rem; width: 5rem;">Search</button>
@@ -127,7 +140,32 @@
                 </div>
                 <!--  Form Control Div Closed -->
                 <hr>
-                <br>
+                <div>
+                    <div class="row">
+                        <div class="col-md-3" style="display: none">
+                            <div class="form-group">
+                                <div class="row" id="group_drop_list" style="position: relative; display: flex; justify-content: start; align-items: start;">
+                                    <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Group : </label>
+                                    <select class="form-control col-sm-8" id="groupDropdown" placeholder="Select Group" onchange="groupChnage()" value="" style="height: 37px; margin-left: 5px;">
+                                        <option value="0">Select Group</option>
+                                        <option value="1">SPV Wise</option>
+                                        <option value="2">Site Wise</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="noGroups" style="display: none">
+                            No Groups Created for this page.
+                        </div>
+                        <div class="col-md-3" id="button_div" style="display: flex; justify-items: end; ">
+                            <div id="Create_group" style="width: 140px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px; " onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="createFunc()">
+                                <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                                <span style="margin-left: 5px; color: #ffffff;">CREATE GROUP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="userData" style="overflow-x: auto;" class="userData"></div>
+                </div>
                 <hr>
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div> <!-- Main Card Body Closded-->
@@ -144,6 +182,7 @@
     var selectedPage = 0;
     var selectedGroup = 0;
     var dataRendered = false;
+    var selectedIds = [];
 
     //Global Variables defination END.
 
@@ -160,11 +199,68 @@
     //Masters data FETCH functions START
     function getPages() {
         //trigger api through Home controller and populate it in dropdown options.
-
+        if (type == 0 && pageType == 0) {
+            alert("Please Select Type and Page Type.");
+            return false;
+        } else if (type == 0) {
+            alert("Please Select Type.");
+            return false;
+        } else if (pageType == 0) {
+            alert("Please Select Page Type.");
+            return false;
+        } else {
+            console.log(type, pageType);
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetPageList_CA", "Home")' + '?type='+type+'&pageType=' + pageType,
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "";
+                    for (var j = 0; j < result.length; j++) {
+                        options += '<option value="' + result[j].page_id + '">' + result[j].page_name + '</option>';
+                    }
+                    $('#pageDropdown').html(options);
+                }
+            });
+        }
     }
 
     function getGroups() {
         //take the page_id selected by the user and fetch the groups of that particular page and populate it in dropdown options
+        if (type == 0 && pageType == 0) {
+            alert("Please Select Type and Page Type.");
+            return false;
+        } else if (type == 0) {
+            alert("Please Select Type.");
+            return false;
+        } else if (pageType == 0) {
+            alert("Please Select Page Type.");
+            return false;
+        } else if (selectedPage == 0) {
+            alert("Please Select Page.");
+            return false;
+        } else {
+            console.log(type, pageType);
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetGroupList_CA", "Home")' + '?page_id=' + selectedPage,
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    var options = "<option value='0'>Select Group</option>";
+                    if (result.length > 0) {
+                        for (var j = 0; j < result.length; j++) {
+                            options += '<option value="' + result[j].page_id + '">' + result[j].page_name + '</option>';
+                        }
+                        $('#groupDropdown').html(options);
+                        document.getElementById("groupDropdown").style.display = "block";
+                    } else {
+                        document.getElementById("noGroups").style.display = "block";
+                    }
+                }
+            });
+        }
     }
     //Masters data FETCH functions END
 
@@ -179,6 +275,7 @@
     function pageTypeChange() {
         //set the selected page type to the pageType global variable.
         pageType = document.getElementById("pageTypeDropdown").value;
+        getPages();
     }
 
     //On changing the page options function.
@@ -186,6 +283,20 @@
         //set the selected page_id to the selectedPage global variable.
         selectedPage = document.getElementById("pageDropdown").value;
         //call the getGroups function.
+        getGroups();
+        var tbl = '<table id="example1" class="table table-bordered table-striped">';
+        tbl += '<thead class="tbl-head"><tr>';
+        tbl += '<th style="width: 250px">Group Name</th>';
+        tbl += '<th>Column Contents</th>';
+        tbl += '</tr></thead>';
+
+        tbl += '<tr>';
+        tbl += '<td> Column Name one</td>';
+        tbl += '</tr>';
+
+        //after loop.
+        tbl += '</table>';
+        $("#userData").html(tbl);
     }
 
     //On changing the Grouo of the selected page.
@@ -193,6 +304,11 @@
         //store the selected group id in the global variable selectedGroup.
         selectedGroup = document.getElementById("groupDropdown").value;
         console.log(type, pageType, selectedPage, selectedGroup);
+        if (selectedGroup == 0) {
+            console.log("Default option.");
+        } else {
+
+        }
     }
 
     //On clicking the search button function.
@@ -201,4 +317,99 @@
         //call the functions for creating the ui for columns as cards with checkbox.
         console.log("Clicked button.");
     }
+
+    function createFunc() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCGColumns_CA", "Home")' + '?page_id=' + selectedPage,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "<option value='0'>Select Group</option>";
+                if (result.length > 0) {
+                    var newRow = `
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" value="" id="group_name_input" placeholder="Enter Group Name">
+                        <div id="Create_group" style="width: 140px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
+                            onmouseover="this.style.opacity=0.90" 
+                            onmouseout="this.style.opacity=1" 
+                            onclick="saveGroup()">
+                            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                            <span style="margin-left: 5px; color: #ffffff;">SAVE</span>
+                        </div>
+                    </td>
+                    <td>` + createColumnCards(result) + `</td>
+                </tr>
+            `;
+
+                    $('#example1 tbody').append(newRow);
+                    attachCheckboxEvents();
+                } else {
+                    
+                }
+            }
+        });
+    }
+    function createColumnCards(data) {
+        var cardHTML = '<div class="card-container" id="column_container">';
+        data.forEach(function (item) {
+            cardHTML += '<div class="card-custom' + (item.required === 1 ? ' blocked-card' : '') + '">';
+
+            cardHTML += '<input type="checkbox" class="form-check-inpu" id="check' + item.column_id + '" value="' + item.column_id + '"';
+            if (item.required === 1) {
+                cardHTML += ' checked disabled';
+                selectedIds.push({ column_id: item.column_id, page_id: selectedPage });
+            }
+            cardHTML += '>';
+            cardHTML += '<label class="form-check-labe" for="check' + item.column_id + '">' + item.column_name + '</label>';
+
+            cardHTML += '</div>';
+        });
+        cardHTML += '</div>';
+        return cardHTML;
+    }
+    function handleCheckboxChange() {
+        var checkbox = $(this);
+        var column_id = checkbox.val();
+        var page_id = selectedPage; // Assuming `selectedPage` holds the current page ID
+
+        if (checkbox.is(':checked')) {
+            // Add the object to the array if checked
+            if (!selectedIds.some(obj => obj.column_id === column_id)) {
+                selectedIds.push({ column_id: column_id, page_id: page_id });
+            }
+        } else {
+            // Remove the object from the array if unchecked
+            selectedIds = selectedIds.filter(function (obj) {
+                return obj.column_id !== column_id;
+            });
+        }
+        console.log(selectedIds); // Output the IDs for debugging
+    }
+    function attachCheckboxEvents() {
+        $('#example1 tbody input[type="checkbox"]').off('change').on('change', handleCheckboxChange);
+    }
+    function saveGroup() {
+        var group_name = document.getElementById("group_name_input").value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CreateGroup_CA", "Home")' + '?page_id=' + selectedPage + '&group_name=' + group_name,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(selectedIds),
+            success: function (result, status, xhr) {
+                console.log("result after adding : ");
+                console.log(result);
+                if (Number(result) > 0) {
+                    console.log("Success...!");
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", error);
+            }
+        });
+    }
+
 </script>

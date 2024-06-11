@@ -21,6 +21,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DGRA_V1.Filters;
+using System.Net.Http;
+using System.Threading;
+
 
 namespace DGRA_V1.Controllers
 {
@@ -1083,5 +1086,114 @@ namespace DGRA_V1.Controllers
             TempData["notification"] = "";
             return View();
         }
+
+        public async Task<IActionResult> GetPageList_CA(int type, int pageType)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetPageList?type=" + type + "&pageType=" + pageType;
+
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetGroupList_CA(int page_id)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetGroupList_CA?page_id=" + page_id;
+
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCGColumns_CA(int page_id)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCGColumns_CA?page_id=" + page_id;
+
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> CreateGroup_CA([FromBody] List<CreateGroupData> groupData, int page_id, string group_name)
+        {
+            string line = "";
+            //string ty = typeof(ACMFinalData).ToString();
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/CreateGroup_CA?page_id=" + page_id + "&group_name=" + group_name;
+
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    // Convert acmDataList to JSON
+                    var json = JsonConvert.SerializeObject(groupData);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Make the POST request using HttpClient
+                    var response = await client.PostAsync(url, data);
+                    // Check if the request was successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content
+                        line = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["notification"] = "Error making API request";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Present!";
+            }
+
+            return Content(line, "application/json");
+        }
+
     }
 }

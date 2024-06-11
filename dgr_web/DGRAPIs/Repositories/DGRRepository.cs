@@ -19627,5 +19627,137 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return 1;
         }
+
+        //COLUMN ACCESS CODE STARTS
+
+        //GetPageList
+        internal async Task<List<PageData>> GetPageList(int type, int pageType)
+        {
+            string functionName = "GetPageList";
+            int result = 0;
+
+            List<PageData> Data = new List<PageData>();
+
+            //get data from hfe_pages table as per filter.
+            string fetchQry = "";
+
+            fetchQry = $"SELECT Id AS page_id, Display_name AS page_name FROM hfe_pages WHERE Page_type = {pageType} AND Site_type = {type} AND visible = 1;";
+
+            try
+            {
+                Data = await Context.GetData<PageData>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from hfe_pages table due to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            return Data;
+        }
+        internal async Task<List<GroupData>> GetGroupList_CA(int page_id)
+        {
+            string functionName = "GetPageList";
+            int result = 0;
+
+            List<GroupData> Data = new List<GroupData>();
+
+            //get data from hfe_pages table as per filter.
+            string fetchQry = "";
+
+            fetchQry = $"SELECT page_groups_id, page_group_name FROM page_groups WHERE page_id = {page_id} AND is_active = 1;";
+
+            try
+            {
+                Data = await Context.GetData<GroupData>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from hfe_pages table due to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            return Data;
+        }
+        internal async Task<List<ColumnData>> GetCGColumns_CA(int page_id)
+        {
+            string functionName = "GetCreateGroupColumns_CA";
+            List<ColumnData> data = new List<ColumnData>();
+            try
+            {
+                string fetchQry = $"SELECT t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                data = await Context.GetData<ColumnData>(fetchQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching columns for creating group";
+            }
+            return data;
+        }
+        internal async Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name)
+        {
+            int finalRes = 0;
+            int insertedDataId = 0;
+            string createGroupQry = $"INSERT INTO page_groups (page_group_name, page_id) VALUES ('{group_name}', {page_id});";
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(createGroupQry).ConfigureAwait(false);
+                finalRes = 1;
+
+            }catch(Exception e)
+            {
+                string msg = "Error inserting names in the page_groups table.";
+                return finalRes;
+            }
+            if(finalRes == 1)
+            {
+                string fetchId = $"SELECT page_groups_id FROM page_groups WHERE page_group_name = '{group_name}' AND page_id = {page_id}";
+                List<GroupData> idData = new List<GroupData>();
+
+                try
+                {
+                    idData = await Context.GetData<GroupData>(fetchId).ConfigureAwait(false);
+                    if (idData.Count > 0)
+                    {
+                        insertedDataId = idData[0].page_groups_id;
+                        finalRes = 2;
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while fetching the recently inserted record, due to : " + e.ToString();
+                    return finalRes;
+                }
+                if(finalRes == 2)
+                {
+                    string contentQry = "INSERT INTO page_group_elements (page_groups_id, column_id) VALUES";
+                    foreach(var unit in set)
+                    {
+                        contentQry += $" ({insertedDataId}, {unit.column_id}),";
+                    }
+                    contentQry = contentQry.Substring(0, (contentQry.Length - 1));
+
+                    try
+                    {
+                        int res = await Context.ExecuteNonQry<int>(contentQry).ConfigureAwait(false);
+                        if (res > 0)
+                        {
+                            finalRes = 1;
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while inserting column elements in column_elements table, due to : " + e.ToString();
+                        return finalRes;
+                    }
+                }
+            }
+
+            return finalRes;
+        }
+
+        //COLUMN ACCESS CODE ENDS
     }
 }
