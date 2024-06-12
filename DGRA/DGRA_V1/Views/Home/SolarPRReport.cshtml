@@ -2665,7 +2665,7 @@
         var fyear       = Fy;
         var leble       = [];
         var revenue_arr = [];
-        var reporthead  = "SPV Wise Reports";
+        var reporthead = "SPV Wise Reports";
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetSolarGroupOfSite", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + custom_site,
@@ -2681,7 +2681,7 @@
                 tbl += '<th colspan="3" class="text-center">GHI Vs POA Gain (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
                 tbl += '<th colspan="3" class="text-center">PR (%)</th>';
-                tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
+                //tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
                 tbl += '<th colspan="3" class="text-center">MA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">IGA (%)</th>';
                 tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr > ';
@@ -2707,9 +2707,9 @@
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
-                tbl += '<th>Tar</th>';
-                tbl += '<th>Act</th>';
-                tbl += '<th>Var (%)</th>';
+                //tbl += '<th>Tar</th>';
+                //tbl += '<th>Act</th>';
+                //tbl += '<th>Var (%)</th>';
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
@@ -2727,77 +2727,138 @@
                         let t_var                   = 0;
                         let e_var                   = 0;
                         let minr                    = 0;
-                        let ghi_var                 = 0;
-                        let poa_var                 = 0;
                         let gain_tar                = 0;
                         let gain_act                = 0;
-                        let gain_var                = 0;
-                        let plf_var                 = 0;
-                        let pr_var                  = 0;
-                        let ma_var                  = 0;
-                        let iga_var                 = 0;
-                        let ega_var                 = 0;
                         let act_prval               = 0;
                         let TCPr_var                = 0;
                         let actual_TempCorrectedPR  = 0;
-
-                        minr                        = ((result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif);
+                        let total_ghi_tar           = 0;
+                        let total_ghi_act           = 0;
+                        let total_tar_poa           = 0;
+                        let total_act_poa           = 0;
+                        let total_capacity          = 0;
+                        let total_tar_plf           = 0;
+                        let total_act_plf           = 0;
+                        let avg_act_plf             = 0;
+                        let avg_tar_plf             = 0;
+                        let avg_plf_var             = 0;
+                        let avg_tar_ghi             = 0;
+                        let avg_act_ghi             = 0;
+                        let avg_ghi_var             = 0;
+                        let avg_tar_poa             = 0;
+                        let avg_poa_var             = 0;
+                        let avg_act_poa             = 0;
+                        let avg_tar_gain            = 0;
+                        let avg_act_gain            = 0;
+                        let avg_gain_var            = 0;
+                        let total_tar_pr            = 0;
+                        let total_act_pr            = 0;
+                        let avg_tar_pr              = 0;
+                        let avg_act_pr              = 0;
+                        let pr_var                  = 0;
+                        let total_tar_ma            = 0;
+                        let total_act_ma            = 0;
+                        let avg_tar_ma              = 0;
+                        let avg_act_ma              = 0;
+                        let ma_var                  = 0;
+                        let total_tar_iga           = 0;
+                        let total_act_iga           = 0;
+                        let avg_tar_iga             = 0;
+                        let avg_act_iga             = 0;
+                        let iga_var                 = 0;
+                        let total_tar_ega           = 0;
+                        let total_act_ega           = 0;
+                        let avg_tar_ega             = 0;
+                        let avg_act_ega             = 0;
+                        let ega_var                 = 0;
                         if (result[i].tar_kwh != 0)
                         {
-                            t_var      = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
+                            t_var   = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0)
                         {
-                            e_var       = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                            e_var   = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
                         }
-                        if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0)
-                        {
-                            act_prval   = 0
-                        }
-                        else
-                        {
-                            act_prval   = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
-                        }
-                        if (result[i].tar_ghi != 0)
-                        {
-                            ghi_var     = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
-                        }
-                        if (result[i].tar_poa != 0)
-                        {
-                            poa_var     = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
-                        }
-                        pr_var          = (act_prval - result[i].tar_pr);
-                        plf_var         = (result[i].act_plf - result[i].tar_plf);
-                        ma_var          = (result[i].act_ma - result[i].tar_ma);
-                        iga_var         = (result[i].act_iga - result[i].tar_iga);
-                        ega_var         = (result[i].act_ega - result[i].tar_ega);
-                        TCPr_var        = (result[i].temp_corrected_pr - result[i].tar_pr);
-
-                        if (result[i].tar_poa == 0 || result[i].tar_ghi == 0)
-                        {
-                            gain_tar    = 0;
-                        }
-                        else
-                        {
-                            gain_tar    = (result[i].tar_poa / result[i].tar_ghi) * 100;
-                        }
-                        if (result[i].act_poa == 0 || result[i].act_ghi == 0)
-                        {
-                            gain_act    = 0;
-                        }
-                        else
-                        {
-                            gain_act    = (result[i].act_poa / result[i].act_ghi) * 100;
-                        }
-                        if (gain_act == 0 || gain_tar == 0)
-                        {
-                            gain_var    = 0;
-                        }
-                        else
-                        {
-                            gain_var    = ((gain_act - gain_tar));
-                        }
+                        
+                        TCPr_var    = (result[i].temp_corrected_pr - result[i].tar_pr);
                         let chielditem = result[i].item;
+                        for (var k = 0; k < chielditem.length; k++)
+                        {
+
+                            minr            += ((chielditem[k].act_kwh - chielditem[k].tar_kwh) * chielditem[k].total_tarrif);
+                            total_ghi_tar   += chielditem[k].tar_ghi * chielditem[k].capacity;
+                            total_ghi_act   += chielditem[k].act_ghi * chielditem[k].capacity;
+                            total_tar_poa   += chielditem[k].tar_poa * chielditem[k].capacity;
+                            total_act_poa   += chielditem[k].act_poa * chielditem[k].capacity;
+                            total_capacity  += chielditem[k].capacity;
+                            total_tar_plf   += chielditem[k].tar_plf * chielditem[k].capacity;
+                            total_act_plf   += chielditem[k].act_plf * chielditem[k].capacity;
+                            total_tar_pr    += chielditem[k].tar_pr * chielditem[k].capacity;
+                            total_tar_ma    += chielditem[k].tar_ma * chielditem[k].capacity
+                            total_act_ma    += chielditem[k].act_ma * chielditem[k].capacity;
+                            total_tar_iga   += chielditem[k].tar_iga * chielditem[k].capacity;
+                            total_act_iga   += chielditem[k].act_iga * chielditem[k].capacity;
+                            total_tar_ega   += chielditem[k].tar_ega * chielditem[k].capacity;
+                            total_act_ega   += chielditem[k].act_ega * chielditem[k].capacity;
+                            if (chielditem[k].pr_expected_kwh == 0 || chielditem[k].act_kwh == 0)
+                            {
+                                total_act_pr = 0
+                            }
+                            else
+                            {
+                                total_act_pr += ((chielditem[k].act_kwh / chielditem[k].pr_expected_kwh) * 100) * chielditem[k].capacity;
+                            }
+                            if (chielditem[k].tar_poa == 0 || chielditem[k].tar_ghi == 0)
+                            {
+                                gain_tar = 0;
+                            }
+                            else
+                            {
+                                gain_tar += ((chielditem[k].tar_poa / chielditem[k].tar_ghi) * 100) * chielditem[k].capacity;
+                            }
+                            if (chielditem[k].act_poa == 0 || chielditem[k].act_ghi == 0)
+                            {
+                                gain_act = 0;
+                            }
+                            else
+                            {
+                                gain_act += ((chielditem[k].act_poa / chielditem[k].act_ghi) * 100) * chielditem[k].capacity;
+                            }
+                        }
+                        if (total_capacity != 0)
+                        {
+                            avg_tar_ghi   = total_ghi_tar / total_capacity;
+                            avg_act_ghi   = total_ghi_act / total_capacity;
+                            avg_tar_poa   = total_tar_poa / total_capacity;
+                            avg_act_poa   = total_act_poa / total_capacity;
+                            avg_tar_gain  = gain_tar / total_capacity;
+                            avg_act_gain  = gain_act / total_capacity;
+                            avg_gain_var  = (avg_act_gain - avg_tar_gain);
+                            if (avg_tar_ghi != 0) {
+                                avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
+                            }
+                            if (avg_tar_poa != 0) {
+                                avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
+                            }
+                            avg_tar_plf  = total_tar_plf / total_capacity;
+                            avg_act_plf  = total_act_plf / total_capacity;
+                            avg_plf_var  = (avg_act_plf - avg_tar_plf);
+                            avg_tar_pr   = total_tar_pr / total_capacity;
+                            avg_act_pr   = total_act_pr / total_capacity;
+                            pr_var       = (avg_act_pr - avg_tar_pr);
+                            avg_tar_ma   = total_tar_ma / total_capacity;
+                            avg_act_ma   = total_act_ma / total_capacity;
+                            ma_var       = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
+                            avg_tar_iga  = total_tar_iga / total_capacity;
+                            avg_act_iga  = total_act_iga / total_capacity;
+                            iga_var      = (avg_act_iga - avg_tar_iga);
+                            avg_tar_ega  = total_tar_ega / total_capacity;
+                            avg_act_ega  = total_act_ega / total_capacity;
+                            ega_var      = (avg_act_ega - avg_tar_ega);
+                           
+                        }
+                        
+                        
                         let chield_class = result[i].cust_group.replace(/\s/g, "");
                         let expand_btn = "";
                         if (chielditem.length > 1) {
@@ -2812,33 +2873,33 @@
                         tbl += '<td class="text-right">' + result[i].act_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + t_var.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + minr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_ghi.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].act_ghi.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + ghi_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].act_poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + poa_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + gain_tar.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + gain_act.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + gain_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].act_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + plf_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + act_prval.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right" >' + minr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ghi_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_poa_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_gain.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_gain.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_gain_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_pr.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_ma.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].act_ma.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ma_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].act_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_iga.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + iga_var.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].tar_ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].act_ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ega.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ega_var.toFixed(2) + '</td>';
                         tbl += '</tr>';
                         for (var j = 0; j < chielditem.length; j++)
@@ -2859,8 +2920,10 @@
                             let act_prval_chield                = 0;
                             let TCPr_var_chield                 = 0;
                             let actual_TempCorrectedPR_chield   = 0;
-
+                           
                             minr_chield = ((chielditem[j].act_kwh - chielditem[j].tar_kwh) * chielditem[j].total_tarrif);
+                          
+                           
                             if (chielditem[j].tar_kwh != 0)
                             {
                                 t_var_chield        = ((chielditem[j].act_kwh - chielditem[j].tar_kwh) / chielditem[j].tar_kwh) * 100;
@@ -2940,9 +3003,9 @@
                             tbl += '<td class="text-right">' + chielditem[j].tar_pr.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + act_prval_chield.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + pr_var_chield.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + chielditem[j].tar_pr.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + chielditem[j].temp_corrected_pr.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + TCPr_var_chield.toFixed(2) + '</td>';
+                            //tbl += '<td class="text-right">' + chielditem[j].tar_pr.toFixed(2) + '</td>';
+                            //tbl += '<td class="text-right">' + chielditem[j].temp_corrected_pr.toFixed(2) + '</td>';
+                            //tbl += '<td class="text-right">' + TCPr_var_chield.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + chielditem[j].tar_ma.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + chielditem[j].act_ma.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + ma_var_chield.toFixed(2) + '</td>';
@@ -2954,7 +3017,6 @@
                             tbl += '<td class="text-right">' + ega_var_chield.toFixed(2) + '</td>';
                             tbl += '</tr>';
                         }
-
                     }
                 }
                 else
@@ -2964,6 +3026,7 @@
                 //$("#reportsDailygroup").html("").html(tbl);
                 $("#reportsDailygroup").html("");
                 $("#reportsDailygroup").html(tbl);
+                //document.getElementById("mint_total_" + count).innerHTML = total_minr;
                 //$("#reportsDailygroup").html("").html(tbl);
                 $('#example_solar_group').DataTable({
                     dom: 'Bfrtip',
