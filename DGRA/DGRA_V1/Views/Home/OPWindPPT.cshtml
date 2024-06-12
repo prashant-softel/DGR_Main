@@ -1,0 +1,2093 @@
+﻿@{
+    Layout = null;
+}
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@model DGRA_V1.Models.DailyGenSummary
+@{
+    ViewData["Title"] = "OPWind";
+}
+@{
+    // Get the current year and month
+    var currentYearMonth = DateTime.Now.ToString("yyyy-MM");
+}
+@{
+    string windSiteList = "";
+    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+}
+@for (int i = 0; i < @usermodel.access_list.Count; i++)
+{
+    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 1)
+    {
+        windSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<style>
+    .anychart-credits {
+        display: none !important;
+    }
+
+    .table-condensed thead tr:nth-child(2),
+    .table-condensed tbody td.day {
+        display: none;
+    }
+
+    .red {
+        background-color: #ff0000;
+        text-align: center;
+        color: white;
+        width: 30px;
+        height: 20px;
+        border: 1px solid;
+        border-radius: 5px;
+    }
+
+    .green {
+        background-color: #008000;
+        text-align: center;
+        color: white;
+        width: 30px;
+        height: 20px;
+        border: 1px solid;
+        border-radius: 5px;
+    }
+
+    .orange {
+        background-color: #FFAC1C;
+        text-align: center;
+        color: white;
+        width: 30px;
+        height: 20px;
+        border: 1px solid;
+        border-radius: 5px;
+    }
+</style>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper" style=" margin-left:0px;">
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-center">Wind Operational Performance</h3>
+            </div>
+            <br>
+            <div id="divWindPerformance">
+                <img id="imgWindPerformance" style="display:none" />
+                <div id="windperformance" style="margin-left: 13px; font-size: 18px; font-weight: bold; color: #31576D;">Wind- Asset Performance</div>
+                <div class="row" style="margin-right: 0; margin-left: 9px;">
+                    <div class="col-md-8" style=" position: relative; border: 2px solid lightgray;">
+                        <div class="card-title text-center" id="allmonthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
+                        <div id="AllWaterfall" style="min-height: 380px; height: 380px; max-height: 380px; max-width: 100%;"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="Allmonthlycomments">
+                            <div id="AllDMC_EGB" style="display: block; cursor: default;"></div>
+                            <div id="AllDMC_BD" style="display: block; cursor: default;"></div>
+                            <div id="AllDMC_Other" style="display: block; cursor: default;"></div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row" style="margin-right: 0; margin-left: 9px;">
+                    <div class="col-md-8" style=" position: relative; border: 2px solid lightgray;">
+                        <div class="card-title text-center" id="allyearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
+                        <div id="AllWaterfallyearly" style="min-height: 380px; height: 380px; max-height: 380px; max-width: 100%;"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="AllyearComments">
+                            <div id="AllDYC_EGB" style="display: block; cursor: default;"></div>
+                            <div id="AllDYC_BD" style="display: block; cursor: default;"></div>
+                            <div id="AllDYC_Other" style="display: block; cursor: default;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <br>
+            <div id="divPerformanceBySite">
+                <img id="imgPerformanceBySite" style="display:none" />
+                <div id="siteandspv" style="margin-left: 13px; font-size: 18px; font-weight: bold; color: #31576D;">Badnawar- Asset Performance</div>
+                <div class="row" style="margin-right: 0; margin-left: 9px;">
+                    <div class="col-md-8" style=" position: relative; border: 2px solid lightgray;">
+                        <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
+                        <div id="Waterfall" style="min-height: 380px; height: 380px; max-height: 380px; max-width: 100%;"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="monthlycomments">
+                            <div id="DMC_EGB" style="display: block; cursor: default;"></div>
+                            <div id="DMC_BD" style="display: block; cursor: default;"></div>
+                            <div id="DMC_Other" style="display: block; cursor: default;"></div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row" style="margin-right: 0; margin-left: 9px;">
+                    <div class="col-md-8" style=" position: relative; border: 2px solid lightgray;">
+                        <div class="card-title text-center" id="yearTitle" style="display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Yearly</div>
+                        <div id="Waterfallyearly" style="min-height: 380px; height: 380px; max-height: 380px; max-width: 100%;"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="yearComments">
+                            <div id="DYC_EGB" style="display: block; cursor: default;"></div>
+                            <div id="DYC_BD" style="display: block; cursor: default;"></div>
+                            <div id="DYC_Other" style="display: block; cursor: default;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <br>
+            <div id="monthlyportfoliobysite">
+                <div class="row">
+                    <div style="margin-left: 22px; width: 85%;" id="portpolioHeadMonthly">
+                        <!--<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Wind portfolio performance by Site</span>
+                <br>
+                <span style="font-weight: bold; font-size: 19px;"> Generation, May ‘23</span>
+                <br>
+                <span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>-->
+                    </div>
+                    <div>
+                        <ul>
+                            <li style="display: flex;"><span class="box green"> </span>&nbsp;&nbsp;&nbsp;&nbsp;<b style="font-size: 16px; margin-top: -3px;">97%+</b> </li>
+                            <li style="display: flex;"><span class="box orange"> </span>&nbsp;&nbsp;&nbsp;&nbsp;<b style="font-size: 16px; margin-top: -3px;">90%-97%</b></li>
+                            <li style="display: flex;"><span class="box red"> </span>&nbsp;&nbsp;&nbsp;&nbsp; <b style="font-size: 16px; margin-top: -3px;">< 90%</b></li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+                <div id="portfoliobysite" style="">
+                    <div id="monthlyportpolio_aop" style="height: 250px;"></div>
+                    <br>
+                    <div id="monthlyportpolio_exp" style="height: 250px;"></div>
+                </div>
+            </div>
+            <br><br>
+            <div id="yearlyportfoliobysite">
+                <div class="row">
+                    <div style="margin-left: 22px; width: 85%;" id="portpolioHeadYearly">
+                        <!--<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Wind portfolio performance by Site</span>
+                <br>
+                <span style="font-weight: bold; font-size: 19px;"> Generation, YTD May ‘23</span>
+                <br>.
+                <span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>-->
+                    </div>
+                    <div>
+                        <ul>
+                            <li style="display: flex;"><span class="box green"> </span>&nbsp;&nbsp;&nbsp;&nbsp;<b style="font-size: 16px; margin-top: -3px;">97%+</b> </li>
+                            <li style="display: flex;"><span class="box orange"> </span>&nbsp;&nbsp;&nbsp;&nbsp;<b style="font-size: 16px; margin-top: -3px;">90%-97%</b></li>
+                            <li style="display: flex;"><span class="box red"> </span>&nbsp;&nbsp;&nbsp;&nbsp; <b style="font-size: 16px; margin-top: -3px;">< 90%</b></li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+                <div id="yearlyportfoliobyysite" style="">
+                    <div id="yearlyportpolio_aop" style="height: 250px;"></div>
+                    <div id="yearlyportpolio_exp" style="height: 250px;"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+</div>
+
+
+<!-- /.content-wrapper -->
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<!--Date Range -->
+<script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src="~/Content/theme/plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
+<script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="~/Content/theme/dist/js/comman.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
+<!-- ppt library-->
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/libs/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.11.0/dist/pptxgen.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="~/Content/theme/dist/js/ppttheme.js"></script>
+
+@*------------------------------------------------------------------------------------------------------------------------------------------------*@
+
+<script type="text/javascript">
+    var siteCount                       = 0;
+    var spvCount                        = 0;
+    var isDoneSite                      = 0;
+    var isDoneSPV                       = 0;
+    var captureImgCount                 = 0;
+    var isSPV                           = 0; //0 = SPV, 1= Site.
+    var siteType                        = 2; //site_type = 1 Solar, 2 : Wind
+    let site_id                         = "";
+    let spv                             = "";
+    var nDval                           = "";
+    var site_list                       = [];
+    var spv_list                        = [];
+    var ChartImages                     = [];
+    var imgOperationBySite              = [];
+    var imgOperationBySPV               = [];
+    var MonthlyAOP_vs_Actual            = [];
+    var MonthlyExpetex_vs_Actual        = [];
+    var YearlyAOP_vs_Actual             = [];
+    var YearlyMonthlyExpetex_vs_Actual  = [];
+    var imgPortpolioYearlyBySite        = [];
+    var imgPortpolioMonthlyBySite       = [];
+    var imgPortpolioMonthlyBySPV        = [];
+    var imgPortpolioYearlyBySPV         = [];
+    var allSitePerformanceImg           = [];
+    var all_sites                       = "";
+    var all_spvs                        = "";
+    var pptTheme                        = GetWindPPTWelcome();
+    ChartImages.push(pptTheme);
+    
+    window.onload = function () {
+        //console.log("on load");
+        var today   = new Date();
+        fyear       = getFinancialYear(today);
+        fdate       = getFinancialYearDateStartDate(fyear);
+        monthdate   = GetMonthDate(today);
+        GetSite();
+        //GetSPV();
+        //monthlyportfolio(1);
+       // yearlyportfolio(1);
+    }
+
+    function GetSite()
+    {
+        let state_id = "";
+        var site_ids = "";
+        let spv      = "";
+        let spvcall  = 0;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state_id + '&spv=' + spv + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr) {
+                //console.log('inside results-->', result.length);
+                //siteCount = result.length;
+                for (var j = 0; j < result.length; j++) {
+                    all_sites += result[j].site_master_id + ',';
+                }
+                all_sites = all_sites.replace(/,\s*$/, "");
+                getAllSiteReport(all_sites, spvcall);
+                getAllYearlyReport(all_sites, spvcall);
+                callReports(result,spvcall);
+            }
+        });
+    }
+    function GetSPV() {
+        let state    = "";
+        var site_ids = "";
+        let spvcall  = 1;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetGroupSPVList", "SolarReport")' + '?siteType=2',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                //console.log(result);
+              callReports(result, spvcall);
+            }
+        });
+
+    }
+    async function callReports(sitedata, spvcall) {
+
+        //console.log('Call Api-->');
+        let allsitedata = false;
+        if (spvcall == 1) {
+
+            spvCount = sitedata.length;
+        }
+        else {
+          
+            siteCount = sitedata.length;
+        }
+        try {
+
+            for (let i = 0; i < sitedata.length; i++) {
+                console.log("call async ");
+               // var all_spvs = "";
+                const res = await getReport(sitedata[i], spvcall); // Await each API call to ensure they execute sequentially
+                const resYearly = await getYearlyReport(sitedata[i], spvcall); // Await each API call to ensure they execute sequentially
+                console.log('--->', res);
+                console.log('Yealy--->', resYearly);
+            }
+        }
+        catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+        //console.log("all_sites" +all_sites);
+    }
+
+    async function getReport(param, spvcall)
+    {
+        let spv_list = "";
+        if (spvcall == 1) {
+            isSPV           = 0;
+            var site_id     = param.site_ids;
+            var site_name   = param.spv;
+            spv_list        = param.spv;
+            var ac_capacity = param.ac_capacity;
+        }
+        else {
+            isSPV           = 1;
+            var site_id     = param.site_master_id;
+            var site_name   = param.site;
+            spv_list        = "";
+            var ac_capacity = param.capacity_mw;
+        }
+        var fromDate = monthdate.startdate;//"2023-11-01";
+        var toDate  = monthdate.enddate;//"2023-11-30";
+        //let prType = "AOP";
+
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+                contentType: "application/json; charset=utf-8",
+                datatype: "JSON",
+                success: function (result, status, xhr)
+                {
+                    //console.log(result);
+                    //document.getElementById("commentsSection").style.display = "flex";
+                    var expected_final       = 0.0;
+                    var lineloss_final       = 0.0;
+                    var target_final         = 0.0;
+                    var lossUSMH_final       = 0.0;
+                    var lossSMH_final        = 0.0;
+                    var lossNC_final         = 0.0;
+                    var lossIGBD_final       = 0.0;
+                    var lossEGBD_final       = 0.0;
+                    var lossLULL_final       = 0.0;
+                    var lossPCD_final        = 0.0;
+                    var actual_final         = 0.0;
+                    var loadShedding         = 0.0;
+                    var isMonthlyDataPresent = 0;
+                    let monthlyaop_achive    = 0;
+                    let monthlyexp_achive    = 0;
+                    //getChartDataYearly(site_id);
+                    if (result.length > 0)
+                    {
+                        for (var i = 0; i < result.length; i++)
+                        {
+                            expected_final       = result[i].expected_final;
+                            lineloss_final       = result[i].lineloss_final;
+                            target_final         = result[i].target_final /1000000;
+                            lossUSMH_final       = result[i].lossUSMH_final;
+                            lossSMH_final        = result[i].lossSMH_final;
+                            lossNC_final         = result[i].lossNC_final;
+                            lossIGBD_final       = result[i].lossIGBD_final;
+                            lossEGBD_final       = result[i].lossEGBD_final;
+                            lossLULL_final       = result[i].lossLULL_final;
+                            lossPCD_final        = result[i].lossPCD_final;
+                            actual_final         = result[i].actual_final;
+                            loadShedding         = result[i].loadShedding;
+                            isMonthlyDataPresent = Number(result[i].monthlyData);
+                            //document.getElementById("dataNotPresentDiv").style.display = "none";
+                            document.getElementById("Waterfall").style.display = "flex";
+                            CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4), site_name);
+                            //portpolio calculation
+                            monthlyaop_achive = (actual_final / target_final) * 100;
+                            monthlyexp_achive = (actual_final / expected_final) * 100;
+                            MonthlyAOP_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "AOP": target_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": monthlyaop_achive.toFixed(1) + '%' });
+                            MonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": expected_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": monthlyexp_achive.toFixed(1) + '%' });
+
+                           monthlyComment(site_id, isSPV, spv_list);
+                            resolve("Success for " + site_name);
+
+                        }
+                    }
+                    else
+                    {
+                        reject("No data for " + site_name);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    //Handle error case
+                    reject("Error for " + site_name);
+                }
+            });
+        });
+    }
+    //Monthly Chart
+    function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding, site_name)
+    {
+        Plotly.purge('Waterfall');
+        let total_opExpected = total_expected - total_lineloss;
+        let total_bd         = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_egbd           = Number(total_egbd) + Number(loadShedding);
+        let t_target         = Number(total_target).toFixed(2);
+        let t_opExpected     = Number(total_opExpected).toFixed(2);
+        let t_bd             = Number(total_bd).toFixed(2);
+        let t_egbd           = Number(total_egbd).toFixed(2);
+        let t_pcd            = Number(total_pcd).toFixed(2);
+        let t_oh             = Number(total_oh).toFixed(2);
+        let t_actual         = Number(total_actual).toFixed(2);
+        let tar_percentage   = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage   = 100;
+        let bd_percentage    = (total_bd / total_opExpected) * 100;
+        let egbd_percentage  = (total_egbd / total_expected) * 100;
+        let pcd_percentage   = (total_pcd / total_expected) * 100;
+        let oh_percentage    = (total_oh / total_expected) * 100;
+        let actul_percentage = ((total_actual) / total_expected) * 100;
+
+        var columnColors = [
+            "#86C466", // Target
+            "#7dddff", // Expected
+            "#EE403D", // BD
+            "#EE403D", // EGB
+            "#86C466", // PCD
+            "#EE403D", // Other
+            "#7dddff"  // Actual
+        ];
+        let rMeasure = "relative";
+        let aMeasure = "absolute";
+        let pcdMeasure = "relative";
+        let lineLossMeasure = "relative";
+        if (Number(total_pcd) > 0) {
+            pcdMeasure = "absolute";
+        }
+        var data = [
+            {
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "BD",
+                    "EGB",
+                    "PCD",
+                    "Other",
+                    "Actual"
+                ],
+                textposition: "outside",
+                text: [
+                    t_target,
+                    t_opExpected,
+                    t_bd,
+                    t_egbd,
+                    t_pcd,
+                    t_oh,
+                    t_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_opExpected),
+                    Number(total_bd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_oh),
+                    Number(total_actual)
+                ],
+                hoverData: [
+                    Number(total_target),
+                    Number(total_opExpected),
+                    Number(total_bd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_oh),
+                    Number(total_actual)
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + total_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                ],
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: { line: { color: "white" } },
+            }];
+        layout = {
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            /*visible: false,*/
+            autosize: true,
+            showlegend: true,
+            trace: false,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 1000,
+            height: 350,
+        };
+        var config = {
+            displayModeBar: false,
+            displaylogo: false,
+            infolayer: false,
+            visible: false,
+        };
+
+        Plotly.newPlot('Waterfall', data, layout, config);
+        document.getElementById("monthTitle").style.display = "block";
+        document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
+    }
+    function monthlyComment(site_id, isSPV, spv)
+    {
+        var mDisplay = document.getElementById("monthlycomments");
+        mDisplay.style.display = "block";
+
+        var temDate = monthdate.startdate.split("-");
+        var year    = 0;
+        var monthNo = 0;
+        if (temDate.length > 1) {
+            year    = Number(temDate[0]); //2023;
+            monthNo = Number(temDate[1]); //11;
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=2&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0&isDisplay=0&isMonthly=0&spv=' + spv,
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var EGB     = []; //bdType = 1
+                var BD      = []; //bdType = 2
+                var Other   = []; //bdType = 3
+                for (var k = 0; k < result.length; k++) {
+                    if (result[k].bd_type == 1) {
+                        EGB.push(result[k]);
+                    } else if (result[k].bd_type == 2) {
+                        BD.push(result[k]);
+                    } else if (result[k].bd_type == 3) {
+                        Other.push(result[k]);
+                    }
+                }
+                var EGB_div   = document.getElementById("DMC_EGB");
+                var BD_div    = document.getElementById("DMC_BD");
+                var Other_div = document.getElementById("DMC_Other");
+                var commentContent = '<h4 style="color: #EE403D; font-size: 15px; font-family: Poppins; font-weight: 700;">Reasons for underperformance:</h4>';
+                if (EGB.length > 0) {
+                    EGB_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id  = "EGB_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                    for (var i = 0; i < EGB.length; i++)
+                    {
+                        if (isSPV == 1)
+                        {
+                            commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
+                        } else if (isSPV == 0)
+                        {
+                            commentContent += '<li><strong>' + EGB[i].spv + ':</strong> ' + EGB[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    EGB_div.innerHTML = "";
+                    EGB_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    EGB_div.style.display = "none";
+                }
+                if (BD.length > 0)
+                {
+                    BD_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "BD_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                    for (var i = 0; i < BD.length; i++)
+                    {
+                        if (isSPV == 1)
+                        {
+                            commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
+                        } else if (isSPV == 0) {
+                            commentContent += '<li><strong>' + BD[i].spv + ':</strong> ' + BD[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>'
+                    commentDiv.innerHTML = commentContent;
+                    BD_div.innerHTML = "";
+                    BD_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    BD_div.style.display = "none";
+                }
+                if (Other.length > 0)
+                {
+                    Other_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "Other_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                    for (var i = 0; i < Other.length; i++)
+                    {
+                        if (isSPV == 1)
+                        {
+                            commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
+                        }
+                        else if (isSPV == 0)
+                        {
+                            commentContent += '<li><strong>' + Other[i].spv + ':</strong> ' + Other[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    Other_div.innerHTML = "";
+                    Other_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    Other_div.style.display = "none";
+                }
+            }
+       });
+    }
+    //Yearly Report API
+    async function getYearlyReport(param, spvcall) {
+        let spv_list = "";
+        if (spvcall == 1) {
+            isSPV           = 0;
+            var site_id     = param.site_ids;
+            var site_name   = param.spv;
+            spv_list        = param.spv;
+            var ac_capacity = param.ac_capacity;
+        }
+        else {
+            isSPV           = 1;
+            var site_id     = param.site_master_id;
+            var site_name   = param.site;
+            spv_list        = "";
+            var ac_capacity = param.capacity_mw;
+
+        }
+        var fromToDates = fdate//getFinancialYearDates(toDate);
+        var fromDate    = fdate.startdate;//"2023-11-01";
+        var toDate      = fdate.enddate; //"2023-11-30";
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&isYearly=1',
+                contentType: "application/json; charset=utf-8",
+                datatype: "JSON",
+                success: function (result, status, xhr) {
+                    //console.log(result);
+                    var expected_final   = 0.0;
+                    var lineloss_final   = 0.0;
+                    var target_final     = 0.0;
+                    var lossUSMH_final   = 0.0;
+                    var lossSMH_final    = 0.0;
+                    var lossNC_final     = 0.0;
+                    var lossIGBD_final   = 0.0;
+                    var lossEGBD_final   = 0.0;
+                    var lossLULL_final   = 0.0;
+                    var lossPCD_final    = 0.0;
+                    var actual_final     = 0.0;
+                    var loadShedding     = 0.0;
+                    let yearlyaop_achive = 0;
+                    let yearlyexp_achive = 0;
+                    if (result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            expected_final = result[i].expected_final;
+                            lineloss_final = result[i].lineloss_final;
+                            target_final   = result[i].target_final / 1000000;
+                            lossUSMH_final = result[i].lossUSMH_final;
+                            lossSMH_final  = result[i].lossSMH_final;
+                            lossNC_final   = result[i].lossNC_final;
+                            lossIGBD_final = result[i].lossIGBD_final;
+                            lossEGBD_final = result[i].lossEGBD_final;
+                            lossLULL_final = result[i].lossLULL_final;
+                            lossPCD_final  = result[i].lossPCD_final;
+                            actual_final   = result[i].actual_final;
+                            loadShedding   = result[i].loadShedding;
+                            CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                            //Portpolio calculation
+                            yearlyaop_achive = (actual_final / target_final) * 100;
+                            yearlyexp_achive = (actual_final / expected_final) * 100;
+                            YearlyAOP_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "AOP": target_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyaop_achive.toFixed(1) + '%' });
+                            YearlyMonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": expected_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyexp_achive.toFixed(1) + '%' });
+
+                            yearlyComment(site_id, isSPV, spv_list);
+                            resolve("Success for " + site_name);
+                        }
+                    }
+                    else {
+                        reject("No data for " + site_name);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    //Handle error case
+                    reject("Error for " + site_name);
+                }
+            });
+        });
+    }
+    function CreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding)
+    {
+        Plotly.purge('Waterfallyearly');
+        let total_bd            = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_bd                = Number(total_bd).toFixed(4);
+        total_expected          = Number(total_expected) - Number(total_lineloss);
+        total_expected          = Number(total_expected).toFixed(4);
+        total_egbd              = Number(total_egbd) + Number(loadShedding);
+        total_egbd              = total_egbd.toFixed(4);
+        let t_target            = Number(total_target).toFixed(2);
+        let t_expected          = Number(total_expected).toFixed(2);
+        let t_bd                = Number(total_bd).toFixed(2);
+        let t_egbd              = Number(total_egbd).toFixed(2);
+        let t_pcd               = Number(total_pcd).toFixed(2);
+        let t_oh                = Number(total_oh).toFixed(2);
+        let t_actual            = Number(total_actual).toFixed(2);
+        let tar_percentage      = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage      = 100;
+        let bd_percentage       = (total_bd / total_expected) * 100;
+        let egbd_percentage     = (total_egbd / total_expected) * 100;
+        let pcd_percentage      = (total_pcd / total_expected) * 100;
+        let oh_percentage       = (total_oh / total_expected) * 100;
+        let actul_percentage    = ((total_actual) / total_expected) * 100;
+        var data = [
+            {
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "BD",
+                    "EGB",
+                    "PCD",
+                    "Other",
+                    "Actual"
+                ],
+                textposition: "outside",
+                text: [
+                    t_target,
+                    t_expected,
+                    t_bd,
+                    t_egbd,
+                    t_pcd,
+                    t_oh,
+                    t_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_expected),
+                    Number(total_bd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_oh),
+                    Number(total_actual)
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>EGB</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                ],
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: { line: { color: "white" } },
+            }];
+        layout = {
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            autosize: true,
+            showlegend: true,
+            trace: false,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 1000,
+            height: 350,
+        };
+        var config = {
+            displayModeBar: false,
+            trace: false,
+        };
+
+        Plotly.newPlot('Waterfallyearly', data, layout, config);
+        //document.getElementById("loader").style.display = 'none';
+        document.getElementById("yearTitle").style.display = 'block';
+    }
+    function yearlyComment(site_id, isSPV, spv)
+    {
+        var yDisplay = document.getElementById("yearComments");
+        yDisplay.style.display = "block";
+        var temDate = monthdate.startdate.split("-");
+        var year = 0;
+        var monthNo = 0;
+        if (temDate.length > 1) {
+            year = Number(temDate[0]); //2023;
+            monthNo =Number(temDate[1]); //11;
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=2&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0&isDisplay=0&isMonthly=1&spv=' + spv,
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                //console.log("Display Result Yearly  : ");
+                //console.log(result);
+                var EGB     = []; //bdType = 1
+                var BD      = []; //bdType = 2
+                var Other   = []; //bdType = 3
+                for (var k = 0; k < result.length; k++)
+                {
+                    if (result[k].bd_type == 1) {
+                        EGB.push(result[k]);
+                    } else if (result[k].bd_type == 2) {
+                        BD.push(result[k]);
+                    } else if (result[k].bd_type == 3) {
+                        Other.push(result[k]);
+                    }
+                }
+                var EGBY_div    = document.getElementById("DYC_EGB");
+                var BDY_div     = document.getElementById("DYC_BD");
+                var OtherY_div = document.getElementById("DYC_Other");
+                var commentContent = '<h4 style="color: #EE403D; font-size: 15px; font-family: Poppins; font-weight: 700;">Reasons for underperformance:</h4>';
+                if (EGB.length > 0)
+                {
+                    EGBY_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "EGBY_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                    for (var i = 0; i < EGB.length; i++)
+                    {
+                        if (isSPV == 1) {
+                            commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
+                        } else if (isSPV == 0) {
+                            commentContent += '<li><strong>' + EGB[i].spv + ':</strong> ' + EGB[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    EGBY_div.innerHTML = "";
+                    EGBY_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    EGBY_div.style.display = "none";
+                }
+                if (BD.length > 0)
+                {
+                    BDY_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "BDY_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                    for (var i = 0; i < BD.length; i++)
+                    {
+                        if (isSPV == 1) {
+                                commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + BD[i].spv + ':</strong> ' + BD[i].comment + '</li>';
+                            }
+                    }
+                    commentContent += '</ul>'
+                    commentDiv.innerHTML = commentContent;
+                    BDY_div.innerHTML = "";
+                    BDY_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    BDY_div.style.display = "none";
+                }
+                if (Other.length > 0)
+                {
+                    OtherY_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "OtherY_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                    for (var i = 0; i < Other.length; i++)
+                    {
+                        if (isSPV == 1) {
+                            commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
+                        } else if (isSPV == 0) {
+                            commentContent += '<li><strong>' + Other[i].spv + ':</strong> ' + Other[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    OtherY_div.innerHTML = "";
+                    OtherY_div.appendChild(commentDiv);
+
+                }
+                else
+                {
+                    OtherY_div.style.display = "none";
+                }
+                var sitewisePerformance = document.getElementById('divPerformanceBySite');
+                //Use html2canvas to convert the table to an image
+                html2canvas(sitewisePerformance).then(function (canvas) {
+                    //Get the image data as a URL
+                    var imageData = canvas.toDataURL();
+                    //Set the image source to the data URL
+                    var img = document.getElementById('imgPerformanceBysite');
+                    if (isSPV == 1) {
+                        imgOperationBySite.push(imageData);
+                       // console.log(imgOperationBySite);
+                        if (siteCount == imgOperationBySite.length) {
+                            //console.log("inside call portpolio");
+                            isDoneSite = 1;
+                            monthlyportfolio(isSPV);
+                            yearlyportfolio(isSPV);
+
+                            GetSPV();
+                        }
+                    }
+                    else {
+                        imgOperationBySPV.push(imageData);
+                       // console.log(imgOperationBySPV);
+                        if (spvCount == imgOperationBySPV.length) {
+                            //console.log("inside call portpolio");
+                            //GetSPV();
+                            isDoneSPV = 1;
+                            monthlyportfolio(isSPV);
+                            yearlyportfolio(isSPV);
+
+
+                        }
+                    }
+                });
+            }
+        });
+    }
+    //All Site Data
+     async function getAllSiteReport(site_ids, spvcall)
+    {
+        let spv_list = "";
+        var site_id = "";
+        var site_name = "";
+        if (spvcall == 1) {
+            isSPV    = 0;
+            site_id  = site_ids;
+            spv_list = "";
+        }
+        else {
+            isSPV    = 1;
+            site_id  = site_ids;
+            spv_list = "";
+        }
+         var fromDate = monthdate.startdate;//"2023-11-01";
+         var toDate   = monthdate.enddate; //"2023-11-30";
+        //let prType = "AOP";
+
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+                contentType: "application/json; charset=utf-8",
+                datatype: "JSON",
+                success: function (result, status, xhr)
+                {
+                    //console.log(result);
+                    //document.getElementById("commentsSection").style.display = "flex";
+                    var expected_final       = 0.0;
+                    var lineloss_final       = 0.0;
+                    var target_final         = 0.0;
+                    var lossUSMH_final       = 0.0;
+                    var lossSMH_final        = 0.0;
+                    var lossNC_final         = 0.0;
+                    var lossIGBD_final       = 0.0;
+                    var lossEGBD_final       = 0.0;
+                    var lossLULL_final       = 0.0;
+                    var lossPCD_final        = 0.0;
+                    var actual_final         = 0.0;
+                    var loadShedding         = 0.0;
+                    var isMonthlyDataPresent = 0;
+                    let monthlyaop_achive    = 0;
+                    let monthlyexp_achive    = 0;
+                    //getChartDataYearly(site_id);
+                    if (result.length > 0)
+                    {
+                        for (var i = 0; i < result.length; i++)
+                        {
+                            expected_final       = result[i].expected_final;
+                            lineloss_final       = result[i].lineloss_final;
+                            target_final         = result[i].target_final /1000000;
+                            lossUSMH_final       = result[i].lossUSMH_final;
+                            lossSMH_final        = result[i].lossSMH_final;
+                            lossNC_final         = result[i].lossNC_final;
+                            lossIGBD_final       = result[i].lossIGBD_final;
+                            lossEGBD_final       = result[i].lossEGBD_final;
+                            lossLULL_final       = result[i].lossLULL_final;
+                            lossPCD_final        = result[i].lossPCD_final;
+                            actual_final         = result[i].actual_final;
+                            loadShedding         = result[i].loadShedding;
+                            isMonthlyDataPresent = Number(result[i].monthlyData);
+                            //document.getElementById("dataNotPresentDiv").style.display = "none";
+                            document.getElementById("AllWaterfall").style.display = "flex";
+                            AllSiteCreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4), site_name);
+
+                            AllmonthlyComment(site_id, isSPV, spv_list);
+                            resolve("Success for " + site_name);
+
+                        }
+                    }
+                    else
+                    {
+                        reject("No data for " + site_name);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    //Handle error case
+                    reject("Error for " + site_name);
+                }
+            });
+        });
+    }
+    function AllSiteCreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding, site_name) {
+        Plotly.purge('AllWaterfall');
+        let total_opExpected = total_expected - total_lineloss;
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_egbd = Number(total_egbd) + Number(loadShedding);
+        let t_target = Number(total_target).toFixed(2);
+        let t_opExpected = Number(total_opExpected).toFixed(2);
+        let t_bd = Number(total_bd).toFixed(2);
+        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_pcd = Number(total_pcd).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage = 100;
+        let bd_percentage = (total_bd / total_opExpected) * 100;
+        let egbd_percentage = (total_egbd / total_expected) * 100;
+        let pcd_percentage = (total_pcd / total_expected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
+        let actul_percentage = ((total_actual) / total_expected) * 100;
+
+        var columnColors = [
+            "#86C466", // Target
+            "#7dddff", // Expected
+            "#EE403D", // BD
+            "#EE403D", // EGB
+            "#86C466", // PCD
+            "#EE403D", // Other
+            "#7dddff"  // Actual
+        ];
+        let rMeasure = "relative";
+        let aMeasure = "absolute";
+        let pcdMeasure = "relative";
+        let lineLossMeasure = "relative";
+        if (Number(total_pcd) > 0) {
+            pcdMeasure = "absolute";
+        }
+        var data = [
+            {
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "BD",
+                    "EGB",
+                    "PCD",
+                    "Other",
+                    "Actual"
+                ],
+                textposition: "outside",
+                text: [
+                    t_target,
+                    t_opExpected,
+                    t_bd,
+                    t_egbd,
+                    t_pcd,
+                    t_oh,
+                    t_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_opExpected),
+                    Number(total_bd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_oh),
+                    Number(total_actual)
+                ],
+                hoverData: [
+                    Number(total_target),
+                    Number(total_opExpected),
+                    Number(total_bd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_oh),
+                    Number(total_actual)
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + total_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                ],
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: { line: { color: "white" } },
+            }];
+        layout = {
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            /*visible: false,*/
+            autosize: true,
+            showlegend: true,
+            trace: false,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 1000,
+            height: 350,
+        };
+        var config = {
+            displayModeBar: false,
+            displaylogo: false,
+            infolayer: false,
+            visible: false,
+        };
+
+        Plotly.newPlot('AllWaterfall', data, layout, config);
+        document.getElementById("allmonthTitle").style.display = "block";
+       // document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
+    }
+    function AllmonthlyComment(site_id, isSPV, spv)
+    {
+        var mDisplay = document.getElementById("Allmonthlycomments");
+        mDisplay.style.display = "block";
+
+        var temDate = monthdate.startdate.split("-");
+        var year    = 0;
+        var monthNo = 0;
+        if (temDate.length > 1) {
+            year    = Number(temDate[0]); //2023;
+            monthNo = Number(temDate[1]); //11;
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=2&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0&isDisplay=0&isMonthly=0&spv=' + spv,
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var EGB     = []; //bdType = 1
+                var BD      = []; //bdType = 2
+                var Other   = []; //bdType = 3
+                for (var k = 0; k < result.length; k++) {
+                    if (result[k].bd_type == 1) {
+                        EGB.push(result[k]);
+                    } else if (result[k].bd_type == 2) {
+                        BD.push(result[k]);
+                    } else if (result[k].bd_type == 3) {
+                        Other.push(result[k]);
+                    }
+                }
+                var EGB_div   = document.getElementById("AllDMC_EGB");
+                var BD_div    = document.getElementById("AllDMC_BD");
+                var Other_div = document.getElementById("AllDMC_Other");
+                var commentContent = '<h4 style="color: #EE403D; font-size: 15px; font-family: Poppins; font-weight: 700;">Reasons for underperformance:</h4>';
+                if (EGB.length > 0) {
+                    EGB_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id  = "AllEGB_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                    for (var i = 0; i < EGB.length; i++)
+                    {
+                        if (isSPV == 1)
+                        {
+                            commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
+                        } else if (isSPV == 0)
+                        {
+                            commentContent += '<li><strong>' + EGB[i].spv + ':</strong> ' + EGB[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    EGB_div.innerHTML = "";
+                    EGB_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    EGB_div.style.display = "none";
+                }
+                if (BD.length > 0)
+                {
+                    BD_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "AllBD_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                    for (var i = 0; i < BD.length; i++)
+                    {
+                        if (isSPV == 1)
+                        {
+                            commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
+                        } else if (isSPV == 0) {
+                            commentContent += '<li><strong>' + BD[i].spv + ':</strong> ' + BD[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>'
+                    commentDiv.innerHTML = commentContent;
+                    BD_div.innerHTML = "";
+                    BD_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    BD_div.style.display = "none";
+                }
+                if (Other.length > 0)
+                {
+                    Other_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "AllOther_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                    for (var i = 0; i < Other.length; i++)
+                    {
+                        if (isSPV == 1)
+                        {
+                            commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
+                        }
+                        else if (isSPV == 0)
+                        {
+                            commentContent += '<li><strong>' + Other[i].spv + ':</strong> ' + Other[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    Other_div.innerHTML = "";
+                    Other_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    Other_div.style.display = "none";
+                }
+            }
+       });
+    }
+    async function getAllYearlyReport(site_ids, spvcall) {
+        let spv_list = "";
+        var site_id = "";
+        var site_name = "";
+        if (spvcall == 1) {
+            isSPV = 0;
+            site_id = site_ids;
+            spv_list = "";
+        }
+        else {
+            isSPV = 1;
+            site_id = site_ids;
+            spv_list = "";
+        }
+        var fromToDates = fdate//getFinancialYearDates(toDate);
+        var fromDate    = fdate.startdate;//"2023-11-01"; 
+        var toDate      = fdate.enddate; //"2023-11-30";
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&isYearly=1',
+                contentType: "application/json; charset=utf-8",
+                datatype: "JSON",
+                success: function (result, status, xhr) {
+                    //console.log(result);
+                    var expected_final   = 0.0;
+                    var lineloss_final   = 0.0;
+                    var target_final     = 0.0;
+                    var lossUSMH_final   = 0.0;
+                    var lossSMH_final    = 0.0;
+                    var lossNC_final     = 0.0;
+                    var lossIGBD_final   = 0.0;
+                    var lossEGBD_final   = 0.0;
+                    var lossLULL_final   = 0.0;
+                    var lossPCD_final    = 0.0;
+                    var actual_final     = 0.0;
+                    var loadShedding     = 0.0;
+                    let yearlyaop_achive = 0;
+                    let yearlyexp_achive = 0;
+                    if (result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            expected_final = result[i].expected_final;
+                            lineloss_final = result[i].lineloss_final;
+                            target_final   = result[i].target_final / 1000000;
+                            lossUSMH_final = result[i].lossUSMH_final;
+                            lossSMH_final  = result[i].lossSMH_final;
+                            lossNC_final   = result[i].lossNC_final;
+                            lossIGBD_final = result[i].lossIGBD_final;
+                            lossEGBD_final = result[i].lossEGBD_final;
+                            lossLULL_final = result[i].lossLULL_final;
+                            lossPCD_final  = result[i].lossPCD_final;
+                            actual_final   = result[i].actual_final;
+                            loadShedding   = result[i].loadShedding;
+                            AllCreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                            //Portpolio calculation
+
+                            AllyearlyComment(site_id, isSPV, spv_list);
+                            resolve("Success for " + site_name);
+                        }
+                    }
+                    else {
+                        reject("No data for " + site_name);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    //Handle error case
+                    reject("Error for " + site_name);
+                }
+            });
+        });
+    }
+    function AllCreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
+        Plotly.purge('AllWaterfallyearly');
+        let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
+        total_bd = Number(total_bd).toFixed(4);
+        total_expected = Number(total_expected) - Number(total_lineloss);
+        total_expected = Number(total_expected).toFixed(4);
+        total_egbd = Number(total_egbd) + Number(loadShedding);
+        total_egbd = total_egbd.toFixed(4);
+        let t_target = Number(total_target).toFixed(2);
+        let t_expected = Number(total_expected).toFixed(2);
+        let t_bd = Number(total_bd).toFixed(2);
+        let t_egbd = Number(total_egbd).toFixed(2);
+        let t_pcd = Number(total_pcd).toFixed(2);
+        let t_oh = Number(total_oh).toFixed(2);
+        let t_actual = Number(total_actual).toFixed(2);
+        let tar_percentage = ((total_expected - total_target) / total_target) * 100;
+        let exp_percentage = 100;
+        let bd_percentage = (total_bd / total_expected) * 100;
+        let egbd_percentage = (total_egbd / total_expected) * 100;
+        let pcd_percentage = (total_pcd / total_expected) * 100;
+        let oh_percentage = (total_oh / total_expected) * 100;
+        let actul_percentage = ((total_actual) / total_expected) * 100;
+        var data = [
+            {
+                type: "waterfall",
+                orientation: "v",
+                measure: [
+                    "relative",
+                    "absolute",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "relative",
+                    "absolute"
+                ],
+                x: [
+                    "Target",
+                    "Expected",
+                    "BD",
+                    "EGB",
+                    "PCD",
+                    "Other",
+                    "Actual"
+                ],
+                textposition: "outside",
+                text: [
+                    t_target,
+                    t_expected,
+                    t_bd,
+                    t_egbd,
+                    t_pcd,
+                    t_oh,
+                    t_actual
+                ],
+                y: [
+                    Number(total_target),
+                    Number(total_expected),
+                    Number(total_bd),
+                    Number(total_egbd),
+                    Number(total_pcd),
+                    Number(total_oh),
+                    Number(total_actual)
+                ],
+                hovertemplate: [
+                    '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                    '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                    '<b>EGB</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                    '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                    '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                    '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                ],
+                totals: { marker: { color: "#86C466" } },
+                increasing: { marker: { color: "#77CAE7" } },
+                decreasing: { marker: { color: "#EE403D" } },
+                connector: { line: { color: "white" } },
+            }];
+        layout = {
+            xaxis: {
+                type: "category",
+                fixedrange: true
+            },
+            yaxis: {
+                type: "linear",
+                fixedrange: true,
+                range: [0, Math.max(...data[0].y) * 1.1]
+            },
+            autosize: true,
+            showlegend: true,
+            trace: false,
+            margin: {
+                l: 30,// left margin
+                b: 30,
+                r: 1,
+            },
+            width: 1000,
+            height: 350,
+        };
+        var config = {
+            displayModeBar: false,
+            trace: false,
+        };
+
+        Plotly.newPlot('AllWaterfallyearly', data, layout, config);
+        //document.getElementById("loader").style.display = 'none';
+        document.getElementById("allyearTitle").style.display = 'block';
+    }
+    function AllyearlyComment(site_id, isSPV, spv)
+    {
+        var yDisplay = document.getElementById("AllyearComments");
+        yDisplay.style.display = "block";
+        var temDate = monthdate.startdate.split("-");
+        var year = 0;
+        var monthNo = 0;
+        if (temDate.length > 1) {
+            year = Number(temDate[0]); //2023;
+            monthNo = Number(temDate[1]); //11;
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=2&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0&isDisplay=0&isMonthly=1&spv=' + spv,
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                //console.log("Display Result Yearly  : ");
+                //console.log(result);
+                var EGB     = []; //bdType = 1
+                var BD      = []; //bdType = 2
+                var Other   = []; //bdType = 3
+                for (var k = 0; k < result.length; k++)
+                {
+                    if (result[k].bd_type == 1) {
+                        EGB.push(result[k]);
+                    } else if (result[k].bd_type == 2) {
+                        BD.push(result[k]);
+                    } else if (result[k].bd_type == 3) {
+                        Other.push(result[k]);
+                    }
+                }
+                var EGBY_div    = document.getElementById("AllDYC_EGB");
+                var BDY_div     = document.getElementById("AllDYC_BD");
+                var OtherY_div = document.getElementById("AllDYC_Other");
+                var commentContent = '<h4 style="color: #EE403D; font-size: 15px; font-family: Poppins; font-weight: 700;">Reasons for underperformance:</h4>';
+                if (EGB.length > 0)
+                {
+                    EGBY_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "AllEGBY_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">EGB</h4><ul>';
+                    for (var i = 0; i < EGB.length; i++)
+                    {
+                        if (isSPV == 1) {
+                            commentContent += '<li><strong>' + EGB[i].site + ':</strong> ' + EGB[i].comment + '</li>';
+                        } else if (isSPV == 0) {
+                            commentContent += '<li><strong>' + EGB[i].spv + ':</strong> ' + EGB[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    EGBY_div.innerHTML = "";
+                    EGBY_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    EGBY_div.style.display = "none";
+                }
+                if (BD.length > 0)
+                {
+                    BDY_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "AllBDY_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">BD</h4><ul>';
+                    for (var i = 0; i < BD.length; i++)
+                    {
+                        if (isSPV == 1) {
+                                commentContent += '<li><strong>' + BD[i].site + ':</strong> ' + BD[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + BD[i].spv + ':</strong> ' + BD[i].comment + '</li>';
+                            }
+                    }
+                    commentContent += '</ul>'
+                    commentDiv.innerHTML = commentContent;
+                    BDY_div.innerHTML = "";
+                    BDY_div.appendChild(commentDiv);
+                }
+                else
+                {
+                    BDY_div.style.display = "none";
+                }
+                if (Other.length > 0)
+                {
+                    OtherY_div.style.display = "flex";
+                    var commentDiv = document.createElement("div");
+                    commentDiv.style.marginLeft = "2px";
+                    commentDiv.id = "AllOtherY_CC"; // CC: Comment Content.
+                    commentContent += '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">Other</h4><ul>';
+                    for (var i = 0; i < Other.length; i++)
+                    {
+                        if (isSPV == 1) {
+                            commentContent += '<li><strong>' + Other[i].site + ':</strong> ' + Other[i].comment + '</li>';
+                        } else if (isSPV == 0) {
+                            commentContent += '<li><strong>' + Other[i].spv + ':</strong> ' + Other[i].comment + '</li>';
+                        }
+                    }
+                    commentContent += '</ul>';
+                    commentDiv.innerHTML = commentContent;
+                    OtherY_div.innerHTML = "";
+                    OtherY_div.appendChild(commentDiv);
+
+                }
+                else
+                {
+                    OtherY_div.style.display = "none";
+                }
+                var allSitePerformance = document.getElementById('divWindPerformance');
+                //Use html2canvas to convert the table to an image
+                html2canvas(allSitePerformance).then(function (canvas) {
+                    //Get the image data as a URL
+                    var imageData = canvas.toDataURL();
+                    allSitePerformanceImg.push(imageData);
+                    console.log(allSitePerformanceImg);
+                });
+            }
+        });
+    }
+
+    //Portpolio Section
+   function monthlyportfolio(isSPV)
+    {
+        var temDate = monthdate.startdate.split("-");
+        var year = 0;
+        var monthNo = 0;
+        var date= "11-01-2023";
+
+        if (temDate.length > 1) {
+            year = Number(temDate[0]); //2023
+            monthNo = Number(temDate[1]);//11
+        }
+
+        var head = '';
+        if (isSPV == 1) {
+            head += '<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Wind portfolio performance by Site</span><br>';
+        }
+        else {
+            head = '<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Wind portfolio performance by SPV</span><br>';
+        }
+
+       head += '<span style="font-weight: bold; font-size: 19px;"> Generation, ' + moment(monthdate.startdate).format("MMM-YYYY"); +'</span><br>';
+        head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+        document.getElementById("portpolioHeadMonthly").innerHTML = head;
+
+        //console.log("Monthly AOP Data");
+        //console.log(MonthlyAOP_vs_Actual);
+        //console.log("Monthly Expected Data ");
+        //console.log(MonthlyExpetex_vs_Actual);
+
+       /* var data = [
+            { site: 'Badnawar', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Bableshwar', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Piploda', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Bableshwar-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Piploda-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-1', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri-1', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh-1', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga-1', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-2', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Bableshwar-2', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Piploda-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-2', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Kukudwad-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' }
+        ];
+        // Create HTML table string Monthly AOP Bases Site Wise
+
+        var data_exp = [
+            { site: 'Badnawar', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
+            { site: 'Bableshwar', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
+            { site: 'Piploda', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
+            { site: 'Bableshwar-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
+            { site: 'Piploda-1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-1', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri-1', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh-1', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga-1', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-2', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
+            { site: 'Bableshwar-2', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
+            { site: 'Piploda-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-2', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Kukudwad-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' }
+        ];*/
+
+        $("#monthlyportpolio_aop").html("");
+        $("#monthlyportpolio_exp").html("");
+       for (let i = 0; i < MonthlyAOP_vs_Actual.length; i += 10) {
+           let chunk = MonthlyAOP_vs_Actual.slice(i, i + 10);
+           let chunk1 = MonthlyExpetex_vs_Actual.slice(i, i + 10);
+            $("#monthlyportpolio_aop").html("").html(generateTableWithAOP(chunk));
+            $("#monthlyportpolio_exp").html("").html(generateTableWithEXP(chunk1));
+            //$("#monthlyportpolio_aop").append(generateTableWithAOP(chunk));
+           //$("#monthlyportpolio_exp").append(generateTableWithEXP(chunk1));
+            captureDivContentmonthly(document.getElementById('monthlyportfoliobysite'), isSPV);
+        }
+
+
+    }
+
+   function yearlyportfolio(isSPV)
+    {
+        //console.log("Yearly AOP Data");
+        //console.log(YearlyAOP_vs_Actual);
+        //console.log("Yearly Expected Data ");
+        //console.log(YearlyMonthlyExpetex_vs_Actual);
+        var temDate = monthdate.startdate.split("-");
+        var year = 0;
+        var monthNo = 0;
+        var date = "11-01-2023";
+
+        if (temDate.length > 1) {
+            year = Number(temDate[0]); //2023
+            monthNo = Number(temDate[1]); //11
+        }
+
+        var head = '';
+        if (isSPV == 1) {
+            head += '<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Wind portfolio performance by Site</span><br>';
+        }
+        else {
+            head = '<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Wind portfolio performance by SPV</span><br>';
+        }
+
+       head += '<span style="font-weight: bold; font-size: 19px;"> Generation, YTD ' + moment(monthdate.startdate).format("MMM-YYYY"); +'</span><br>';
+        head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+        document.getElementById("portpolioHeadYearly").innerHTML = head;
+
+       /* var data = [
+            { site: 'Badnawar', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Bableshwar', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Piploda', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Bableshwar-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Piploda-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-1', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri-1', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh-1', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga-1', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-2', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Bableshwar-2', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Piploda-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-2', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Kukudwad-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' }
+        ];
+
+        var data_exp = [
+            { site: 'Badnawar', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
+            { site: 'Bableshwar', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
+            { site: 'Piploda', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
+            { site: 'Bableshwar-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
+            { site: 'Piploda-1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-1', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Dangri-1', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
+            { site: 'Devgarh-1', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
+            { site: 'Gunga-1', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
+            { site: 'Gurvepalli-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
+            { site: 'Kavital-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
+            { site: 'Kukudwad-1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'Badnawar-2', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
+            { site: 'Bableshwar-2', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
+            { site: 'Piploda-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
+            { site: 'South Budh-2', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
+            { site: 'Kukudwad-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' }
+        ];*/
+
+       $("#yearlyportpolio_aop").html("");
+       $("#yearlyportpolio_exp").html("");
+       for (let i = 0; i < YearlyAOP_vs_Actual.length; i += 10) {
+           let chunk = YearlyAOP_vs_Actual.slice(i, i + 10);
+           let chunk1 = YearlyMonthlyExpetex_vs_Actual.slice(i, i + 10);
+           $("#yearlyportpolio_aop").html("").html(generateTableWithAOP(chunk));
+           $("#yearlyportpolio_exp").html("").html(generateTableWithEXP(chunk1));
+           //$("#monthlyportpolio_aop").append(generateTableWithAOP(chunk));
+           //$("#monthlyportpolio_exp").append(generateTableWithEXP(chunk1));
+           captureDivContent(document.getElementById('yearlyportfoliobysite'), isSPV);
+       }
+
+        //console.log("Site Count" + isDoneSite + "SPV Count" + isDoneSPV);
+        if (isDoneSite == 1 && isDoneSPV == 1) {
+            setTimeout(function () {
+                //console.log(ChartImages);
+                makePPT(ChartImages);
+            }, 17000);
+        }
+    }
+    function generateTableWithAOP(data)
+    {
+        let tbl = '<table class="table table-bordered table-striped" style="height: 200px;">';
+        tbl += '<thead class="tbl-head">';
+        tbl += '<tr>';
+        tbl += '<th colspan="2" rowspan="2">APO</th>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<th>' + data[i].site + '</th>';
+            } else {
+                //tbl += '<th></th>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '<tr>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<th>' + data[i].MW + '</th>';
+            } else {
+                //tbl += '<th></th>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '</thead>';
+        tbl += '<tbody>';
+        tbl += '<tr>';
+        tbl += '<td rowspan="3" style="font-weight: 600;">Generation</td>';
+        tbl += '<td style="font-weight: 600;">APO</td>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<td style="font-weight: 600;">' + data[i].AOP + '</td>';
+            } else {
+                //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '<tr>';
+        tbl += '<td style="font-weight: 600;">Actual</td>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<td style="font-weight: 600;">' + data[i].actual + '</td>';
+            } else {
+                //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '<tr>';
+        tbl += '<td style="font-weight: 600;">Archived</td>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                let background = "background:#FFAC1C;font-weight: 600;";
+                if (data[i].archive >= '97%') {
+                    background = "background:#008000;font-weight: 600;";
+                }
+                if (data[i].archive < '90%') {
+                    background = "background:#ff0000;font-weight: 600;";
+                }
+                tbl += '<td style=' + background + '>' + data[i].archive + '</td>';
+            } else {
+                //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '</tbody>';
+        tbl += '</table>';
+        return tbl;
+    }
+    function generateTableWithEXP(data)
+    {
+        let tbl = '<table class="table table-bordered table-striped" style="height: 200px;">';
+        tbl += '<thead class="tbl-head">';
+        tbl += '<tr>';
+        tbl += '<th colspan="2" rowspan="2">Expected<sup>1<sup></th>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<th>' + data[i].site + '</th>';
+            } else {
+                //tbl += '<th></th>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '<tr>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<th>' + data[i].MW + '</th>';
+            } else {
+                //tbl += '<th></th>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '</thead>';
+        tbl += '<tbody>';
+        tbl += '<tr>';
+        tbl += '<td rowspan="3" style="font-weight: 600;">Generation</td>';
+        tbl += '<td style="font-weight: 600;">Expected</td>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<td style="font-weight: 600;">' + data[i].expected + '</td>';
+            } else {
+                //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '<tr>';
+        tbl += '<td style="font-weight: 600;">Actual</td>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                tbl += '<td style="font-weight: 600;">' + data[i].actual + '</td>';
+            } else {
+                //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '<tr>';
+        tbl += '<td style="font-weight: 600;">Archived</td>';
+        for (let i = 0; i < 10; i++) {
+            if (data[i]) {
+                let background = "background:#FFAC1C;font-weight: 600;";
+                if (data[i].archive >= '97%') {
+                    background = "background:#008000;font-weight: 600;";
+                }
+                if (data[i].archive < '90%') {
+                    background = "background:#ff0000;font-weight: 600;";
+                }
+                tbl += '<td style=' + background + '>' + data[i].archive + '</td>';
+            } else {
+                //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
+            }
+        }
+        tbl += '</tr>';
+        tbl += '</tbody>';
+        tbl += '</table>';
+        return tbl;
+    }
+    function captureDivContentmonthly(divElement, isSPV) {
+        html2canvas(divElement, {
+            scrollX: 0, // Set scrollX and scrollY to 0 to capture entire content
+            scrollY: 0,
+            width: divElement.scrollWidth, // Set width to capture the entire width of the div
+            height: divElement.scrollHeight // Set height to capture the entire height of the div
+        }).then(function (canvas) {
+            if (isSPV == 1) {
+                imgPortpolioMonthlyBySite.push(canvas.toDataURL());
+                //console.log(imgPortpolioMonthlyBySite);
+            }
+            else {
+                imgPortpolioMonthlyBySPV.push(canvas.toDataURL());
+                //console.log(imgPortpolioMonthlyBySPV);
+            }
+
+        });
+    }
+    function captureDivContent(divElement, isSPV) {
+        html2canvas(divElement, {
+            scrollX: 0, // Set scrollX and scrollY to 0 to capture entire content
+            scrollY: 0,
+            width: divElement.scrollWidth, // Set width to capture the entire width of the div
+            height: divElement.scrollHeight // Set height to capture the entire height of the div
+        }).then(function (canvas) {
+            if (isSPV == 1) {
+                imgPortpolioYearlyBySite.push(canvas.toDataURL());
+                //console.log(imgPortpolioYearlyBySite);
+            }
+            else {
+                imgPortpolioYearlyBySPV.push(canvas.toDataURL());
+                //console.log(imgPortpolioYearlyBySPV);
+            }
+
+            //imgPortpolioYearlyBySite.push(canvas.toDataURL());
+            //console.log(imgPortpolioYearlyBySite);
+        });
+    }
+
+    async function makePPT(ChartImages) {
+        let pres = new PptxGenJS();
+        //Testing and Developing by Prashant K
+        //Start
+        ChartImages.push.apply(ChartImages, allSitePerformanceImg);
+        ChartImages.push.apply(ChartImages, imgPortpolioMonthlyBySite);
+        ChartImages.push.apply(ChartImages, imgPortpolioYearlyBySite);
+        ChartImages.push.apply(ChartImages, imgOperationBySite);
+
+        ChartImages.push.apply(ChartImages, imgPortpolioMonthlyBySPV);
+        ChartImages.push.apply(ChartImages, imgPortpolioYearlyBySPV);
+        ChartImages.push.apply(ChartImages, imgOperationBySPV);
+
+        //ChartImages.push(thankyouSlide);
+        //base 64 image for thank you slide
+        const thankyouSlide = `data:image/png;base64,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`
+        ChartImages.push(thankyouSlide);
+        console.log(ChartImages);
+        let count = siteCount + 4;
+        console.log("count" + count);
+        ChartImages.forEach(function (currentValue, index, arr) {
+            console.log(index)
+            /*if (index == 1) {
+                console.log(index)
+
+            }
+            /*else*/ if (index == 2 || index == 3) {
+                //console.log(index);
+                pres.addSlide().addImage({
+                    path: ChartImages[index],
+                    x: "1%",
+                    y: "12%",
+                    w: "98%",
+                    h: "70%",
+                })
+            }
+            else if (index == count || index == count+1) {
+                console.log("SPV ::" +index);
+                pres.addSlide().addImage({
+                    path: ChartImages[index],
+                    x: "1%",
+                    y: "12%",
+                    w: "98%",
+                    h: "70%",
+                })
+            }
+            else {
+                pres.addSlide().addImage({
+                    path: currentValue,
+                    x: "0%",
+                    y: "0%",
+                    w: "100%",
+                    h: "100%",
+                });
+            }
+        });
+        let today = new Date().toISOString().slice(0, 10)
+        var fname = 'WindReview' + today;
+        await pres.writeFile({
+            fileName: fname,
+        });
+    }
+</script>

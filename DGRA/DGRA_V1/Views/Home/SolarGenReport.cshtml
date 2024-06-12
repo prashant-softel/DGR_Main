@@ -79,16 +79,22 @@
                                         <a class="nav-link" id="custom-tabs-three-yearly-tab" data-toggle="pill" href="#custom-tabs-three-yearly" role="tab" aria-controls="custom-tabs-three-yearly" aria-selected="false">Yearly Gen Report</a>
                                     </li>
 
-
+                                    <div style="float: right;width: 65%;" id="customDiv">
+                                        <div style="float: right;">
+                                            <input type="checkbox" class="form-check-input group_by_site" id="group_by_site" name="group_by_site" value="1" style="width: 17px; height: 16px;" onclick="grouping_site()"> <b>&nbsp;&nbsp;&nbsp;Custom Grouping of Site </b>
+                                        </div> 
+                                    </div>
 
                                 </ul>
-
+                                <div>
+                                
+                                
                             </div>
 
                             <div class="card-body">
                                 <div class="tab-content" id="custom-tabs-three-tabContent">
                                     <div class="tab-pane fade show active" id="custom-tabs-three-daily" role="tabpanel" aria-labelledby="custom-tabs-three-daily-tab">
-                                        <div class="row">
+                                        <div class="row" id="daily_sec">
                                             <div class="col-sm-4">
                                                 <div class="input-group " style="margin-left: -14%; width: 118%;">
                                                     <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
@@ -124,7 +130,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="daily_sec1">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -152,7 +158,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="daily_sec2">
                                             <div class="col-sm-5 text-left">
                                                 <div class="table-responsive pad">
                                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -171,15 +177,40 @@
                                             </div>
                                             <div class="col-sm-5 text-center"></div>
                                         </div>
-
+                                        <!--daily Group site -->
+                                        <div class="row" id="daily_group" style="display:none">
+                                            <div class="col-sm-4">
+                                                <div class="input-group " style="margin-left: -14%; width: 118%;">
+                                                    <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="text" class="form-control float-right col-sm-6" id="custom_daterange" name="custom_daterange">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
+                                                        <select class="form-control  col-sm-8" id="cust_daily_group" name="cust_daily_group[]" value="" multiple></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 text-center">
+                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomDailyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                            </div>
+                                        </div>
                                         <hr>
                                         <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
+                                        <div id="reportsDailyGroup" style="overflow-x: auto;" class="reportsDailyGroup"></div>
                                         <div id="loaderD" class="loader  center" style="display:none"></div>
 
 
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-three-monthly" role="tabpanel" aria-labelledby="custom-tabs-three-monthly-tab">
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -224,7 +255,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec1">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -253,7 +284,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec2">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -268,7 +299,7 @@
                                             </div>
                                             <div class="col-sm-5"></div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec3">
                                             <div class="col-sm-5">
                                                 <div class="table-responsive pad">
                                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -283,13 +314,66 @@
                                             </div>
                                             <div class="col-sm-7"></div>
                                         </div>
+                                        <!-- Monthly Group by Site -->
+                                        <div class="row" id="monthly_group" style="display:none">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-3 col-form-label text-right">FY : </label>
+                                                        <select class="form-control  col-sm-8" id="fyM_group" name="fyM_group" value="">
+                                                            <option value="">Select Financial Year</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
 
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-3 col-form-label text-right">Month : </label>
+                                                        <select class="form-control  col-sm-8" id="monthM_group" name="monthM_group[]" value="" multiple>
+                                                            <option value="04">April</option>
+                                                            <option value="05">May</option>
+                                                            <option value="06">June</option>
+                                                            <option value="07">July</option>
+                                                            <option value="08">August</option>
+                                                            <option value="09">September</option>
+                                                            <option value="10">October</option>
+                                                            <option value="11">November</option>
+                                                            <option value="12">December</option>
+                                                            <option value="01">January</option>
+                                                            <option value="02">February</option>
+                                                            <option value="03">March</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Custom Group : </label>
+                                                            <select class="form-control  col-sm-8" id="custM_group" name="custM_group[]" value="" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row" id="monthly_group1" style="display:none">
+                                            <div class="col-sm-5"></div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomMonthGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                            </div>
+                                            <div class="col-sm-5"></div>
+                                        </div>
                                         <hr>
                                         <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
+                                        <div id="reportsMonthlyGroup" style="overflow-x: auto;" class="reportsMonthlyGroup"></div>
                                         <div id="loaderM" class="loader  center" style="display:none"></div>
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-three-yearly" role="tabpanel" aria-labelledby="custom-tabs-three-yearly-tab">
-                                        <div class="row">
+                                        <div class="row" id="yearly_sec">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -320,7 +404,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="yearly_sec1">
                                             <div class="col-sm-4">
 
                                                 <div class="form-group">
@@ -348,7 +432,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row">
+                                        <div class="row" id="yearly_sec2">
                                             <div class="col-sm-5 text-left">
                                                 <div class="table-responsive pad">
                                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -366,13 +450,38 @@
                                             </div>
                                             <div class="col-sm-5 text-center"></div>
                                         </div>
+                                        <!-- Yearly Group -->
+                                        <div class="row" id="yearly_group" style="display:none">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-2 col-form-label text-right">FY : </label>
+                                                        <select class="form-control  col-sm-8" id="fyY_group" name="fyY_group" value="">
+                                                            <option value="">Select Financial Year</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
+                                                        <select class="form-control  col-sm-8" id="customY_group" name="customY_group[]" value="" onchange="" multiple></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 text-center">
+                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomYearlyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                            </div>
 
+                                        </div>
                                         <hr>
                                         <div id="reportsYearly" style="overflow-x: auto;" class="reportsYearly"></div>
+                                        <div id="reportsYearlyGroup" style="overflow-x: auto;" class="reportsYearlyGroup"></div>
                                         <div id="loaderY" class="loader  center" style="display:none"></div>
                                     </div>
 
-                                </div>
+                                    </div>
                             </div>
                             <!-- /.card -->
                         </div>
@@ -429,9 +538,52 @@
     var exceldata4;
     var exceldata5;
     var exceldata6;
+
+    //-- Selection Disable Enable
+    function grouping_site() {
+        var checkBox = document.getElementById("group_by_site");
+        console.log(checkBox.checked);
+        if (checkBox.checked == true) {
+            document.getElementById('daily_sec').style.display      = 'none';
+            document.getElementById('daily_sec1').style.display     = 'none';
+            document.getElementById('daily_sec2').style.display      = 'none';
+            document.getElementById('monthly_sec').style.display    = 'none';
+            document.getElementById('monthly_sec1').style.display   = 'none';
+            document.getElementById('monthly_sec2').style.display   = 'none';
+            document.getElementById('monthly_sec3').style.display   = 'none';
+            document.getElementById('yearly_sec').style.display     = 'none';
+            document.getElementById('yearly_sec1').style.display    = 'none';
+            document.getElementById('yearly_sec2').style.display    = 'none';
+            document.getElementById('daily_group').style.display    = 'flex';
+            document.getElementById('monthly_group').style.display  = 'flex';
+            document.getElementById('monthly_group1').style.display = 'flex';
+            document.getElementById('yearly_group').style.display   = 'flex';
+        }
+        else {
+            document.getElementById('daily_sec').style.display      = 'flex';
+            document.getElementById('daily_sec1').style.display     = 'flex';
+            document.getElementById('daily_sec2').style.display     = 'flex';
+            document.getElementById('monthly_sec').style.display    = 'flex';
+            document.getElementById('monthly_sec1').style.display   = 'flex';
+            document.getElementById('monthly_sec2').style.display   = 'flex';
+            document.getElementById('monthly_sec3').style.display   = 'flex';
+            document.getElementById('yearly_sec').style.display     = 'flex';
+            document.getElementById('yearly_sec1').style.display    = 'flex';
+            document.getElementById('yearly_sec2').style.display    = 'flex';
+            document.getElementById('daily_group').style.display    = 'none';
+            document.getElementById('monthly_group').style.display  = 'none';
+            document.getElementById('monthly_group1').style.display = 'none';
+            document.getElementById('yearly_group').style.display   = 'none';
+        }
+    }
+
  var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
  var solarUserAccess ="@Html.Raw(solarSiteList.TrimEnd(','))";
     $(document).ready(function () {
+        if (userRole != "Admin") {
+            document.getElementById("customDiv").style.display = "none";
+            GetCustomGroupAccess();
+        }
         $('#daterange').daterangepicker(
             {
                 maxDate: new Date(),
@@ -439,12 +591,25 @@
                     format: 'DD/MM/YYYY',
                 }
             });
+
+    $('#custom_daterange').daterangepicker(
+        {
+            maxDate: new Date(),
+            locale: {
+                format: 'DD/MM/YYYY',
+            }
+        });
     });
     window.onload = function () {
         $('select#monthM').multipleSelect({
                     "minimumCountSelected": 2,
                     "placeholder": "Select Month(s)",
                     filter: true
+        });
+        $('select#monthM_group').multipleSelect({
+            "minimumCountSelected": 2,
+            "placeholder": "Select Month(s)",
+            filter: true
         });
         $('select#country').multipleSelect({
             "placeholder": "Select country",
@@ -498,6 +663,29 @@
         GetSPV();
         GetSPVM();
         GetSPVY();
+        getCutomeGroup();
+    }
+
+    function GetCustomGroupAccess()
+    {
+        console.log("call function");
+        var login_id = @HttpContextAccessor.HttpContext.Session.GetString("userid");
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomGroupAccess", "Home")' + '?login_id=' + login_id + '&site_type=2',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                if (result.length > 0) {
+                    CustomGroupOfSite = true;
+                    document.getElementById("customDiv").style.display = "block";
+                }
+                else {
+                    CustomGroupOfSite = false;
+                    document.getElementById("customDiv").style.display = "none";
+                }
+            }
+        });
     }
     function getYear() {
     $.ajax({
@@ -514,12 +702,22 @@
                 options += '<option value="' + result[i].financial_year + '">' + result[i].financial_year + '</option>';
             }
             $("#fyM").html(options);
+            $("#fyM_group").html(options);
             $("#fyY").html(options);
+            $("#fyY_group").html(options);
             $('select#fyM').multipleSelect({
                 "placeholder": "Select month",
                 filter: true
             });
+            $('select#fyM_group').multipleSelect({
+                "placeholder": "Select month",
+                filter: true
+            });
             $('select#fyY').multipleSelect({
+                "placeholder": "Select year",
+                filter: true
+            });
+            $('select#fyY_group').multipleSelect({
                 "placeholder": "Select year",
                 filter: true
             });
@@ -927,6 +1125,45 @@
             }
         });
     }
+    function getCutomeGroup()
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCustomGroup", "SolarReport")?siteType=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var options = "";
+                for (var k = 0; k < result.length; k++)
+                {
+                    options += '<option value="' + result[k].site_ids + '">' + result[k].cust_group + '</option>';
+                }
+                $("#cust_daily_group").multipleSelect('destroy');
+                $("#cust_daily_group").html("").html(options);
+                $('select#cust_daily_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter:true
+                });
+                $("#custM_group").multipleSelect('destroy');
+                $("#custM_group").html("").html(options);
+                $('select#custM_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter: true
+                });
+                $("#customY_group").multipleSelect('destroy');
+                $("#customY_group").html("").html(options);
+                $('select#customY_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter: true
+                });
+            }
+        });
+    }
+
     function GetDailyGenReport() {
 
         var ReportType = $("input[name='daily']:checked").val();
@@ -3262,6 +3499,852 @@
 
         saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SolarYearlyGenRep SiteWise.xlsx");
 
+    }
+
+    function GetCustomDailyGenReport()
+    {
+        var daterange = $('#custom_daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        let site_list = "";
+        $('select#cust_daily_group option:selected').each(function () {
+            site_list += $(this).val() + ",";
+        });
+        site_list = site_list != "" ? site_list.slice(0, -1) : site_list;
+        document.getElementById("loaderD").style.display = 'flex';
+        var reportType = "Site";
+        var reporthead = "Site Wise Report";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomeSolarDaily", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + site_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr)
+            {
+                var  tbl = '<table id="exampleDailygroup"  class="table table-bordered table-striped" style="width:285%">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>Date</th>';
+                tbl += '<th style="text-wrap: nowrap;width:12%">Group Name</th>';
+                tbl += '<th>Country</th>';
+                tbl += '<th>State</th>';
+                //tbl += '<th>SPV</th>';
+                tbl += '<th>DC_Capacity<br>(MW)</th>';
+                tbl += '<th>AC_Capacity<br>(MW)</th>';
+                tbl += '<th>GHI</th>';
+                tbl += '<th>POA</th>';
+                tbl += '<th>Expected_kwh</th>';
+                tbl += '<th>INV_kWh</th>';
+                tbl += '<th>Plant_kWh</th>';
+                tbl += '<th>INV_PR</th>';
+                tbl += '<th>Plant_PR</th>';
+                tbl += '<th>INV_PLF<br>(%)</th>';
+                tbl += '<th>Plant_PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>Gen_Hrs</th>';
+                tbl += '<th>Lull_Hrs</th>';
+                tbl += '<th>USMH</th>';
+                tbl += '<th>SMH</th>';
+                tbl += '<th>OH</th>';
+                tbl += '<th>IGBD</th>';
+                tbl += '<th>EGBD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>OH_Loss</th>';
+                tbl += '<th>IGBD_Loss</th>';
+                tbl += '<th>EGBD_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>LULL_Loss</th>';
+                tbl += '<th>Tracker_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
+                tbl += '</tr></thead>';
+                if (result.length > 0)
+                {
+                    for (var i = 0; i < result.length; i++) {
+                        var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        let totalFinal = result[i].total_losses + result[i].tracker_losses;
+                        let chielditem = result[i].item;
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn = '<div class="grp-btn" id = "parant_' + chield_class + '" onclick = "showchield(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phide_' + chield_class + '" onclick="hidechield(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td >';
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                        //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-right">' + result[i].dc_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].smh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].oh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_bd_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].smh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].oh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
+                        tbl += '</tr>';
+
+                        for (var j = 0; j < chielditem.length; j++)
+                        {
+                            var formattedDate_chield = moment(chielditem[j].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                            let totalFinal_chield = chielditem[j].total_losses + chielditem[j].tracker_losses;
+
+                            tbl += '<tr  class="' + chield_class + '" style="display:none">';
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate_chield + '</td>';
+                            tbl += '<td class="text-left" style="padding-left: 1rem !important;">' + chielditem[j].site + '</td >';
+                            tbl += '<td class="text-left">' + chielditem[j].country + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].state + '</td>';
+                            //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].dc_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ac_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].expected_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_actual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_b.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_c.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].usmh_bs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].smh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].oh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_bd_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].usmh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].smh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].oh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tracker_losses.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + totalFinal_chield.toFixed(2) + '</td>';
+                            tbl += '</tr>';
+                        }
+                    }
+                }
+                else
+                {
+                    console.log("Data not available");
+                }
+                tbl += '</table>';
+                //$("#reportsDailyGroup").html(tbl);
+                $("#reportsDailyGroup").html("");
+                $("#reportsDailyGroup").html(tbl);
+                $('#exampleDailygroup').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    "order": [[1, "asc"]],
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Daily Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Daily Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis',
+                        {
+                            //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            //className: 'btn ml-1   ',
+                            //action: function () {
+                                //DailyexportToExcelGenReportSiteWise();
+                            //}
+                        },
+                    ],
+                    initComplete: function ()
+                    {
+                        this.api().columns().header().to$().each(function ()
+                        {
+
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                document.getElementById("loaderD").style.display = 'none';
+            }
+        });
+    }
+    function GetCustomMonthGenReport()
+    {
+        let site_list= "";
+        $('select#custM_group option:selected').each(function () {
+            site_list += $(this).val() + ",";
+        });
+        site_list = site_list != "" ? site_list.slice(0, -1) : site_list;
+        var fyyear = $('select#fyM_group option:selected').val();
+        if (fyyear == "") {
+            alert("Please select financial year");
+            return false;
+        }
+        let month = "";
+        $('select#monthM_group option:selected').each(function () {
+            month+= $(this).val()+",";
+        });
+        month = month != "" ? month.slice(0, -1) : month;
+        document.getElementById("loaderM").style.display = 'flex';
+        var arr1 = new Array();
+        arr1 = fyyear.split("-");
+        var fromDate = "";
+        var reportType = "Site";
+        var reporthead = "Site Wise Report";
+        var cnt = 0;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomeSolarMonthly", "SolarReport")' + '?fy=' + arr1[0] + '&month=' + month + '&site_list=' + site_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr)
+            {
+                //console.log(result);
+                var tbl = '<table id="exampleMothlyGroup"  class="table table-bordered table-striped" style="width:285%">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>FY</th>';
+                tbl += '<th>Month</th>';
+                tbl += '<th>Country</th>';
+                tbl += '<th>State</th>';
+                //tbl += '<th>SPV</th>';
+                tbl += '<th style="text-wrap: nowrap;width:12%">Group Name</th>';
+                tbl += '<th>DC_Capacity<br>(MW)</th>';
+                tbl += '<th>AC_Capacity<br>(MW)</th>';
+                tbl += '<th>GHI</th>';
+                tbl += '<th>POA</th>';
+                tbl += '<th>Expected_kwh</th>';
+                tbl += '<th>INV_kWh</th>';
+                tbl += '<th>Plant_kWh</th>';
+                tbl += '<th>INV_PR</th>';
+                tbl += '<th>Plant_PR</th>';
+                tbl += '<th>INV_PLF<br>(%)</th>';
+                tbl += '<th>Plant_PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>Gen_Hrs</th>';
+                tbl += '<th>Lull_Hrs</th>';
+                tbl += '<th>USMH</th>';
+                tbl += '<th>SMH</th>';
+                tbl += '<th>OH</th>';
+                tbl += '<th>IGBD</th>';
+                tbl += '<th>EGBD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>OH_Loss</th>';
+                tbl += '<th>IGBD_Loss</th>';
+                tbl += '<th>EGBD_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>LULL_Loss</th>';
+                tbl += '<th>Tracker_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
+                tbl += '</tr></thead>';
+                console.log(result.length);
+                if (result.length > 0)
+                {
+
+                    for (var i = 0; i < result.length; i++)
+                    {
+
+                        let totalFinal = result[i].total_losses + result[i].tracker_losses;
+                        let chielditem = result[i].item;
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn = '<div class="grp-btn" id = "parantM_' + chield_class + '" onclick = "showchieldMontly(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phideM_' + chield_class + '" onclick="hidechieldMonthly(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + fyyear + '</td>';
+                        tbl += '<td class="text-left">' + result[i].month + '</td>';
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                        //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td >';
+                        tbl += '<td class="text-left">' + result[i].dc_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-left">' + result[i].ac_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].smh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].oh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_bd_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].smh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].oh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2)+ '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
+                        tbl += '</tr>';
+                        for (var j = 0; j < chielditem.length; j++)
+                        {
+                            let totalFinal_chield = chielditem[j].total_losses + chielditem[j].tracker_losses;
+                            tbl += '<tr class="' + chield_class +'" style="display:none">';
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + fyyear + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].month + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].country + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].state + '</td>';
+                            //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                            tbl += '<td class="text-left" style="padding-left: 1rem !important;">' + chielditem[j].site + '</td >';
+                            tbl += '<td class="text-left">' + chielditem[j].dc_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].ac_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].expected_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_actual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_b.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_c.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].usmh_bs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].smh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].oh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_bd_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].usmh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].smh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].oh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tracker_losses.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_losses.toFixed(2) + '</td>';
+                            tbl += '</tr>';
+                        }
+                    }
+                }
+                else
+                {
+                    console.log("Data not available");
+
+                }
+                console.log("rows"+cnt+"");
+                tbl += '</table>';
+                //$("#reportsMonthlyGroup").html(tbl);
+                $("#reportsMonthlyGroup").html("");
+                $("#reportsMonthlyGroup").html(tbl);
+                $('#exampleMothlyGroup').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    "order": [[5, "asc"]],
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible',
+                                rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: ''+cnt+''}
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis',
+                        {
+                            //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            //className: 'btn ml-1   ',
+                            //action: function () {
+                               // MonthlyexportToExcelGenReportSiteWise();
+                           // }
+                        },
+                    ],
+                    initComplete: function ()
+                    {
+                        this.api().columns().header().to$().each(function ()
+                        {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $(document).on("click", "div.dt-button-collection > div > button", function ()
+                {
+                    if ($(this).hasClass("active"))
+                    {
+                        $(this).css("background-color", "white");
+                    }
+                    else
+                    {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                document.getElementById("loaderM").style.display = 'none';
+            }
+        });
+
+    }
+    function GetCustomYearlyGenReport()
+    {
+        let site_list = "";
+        $('select#customY_group option:selected').each(function () {
+            site_list += $(this).val() + ",";
+        });
+        site_list = site_list != "" ? site_list.slice(0, -1) : site_list;
+        var fyyear = $('select#fyY_group option:selected').val();
+        if (fyyear == "") {
+            alert("Please select financial year");
+            return false;
+        }
+        document.getElementById("loaderY").style.display = 'flex';
+        var arr1 = new Array();
+        arr1 = fyyear.split("-");
+        var fromDate = "";
+        fromDate = arr1[0] + '-04-01';
+        toDate = '20' + arr1[1] + '-03-31';
+        var reportType = "Site";
+        var reporthead = "Site Wise Report";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomeSolarYearly", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + site_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr)
+            {
+                //var tbl = '<div class="text-center"><h5></h5></div>';
+                var tbl = '<table id="exampleGroupY"  class="table table-bordered table-striped" style="width:285%">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>FY</th>';
+                tbl += '<th>Country</th>';
+                tbl += '<th>State</th>';
+                //tbl += '<th>SPV</th>';
+                tbl += '<th style="text-wrap: nowrap;width:12%" >Group Name</th>';
+                tbl += '<th>DC_Capacity<br>(MW)</th>';
+                tbl += '<th>AC_Capacity<br>(MW)</th>';
+                tbl += '<th>GHI</th>';
+                tbl += '<th>POA</th>';
+                tbl += '<th>Expected_kwh</th>';
+                tbl += '<th>INV_kWh</th>';
+                tbl += '<th>Plant_kWh</th>';
+                tbl += '<th>INV_PR</th>';
+                tbl += '<th>Plant_PR</th>';
+                tbl += '<th>INV_PLF<br>(%)</th>';
+                tbl += '<th>Plant_PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>Gen_Hrs</th>';
+                tbl += '<th>Lull_Hrs</th>';
+                tbl += '<th>USMH</th>';
+                tbl += '<th>SMH</th>';
+                tbl += '<th>OH</th>';
+                tbl += '<th>IGBD</th>';
+                tbl += '<th>EGBD</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>OH_Loss</th>';
+                tbl += '<th>IGBD_Loss</th>';
+                tbl += '<th>EGBD_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>LULL_Loss</th>';
+                tbl += '<th>Tracker_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
+                tbl += '</tr></thead>';
+                if (result.length > 0)
+                {
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        let TotalFinal = result[i].total_losses + result[i].tracker_losses;
+                        let chielditem = result[i].item;
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn = '<div class="grp-btn" id = "parantY_' + chield_class + '" onclick = "showchieldYearly(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phideY_' + chield_class + '" onclick="hidechieldYearly(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                        //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td>';
+                        tbl += '<td class="text-left">' + result[i].dc_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-left">' + result[i].ac_capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].inv_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plant_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].smh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].oh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding_bd.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_bd_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].usmh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].smh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].oh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
+                        tbl += '</tr>';
+                        for (var j = 0; j < chielditem.length; j++)
+                        {
+                            tbl += '<tr class="' + chield_class +'" style="display:none">';
+                            tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].country + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].state + '</td>';
+                            //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                            tbl += '<td class="text-left" style="padding-left: 1rem !important;">' + chielditem[j].site + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].dc_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].ac_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].expected_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].inv_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plant_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_actual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_b.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_c.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].usmh_bs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].smh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].oh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding_bd.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_bd_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].usmh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].smh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].oh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tracker_losses.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_losses.toFixed(2) + '</td>';
+                            tbl += '</tr>';
+                        }
+                    }
+                }
+                else
+                {
+                    console.log("Data not available");
+                }
+                tbl += '</table>';
+                //$("#reportsYearlyGroup").html(tbl);
+                $("#reportsYearlyGroup").html("");
+                $("#reportsYearlyGroup").html(tbl);
+                    $('#exampleGroupY').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    "order": [[4, "asc"]],
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis',
+                        {
+                            //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            //className: 'btn ml-1   ',
+                            //action: function () {
+                             //   YearlyexportToExcelGenReportSiteWise();
+                            //}
+                        },
+                    ],
+                    initComplete: function ()
+                    {
+                        this.api().columns().header().to$().each(function ()
+                        {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active"))
+                    {
+                        $(this).css("background-color", "white");
+                    }
+                    else
+                    {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                document.getElementById("loaderY").style.display = 'none';
+            }
+        });
+    }
+    function showchield(id)
+    {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phide_" + iden[1]).style.display = "inline-block";
+
+    }
+    function hidechield(id)
+    {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parant_" + iden[1]).style.display = "inline-block";
+    }
+    //-------Monthly------//
+    function showchieldMontly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phideM_" + iden[1]).style.display = "inline-block";
+
+    }
+    function hidechieldMonthly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parantM_" + iden[1]).style.display = "inline-block";
+    }
+
+    //-------Yearly------//
+    function showchieldYearly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phideY_" + iden[1]).style.display = "inline-block";
+
+    }
+    function hidechieldYearly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parantY_" + iden[1]).style.display = "inline-block";
     }
 
 </script>

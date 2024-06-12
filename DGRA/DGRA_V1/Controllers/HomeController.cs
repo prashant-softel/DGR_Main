@@ -722,6 +722,29 @@ namespace DGRA_V1.Controllers
 
         }
 
+        public async Task<IActionResult> GetCustomGroup(int login_id, int site_type,string groupPage)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/GetCustomGroup?login_id=" + login_id + "&site_type=" + site_type+ "&groupPage="+ groupPage;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
         public async Task<IActionResult> GetEmailAccess(int login_id, int site, int access, string notifications=null, bool actionType = false)
         {
             UserInfomation usermodel = new UserInfomation();
@@ -810,6 +833,30 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
 
         }
+        [TypeFilter(typeof(SessionValidation))]
+        public async Task<IActionResult> SubmitGroupBySiteAccess(int login_id, string reportgroup, string site_type)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/SubmitGroupBySite?login_id=" + login_id + "&reportgroup=" + reportgroup + "&site_type=" + site_type;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
         //SubmitCloneUserAccess
         [TypeFilter(typeof(SessionValidation))]
         public async Task<IActionResult> SubmitCloneUserAccess(int login_id, int site_type, int page_type, int identity, int upload_access)
@@ -818,6 +865,30 @@ namespace DGRA_V1.Controllers
             try
             {
                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/SubmitCloneUserAccess?login_id=" + login_id + "&site_type=" + site_type + "&page_type=" + page_type + "&identity=" + identity + "&upload_access=" + upload_access;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
+
+        public async Task<IActionResult> GetCustomGroupAccess(int login_id, int site_type)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/GetCustomGroupAccess?login_id=" + login_id + "&site_type=" + site_type;
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {
@@ -1073,6 +1144,16 @@ namespace DGRA_V1.Controllers
         
         [TypeFilter(typeof(SessionValidation))]
         public ActionResult OPSolar()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+        public IActionResult OPSolarPPT()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+        public ActionResult OPWindPPT()
         {
             TempData["notification"] = "";
             return View();

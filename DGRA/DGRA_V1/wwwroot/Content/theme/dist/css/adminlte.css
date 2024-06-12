@@ -53172,6 +53172,18 @@ table.dataTable thead tr > .dtfc-fixed-left {
 {
     font-size:20px;
 }
+.grp-btn {
+    background: #0069d9;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    line-height: 11px;
+    text-align: center;
+    color: white;
+    -moz-box-sizing: border-box;
+    font-size: 8px;
+}
 /*
 .dataTables_scrollBody {
     margin-top: -8px;

@@ -104,28 +104,36 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title text-center">Wind Performance Summary</h3>
-
-               
             </div>
             <div class="card-body">
-                <div class="row" style="margin-bottom: -6px;">
+                <div class="row" style="margin-top: -14px;">
+                    <div class="chart col-sm-10">
+                    </div>
+                    <div class="chart col-sm-2 text-center" id="customDiv">
+                        <span style=" margin-left:-20px; margin-top: -6px; ">
+                            <input type="checkbox" class="form-check-input group_by_site" id="group_by_site" name="group_by_site" value="1" style="width: 17px; height: 16px;" onclick="grouping_site()">
+                        </span> <span><b>&nbsp;&nbsp;&nbsp;Custom Grouping of Site </b></span>
+                    </div>
 
-
-                    <div class="col-sm-3"  style=" margin-left: 15px;">
+                </div>
+                <hr>
+                <!-- No Group-->
+                <div class="row" id="no_group" style="display:flex">
+                    <div class="col-sm-4">
                         <div class="input-group ">
-                            <label class="col-sm-3.1 col-form-label text-left">Date Range :&nbsp;&nbsp;</label>
+                            <label class="col-sm-2 col-form-label text-left">Date : </label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right col-sm-9" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-8" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-sm-3" style="margin-left: -13px;">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label text-right">SPV : </label>
+                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
                                 <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
                             </div>
                         </div>
@@ -133,19 +141,17 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                <select class="form-control  col-sm-9" id="site" name="site[]" multiple></select>
+                                <label class="col-sm-2 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-2 text-left">
-                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style=" width: 5rem; line-height: 1.3;">Search</button>
+                    <div class="col-sm-1 text-left">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="margin-left:-2rem; width: 5rem;">Search</button>
                     </div>
                     <div class="col-sm-1 text-center"></div>
-
-
                 </div>
-                <div class="row">
+                <div class="row" id="no_group_tab" style="display:flex">
                     <div class="col-sm-5">
                         <div class="card-body table-responsive pad" style="margin-left: -4%; padding-bottom: 2px;">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -158,18 +164,42 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-2 text-center">
-
-                    </div>
+                    <div class="col-sm-2 text-center"></div>
                     <div class="col-sm-5 text-center"></div>
                 </div>
-
+                <!--Custom Group By Site -->
+                <div class="row" id="groupbysite" style="display:none">
+                    <div class="col-sm-4">
+                        <div class="input-group ">
+                            <label class="col-sm-2 col-form-label text-left">Date : </label>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control float-right col-sm-8" id="daterange_group" name="daterange">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-4 col-form-label text-left">Custom Group : </label>
+                                <select class="form-control  col-sm-8" id="cust_group" name="cust_group[]" value="" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1 text-center"></div>
+                    <div class="col-sm-1 text-left">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReportGroup();" style="margin-left:-5rem; width: 5rem;">Search</button>
+                    </div>
+                    <!--<div class="col-sm-1 text-center"></div>-->
+                </div>
                 <hr>
-
                 <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
+                <div id="reportsDailygroup" style="overflow-x: auto;" class="reportsDailygroup"></div>
+                
                 <div id="loader" class="loader  center" style="display:none"></div>
-
-               <!-- <hr>-->
+                <!-- <hr>-->
                 <div class="row" id="sitewisechart" style="display:none">
                     <div class="chart col-sm-6 text-center">
                         <h5>Energy (MUs) </h5>
@@ -179,7 +209,6 @@
                         <h5>Wind (m/s) </h5>
                         <canvas id="wind_chart" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%;"></canvas>
                     </div>
-
                 </div>
                 <div class="row" id="spvwisechart" style="display:none">
                     <div class="col-sm-6 text-center">
@@ -189,8 +218,7 @@
                 </div>
             </div>
         </div>
-</div>
-</section>
+    </section>
 </div>
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -218,48 +246,100 @@
      var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
      var exceldata1;
      var exceldata2;
+
+    //-- Selection Disable Enable
+    function grouping_site()
+    {
+
+        var checkBox = document.getElementById("group_by_site");
+        console.log(checkBox.checked);
+        if (checkBox.checked == true) {
+            document.getElementById('no_group').style.display = 'none';
+            document.getElementById('no_group_tab').style.display = 'none';
+            document.getElementById('groupbysite').style.display = 'flex';
+        }
+        else
+        {
+            document.getElementById('no_group').style.display = 'flex';
+            document.getElementById('no_group_tab').style.display = 'flex';
+            document.getElementById('groupbysite').style.display = 'none';
+        }
+    }
+
     $(document).ready(function () {
+        console.log("Role=>", userRole);
+        if (userRole != "Admin") {
+            document.getElementById("customDiv").style.display = "none";
+            GetCustomGroupAccess();
+        }
         var today = new Date();
         fyear = getFinancialYear(today);
         console.log(fyear);
-
         $('#daterange').daterangepicker(
-            {
-                maxDate: new Date(),
-                locale: {
-                    format: 'DD/MM/YYYY',
-                }
-            });
+        {
+            maxDate: new Date(),
+            locale: {
+                format: 'DD/MM/YYYY',
+            }
+        });
+        $('#daterange_group').daterangepicker(
+        {
+            maxDate: new Date(),
+            locale: {
+                format: 'DD/MM/YYYY',
+            }
+        });
     });
-    window.onload = function () {
-
+    window.onload = function ()
+    {
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         GetSPV(false);
         getSite(false);
-
+        getCutomeGroup();
     }
 
     var today = new Date();
     fyear = getFinancialYear(today);
     var Fy = fyear;
-     function GetSPV(fliterVal) {
-        let state_id = "";
-        let site_ids = "";
-
-        if (fliterVal == false) {
-            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-        }
-
+    function GetCustomGroupAccess()
+    {
+        console.log("call function");
+        var login_id = @HttpContextAccessor.HttpContext.Session.GetString("userid");
         $.ajax({
             type: "GET",
-            ///url: "/WindReport/GetSPVList?state=" + val,
-            url: '@Url.Action("GetSPVList", "WindReport")' + '?state=' + state_id + '&sitelist=' + site_ids,
+            url: '@Url.Action("GetCustomGroupAccess", "Home")' + '?login_id=' + login_id + '&site_type=1',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
-
+                if (result.length > 0) {
+                    CustomGroupOfSite = true;
+                    document.getElementById("customDiv").style.display = "block";
+                }
+                else {
+                    CustomGroupOfSite = false;
+                    document.getElementById("customDiv").style.display = "none";
+                }
+            }
+        });
+    }
+    function GetSPV(fliterVal)
+    {
+        let state_id = "";
+        let site_ids = "";
+        if (fliterVal == false)
+        {
+            site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSPVList", "WindReport")' + '?state=' + state_id + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var j = 0; j < result.length; j++) {
+                for (var j = 0; j < result.length; j++)
+                {
                     options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
                 }
                 $("#spv").multipleSelect('destroy');
@@ -269,14 +349,22 @@
                     "placeholder": "Select SPV(s)",
                     filter:true
                 });
-
+                $("#spv_group").multipleSelect('destroy');
+                $("#spv_group").html(options);
+                $('select#spv_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select SPV(s)",
+                    filter: true
+                });
             }
         });
         getSite(false);
     }
-    function getSite(fliterVal) {
+    function getSite(fliterVal)
+    {
         var site_ids = "";
-        if (fliterVal == false) {
+        if (fliterVal == false)
+        {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         let state_id = "";
@@ -286,7 +374,8 @@
         state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
 
         let spv = "";
-        $('select#spv option:selected').each(function () {
+        $('select#spv option:selected').each(function ()
+        {
             spv += $(this).val() + ",";
         });
         spv = spv != "" ? spv.slice(0, -1) : spv;
@@ -298,9 +387,11 @@
             url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state_id + '&spv=' + spv + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
                 }
                 $("#site").multipleSelect('destroy');
@@ -313,174 +404,184 @@
                 });
             }
         });
-
     }
-
-    function GetPRReport() {
-
+    function getCutomeGroup()
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCustomGroup", "WindReport")?siteType=2',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var options = "";
+                for (var k = 0; k < result.length; k++)
+                {
+                    options += '<option value="' + result[k].site_ids + '">' + result[k].cust_group + '</option>';
+                }
+                $("#cust_group").multipleSelect('destroy');
+                $("#cust_group").html("").html(options);
+                $('select#cust_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter:true
+                });
+            }
+        });
+    }
+    function GetPRReport()
+    {
         var ReportType = $("input[name='reportType']:checked").val();
-        if (ReportType == "SPV") {
+        if (ReportType == "SPV")
+        {
             GetWindPRReportSPVWise();
         }
-        else {
-
-           GetWindPRReportSiteWise();
+        else
+        {
+            GetWindPRReportSiteWise();
         }
     }
-    function ExportToExcelSPVWise() {
+    function ExportToExcelSPVWise()
+    {
+        console.log(exceldata1)
+        result = exceldata1;
+        var columns = [
+            "SPV","Capacity","JMR Energy (in MU) Tar","JMR Energy (in MU) Exp","JMR Energy (in MU) Act","JMR Energy (in MU) T.var(%)","JMR Energy (in MU) E.var(%)","Revenue (MINR)"," Wind Speed (m/s) Tar","Wind Speed (m/s) Act ","Wind Speed (m/s) Var (%)","PLF (%) Tar",
+            "PLF (%) Act ","PLF (%) Var (%) ","MA Actual (%) Tar","MA Actual (%) Act ","MA Actual (%) Var (%) ","IGA (%) Tar","IGA (%) Act ","IGA (%) Var (%) ","EGA (%) Tar","EGA (%) Act ","EGA (%) Var (%) "
+        ];
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row                  = [];
+            let total_capacity       = 0;
+            let total_capTarMu       = 0;
+            let total_tar_mu         = 0;
+            let total_exp_power      = 0;
+            let total_act_jmr_kwh_mu = 0;
+            let avg_jmr_var          = 0;
+            let total_revenue        = 0;
+            let total_capTarWind     = 0;
+            let total_tar_wind       = 0;
+            let total_act_wind       = 0;
+            let avg_wind_var         = 0;
+            let total_capTarPlf      = 0;
+            let total_tar_plf        = 0;
+            let total_act_plf        = 0;
+            let avg_plf_var          = 0;
+            let total_capTarMa       = 0;
+            let total_tar_ma         = 0;
+            let total_act_ma         = 0;
+            let avg_ma_var           = 0;
+            let total_capTarIga      = 0;
+            let total_tar_iga        = 0;
+            let total_act_iga        = 0;
+            let avg_iga_var          = 0;
+            let total_capTarEga      = 0;
+            let total_tar_ega        = 0;
+            let total_act_ega        = 0;
+            let avg_ega_var          = 0;
+            let total_capActWind     = 0;
+            let total_capActPlf      = 0;
+            let total_capActMa       = 0;
+            let total_capActIga      = 0;
+            let total_capActEga      = 0;
+            let revenue              = 0;
+            let jmr_var              = 0;
+            let e_var                = 0;
+            let wind_var             = 0;
+            let plf_var              = 0;
+            let ma_act_var           = 0;
+            let iga_var              = 0;
+            let ega_var              = 0;
+            let tar_mu               = 0;
+            tar_mu                   = result[i].tar_kwh_mu / 1000000;
+            revenue                  = ((result[i].act_jmr_kwh_mu - tar_mu) * result[i].total_tarrif);
+            if (result[i].act_jmr_kwh_mu != 0 || result[i].tar_kwh_mu != 0)
+            {
+                jmr_var = ((result[i].act_jmr_kwh_mu - tar_mu) / tar_mu) * 100;
+            }
+            if (result[i].exp_power != 0)
+            {
+                e_var = ((result[i].act_jmr_kwh_mu - (result[i].exp_power /6) / 1000000) / ((result[i].exp_power /6 ) / 1000000)) * 100;
+            }
+            if (result[i].act_Wind != 0 || result[i].tar_wind != 0)
+            {
+                wind_var = ((result[i].act_Wind - result[i].tar_wind) / result[i].tar_wind) * 100;
+            }
+            plf_var              = (result[i].act_plf - result[i].tar_plf);
+            ma_act_var           = (result[i].act_ma - result[i].tar_ma);
+            iga_var              = (result[i].act_iga - result[i].tar_iga);
+            ega_var              = (result[i].act_ega - result[i].tar_ega);
+	        total_capacity       += result[i].total_mw;
+            total_tar_mu         += tar_mu;
+            total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
+            total_exp_power      += ((result[i].exp_power/6)/1000000);
+            total_revenue        += revenue;
+            total_tar_wind       += result[i].tar_wind;
+            total_act_wind       += result[i].act_Wind;
+            total_tar_plf        += result[i].tar_plf;
+            total_act_plf        += result[i].act_plf;
+            total_tar_ma         += result[i].tar_ma;
+            total_act_ma         += result[i].act_ma;
+            total_tar_iga        += result[i].tar_iga;
+            total_act_iga        += result[i].act_iga;
+            total_tar_ega        += result[i].tar_ega;
+            total_act_ega        += result[i].act_ega;
+            total_capTarMu       += tar_mu * result[i].total_mw;
+            total_capTarWind     += result[i].tar_wind * result[i].total_mw;
+            total_capTarPlf      += result[i].tar_plf * result[i].total_mw;
+            total_capTarMa       += result[i].tar_ma * result[i].total_mw;
+            total_capTarIga      += result[i].tar_iga * result[i].total_mw;
+            total_capTarEga      += result[i].tar_ega * result[i].total_mw;
+            total_capActWind     += result[i].act_Wind * result[i].total_mw;
+            total_capActPlf      += result[i].act_plf * result[i].total_mw;
+            total_capActMa       += result[i].act_ma * result[i].total_mw;
+            total_capActIga      += result[i].act_iga * result[i].total_mw;
+            total_capActEga      += result[i].act_ega * result[i].total_mw;
+            row.push(result[i].spv);
+            row.push(result[i].total_mw);
+            row.push(tar_mu);
+            row.push((result[i].exp_power /6)/ 1000000);
+            row.push(result[i].act_jmr_kwh_mu);
+            row.push( jmr_var);
+            row.push(e_var);
+            row.push(revenue);
+            row.push(result[i].tar_wind);
+            row.push(result[i].act_Wind);
+            row.push(wind_var);
+            row.push(result[i].tar_plf);
+            row.push(result[i].act_plf);
+            row.push(plf_var);
+            row.push(result[i].tar_ma);
+            row.push(result[i].act_ma);
+            row.push(ma_act_var);
+            row.push(result[i].tar_iga);
+            row.push(result[i].act_iga);
+            row.push(iga_var);
+            row.push(result[i].tar_ega);
+            row.push( result[i].act_ega);
+            row.push( ega_var);
+            rows.push(row);
+        }
+        var data = [columns].concat(rows);
+        var ws   = XLSX.utils.aoa_to_sheet(data);
+        var wb   = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Wind PerformanceSum SPVWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
 
-    console.log(exceldata1)
-    result = exceldata1;
-
-    var columns = [
-         "SPV","Capacity","JMR Energy (in MU) Tar","JMR Energy (in MU) Exp","JMR Energy (in MU) Act","JMR Energy (in MU) T.var(%)","JMR Energy (in MU) E.var(%)","Revenue (MINR)"," Wind Speed (m/s) Tar","Wind Speed (m/s) Act ","Wind Speed (m/s) Var (%)","PLF (%) Tar",
-       "PLF (%) Act ","PLF (%) Var (%) ","MA Actual (%) Tar","MA Actual (%) Act ","MA Actual (%) Var (%) ","IGA (%) Tar","IGA (%) Act ","IGA (%) Var (%) ","EGA (%) Tar","EGA (%) Act ","EGA (%) Var (%) "
-    ];
-
-    var rows = [];
-
-    for (var i = 0; i < result.length; i++) {
-        var row = [];
-       let total_capacity = 0;
-                    let total_capTarMu = 0;
-                    let total_tar_mu = 0;
-                    let total_exp_power = 0;
-                    let total_act_jmr_kwh_mu = 0;
-                    let avg_jmr_var = 0;
-                    let total_revenue = 0;
-                    let total_capTarWind = 0;
-                    let total_tar_wind = 0;
-                    let total_act_wind = 0;
-                    let avg_wind_var = 0;
-                    let total_capTarPlf = 0;
-                    let total_tar_plf = 0;
-                    let total_act_plf = 0;
-                    let avg_plf_var = 0;
-                    let total_capTarMa = 0;
-                    let total_tar_ma = 0;
-                    let total_act_ma = 0;
-                    let avg_ma_var = 0;
-                    let total_capTarIga = 0;
-                    let total_tar_iga = 0;
-                    let total_act_iga = 0;
-                    let avg_iga_var = 0;
-                    let total_capTarEga = 0;
-                    let total_tar_ega = 0;
-                    let total_act_ega = 0;
-                    let avg_ega_var = 0;
-                    let total_capActWind = 0;
-                    let total_capActPlf = 0;
-                    let total_capActMa = 0;
-                    let total_capActIga = 0;
-        let total_capActEga = 0;
-                        let revenue = 0;
-                        let jmr_var = 0;
-                        let e_var = 0;
-                        let wind_var = 0;
-                        let plf_var = 0;
-                        let ma_act_var = 0;
-                        let iga_var = 0;
-                        let ega_var = 0;
-                        let tar_mu = 0;
-                        tar_mu = result[i].tar_kwh_mu / 1000000;
-                        revenue = ((result[i].act_jmr_kwh_mu - tar_mu) * result[i].total_tarrif);
-                        if (result[i].act_jmr_kwh_mu != 0 || result[i].tar_kwh_mu != 0) {
-                            jmr_var = ((result[i].act_jmr_kwh_mu - tar_mu) / tar_mu) * 100;
-                        }
-                        if (result[i].exp_power != 0) {
-                            //e_var = ((result[i].act_jmr_kwh_mu - (result[i].exp_power / 6) / 1000000) / ((result[i].exp_power / 6) / 1000000)) * 100;
-                            e_var = (result[i].act_jmr_kwh_mu - result[i].exp_power ) / (result[i].exp_power) * 100;
-                            //if (result[i].site == "Maragutti") {
-                            //    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
-                            //    //    console.log(temp_e_var);
-                            //}
-                        }
-                        if (result[i].act_Wind != 0 || result[i].tar_wind != 0) {
-                            wind_var = ((result[i].act_Wind - result[i].tar_wind) / result[i].tar_wind) * 100;
-                        }
-                        plf_var = (result[i].act_plf - result[i].tar_plf);
-                        ma_act_var = (result[i].act_ma - result[i].tar_ma);
-                        iga_var = (result[i].act_iga - result[i].tar_iga);
-                        ega_var = (result[i].act_ega - result[i].tar_ega);
-
-                        //revenue_arr.push(revenue.toFixed(2));
-			            total_capacity += result[i].total_mw;
-                        total_tar_mu += tar_mu;
-                        total_act_jmr_kwh_mu += result[i].act_jmr_kwh_mu;
-                        total_exp_power += result[i].exp_power;
-                        total_revenue += revenue;
-                        total_tar_wind += result[i].tar_wind;
-                        total_act_wind += result[i].act_Wind;
-                        total_tar_plf += result[i].tar_plf;
-                        total_act_plf += result[i].act_plf;
-                        total_tar_ma += result[i].tar_ma;
-                        total_act_ma += result[i].act_ma;
-                        total_tar_iga += result[i].tar_iga;
-                        total_act_iga += result[i].act_iga;
-                        total_tar_ega += result[i].tar_ega;
-                        total_act_ega += result[i].act_ega;
-                        total_capTarMu += tar_mu * result[i].total_mw;
-                        total_capTarWind += result[i].tar_wind * result[i].total_mw;
-                        total_capTarPlf += result[i].tar_plf * result[i].total_mw;
-                        total_capTarMa += result[i].tar_ma * result[i].total_mw;
-                        total_capTarIga += result[i].tar_iga * result[i].total_mw;
-                        total_capTarEga += result[i].tar_ega * result[i].total_mw;
-                        total_capActWind += result[i].act_Wind * result[i].total_mw;
-                        total_capActPlf += result[i].act_plf * result[i].total_mw;
-                        total_capActMa += result[i].act_ma * result[i].total_mw;
-                        total_capActIga += result[i].act_iga * result[i].total_mw;
-                        total_capActEga += result[i].act_ega * result[i].total_mw;
-
-       row.push(result[i].spv);
-        row.push(result[i].total_mw);
-        row.push(tar_mu);
-        row.push(result[i].exp_power);
-        row.push(result[i].act_jmr_kwh_mu);
-        row.push( jmr_var);
-        row.push(e_var);
-        row.push(revenue);
-        row.push(result[i].tar_wind);
-        row.push(result[i].act_Wind);
-        row.push(wind_var);
-        row.push(result[i].tar_plf);
-        row.push(result[i].act_plf);
-        row.push(plf_var);
-        row.push( result[i].tar_ma);
-        row.push(result[i].act_ma);
-        row.push(ma_act_var);
-        row.push(result[i].tar_iga);
-        row.push(result[i].act_iga);
-        row.push(iga_var);
-        row.push(result[i].tar_ega);
-        row.push( result[i].act_ega);
-        row.push( ega_var);
-        rows.push(row);
-
-
-
+        function s2ab(s)
+        {
+            var buf  = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind PerformanceSum SPVWise.xlsx");
     }
-
-    var data = [columns].concat(rows);
-
-    var ws = XLSX.utils.aoa_to_sheet(data);
-    var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Wind PerformanceSum SPVWise");
-    var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-    function s2ab(s) {
-        var buf = new ArrayBuffer(s.length);
-        var view = new Uint8Array(buf);
-        for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-        return buf;
-    }
-
-    saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind PerformanceSum SPVWise.xlsx");
-
-}
-
 
     // Daily Gen Report SPV WIse
-    function GetWindPRReportSPVWise() {
+    function GetWindPRReportSPVWise()
+    {
         document.getElementById("loader").style.display = 'flex';
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         let site = "";
@@ -494,17 +595,17 @@
             spv += $(this).val() + ",";
         });
         spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (userRole == "User" && site == "") {
+        if (userRole == "User" && site == "")
+        {
             site = site_ids;
         }
-        var daterange = $('#daterange').val();
-        var arr1 = new Array();
-        arr1 = daterange.split("-");
-        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        var fyear = Fy;
-        console.log(fyear);
-        var leble = [];
+        var daterange   = $('#daterange').val();
+        var arr1        = new Array();
+        arr1            = daterange.split("-");
+        var fromDate    = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate      = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var fyear       = Fy;
+        var leble       = [];
         var revenue_arr = [];
         var reporthead = "SPV Wise Reports";
         $.ajax({
@@ -514,7 +615,8 @@
             contentType: "application/json; charset=utf-8",
 
             datatype: "JSON",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 console.log(result);
                 //var tbl = '<div class="text-center"><h5>' + reporthead+'</h5></div>';
                 var tbl = '<table id="example1"  class="table table-bordered table-striped" style="width: 130%;">';
@@ -1981,13 +2083,550 @@
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                //$(document).on("click", ".dt-button-collection ", function () {
-                //    var collection = document.getElementsByClassName("buttons-collection");
-                //    var firstElement = collection[0];
-                //    var attributeValue = firstElement.getAttribute('aria-expanded');
-                //    console.log(attributeValue + "jjj");
-                //});
+                document.getElementById("loader").style.display = 'none';
+            }
+        });
+    }
 
+    function GetPRReportGroup()
+    {
+        document.getElementById("loader").style.display = 'flex';
+
+        let custom_site = "";
+        $('select#cust_group option:selected').each(function () {
+            custom_site += $(this).val() + ",";
+        });
+        custom_site = custom_site != "" ? custom_site.slice(0, -1) : custom_site;
+        var daterange = $('#daterange_group').val();
+        var arr1        = new Array();
+        arr1            = daterange.split("-");
+        var fromDate    = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate      = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var fyear       = Fy;
+        var leble       = [];
+        var revenue_arr = [];
+        var reporthead  = "SPV Wise Reports";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWindGroupOfSite", "WindReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + custom_site,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr) {
+                console.log(result);
+                var tbl = '<table id="example_group"  class="table table-bordered table-striped" style="width: 130%;">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th rowspan="2" style="width: 12%;">Group Name</th><th rowspan="2">Capacity<br> (MW)</th>';
+                tbl += '<th colspan="5" class="text-center">JMR Energy (in MU)</th><th>(±)Revenue</th>';
+                tbl += '<th colspan="3" class="text-center">Wind Speed (m/s)</th><th colspan="3" class="text-center">PLF (%)</th>';
+                tbl += '<th colspan="3" class="text-center">MA Actual (%)</th><th colspan="3" class="text-center">IGA (%)</th>';
+                tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr>';
+                tbl += '<tr><th>Tar</th>';
+                tbl += '<th>Exp</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>T.Var (%)</th>';
+                tbl += '<th>E.Var (%)</th>';
+                tbl += '<th>(MINR)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '</tr></thead>';
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        let revenue     = 0;
+                        let jmr_var     = 0;
+                        let e_var       = 0;
+                        let wind_var    = 0;
+                        let plf_var     = 0;
+                        let ma_act_var  = 0;
+                        let iga_var     = 0;
+                        let ega_var     = 0;
+                        let tar_mu      = 0;
+                        tar_mu          = result[i].tar_kwh_mu / 1000000;
+                        revenue         = ((result[i].act_jmr_kwh_mu - tar_mu) * result[i].total_tarrif);
+                        if (result[i].act_jmr_kwh_mu != 0 || result[i].tar_kwh_mu != 0) {
+                            jmr_var     = ((result[i].act_jmr_kwh_mu - tar_mu) / tar_mu) * 100;
+                        }
+                        if (result[i].exp_power != 0) {
+                            e_var       = ((result[i].act_jmr_kwh_mu - (result[i].exp_power / 6) / 1000000) / ((result[i].exp_power / 6) / 1000000)) * 100;
+                        }
+                        if (result[i].act_Wind != 0 || result[i].tar_wind != 0) {
+                            wind_var    = ((result[i].act_Wind - result[i].tar_wind) / result[i].tar_wind) * 100;
+                        }
+                        plf_var         = (result[i].act_plf - result[i].tar_plf);
+                        ma_act_var      = (result[i].act_ma - result[i].tar_ma);
+                        iga_var         = (result[i].act_iga - result[i].tar_iga);
+                        ega_var         = (result[i].act_ega - result[i].tar_ega);
+                        let chielditem = result[i].item;
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        //console.log(result[i].cust_group + " count ::" + chielditem.length);
+                        tbl += '<tr>';
+                        //tbl += '<td class="text-left">';
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn  = '<div class="grp-btn" id = "parant_' + chield_class + '" onclick = "showchield(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phide_' + chield_class + '" onclick="hidechield(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+
+                        }
+                        tbl += '<td class="text-left">' + expand_btn+'<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td >';
+                        tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + tar_mu.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ((result[i].exp_power / 6) / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].act_jmr_kwh_mu.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + revenue.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tar_wind.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].act_Wind.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + wind_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tar_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].act_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + plf_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tar_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].act_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ma_act_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tar_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].act_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + iga_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tar_ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].act_ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ega_var.toFixed(2) + '</td>';
+                        tbl += '</tr>';
+
+                        for (var j = 0; j < chielditem.length; j++) {
+
+                            let revenue_chield = 0;
+                            let jmr_var_chield = 0;
+                            let e_var_chield = 0;
+                            let wind_var_chield = 0;
+                            let plf_var_chield = 0;
+                            let ma_act_var_chield = 0;
+                            let iga_var_chield = 0;
+                            let ega_var_chield = 0;
+                            let tar_mu_chield = 0;
+                            tar_mu_chield = chielditem[j].tar_kwh_mu / 1000000;
+                            revenue = ((chielditem[j].act_jmr_kwh_mu - tar_mu) * chielditem[j].total_tarrif);
+                            if (chielditem[j].act_jmr_kwh_mu != 0 || chielditem[j].tar_kwh_mu != 0) {
+                                jmr_var_chield = ((chielditem[j].act_jmr_kwh_mu - tar_mu_chield) / tar_mu_chield) * 100;
+                            }
+                            if (chielditem[j].exp_power != 0) {
+                                e_var_chield = ((chielditem[j].act_jmr_kwh_mu - (chielditem[j].exp_power / 6) / 1000000) / ((chielditem[j].exp_power / 6) / 1000000)) * 100;
+                            }
+                            if (chielditem[j].act_Wind != 0 || chielditem[j].tar_wind != 0) {
+                                wind_var_chield = ((chielditem[j].act_Wind - chielditem[j].tar_wind) / chielditem[j].tar_wind) * 100;
+                            }
+                            plf_var_chield = (chielditem[j].act_plf - chielditem[j].tar_plf);
+                            ma_act_var_chield = (chielditem[j].act_ma - chielditem[j].tar_ma);
+                            iga_var_chield = (chielditem[j].act_iga - chielditem[j].tar_iga);
+                            ega_var_chield = (chielditem[j].act_ega - chielditem[j].tar_ega);
+
+                            tbl += '<tr class="'+ chield_class+'" style="display:none">';
+                            tbl += '<td class="text-left" style="padding-left: 1rem !important;">' + chielditem[j].site + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_mw.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + tar_mu_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((chielditem[j].exp_power / 6) / 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_jmr_kwh_mu.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + jmr_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + e_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + revenue_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_wind.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_Wind.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + wind_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + plf_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_ma.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_ma.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ma_act_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + iga_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ega_var_chield.toFixed(2) + '</td>';
+                            tbl += '</tr>';
+                        }
+
+                    }
+                }
+                else {
+                }
+                tbl += '</table>';
+                $("#reportsDailygroup").html("");
+                $("#reportsDailygroup").html(tbl);
+                //$("#reportsDailygroup").html("").html(tbl);
+                $('#example_group').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            footer: true,
+                            title: 'Wind Performance Reports Site Wise',
+                            //titleAttr: 'Export Excel',
+                            "oSelectorOpts": { filter: 'applied', order: 'current' },
+                            exportOptions: {
+                                columns: ':visible',
+                                modifier: {
+                                    page: 'all'
+                                },
+                                format: {
+                                    header: function (data, columnIdx) {
+                                        if (columnIdx == 1) {
+                                            return 'Capacity (MW)';
+                                        }
+                                        else if (columnIdx == 2) {
+                                            return 'JMR Energy (in MU)  Tar';
+                                        }
+                                        else if (columnIdx == 3) {
+                                            return 'JMR Energy (in MU)  Exp';
+                                        }
+                                        else if (columnIdx == 4) {
+                                            return 'JMR Energy (in MU) Act';
+                                        }
+                                        else if (columnIdx == 5) {
+                                            return 'JMR Energy (in MU) T.Var (%)';
+                                        }
+                                        else if (columnIdx == 6) {
+                                            return 'JMR Energy (in MU) E.Var (%)';
+                                        }
+                                        else if (columnIdx == 7) {
+                                            return 'Revenue (MINR) ';
+                                        }
+                                        else if (columnIdx == 8) {
+                                            return 'Wind Speed (m/s) Tar';
+                                        }
+                                        else if (columnIdx == 9) {
+                                            return 'Wind Speed (m/s) Act ';
+                                        }
+                                        else if (columnIdx == 10) {
+                                            return 'Wind Speed (m/s) Var (%) ';
+                                        }
+                                        else if (columnIdx == 11) {
+                                            return 'PLF (%) Tar';
+                                        }
+                                        else if (columnIdx == 12) {
+                                            return 'PLF (%) Act ';
+                                        }
+                                        else if (columnIdx == 13) {
+                                            return 'PLF (%) Var (%) ';
+                                        }
+                                        else if (columnIdx == 14) {
+                                            return 'MA Actual (%) Tar';
+                                        }
+                                        else if (columnIdx == 15) {
+                                            return 'MA Actual (%) Act ';
+                                        }
+                                        else if (columnIdx == 16) {
+                                            return 'MA Actual (%) Var (%) ';
+                                        }
+                                        else if (columnIdx == 17) {
+                                            return 'IGA (%) Tar';
+                                        }
+                                        else if (columnIdx == 18) {
+                                            return 'IGA (%) Act ';
+                                        }
+                                        else if (columnIdx == 19) {
+                                            return 'IGA (%) Var (%) ';
+                                        }
+                                        else if (columnIdx == 20) {
+                                            return 'EGA (%) Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'EGA (%) Act ';
+                                        }
+                                        else if (columnIdx == 22) {
+                                            return 'EGA (%) Var (%) ';
+                                        }
+                                        else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            footer: true,
+                            title: 'Wind Performance Reports Site Wise',
+                            //titleAttr: 'Export Excel',
+                            "oSelectorOpts": { filter: 'applied', order: 'current' },
+                            exportOptions: {
+                                columns: ':visible',
+                                modifier: {
+                                    page: 'all'
+                                },
+                                format: {
+                                    header: function (data, columnIdx) {
+                                        if (columnIdx == 1) {
+                                            return 'Capacity (MW)';
+                                        }
+                                        else if (columnIdx == 2) {
+                                            return 'JMR Energy (in MU)  Tar';
+                                        }
+                                        else if (columnIdx == 3) {
+                                            return 'JMR Energy (in MU)  Exp';
+                                        }
+                                        else if (columnIdx == 4) {
+                                            return 'JMR Energy (in MU) Act';
+                                        }
+                                        else if (columnIdx == 5) {
+                                            return 'JMR Energy (in MU) T.Var (%)';
+                                        }
+                                        else if (columnIdx == 6) {
+                                            return 'JMR Energy (in MU) E.Var (%)';
+                                        }
+                                        else if (columnIdx == 7) {
+                                            return 'Revenue (MINR) ';
+                                        }
+                                        else if (columnIdx == 8) {
+                                            return 'Wind Speed (m/s) Tar';
+                                        }
+                                        else if (columnIdx == 9) {
+                                            return 'Wind Speed (m/s) Act ';
+                                        }
+                                        else if (columnIdx == 10) {
+                                            return 'Wind Speed (m/s) Var (%) ';
+                                        }
+                                        else if (columnIdx == 11) {
+                                            return 'PLF (%) Tar';
+                                        }
+                                        else if (columnIdx == 12) {
+                                            return 'PLF (%) Act ';
+                                        }
+                                        else if (columnIdx == 13) {
+                                            return 'PLF (%) Var (%) ';
+                                        }
+                                        else if (columnIdx == 14) {
+                                            return 'MA Actual (%) Tar';
+                                        }
+                                        else if (columnIdx == 15) {
+                                            return 'MA Actual (%) Act ';
+                                        }
+                                        else if (columnIdx == 16) {
+                                            return 'MA Actual (%) Var (%) ';
+                                        }
+                                        else if (columnIdx == 17) {
+                                            return 'IGA (%) Tar';
+                                        }
+                                        else if (columnIdx == 18) {
+                                            return 'IGA (%) Act ';
+                                        }
+                                        else if (columnIdx == 19) {
+                                            return 'IGA (%) Var (%) ';
+                                        }
+                                        else if (columnIdx == 20) {
+                                            return 'EGA (%) Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'EGA (%) Act ';
+                                        }
+                                        else if (columnIdx == 22) {
+                                            return 'EGA (%) Var (%) ';
+                                        }
+                                        else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'JMR Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'JMR Energy (in MU)  Exp';
+                                }
+                                else if (idx == 4) {
+                                    return 'JMR Energy (in MU) Act';
+                                }
+                                else if (idx == 5) {
+                                    return 'JMR Energy (in MU) T.Var (%)';
+                                }
+                                else if (idx == 6) {
+                                    return 'JMR Energy (in MU) E.Var (%)';
+                                }
+                                else if (idx == 7) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 8) {
+                                    return 'Wind Speed (m/s) Tar';
+                                }
+                                else if (idx == 9) {
+                                    return 'Wind Speed (m/s) Act ';
+                                }
+                                else if (idx == 10) {
+                                    return 'Wind Speed (m/s) Var (%) ';
+                                }
+                                else if (idx == 11) {
+                                    return 'PLF (%) Tar';
+                                }
+                                else if (idx == 12) {
+                                    return 'PLF (%) Act ';
+                                }
+                                else if (idx == 13) {
+                                    return 'PLF (%) Var (%) ';
+                                }
+                                else if (idx == 14) {
+                                    return 'MA Actual (%) Tar';
+                                }
+                                else if (idx == 15) {
+                                    return 'MA Actual (%) Act ';
+                                }
+                                else if (idx == 16) {
+                                    return 'MA Actual (%) Var (%) ';
+                                }
+                                else if (idx == 17) {
+                                    return 'IGA (%) Tar';
+                                }
+                                else if (idx == 18) {
+                                    return 'IGA (%) Act ';
+                                }
+                                else if (idx == 19) {
+                                    return 'IGA (%) Var (%) ';
+                                }
+                                else if (idx == 20) {
+                                    return 'EGA (%) Tar';
+                                }
+                                else if (idx == 21) {
+                                    return 'EGA (%) Act ';
+                                }
+                                else if (idx == 22) {
+                                    return 'EGA (%) Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        },
+                        /*{
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                ExportToExcelSiteWise();
+                            },
+                            format: {
+                                header: function (data, columnIdx) {
+                                    if (columnIdx == 1) {
+                                        return 'Capacity (MW)';
+                                    }
+                                    else if (columnIdx == 2) {
+                                        return 'JMR Energy (in MU)  Tar';
+                                    }
+                                    else if (columnIdx == 3) {
+                                        return 'JMR Energy (in MU)  Exp';
+                                    }
+                                    else if (columnIdx == 4) {
+                                        return 'JMR Energy (in MU)  Act';
+                                    }
+                                    else if (columnIdx == 5) {
+                                        return 'JMR Energy (in MU)  T.Var (%)';
+                                    }
+                                    else if (columnIdx == 6) {
+                                        return 'JMR Energy (in MU)  E.Var (%)';
+                                    }
+                                    else if (columnIdx == 7) {
+                                        return 'Revenue (MINR) ';
+                                    }
+                                    else if (columnIdx == 8) {
+                                        return 'Wind Speed (m/s)  Tar';
+                                    }
+                                    else if (columnIdx == 9) {
+                                        return 'Wind Speed (m/s)  Act ';
+                                    }
+                                    else if (columnIdx == 10) {
+                                        return 'Wind Speed (m/s)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 11) {
+                                        return 'PLF (%)  Tar';
+                                    }
+                                    else if (columnIdx == 12) {
+                                        return 'PLF (%)  Act ';
+                                    }
+                                    else if (columnIdx == 13) {
+                                        return 'PLF (%)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 14) {
+                                        return 'MA Actual (%)  Tar';
+                                    }
+                                    else if (columnIdx == 15) {
+                                        return 'MA Actual (%)  Act ';
+                                    }
+                                    else if (columnIdx == 16) {
+                                        return 'MA Actual (%)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 17) {
+                                        return 'IGA (%)  Tar';
+                                    }
+                                    else if (columnIdx == 18) {
+                                        return 'IGA (%)  Act ';
+                                    }
+                                    else if (columnIdx == 19) {
+                                        return 'IGA (%)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 20) {
+                                        return 'EGA (%)  Tar';
+                                    }
+                                    else if (columnIdx == 21) {
+                                        return 'EGA (%)  Act ';
+                                    }
+                                    else if (columnIdx == 22) {
+                                        return 'EGA (%)  Var (%) ';
+                                    }
+                                    else {
+                                        return data;
+                                    }
+                                }
+                            }
+                        },*/
+                    ]
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dt-button-collection > div > button").addClass('btn btn-secondary');
+                 $("button.dt-button.buttons-collection.buttons-colvis").addClass('btn btn-light');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
                 document.getElementById("loader").style.display = 'none';
                 //$('#example2').wrap("<div class='scrolledTable'></div>");
 
@@ -1995,5 +2634,24 @@
         });
     }
 
+    function showchield(id)
+    {
+       let iden = id.split("_");
+       let elements = document.getElementsByClassName(iden[1]);
+       for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phide_" + iden[1]).style.display = "inline-block";
 
+    }
+    function hidechield(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parant_" + iden[1]).style.display = "inline-block";
+    }
 </script>

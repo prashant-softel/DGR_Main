@@ -59,9 +59,14 @@ namespace DGRAPIs.Models
         public string Display_name { get; set; }
         public string Action_url { get; set; }
         public string Controller_name { get; set; }
-        
-      
-     
-
+    }
+    public class CustomGroup
+    {
+        public int Id { get; set; }
+        public int cust_group { get; set; }
+    }
+    public class CustomGroupAccess
+    {
+        public int cust_group { get; set; }
     }
 }

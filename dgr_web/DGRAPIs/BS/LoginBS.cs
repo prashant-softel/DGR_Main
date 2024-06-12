@@ -35,8 +35,9 @@ namespace DGRAPIs.BS
         Task<int> SubmitCloneUserAccess(int login_id, int site_type, int page_type, int identity, int upload_access);
         Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role);
         Task<List<EmailReportTimingsLog>> EmailReportTimings();
-
-
+        Task<List<CustomGroup>> GetCustomGroup(int login_id, int site_type,string groupPage);
+        Task<int> SubmitGroupBySite(int login_id, string reportgroup, string site_type);
+        Task<List<CustomGroupAccess>> GetCustomGroupAccess(int login_id, int site_type);
     }
     public class LoginBS : iLoginBS
     {
@@ -370,7 +371,6 @@ namespace DGRAPIs.BS
                 using (var repos = new LoginRepository(getDB))
                 {
                     return await repos.EmailReportTimings();
-
                 }
             }
             catch (Exception ex)
@@ -378,6 +378,47 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
-
+        public async Task<List<CustomGroup>> GetCustomGroup(int login_id, int site_type,string groupPage)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.GetCustomGroup(login_id,site_type, groupPage);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<int> SubmitGroupBySite(int login_id,string reportgroup, string site_type)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.SubmitGroupBySite(login_id, reportgroup, site_type);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<CustomGroupAccess>> GetCustomGroupAccess(int login_id, int site_type)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.GetCustomGroupAccess(login_id, site_type);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

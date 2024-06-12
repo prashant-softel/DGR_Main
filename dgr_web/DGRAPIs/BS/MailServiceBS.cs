@@ -44,7 +44,8 @@ namespace DGRAPIs.BS
                 time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:WeeklyReportTimeSolar")));
                 time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:firstDgrReminderTime")));
                 time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:secondDgrReminderTime")));
-
+                time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:MonthlyReportTime")));
+                time.Add(TimeSpan.Parse(MyConfig.GetValue<string>("Timer:MonthlyReportTimeSolar")));
                 var timeNow = DateTime.Now.TimeOfDay;
                 //daily mail
                
