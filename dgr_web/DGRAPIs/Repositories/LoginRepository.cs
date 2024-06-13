@@ -665,7 +665,39 @@ namespace DGRAPIs.Repositories
             //Read variable from appsetting to enable disable log
             System.IO.File.AppendAllText(@"C:\LogFile\api_Log.txt", "**Info**:" + Message + "\r\n");
         }
+        public async Task<List<CustomGroup>> GetCustomGroup(int login_id, int site_type, string groupPage)
+        {
+            string qry = "";
+            qry = "SELECT id,cust_group FROM `user_access` where login_id = "+ login_id + " and site_type = "+ site_type + " and identity in("+groupPage+") and category_id = 2";
+            List<CustomGroup> _customaccess = new List<CustomGroup>();
+            _customaccess = await Context.GetData<CustomGroup>(qry).ConfigureAwait(false);
+            return _customaccess;
+        }
+        internal async Task<int> SubmitGroupBySite(int login_id,string reportgroup, string site_type)
+        {
+            //var ReportGroup = new JavaScriptSerializer().Deserialize<dynamic>(reportgroup);
+           
+                string updateqry ="UPDATE `user_access` SET `cust_group` = '1' WHERE `login_id` ="+login_id+" and site_type="+site_type+ " and category_id=2 and identity in ("+ reportgroup + ")";
+                try
+                {
+                    await Context.ExecuteNonQry<int>(updateqry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.Message;
+                }
 
+            
+            return 0;
+        }
+        public async Task<List<CustomGroupAccess>> GetCustomGroupAccess(int login_id, int site_type)
+        {
+            string qry = "";
+            qry = "SELECT cust_group FROM `user_access` where login_id = " + login_id + " and site_type = " + site_type + " and category_id = 2  and cust_group=1";
+            List<CustomGroupAccess> _groupaccess = new List<CustomGroupAccess>();
+            _groupaccess = await Context.GetData<CustomGroupAccess>(qry).ConfigureAwait(false);
+            return _groupaccess;
+        }
     }
 
 }

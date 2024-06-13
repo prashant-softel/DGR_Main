@@ -255,6 +255,7 @@ namespace DGRAPIs.Models
         public double egbdh_bd { get; set; }
         public double load_shedding_bd { get; set; }
         public double total_bd_hrs { get; set; }
+        public double total_tarrif { get; set; }
         public List<SolarDailyGenReportsGroup> item { get; set; }
     }
 }

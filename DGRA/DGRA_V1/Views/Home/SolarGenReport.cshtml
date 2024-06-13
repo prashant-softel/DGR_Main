@@ -3568,9 +3568,53 @@
                 if (result.length > 0)
                 {
                     for (var i = 0; i < result.length; i++) {
-                        var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
-                        let totalFinal = result[i].total_losses + result[i].tracker_losses;
-                        let chielditem = result[i].item;
+                        var formattedDate   = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        let totalFinal      = result[i].total_losses + result[i].tracker_losses;
+                        let chielditem      = result[i].item;
+                        let total_inv_pr    = 0;
+                        let avg_inv_pr      = 0;
+                        let total_plant_pr  = 0;
+                        let avg_plant_pr    = 0;
+                        let total_inv_plf   = 0;
+                        let avg_inv_plf     = 0;
+                        let total_plant_plf = 0;
+                        let avg_plant_plf   = 0;
+                        let total_act_ma    = 0;
+                        let avg_act_ma      = 0;
+                        let total_iga       = 0;
+                        let avg_iga         = 0;
+                        let total_ega_a     = 0;
+                        let avg_ega_a       = 0;
+                        let total_ega_b     = 0;
+                        let avg_ega_b       = 0;
+                        let total_ega_c     = 0;
+                        let avg_ega_c       = 0;
+                        let total_capacity  = 0;
+                        for (var k = 0; k < chielditem.length; k++)
+                        {
+                            total_capacity  += chielditem[k].ac_capacity;
+                            total_inv_pr    += chielditem[k].inv_pr * chielditem[k].ac_capacity;
+                            total_plant_pr  += chielditem[k].plant_pr * chielditem[k].ac_capacity;
+                            total_inv_plf   += chielditem[k].inv_plf * chielditem[k].ac_capacity;
+                            total_plant_plf += chielditem[k].plant_plf * chielditem[k].ac_capacity;
+                            total_act_ma    += chielditem[k].ma_actual * chielditem[k].ac_capacity;
+                            total_iga       += chielditem[k].iga * chielditem[k].ac_capacity;
+                            total_ega_a     += chielditem[k].ega * chielditem[k].ac_capacity;
+                            total_ega_b     += chielditem[k].ega_b * chielditem[k].ac_capacity;
+                            total_ega_c     += chielditem[k].ega_c * chielditem[k].ac_capacity;
+                        }
+                        if (total_capacity != 0)
+                        {
+                            avg_inv_pr    = total_inv_pr / total_capacity;
+                            avg_plant_pr  = total_plant_pr / total_capacity;
+                            avg_inv_plf   = total_inv_plf / total_capacity;
+                            avg_plant_plf = total_plant_plf / total_capacity;
+                            avg_act_ma    = total_act_ma / total_capacity;
+                            avg_iga       = total_iga / total_capacity;
+                            avg_ega_a     = total_ega_a / total_capacity;
+                            avg_ega_b     = total_ega_b / total_capacity;
+                            avg_ega_c     = total_ega_c / total_capacity;
+                        }
                         let chield_class = result[i].cust_group.replace(/\s/g, "");
                         let expand_btn = "";
                         if (chielditem.length > 1) {
@@ -3590,15 +3634,15 @@
                         tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].inv_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plant_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_inv_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plant_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_inv_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plant_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
@@ -3838,6 +3882,49 @@
 
                         let totalFinal = result[i].total_losses + result[i].tracker_losses;
                         let chielditem = result[i].item;
+                        let total_inv_pr = 0;
+                        let avg_inv_pr = 0;
+                        let total_plant_pr = 0;
+                        let avg_plant_pr = 0;
+                        let total_inv_plf = 0;
+                        let avg_inv_plf = 0;
+                        let total_plant_plf = 0;
+                        let avg_plant_plf = 0;
+                        let total_act_ma = 0;
+                        let avg_act_ma = 0;
+                        let total_iga = 0;
+                        let avg_iga = 0;
+                        let total_ega_a = 0;
+                        let avg_ega_a = 0;
+                        let total_ega_b = 0;
+                        let avg_ega_b = 0;
+                        let total_ega_c = 0;
+                        let avg_ega_c = 0;
+                        let total_capacity = 0;
+                        for (var k = 0; k < chielditem.length; k++) {
+                            total_capacity += chielditem[k].ac_capacity;
+                            total_inv_pr += chielditem[k].inv_pr * chielditem[k].ac_capacity;
+                            total_plant_pr += chielditem[k].plant_pr * chielditem[k].ac_capacity;
+                            total_inv_plf += chielditem[k].inv_plf * chielditem[k].ac_capacity;
+                            total_plant_plf += chielditem[k].plant_plf * chielditem[k].ac_capacity;
+                            total_act_ma += chielditem[k].ma_actual * chielditem[k].ac_capacity;
+                            total_iga += chielditem[k].iga * chielditem[k].ac_capacity;
+                            total_ega_a += chielditem[k].ega * chielditem[k].ac_capacity;
+                            total_ega_b += chielditem[k].ega_b * chielditem[k].ac_capacity;
+                            total_ega_c += chielditem[k].ega_c * chielditem[k].ac_capacity;
+                        }
+                        if (total_capacity != 0) {
+                            avg_inv_pr = total_inv_pr / total_capacity;
+                            avg_plant_pr = total_plant_pr / total_capacity;
+                            avg_inv_plf = total_inv_plf / total_capacity;
+                            avg_plant_plf = total_plant_plf / total_capacity;
+                            avg_act_ma = total_act_ma / total_capacity;
+                            avg_iga = total_iga / total_capacity;
+                            avg_ega_a = total_ega_a / total_capacity;
+                            avg_ega_b = total_ega_b / total_capacity;
+                            avg_ega_c = total_ega_c / total_capacity;
+                        }
+
                         let chield_class = result[i].cust_group.replace(/\s/g, "");
                         let expand_btn = "";
                         if (chielditem.length > 1) {
@@ -3858,15 +3945,15 @@
                         tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].inv_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plant_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_inv_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plant_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_inv_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plant_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
@@ -4103,6 +4190,49 @@
                     {
                         let TotalFinal = result[i].total_losses + result[i].tracker_losses;
                         let chielditem = result[i].item;
+                        let total_inv_pr = 0;
+                        let avg_inv_pr = 0;
+                        let total_plant_pr = 0;
+                        let avg_plant_pr = 0;
+                        let total_inv_plf = 0;
+                        let avg_inv_plf = 0;
+                        let total_plant_plf = 0;
+                        let avg_plant_plf = 0;
+                        let total_act_ma = 0;
+                        let avg_act_ma = 0;
+                        let total_iga = 0;
+                        let avg_iga = 0;
+                        let total_ega_a = 0;
+                        let avg_ega_a = 0;
+                        let total_ega_b = 0;
+                        let avg_ega_b = 0;
+                        let total_ega_c = 0;
+                        let avg_ega_c = 0;
+                        let total_capacity = 0;
+                        for (var k = 0; k < chielditem.length; k++) {
+                            total_capacity += chielditem[k].ac_capacity;
+                            total_inv_pr += chielditem[k].inv_pr * chielditem[k].ac_capacity;
+                            total_plant_pr += chielditem[k].plant_pr * chielditem[k].ac_capacity;
+                            total_inv_plf += chielditem[k].inv_plf * chielditem[k].ac_capacity;
+                            total_plant_plf += chielditem[k].plant_plf * chielditem[k].ac_capacity;
+                            total_act_ma += chielditem[k].ma_actual * chielditem[k].ac_capacity;
+                            total_iga += chielditem[k].iga * chielditem[k].ac_capacity;
+                            total_ega_a += chielditem[k].ega * chielditem[k].ac_capacity;
+                            total_ega_b += chielditem[k].ega_b * chielditem[k].ac_capacity;
+                            total_ega_c += chielditem[k].ega_c * chielditem[k].ac_capacity;
+                        }
+                        if (total_capacity != 0) {
+                            avg_inv_pr = total_inv_pr / total_capacity;
+                            avg_plant_pr = total_plant_pr / total_capacity;
+                            avg_inv_plf = total_inv_plf / total_capacity;
+                            avg_plant_plf = total_plant_plf / total_capacity;
+                            avg_act_ma = total_act_ma / total_capacity;
+                            avg_iga = total_iga / total_capacity;
+                            avg_ega_a = total_ega_a / total_capacity;
+                            avg_ega_b = total_ega_b / total_capacity;
+                            avg_ega_c = total_ega_c / total_capacity;
+                        }
+
                         let chield_class = result[i].cust_group.replace(/\s/g, "");
                         let expand_btn = "";
                         if (chielditem.length > 1) {
@@ -4122,15 +4252,15 @@
                         tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plant_kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].inv_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plant_pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].inv_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plant_plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_inv_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plant_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_inv_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plant_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
