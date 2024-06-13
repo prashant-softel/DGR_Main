@@ -163,6 +163,7 @@
                                                 <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_Other" style="display: block; cursor: default;"></div>
+                                                <div id="DMC_PR" style="display: block; cursor: default;"></div>
                                             </div>
                                             <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                                 <div class="addCommentMonthly" id="ACM" style="overflow: hidden;">
@@ -221,6 +222,7 @@
                                                             <option value="1">BD</option>
                                                             <option value="2">EGB</option>
                                                             <option value="3">Other</option>
+                                                            <option value="5">PR</option>
                                                         </select>
                                                     </div>
                                                     <div id="ECM_content">
@@ -243,6 +245,7 @@
                                                             <option value="1">BD</option>
                                                             <option value="2">EGB</option>
                                                             <option value="3">Other</option>
+                                                            <option value="5">PR</option>
                                                         </select>
                                                     </div>
                                                     <div id="DCM_content">
@@ -288,6 +291,7 @@
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
+                                            <div id="DYC_PR" style="display: block; cursor: default;"></div>
                                         </div>
                                         <div class="scrollable-container" id="yearAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                             @*Scrollable division*@
@@ -349,6 +353,7 @@
                                                         <option value="1">BD</option>
                                                         <option value="2">EGB</option>
                                                         <option value="3">Other</option>
+                                                        <option value="5">PR</option>
                                                     </select>
                                                 </div>
                                                 <div id="ECY_content">
@@ -370,6 +375,7 @@
                                                         <option value="1">BD</option>
                                                         <option value="2">EGB</option>
                                                         <option value="3">Other</option>
+                                                        <option value="5">PR</option>
                                                     </select>
                                                 </div>
                                                 <div id="DCY_content">
@@ -559,7 +565,7 @@
         return `${formattedStartDate}-${formattedEndDate}`;
     }
     //For operational Performance BD array.
-    var bdArray = [{ "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }];
+    var bdArray = [{ "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }];
 
     window.onload = function () {
         var today = new Date();
@@ -1301,6 +1307,7 @@
                     var EGB = []; //bdType = 2
                     var BD = []; //bdType = 2
                     var Other = []; //bdType = 3
+                    var PR = []; //bdType = 5
 
                     for (var k = 0; k < result.length; k++) {
                         if (result[k].bd_type == 2) {
@@ -1309,6 +1316,8 @@
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
+                        } else if (result[k].bd_type == 5) {
+                            PR.push(result[k]);
                         }
                     }
                     //console.log("After 3 different arrays : ");
@@ -1318,6 +1327,7 @@
                     var BD_div = document.getElementById("DMC_BD");
                     var EGB_div = document.getElementById("DMC_EGB");
                     var Other_div = document.getElementById("DMC_Other");
+                    var PR_div = document.getElementById("DMC_PR");
                     if (afterUpdate) {
                         var element_egb = document.getElementById("EGB_CC");
                         if (element_egb) {
@@ -1330,6 +1340,10 @@
                         var element_other = document.getElementById("Other_CC");
                         if (element_other) {
                             element_other.parentNode.removeChild(element_other);
+                        }
+                        var element_pr = document.getElementById("PR_CC");
+                        if (element_pr) {
+                            element_pr.parentNode.removeChild(element_pr);
                         }
                     }
                     if (EGB.length > 0) {
@@ -1395,6 +1409,27 @@
                     } else {
                         Other_div.style.display = "none";
                     }
+                    if (PR.length > 0) {
+                        PR_div.style.display = "flex";
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "2px";
+                        commentDiv.id = "PR_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">PR</h4><ul>';
+                        for (var i = 0; i < PR.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + PR[i].site + ':</strong> ' + PR[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + PR[i].spv + ':</strong> ' + PR[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        PR_div.innerHTML = "";
+                        PR_div.appendChild(commentDiv);
+                    } else {
+                        PR_div.style.display = "none";
+                    }
                 }
             });
         }
@@ -1405,7 +1440,7 @@
     var ACM_info = [
         {
             "bdSetCount": 1,
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }],
         },
         {
             "mainDiv": "ACM",
@@ -2326,6 +2361,7 @@
                     var BD = []; //bdType = 1
                     var EGB = []; //bdType = 2
                     var Other = []; //bdType = 3
+                    var PR = []; //bdType = 5
 
                     for (var k = 0; k < result.length; k++) {
                         if (result[k].bd_type == 2) {
@@ -2334,6 +2370,8 @@
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
+                        } else if (result[k].bd_type == 5) {
+                            PR.push(result[k]);
                         }
                     }
                     console.log("After 3 different arrays Yearly : ");
@@ -2343,6 +2381,7 @@
                     var EGBY_div = document.getElementById("DYC_EGB");
                     var BDY_div = document.getElementById("DYC_BD");
                     var OtherY_div = document.getElementById("DYC_Other");
+                    var PRY_div = document.getElementById("DYC_PR");
                     if (EGB.length > 0) {
                         EGBY_div.style.display = "flex";
                         var commentDiv = document.createElement("div");
@@ -2406,6 +2445,27 @@
                     } else {
                         OtherY_div.style.display = "none";
                     }
+                    if (PR.length > 0) {
+                        PRY_div.style.display = "flex";
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "2px";
+                        commentDiv.id = "PRY_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">PR</h4><ul>';
+                        for (var i = 0; i < Other.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + PR[i].site + ':</strong> ' + PR[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + PR[i].spv + ':</strong> ' + PR[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        PRY_div.innerHTML = "";
+                        PRY_div.appendChild(commentDiv);
+                    } else {
+                        PRY_div.style.display = "none";
+                    }
                 }
             });
 
@@ -2417,7 +2477,7 @@
     var ACY_info = [
         {
             "bdSetCount": 1,
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }],
         },
         {
             "mainDiv": "ACY",
@@ -2835,7 +2895,7 @@
         ACY_info = [
             {
                 "bdSetCount": 1,
-                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
+                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }],
             },
             {
                 "mainDiv": "ACY",
