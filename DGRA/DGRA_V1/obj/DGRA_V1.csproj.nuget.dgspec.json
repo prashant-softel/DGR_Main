@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "G:\\solarproject\\08012023\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
+    "D:\\Haresh\\Softel\\Production code\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {}
   },
   "projects": {
-    "G:\\solarproject\\08012023\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
+    "D:\\Haresh\\Softel\\Production code\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\solarproject\\08012023\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "projectUniqueName": "D:\\Haresh\\Softel\\Production code\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
         "projectName": "DGRA_V1",
-        "projectPath": "G:\\solarproject\\08012023\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
-        "packagesPath": "C:\\Users\\sujit\\.nuget\\packages\\",
-        "outputPath": "G:\\solarproject\\08012023\\DGR_Main\\DGRA\\DGRA_V1\\obj\\",
+        "projectPath": "D:\\Haresh\\Softel\\Production code\\DGR_Main\\DGRA\\DGRA_V1\\DGRA_V1.csproj",
+        "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
+        "outputPath": "D:\\Haresh\\Softel\\Production code\\DGR_Main\\DGRA\\DGRA_V1\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\sujit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -111,7 +115,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.412\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     }
