@@ -544,36 +544,48 @@
         var checkBox = document.getElementById("group_by_site");
         console.log(checkBox.checked);
         if (checkBox.checked == true) {
-            document.getElementById('daily_sec').style.display      = 'none';
-            document.getElementById('daily_sec1').style.display     = 'none';
-            document.getElementById('daily_sec2').style.display      = 'none';
-            document.getElementById('monthly_sec').style.display    = 'none';
-            document.getElementById('monthly_sec1').style.display   = 'none';
-            document.getElementById('monthly_sec2').style.display   = 'none';
-            document.getElementById('monthly_sec3').style.display   = 'none';
-            document.getElementById('yearly_sec').style.display     = 'none';
-            document.getElementById('yearly_sec1').style.display    = 'none';
-            document.getElementById('yearly_sec2').style.display    = 'none';
-            document.getElementById('daily_group').style.display    = 'flex';
-            document.getElementById('monthly_group').style.display  = 'flex';
-            document.getElementById('monthly_group1').style.display = 'flex';
-            document.getElementById('yearly_group').style.display   = 'flex';
+            document.getElementById('daily_sec').style.display           = 'none';
+            document.getElementById('daily_sec1').style.display          = 'none';
+            document.getElementById('daily_sec2').style.display          = 'none';
+            document.getElementById('monthly_sec').style.display         = 'none';
+            document.getElementById('monthly_sec1').style.display        = 'none';
+            document.getElementById('monthly_sec2').style.display        = 'none';
+            document.getElementById('monthly_sec3').style.display        = 'none';
+            document.getElementById('yearly_sec').style.display          = 'none';
+            document.getElementById('yearly_sec1').style.display         = 'none';
+            document.getElementById('yearly_sec2').style.display         = 'none';
+            document.getElementById('daily_group').style.display         = 'flex';
+            document.getElementById('monthly_group').style.display       = 'flex';
+            document.getElementById('monthly_group1').style.display      = 'flex';
+            document.getElementById('yearly_group').style.display        = 'flex';
+            document.getElementById('reportsDaily').style.display        = 'none';
+            document.getElementById('reportsMonthly').style.display      = 'none';
+            document.getElementById('reportsYearly').style.display       = 'none';
+            document.getElementById('reportsDailyGroup').style.display   = 'block';
+            document.getElementById('reportsMonthlyGroup').style.display = 'block';
+            document.getElementById('reportsYearlyGroup').style.display  = 'block';
         }
         else {
-            document.getElementById('daily_sec').style.display      = 'flex';
-            document.getElementById('daily_sec1').style.display     = 'flex';
-            document.getElementById('daily_sec2').style.display     = 'flex';
-            document.getElementById('monthly_sec').style.display    = 'flex';
-            document.getElementById('monthly_sec1').style.display   = 'flex';
-            document.getElementById('monthly_sec2').style.display   = 'flex';
-            document.getElementById('monthly_sec3').style.display   = 'flex';
-            document.getElementById('yearly_sec').style.display     = 'flex';
-            document.getElementById('yearly_sec1').style.display    = 'flex';
-            document.getElementById('yearly_sec2').style.display    = 'flex';
-            document.getElementById('daily_group').style.display    = 'none';
-            document.getElementById('monthly_group').style.display  = 'none';
-            document.getElementById('monthly_group1').style.display = 'none';
-            document.getElementById('yearly_group').style.display   = 'none';
+            document.getElementById('daily_sec').style.display           = 'flex';
+            document.getElementById('daily_sec1').style.display          = 'flex';
+            document.getElementById('daily_sec2').style.display          = 'flex';
+            document.getElementById('monthly_sec').style.display         = 'flex';
+            document.getElementById('monthly_sec1').style.display        = 'flex';
+            document.getElementById('monthly_sec2').style.display        = 'flex';
+            document.getElementById('monthly_sec3').style.display        = 'flex';
+            document.getElementById('yearly_sec').style.display          = 'flex';
+            document.getElementById('yearly_sec1').style.display         = 'flex';
+            document.getElementById('yearly_sec2').style.display         = 'flex';
+            document.getElementById('daily_group').style.display         = 'none';
+            document.getElementById('monthly_group').style.display       = 'none';
+            document.getElementById('monthly_group1').style.display      = 'none';
+            document.getElementById('yearly_group').style.display        = 'none';
+            document.getElementById('reportsDaily').style.display        = 'block';
+            document.getElementById('reportsMonthly').style.display      = 'block';
+            document.getElementById('reportsYearly').style.display       = 'block';
+            document.getElementById('reportsDailyGroup').style.display   = 'none';
+            document.getElementById('reportsMonthlyGroup').style.display = 'none';
+            document.getElementById('reportsYearlyGroup').style.display  = 'none';
         }
     }
 
@@ -3755,13 +3767,13 @@
                             }
                         },
                         'colvis',
-                        {
+                        //{
                             //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             //className: 'btn ml-1   ',
                             //action: function () {
                                 //DailyexportToExcelGenReportSiteWise();
                             //}
-                        },
+                        //},
                     ],
                     initComplete: function ()
                     {
@@ -4067,13 +4079,13 @@
                             }
                         },
                         'colvis',
-                        {
+                        //{
                             //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             //className: 'btn ml-1   ',
                             //action: function () {
                                // MonthlyexportToExcelGenReportSiteWise();
                            // }
-                        },
+                        //},
                     ],
                     initComplete: function ()
                     {
@@ -4369,13 +4381,13 @@
                             }
                         },
                         'colvis',
-                        {
+                        //{
                             //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             //className: 'btn ml-1   ',
                             //action: function () {
                              //   YearlyexportToExcelGenReportSiteWise();
                             //}
-                        },
+                        //},
                     ],
                     initComplete: function ()
                     {

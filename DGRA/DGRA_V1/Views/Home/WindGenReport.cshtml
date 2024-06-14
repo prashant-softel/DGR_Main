@@ -521,36 +521,48 @@
         var checkBox = document.getElementById("group_by_site");
         console.log(checkBox.checked);
         if (checkBox.checked == true) {
-            document.getElementById('daily_sec').style.display      = 'none';
-            document.getElementById('daily_sec1').style.display     = 'none';
-            document.getElementById('daily_sec2').style.display     = 'none';
-            document.getElementById('monthly_sec').style.display    = 'none';
-            document.getElementById('monthly_sec1').style.display   = 'none';
-            document.getElementById('monthly_sec2').style.display   = 'none';
-            document.getElementById('monthly_sec3').style.display   = 'none';
-            document.getElementById('yearly_sec').style.display     = 'none';
-            document.getElementById('yearly_sec1').style.display    = 'none';
-            document.getElementById('yearly_sec2').style.display    = 'none';
-            document.getElementById('daily_group').style.display    = 'flex';
-            document.getElementById('monthly_group').style.display  = 'flex';
-            document.getElementById('monthly_group1').style.display = 'flex';
-            document.getElementById('yearly_group').style.display   = 'flex';
+            document.getElementById('daily_sec').style.display           = 'none';
+            document.getElementById('daily_sec1').style.display          = 'none';
+            document.getElementById('daily_sec2').style.display          = 'none';
+            document.getElementById('monthly_sec').style.display         = 'none';
+            document.getElementById('monthly_sec1').style.display        = 'none';
+            document.getElementById('monthly_sec2').style.display        = 'none';
+            document.getElementById('monthly_sec3').style.display        = 'none';
+            document.getElementById('yearly_sec').style.display          = 'none';
+            document.getElementById('yearly_sec1').style.display         = 'none';
+            document.getElementById('yearly_sec2').style.display         = 'none';
+            document.getElementById('daily_group').style.display         = 'flex';
+            document.getElementById('monthly_group').style.display       = 'flex';
+            document.getElementById('monthly_group1').style.display      = 'flex';
+            document.getElementById('yearly_group').style.display        = 'flex';
+            document.getElementById('reportsDaily').style.display        = 'none';
+            document.getElementById('reportsMonthly').style.display      = 'none';
+            document.getElementById('reportsYearly').style.display       = 'none';
+            document.getElementById('reportsDailyGroup').style.display   = 'block';
+            document.getElementById('reportsMonthlyGroup').style.display = 'block';
+            document.getElementById('reportsYearlyGroup').style.display  = 'block';
         }
         else {
-            document.getElementById('daily_sec').style.display      = 'flex';
-            document.getElementById('daily_sec1').style.display     = 'flex';
-            document.getElementById('daily_sec2').style.display     = 'flex';
-            document.getElementById('monthly_sec').style.display    = 'flex';
-            document.getElementById('monthly_sec1').style.display   = 'flex';
-            document.getElementById('monthly_sec2').style.display   = 'flex';
-            document.getElementById('monthly_sec3').style.display   = 'flex';
-            document.getElementById('yearly_sec').style.display     = 'flex';
-            document.getElementById('yearly_sec1').style.display    = 'flex';
-            document.getElementById('yearly_sec2').style.display    = 'flex';
-            document.getElementById('daily_group').style.display    = 'none';
-            document.getElementById('monthly_group').style.display  = 'none';
-            document.getElementById('monthly_group1').style.display = 'none';
-            document.getElementById('yearly_group').style.display   = 'none';
+            document.getElementById('daily_sec').style.display           = 'flex';
+            document.getElementById('daily_sec1').style.display          = 'flex';
+            document.getElementById('daily_sec2').style.display          = 'flex';
+            document.getElementById('monthly_sec').style.display         = 'flex';
+            document.getElementById('monthly_sec1').style.display        = 'flex';
+            document.getElementById('monthly_sec2').style.display        = 'flex';
+            document.getElementById('monthly_sec3').style.display        = 'flex';
+            document.getElementById('yearly_sec').style.display          = 'flex';
+            document.getElementById('yearly_sec1').style.display         = 'flex';
+            document.getElementById('yearly_sec2').style.display         = 'flex';
+            document.getElementById('daily_group').style.display         = 'none';
+            document.getElementById('monthly_group').style.display       = 'none';
+            document.getElementById('monthly_group1').style.display      = 'none';
+            document.getElementById('yearly_group').style.display        = 'none';
+            document.getElementById('reportsDaily').style.display        = 'block';
+            document.getElementById('reportsMonthly').style.display      = 'block';
+            document.getElementById('reportsYearly').style.display       = 'block';
+            document.getElementById('reportsDailyGroup').style.display   = 'none';
+            document.getElementById('reportsMonthlyGroup').style.display = 'none';
+            document.getElementById('reportsYearlyGroup').style.display  = 'none';
         }
     }
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
@@ -660,7 +672,7 @@
             }
         });
     }
-    funct
+    
     function getYear() {
         $.ajax({
             type: "GET",
@@ -1352,6 +1364,7 @@
                     }
                 });
                 document.getElementById("loaderD").style.display = 'none';
+                //document.getElementById("reportsDailyGroup").style.display = 'none';
             }
         });
     }
@@ -1577,6 +1590,7 @@
                     }
                 });
                 document.getElementById("loaderD").style.display = 'none';
+                //document.getElementById("reportsDailyGroup").style.display = 'none';
             }
         });
     }
@@ -1824,6 +1838,7 @@
                     }
                 });
                 document.getElementById("loaderM").style.display = 'none';
+                document.getElementById("reportsMonthlyGroup").style.display = 'none';
             }
         });
     }
@@ -2056,6 +2071,7 @@
                     }
                 });
                 document.getElementById("loaderM").style.display = 'none';
+                //document.getElementById("reportsMonthlyGroup").style.display = 'none';
             }
         });
     }
@@ -2298,6 +2314,7 @@
                     }
                 });
                 document.getElementById("loaderY").style.display = 'none';
+                //document.getElementById("reportsYearlyGroup").style.display = 'none';
             }
         });
     }
@@ -2523,6 +2540,7 @@
                     }
                 });
                 document.getElementById("loaderY").style.display = 'none';
+                //document.getElementById("reportsYearlyGroup").style.display = 'none';
             }
         });
     }
@@ -2963,7 +2981,7 @@
             datatype: "JSON",
             success: function (result, status, xhr)
             {
-                var tbl = '<table id="example_daily_group"  class="table table-bordered table-striped" style="width: 220%;">';
+                var tbl = '<table id="example_daily_group"  class="table table-bordered table-striped" style="width:220%">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>Date</th>';
                 tbl += '<th>Country</th>';
@@ -3005,35 +3023,68 @@
                     {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
                         total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-
-                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
-                       // let totalFinal = result[i].total_losses + result[i].tracker_losses;
                         let chielditem = result[i].item;
+                        let total_wind_speed = 0;
+                        let total_plf        = 0;
+                        let total_ma_act     = 0;
+                        let total_ma_con     = 0;
+                        let total_iga        = 0;
+                        let total_ega_a      = 0;
+                        let total_ega_b      = 0;
+                        let total_ega_c      = 0;
+                        let total_capacity   = 0;
+                        let avg_wind_speed   = 0;
+                        let avg_plf          = 0;
+                        let avg_ma_act       = 0;
+                        let avg_ma_con       = 0;
+                        let avg_iga          = 0;
+                        let avg_ega_a        = 0;
+                        let avg_ega_b        = 0;
+                        let avg_ega_c        = 0;
+                        for (var k = 0; k < chielditem.length; k++) {
+                            total_capacity   += chielditem[k].total_mw;
+                            total_wind_speed += chielditem[k].wind_speed * chielditem[k].total_mw;
+                            total_plf        += chielditem[k].plf * chielditem[k].total_mw;
+                            total_ma_act     += chielditem[k].ma_actual * chielditem[k].total_mw;
+                            total_ma_con     += chielditem[k].ma_contractual * chielditem[k].total_mw;
+                            total_iga        += chielditem[k].iga * chielditem[k].total_mw;
+                            total_ega_a      += chielditem[k].ega * chielditem[k].total_mw;
+                            total_ega_b      += chielditem[k].ega_b * chielditem[k].total_mw;
+                            total_ega_c      += chielditem[k].ega_c * chielditem[k].total_mw;
+                        }
+                        if (total_capacity != 0) {
+                            avg_wind_speed = total_wind_speed / total_capacity;
+                            avg_plf        = total_plf / total_capacity;
+                            avg_ma_act     = total_ma_act / total_capacity;
+                            avg_ma_con     = total_ma_con / total_capacity;
+                            avg_iga        = total_iga / total_capacity;
+                            avg_ega_a      = total_ega_a / total_capacity;
+                            avg_ega_b      = total_ega_b / total_capacity;
+                            avg_ega_c      = total_ega_c / total_capacity;
+                        }
                         let chield_class = result[i].cust_group.replace(/\s/g, "");
-                        //console.log(result[i].cust_group + " count ::" + chielditem.length);
                         tbl += '<tr>';
-                        //tbl += '<td class="text-left">';
                         let expand_btn = "";
                         if (chielditem.length > 1) {
                             expand_btn = '<div class="grp-btn" id = "parant_' + chield_class + '" onclick = "showchield(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phide_' + chield_class + '" onclick="hidechield(id)" style="display:none"><i class="fas fa-minus"></i></div>';
 
                         }
-                        tbl += '<tr>';
+                        //tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_wind_speed.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_act.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_con.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].unschedule_num.toFixed(2) + '</td>';
@@ -3042,14 +3093,14 @@
                         tbl += '<td  class="text-right">' + result[i].igbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
                         tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">'  + total_hourse.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
 
                         var total_losses_chield = 0;
@@ -3083,13 +3134,13 @@
                             tbl += '<td  class="text-right">' + chielditem[j].egbdh_num.toFixed(2) + '</td>';
                             tbl += '<td  class="text-right">' + chielditem[j].load_shedding_num.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + total_hourse_chield.toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].usmh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].smh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].others_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].igbdh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].egbdh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].loadShedding_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses_chield)).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].others_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses_chield)) * 1000000).toFixed(2) + '</td>';
                             tbl += '</tr>';
                         }
                     }
@@ -3099,6 +3150,8 @@
                     console.log("Data not available");
                 }
                 tbl += '</table>';
+                //document.getElementById("reportsDaily").style.display = 'none';
+               // document.getElementById("reportsDailyGroup").style.display = 'block';
                 document.getElementById("loaderD").style.display = 'none';
                 //$("#reportsDailyGroup").html(tbl);
                 $("#reportsDailyGroup").html("");
@@ -3121,30 +3174,30 @@
                         dataSrc: 0,
                     },
                     pageLength: 50,
-                    "order": [[1, "asc"]],
+                    "order": [[4, "asc"]],
                     buttons: [
                         {
                             extend: 'excel',
-                            title: 'Solar Daily Generation Reports Group By Site',
+                            title: 'Solar Monthly Generation Reports Group By Site',
                             exportOptions: {
                                 columns: ':visible'
                             }
                         },
                         {
                             extend: 'csv',
-                            title: 'Solar Daily Generation Reports Group By Site',
+                            title: 'Solar Monthly Generation Reports Group By Site',
                             exportOptions: {
                                 columns: ':visible'
                             }
                         },
                         'colvis',
-                        {
+                        //{
                             //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             //className: 'btn ml-1   ',
                             //action: function () {
-                              //  DailyexportToExcelGenReportSiteWise();
+                            //   YearlyexportToExcelGenReportSiteWise();
                             //}
-                        },
+                        //},
                     ],
                     initComplete: function ()
                     {
@@ -3173,7 +3226,8 @@
                 $(document).on("click", "div.dt-button-collection > div > button", function () {
                     if ($(this).hasClass("active")) {
                         $(this).css("background-color", "white");
-                    } else {
+                    }
+                    else {
                         $(this).css("background-color", "#31576d");
                     }
                 });
@@ -3258,7 +3312,48 @@
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
                         total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
 
-                        let chielditem = result[i].item;
+                        let chielditem       = result[i].item;
+                        let total_wind_speed = 0;
+                        let total_plf        = 0;
+                        let total_ma_act     = 0;
+                        let total_ma_con     = 0;
+                        let total_iga        = 0;
+                        let total_ega_a      = 0;
+                        let total_ega_b      = 0;
+                        let total_ega_c      = 0;
+                        let total_capacity   = 0;
+                        let avg_wind_speed   = 0;
+                        let avg_plf          = 0;
+                        let avg_ma_act       = 0;
+                        let avg_ma_con       = 0;
+                        let avg_iga          = 0;
+                        let avg_ega_a        = 0;
+                        let avg_ega_b        = 0;
+                        let avg_ega_c        = 0;
+                        for (var k = 0; k < chielditem.length; k++)
+                        {
+                            total_capacity   += chielditem[k].total_mw;
+                            total_wind_speed += chielditem[k].wind_speed * chielditem[k].total_mw;
+                            total_plf        += chielditem[k].plf * chielditem[k].total_mw;
+                            total_ma_act     += chielditem[k].ma_actual * chielditem[k].total_mw;
+                            total_ma_con     += chielditem[k].ma_contractual * chielditem[k].total_mw;
+                            total_iga        += chielditem[k].iga * chielditem[k].total_mw;
+                            total_ega_a      += chielditem[k].ega * chielditem[k].total_mw;
+                            total_ega_b      += chielditem[k].ega_b * chielditem[k].total_mw;
+                            total_ega_c      += chielditem[k].ega_c * chielditem[k].total_mw;
+
+                        }
+                        if (total_capacity != 0) {
+                            avg_wind_speed = total_wind_speed / total_capacity;
+                            avg_plf        = total_plf / total_capacity;
+                            avg_ma_act     = total_ma_act / total_capacity;
+                            avg_ma_con     = total_ma_con / total_capacity;
+                            avg_iga        = total_iga / total_capacity;
+                            avg_ega_a      = total_ega_a / total_capacity;
+                            avg_ega_b      = total_ega_b / total_capacity;
+                            avg_ega_c      = total_ega_c / total_capacity;
+                        }
+
                         let chield_class = result[i].cust_group.replace(/\s/g, "");
                         let expand_btn = "";
                         if (chielditem.length > 1) {
@@ -3273,15 +3368,15 @@
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;"">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_act.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_con.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';
@@ -3291,13 +3386,13 @@
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
                         for (var j = 0; j < chielditem.length; j++)
                         {
@@ -3329,13 +3424,13 @@
                             tbl += '<td class="text-right">' + chielditem[j].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + chielditem[j].load_shedding.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + total_hourse_chield.toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].usmh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].smh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].others_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].igbdh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].egbdh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].loadShedding_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses_chield)).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].others_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses_chield)) * 1000000).toFixed(2) + '</td>';
                             tbl += '</tr>';
                         }
 
@@ -3346,6 +3441,8 @@
                     console.log("Data not available");
                 }
                 tbl += '</table>';
+                //document.getElementById("reportsMonthly").style.display = 'none';
+                //document.getElementById("reportsMonthlyGroup").style.display = 'block';
                 //$("#reportsMonthlyGroup").html(tbl);
                 $("#reportsMonthlyGroup").html("");
                 $("#reportsMonthlyGroup").html(tbl);
@@ -3385,13 +3482,13 @@
                             }
                         },
                         'colvis',
-                        {
+                        //{
                            // text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             //className: 'btn ml-1   ',
                            // action: function () {
                                // MonthlyexportToExcelGenReportSiteWise();
                            // }
-                        },
+                        //},
                     ],
                     initComplete: function ()
                     {
@@ -3502,7 +3599,46 @@
                     {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
                         total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-                        let chielditem = result[i].item;
+                        let chielditem       = result[i].item;
+                        let total_wind_speed = 0;
+                        let total_plf        = 0;
+                        let total_ma_act     = 0;
+                        let total_ma_con     = 0;
+                        let total_iga        = 0;
+                        let total_ega_a      = 0;
+                        let total_ega_b      = 0;
+                        let total_ega_c      = 0;
+                        let total_capacity   = 0;
+                        let avg_wind_speed   = 0;
+                        let avg_plf          = 0;
+                        let avg_ma_act       = 0;
+                        let avg_ma_con       = 0;
+                        let avg_iga          = 0;
+                        let avg_ega_a        = 0;
+                        let avg_ega_b        = 0;
+                        let avg_ega_c        = 0;
+                        for (var k = 0; k < chielditem.length; k++) {
+                            total_capacity   += chielditem[k].total_mw;
+                            total_wind_speed += chielditem[k].wind_speed * chielditem[k].total_mw;
+                            total_plf        += chielditem[k].plf * chielditem[k].total_mw;
+                            total_ma_act     += chielditem[k].ma_actual * chielditem[k].total_mw;
+                            total_ma_con     += chielditem[k].ma_contractual * chielditem[k].total_mw;
+                            total_iga        += chielditem[k].iga * chielditem[k].total_mw;
+                            total_ega_a      += chielditem[k].ega * chielditem[k].total_mw;
+                            total_ega_b      += chielditem[k].ega_b * chielditem[k].total_mw;
+                            total_ega_c      += chielditem[k].ega_c * chielditem[k].total_mw;
+
+                        }
+                        if (total_capacity != 0) {
+                            avg_wind_speed = total_wind_speed / total_capacity;
+                            avg_plf        = total_plf / total_capacity;
+                            avg_ma_act     = total_ma_act / total_capacity;
+                            avg_ma_con     = total_ma_con / total_capacity;
+                            avg_iga        = total_iga / total_capacity;
+                            avg_ega_a      = total_ega_a / total_capacity;
+                            avg_ega_b      = total_ega_b / total_capacity;
+                            avg_ega_c      = total_ega_c / total_capacity;
+                        }
                         let chield_class = result[i].cust_group.replace(/\s/g, "");
                         let expand_btn = "";
                         if (chielditem.length > 1) {
@@ -3515,15 +3651,15 @@
                         tbl += '<td class="text-left">' + result[i].state + '</td>';
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td>';
                         tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_wind_speed.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].kwh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_actual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma_contractual.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_act.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_con.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';
@@ -3533,13 +3669,13 @@
                         tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].smh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].others_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].igbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].egbdh_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(result[i].loadShedding_loss)).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses)).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
                         tbl += '</tr>';
 
                         var total_losses_chield = 0;
@@ -3572,13 +3708,13 @@
                             tbl += '<td class="text-right">' + chielditem[j].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + chielditem[j].load_shedding.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + total_hourse_chield.toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].usmh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].smh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].others_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].igbdh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].egbdh_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(chielditem[j].loadShedding_loss)).toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + Math.abs(parseFloat(total_losses_chield)).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].others_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses_chield)) * 1000000).toFixed(2) + '</td>';
                             tbl += '</tr>';
 
                         }
@@ -3590,6 +3726,8 @@
                 }
                 tbl += '</table>';
                 //$("#reportsYearlyGroup").html(tbl);
+                 //document.getElementById("reportsYearly").style.display = 'none';
+               // document.getElementById("reportsYearlyGroup").style.display = 'block';
                 $("#reportsYearlyGroup").html("");
                 $("#reportsYearlyGroup").html(tbl);
                     $('#example_yearly_group').DataTable({
@@ -3627,13 +3765,13 @@
                             }
                         },
                         'colvis',
-                        {
+                        //{
                             //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                            // className: 'btn ml-1   ',
                             //action: function () {
                              //   YearlyexportToExcelGenReportSiteWise();
                            // }
-                        },
+                        //},
                     ],
                     initComplete: function ()
                     {

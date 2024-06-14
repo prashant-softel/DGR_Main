@@ -254,15 +254,19 @@
         var checkBox = document.getElementById("group_by_site");
         console.log(checkBox.checked);
         if (checkBox.checked == true) {
-            document.getElementById('no_group').style.display = 'none';
-            document.getElementById('no_group_tab').style.display = 'none';
-            document.getElementById('groupbysite').style.display = 'flex';
+            document.getElementById('no_group').style.display          = 'none';
+            document.getElementById('no_group_tab').style.display      = 'none';
+            document.getElementById('groupbysite').style.display       = 'flex';
+            document.getElementById('reportsDailygroup').style.display = 'block';
+            document.getElementById('reportsDaily').style.display      = 'none';
         }
         else
         {
-            document.getElementById('no_group').style.display = 'flex';
-            document.getElementById('no_group_tab').style.display = 'flex';
-            document.getElementById('groupbysite').style.display = 'none';
+            document.getElementById('no_group').style.display          = 'flex';
+            document.getElementById('no_group_tab').style.display      = 'flex';
+            document.getElementById('groupbysite').style.display       = 'none';
+            document.getElementById('reportsDailygroup').style.display = 'none';
+            document.getElementById('reportsDaily').style.display      = 'block';
         }
     }
 
