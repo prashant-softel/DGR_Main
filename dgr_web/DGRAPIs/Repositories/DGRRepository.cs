@@ -61,11 +61,13 @@ namespace DGRAPIs.Repositories
         internal async Task<List<FinancialYear>> GetFinancialYear()
         {
             List<FinancialYear> _FinancialYear = new List<FinancialYear>();
-            _FinancialYear.Add(new FinancialYear { financial_year = "2020-21" });
-            _FinancialYear.Add(new FinancialYear { financial_year = "2021-22" });
-            _FinancialYear.Add(new FinancialYear { financial_year = "2022-23" });
-            _FinancialYear.Add(new FinancialYear { financial_year = "2023-24" });
-            _FinancialYear.Add(new FinancialYear { financial_year = "2024-25" });
+           // _FinancialYear.Add(new FinancialYear { financial_year = "2020-21" });
+            //_FinancialYear.Add(new FinancialYear { financial_year = "2021-22" });
+            //_FinancialYear.Add(new FinancialYear { financial_year = "2022-23" });
+            //_FinancialYear.Add(new FinancialYear { financial_year = "2023-24" });
+            //_FinancialYear.Add(new FinancialYear { financial_year = "2024-25" });
+            string qry = "SELECT financial_year FROM `year_master` where status='Y'";
+            _FinancialYear = await Context.GetData<FinancialYear>(qry).ConfigureAwait(false);
             return _FinancialYear;
 
         }
