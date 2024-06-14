@@ -1654,7 +1654,7 @@
                 var siteNumber = 0;
                 var eachData = {};
                 if (isSPV == 0) {
-                    var finalCommentData = document.getElementById((BDelement.siteSelectDD + "_" + j)).value;
+                    var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
                     finalCommentData = finalCommentData.replace(/["']/g, ' ');
                     var encodedCommentData = encodeURIComponent(finalCommentData);
@@ -2275,6 +2275,8 @@
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
+                        } else if (result[k].bd_type == 4) {
+                            PCD.push(result[k]);
                         }
                     }
                     console.log("After 3 different arrays Yearly : ");
