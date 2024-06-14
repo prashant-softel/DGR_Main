@@ -281,7 +281,7 @@
                             <div id="Waterfallyearly" style="width: 100%; z-index: 1; overflow-y: auto;"></div>
                         </div>
                         <div class="col-md-5">
-                            <div class="card h-90vh w-100" id="commentsSectionYearly" style="display: none; margin-top: 20px">
+                            <div class="card h-90vh w-100" id="commentsSectionYearly" style="display: flex; margin-top: 20px">
                                 <div class="card-header">
                                     <h3 class="card-title text-center">Reasons For Underperformance</h3>
                                 </div>
@@ -2378,6 +2378,7 @@
                     console.log(EGB);
                     console.log(BD);
                     console.log(Other);
+                    console.log(PR);
                     var EGBY_div = document.getElementById("DYC_EGB");
                     var BDY_div = document.getElementById("DYC_BD");
                     var OtherY_div = document.getElementById("DYC_Other");
@@ -2452,7 +2453,7 @@
                         commentDiv.id = "PRY_CC"; // CC: Comment Content.
 
                         var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">PR</h4><ul>';
-                        for (var i = 0; i < Other.length; i++) {
+                        for (var i = 0; i < PR.length; i++) {
                             if (isSPV == 1) {
                                 commentContent += '<li><strong>' + PR[i].site + ':</strong> ' + PR[i].comment + '</li>';
                             } else if (isSPV == 0) {
