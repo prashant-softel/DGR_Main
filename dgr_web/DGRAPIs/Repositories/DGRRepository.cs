@@ -19757,6 +19757,58 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             return finalRes;
         }
+        internal async Task<List<pageColumns>> GetPageColumns(int page_id)
+        {
+            List<pageColumns> finalData = new List<pageColumns>();
+
+            try
+            {
+                string fetchQry = $"SELECT t1.page_id, t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                finalData = await Context.GetData<pageColumns>(fetchQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching page columns, due to : " + e.ToString();
+            }
+
+            return finalData;
+        }
+        internal async Task<List<pageColumns>> GetUserGroupColumns(int page_id, int userId)
+        {
+            List<pageColumns> finalData = new List<pageColumns>();
+            int finalRes = 0;
+            int GroupId = 0;
+            try
+            {
+                string fetchGroupId = $"SELECT * FROM user_page_group_ca WHERE page_id = {page_id} AND user_id = {userId};";
+                List<user_page_group_ca> dataGroupId = new List<user_page_group_ca>();
+
+                dataGroupId = await Context.GetData<user_page_group_ca>(fetchGroupId).ConfigureAwait(false);
+                if(dataGroupId.Count > 0)
+                {
+                    GroupId = dataGroupId[0].page_groups_id;
+                }
+                finalRes = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching the user assigned group id, due to : " + e.ToString();
+            }
+            if (finalRes == 1 && GroupId != 0)
+            {
+                try
+                {
+                    string fetchQry = $"SELECT t1.page_groups_id, t1.column_id, t2.column_name FROM `page_group_elements` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_groups_id = {GroupId};";
+                    finalData = await Context.GetData<pageColumns>(fetchQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching page columns, due to : " + e.ToString();
+                }
+            }
+
+            return finalData;
+        }
 
         //COLUMN ACCESS CODE ENDS
     }

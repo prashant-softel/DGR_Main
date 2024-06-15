@@ -217,6 +217,8 @@ namespace DGRAPIs.BS
         Task<List<GroupData>> GetGroupList_CA(int page_id);
         Task<List<ColumnData>> GetCGColumns_CA(int page_id);
         Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name);
+        Task<List<pageColumns>> GetPageColumns(int page_id);
+        Task<List<pageColumns>> GetUserGroupColumns(int page_id, int userId);
 
         //COLUMN ACCESS END
     }
@@ -2971,6 +2973,36 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.CreateGroup_CA(set, page_id, group_name);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<pageColumns>> GetPageColumns(int page_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetPageColumns(page_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<pageColumns>> GetUserGroupColumns(int page_id, int userId)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetUserGroupColumns(page_id, userId);
                 }
             }
             catch (Exception ex)

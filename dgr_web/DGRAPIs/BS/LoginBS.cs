@@ -36,6 +36,12 @@ namespace DGRAPIs.BS
         Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role);
         Task<List<EmailReportTimingsLog>> EmailReportTimings();
 
+        //COLUMN ACCESS CODE START
+
+        Task<int> AssignGroup(int login_id, string group_data);
+
+        //COLUMN ACCESS CODE END
+
 
     }
     public class LoginBS : iLoginBS
@@ -379,5 +385,24 @@ namespace DGRAPIs.BS
             }
         }
 
+        //COLUMN ACCESS CODE START
+
+        public async Task<int> AssignGroup(int login_id, string group_data)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.AssignGroup(login_id, group_data);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //COLUMN ACCESS CODE END
     }
 }

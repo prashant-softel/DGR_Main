@@ -3075,6 +3075,42 @@ namespace DGRAPIs.Controllers
                 }
             }
         }
+        [Route("GetPageColumns")]
+        [HttpGet]
+        public async Task<IActionResult> GetPageColumns(int page_id)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetPageColumns(page_id);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        [Route("GetUserGroupColumns")]
+        [HttpGet]
+        public async Task<IActionResult> GetUserGroupColumns(int page_id, int userId)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetUserGroupColumns(page_id, userId);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
 
         //COLUMN ACCESS CODE END
         #endregion

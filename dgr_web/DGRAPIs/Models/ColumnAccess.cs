@@ -58,5 +58,12 @@ namespace DGRAPIs.Models
         public int isGroupAvailable { get; set; }
         public List<page_group_elements> pageGroupData { get; set; }
     }
+    public class pageColumns
+    {
+        public int page_id { get; set; }
+        public int column_id { get; set; }
+        public string column_name { get; set; }
+        public int required { get; set; }
+    }
 
 }

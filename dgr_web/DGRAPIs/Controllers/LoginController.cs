@@ -379,6 +379,27 @@ namespace Login.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //COLUMN ACCESS CODE START
+
+        [Route("AssignGroup")]
+        [HttpGet]
+        public async Task<IActionResult> AssignGroup(int login_id, string group_data)
+        {
+            try
+            {
+
+                var data = await _loginBs.AssignGroup(login_id, group_data);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //COLUMN ACCESS CODE END 
     }
 
 
