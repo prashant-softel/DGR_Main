@@ -2665,6 +2665,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                             addUnit.RKVH_percentage =  commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["RKVH%"]), "RKVH%");
                         }
 
+                        string remarks = dr["Remarks"] is DBNull || string.IsNullOrEmpty((string)dr["Remarks"]) ? "Nil" : Convert.ToString(dr["Remarks"]);
+                        remarks = validateAndCleanSpChar(rowNumber, "Remarks", remarks);
+                        addUnit.remarks = remarks;
                         errorFlag.Add(uniqueRecordCheckSolarPerMonthYear_JMR(addUnit, addSet, rowNumber));
                         foreach (bool item in errorFlag)
                         {
@@ -2828,6 +2831,10 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.lineLoss = Convert.ToDouble(dr["Line Loss"] is DBNull || string.IsNullOrEmpty((string)dr["Line Loss"]) ? 0 : dr["Line Loss"]);
                         //errorFlag.Add(numericNullValidation(addUnit.lineLoss, "Line Loss", rowNumber));
+                        string remarks = dr["Remarks"] is DBNull || string.IsNullOrEmpty((string)dr["Remarks"]) ? "Nil" : Convert.ToString(dr["Remarks"]);
+                        remarks = validateAndCleanSpChar(rowNumber, "Remarks", remarks);
+                        addUnit.remarks = remarks;
+
                         foreach (bool item in errorFlag)
                         {
                             if (item)
