@@ -958,7 +958,7 @@
             "#EE403D", // IGBD
             "#EE403D", // EGBD
             "#86C466", // PCD
-            "#7dddff", // Lineloss
+            //"#7dddff", // Lineloss
             "#7dddff"  // Actual
         ];
 
@@ -991,7 +991,7 @@
                     "relative",
                     "relative",
                     "relative",
-                    "relative",
+                    //"relative",
                     "absolute"
                 ],
                 x: [
@@ -1004,7 +1004,7 @@
                     "EGBD",
                     "Curtailment",
                     "PCD",
-                    "Lineloss",
+                    //"Lineloss",
                     "Actual"
                 ],
                 textposition: "outside",
@@ -1019,7 +1019,7 @@
                     t_egbd,
                     t_loadShedding,
                     t_pcd ,
-                    t_lineloss,
+                    //t_lineloss,
                     t_actual
                 ],
                 y: [
@@ -1032,7 +1032,7 @@
                     Number(total_egbd),
                     Number(loadShedding),
                     Number(total_pcd),
-                    Number(total_lineloss),
+                    //Number(total_lineloss),
                     Number(total_actual)
                 ],
                 hoverData: [
@@ -1045,7 +1045,7 @@
                     Number(total_egbd),
                     Number(loadShedding),
                     Number(total_pcd),
-                    Number(total_lineloss),
+                    //Number(total_lineloss),
                     Number(total_actual)
                 ],
                 hovertemplate: [
@@ -1058,7 +1058,7 @@
                     '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
                     '<b>Curtailment</b><br>Value: ' + loadShedding + '<br> (' + loadShedding_percentage.toFixed(2) + '% )',
                     '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
-                    '<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
+                    //'<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
 
@@ -1150,7 +1150,7 @@
                     "relative",
                     "relative",
                     "relative",
-                    "relative",
+                    //"relative",
                     "absolute"
                 ],
                 x: [
@@ -1163,7 +1163,7 @@
                     "EGBD",
                     "Curtailment",
                     "PCD",
-                    "Lineloss",
+                    //"Lineloss",
                     "Actual"
                 ],
                 textposition: "outside",
@@ -1178,7 +1178,7 @@
                     t_egbd,
                     t_loadShedding,
                     t_pcd,
-                    t_lineloss,
+                    //t_lineloss,
                     t_actual
                 ],
                 y: [
@@ -1191,7 +1191,7 @@
                     Number(total_egbd),
                     Number(loadShedding),
                     Number(total_pcd),
-                    Number(total_lineloss),
+                    //Number(total_lineloss),
                     Number(total_actual)
                 ],
                 hovertemplate: [
@@ -1204,7 +1204,7 @@
                     '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
                     '<b>Curtailment</b><br>Value: ' + loadShedding + '<br> (' + loadShedding_percentage.toFixed(2) + '% )',
                     '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
-                    '<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
+                    //'<b>Lineloss</b><br>Value: ' + total_lineloss + '<br> (' + line_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
                 //hovertemplate: '<b>%{x}</b><br>' +
