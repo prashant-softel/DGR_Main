@@ -18805,15 +18805,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     uni.jmr_kwh = (uni.controller_kwh / 1000000) + uni.lineloss_mu;
 
                     //Calculating the difference
-                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss + uni.lineloss_mu;
+                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss;
                     uni.difference_expected = uni.jmr_kwh - allSum;
                     if (uni.difference_expected != 0)
                     {
                         uni.adjusted_expected = uni.expected_power + uni.difference_expected;
+                        //uni.adjusted_expected = uni.adjusted_expected + uni.lineloss_mu;
                     }
                     else
                     {
-                        uni.adjusted_expected = uni.expected_power;
+                        uni.adjusted_expected = uni.expected_power + uni.lineloss_mu;
                     }
 
                     //insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
@@ -19129,7 +19130,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             try
             {
-                string fetchQry = $"SELECT SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
+                string fetchQry = $"SELECT SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(egbd_loss) AS lossEGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
 
                 _dailyBasisDataList = await Context.GetData<GetWindTMLGraphData>(fetchQry).ConfigureAwait(false);
                 finalRes = 2;
@@ -19151,202 +19152,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 string msg = "Exception while setting the flag of monthly or yearly, due to : " + e.Message;
             }
-            //if(finalRes == 3)
-            //{
-            //    try
-            //    {
-            //        //To fetch controller kwh from daily_gen_summary table and degrade it with lineloss.
-            //        //(SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg)
-            //        try
-            //        {
-            //            //fetch controllerkwh from daily_gen_summary.
-            //            string fetchController_kwhQry = "SELECT ";
-            //        }
-            //        catch(Exception e)
-            //        {
-
-            //        }
-            //        List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
-            //        double actual_active_power = 0;
-            //        double target_sum = 0;
-            //        double gen_actual_active_power = 0;
-            //        double lineloss_percentage = 0;
-            //        double lineloss_final = 0;
-            //        _tmlDataList.Clear();
-
-            //        //Actual from Generation table :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
-            //        string fetchGenActualQry = "";
-            //        List<GetWindTMLGraphData> _tmlActualGenYearly = new List<GetWindTMLGraphData>();
-            //        if (isYearly == 1)
-            //        {
-            //            fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power, site_id FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date), site_id;";
-            //            try
-            //            {
-            //                _tmlActualGenYearly = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while Fetching Generation active power sum for yearly form daily_gen_summary, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //        }
-            //        else
-            //        {
-            //            fetchGenActualQry = "SELECT SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
-
-            //            try
-            //            {
-            //                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while Fetching Generation active power sum form daily_gen_summary, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //            if (_tmlDataList.Count > 0)
-            //            {
-            //                try
-            //                {
-            //                    foreach (var unit in _tmlDataList)
-            //                    {
-            //                        gen_actual_active_power = unit.gen_actual_active_power;
-            //                    }
-            //                }
-            //                catch (Exception e)
-            //                {
-            //                    string msg = "Exception while Extracting Generation active power sum from _tmlDataList, due to : " + e.ToString();
-            //                    //API_ErrorLog(msg);
-            //                    LogError(0, 2, 5, functionName, msg, backend);
-
-            //                }
-            //            }
-            //            _tmlDataList.Clear();
-            //        }
-
-            //        //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
-            //        //              line_loss_per * actual / 1000000.
-            //        string toMonth = Convert.ToDateTime(toDate).ToString("MM");
-            //        string fromMonth = Convert.ToDateTime(fromDate).ToString("MM");
-            //        string fromYear = Convert.ToDateTime(fromDate).ToString("yyyy");
-            //        string toYear = Convert.ToDateTime(toDate).ToString("yyyy");
-            //        string fetchLinelossPerQry = "";
-            //        List<GetWindTMLGraphData> _tmlLineLossForYearly = new List<GetWindTMLGraphData>();
-            //        if (isYearly == 1)
-            //        {
-            //            //fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
-            //            fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
-
-            //            try
-            //            {
-            //                _tmlLineLossForYearly = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while fetching lineloss percentage for yearly from mothly_uploading_lineloss, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //        }
-            //        else
-            //        {
-            //            fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") ;";
-            //            // fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ")  AND year IN(" + fromYear + "," + toYear + ") ;";
-
-            //            try
-            //            {
-            //                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //            if (_tmlDataList.Count > 0)
-            //            {
-            //                try
-            //                {
-            //                    foreach (var unit in _tmlDataList)
-            //                    {
-            //                        lineloss_percentage = unit.line_loss_per;
-            //                    }
-            //                }
-            //                catch (Exception e)
-            //                {
-            //                    string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
-            //                    //API_ErrorLog(msg);
-            //                    LogError(0, 2, 5, functionName, msg, backend);
-
-            //                }
-            //            }
-            //            _tmlDataList.Clear();
-            //        }
-            //        double lineLossForYearly = 0;
-            //        double actPowerForYearly = 0;
-            //        if (isYearly == 1)
-            //        {
-            //            foreach (var _element in _tmlActualGenYearly)
-            //            {
-            //                foreach (var _innerElement in _tmlLineLossForYearly)
-            //                {
-            //                    if (_element.month_no == _innerElement.month_no && _element.site_id == _innerElement.site_id)
-            //                    {
-            //                        double lineloss = _innerElement.line_loss_per / 100;
-            //                        double temp = (lineloss * _element.gen_actual_active_power) * -1; //6;
-            //                        lineloss_final = temp / 1000000;
-            //                        lineLossForYearly += lineloss_final;
-
-            //                        double actGenPowertemp = (_element.gen_actual_active_power / 1000000) + lineloss_final;
-            //                        actPowerForYearly += actGenPowertemp;
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        else
-            //        {
-            //            //if (lineloss_percentage > 0)
-            //            //{
-            //            double lineloss = lineloss_percentage / 100;
-            //            double temp = (lineloss * gen_actual_active_power) * -1; //6;
-            //            lineloss_final = temp / 1000000;
-            //            _tmlDataList.Clear();
-            //        }
-
-            //        try
-            //        {
-            //            _tmlDataList.Clear();
-            //            if(_dailyBasisDataList.Count > 0)
-            //            {
-            //                if(isYearly == 1)
-            //                {
-            //                    _dailyBasisDataList[0].lineloss_final = lineLossForYearly;
-            //                    _dailyBasisDataList[0].actual_final = actPowerForYearly;
-            //                }
-            //                else
-            //                {
-            //                    _dailyBasisDataList[0].lineloss_final = lineloss_final;
-            //                    double temps = ((lineloss_percentage/100) * gen_actual_active_power) * -1; //6;
-            //                    double lineloss_final_new = temps / 1000000;
-            //                    _dailyBasisDataList[0].actual_final = (gen_actual_active_power / 1000000) + lineloss_final_new;
-            //                }
-            //            }
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            string msg = "Exception while inserting final Values into _tmlDataList, due to : " + e.ToString();
-            //        }
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        string msg = "Exception while degrading lineloss, due to : " + e.Message;
-            //    }
-            //}
             return _dailyBasisDataList;
         }
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)

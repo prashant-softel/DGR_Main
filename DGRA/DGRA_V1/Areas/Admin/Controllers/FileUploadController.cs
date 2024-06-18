@@ -4682,8 +4682,8 @@ namespace DGRA_V1.Areas.admin.Controllers
             if (ufile != null && ufile.Length > 0)
             {
                 var fileName = Path.GetFileName(ufile.FileName);
-                var filePath = env.ContentRootPath + @"C:\ImportedFile\" + fileName;
-                //var filePath = env.ContentRootPath + @"\ImportedFile\" + fileName;
+                //var filePath = env.ContentRootPath + @"C:\ImportedFile\" + fileName;
+                var filePath = env.ContentRootPath + @"\ImportedFile\" + fileName;
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await ufile.CopyToAsync(fileStream);
