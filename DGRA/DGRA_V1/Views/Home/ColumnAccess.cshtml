@@ -85,6 +85,19 @@
             white-space: nowrap; /* Prevent label from wrapping */
         }
 
+        .action-button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -141,30 +154,27 @@
                 <!--  Form Control Div Closed -->
                 <hr>
                 <div>
-                    <div class="row">
-                        <div class="col-md-3" style="display: none">
-                            <div class="form-group">
+                    <div class="row" style="display: flex; justify-content: end;">
+                        <div class="col-md-3" id="groupsPresent" style="display: none">
+                            <div class="col-md-12">
                                 <div class="row" id="group_drop_list" style="position: relative; display: flex; justify-content: start; align-items: start;">
                                     <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Group : </label>
-                                    <select class="form-control col-sm-8" id="groupDropdown" placeholder="Select Group" onchange="groupChnage()" value="" style="height: 37px; margin-left: 5px;">
-                                        <option value="0">Select Group</option>
-                                        <option value="1">SPV Wise</option>
-                                        <option value="2">Site Wise</option>
-                                    </select>
+                                    <select class="form-control col-sm-8" id="groupDropdown" placeholder="Select Group" onchange="groupChnage()" value="" style="height: 37px; margin-left: 5px;"></select>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3" id="noGroups" style="display: none">
                             No Groups Created for this page.
                         </div>
-                        <div class="col-md-3" id="button_div" style="display: flex; justify-items: end; ">
+                        <div class="col-md-3" id="button_div" style="display: flex; justify-content: end; ">
                             <div id="Create_group" style="width: 140px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px; " onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="createFunc()">
                                 <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
                                 <span style="margin-left: 5px; color: #ffffff;">CREATE GROUP</span>
                             </div>
                         </div>
                     </div>
-                    <div id="userData" style="overflow-x: auto;" class="userData"></div>
+                    <div id="tableData" style="overflow-x: auto;" class="userData"></div>
+                    <div id="tableData_new" style="overflow-x: auto;" class="userData"></div>
                 </div>
                 <hr>
                 <div id="loader" class="loader  center" style="display:none"></div>
@@ -216,7 +226,7 @@
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr) {
-                    var options = "";
+                    var options = "<option value='0'>Select Page</option>";
                     for (var j = 0; j < result.length; j++) {
                         options += '<option value="' + result[j].page_id + '">' + result[j].page_name + '</option>';
                     }
@@ -250,11 +260,12 @@
                 success: function (result, status, xhr) {
                     var options = "<option value='0'>Select Group</option>";
                     if (result.length > 0) {
-                        for (var j = 0; j < result.length; j++) {
-                            options += '<option value="' + result[j].page_id + '">' + result[j].page_name + '</option>';
-                        }
-                        $('#groupDropdown').html(options);
-                        document.getElementById("groupDropdown").style.display = "block";
+                        createTable(result);
+                        //for (var j = 0; j < result.length; j++) {
+                        //    options += '<option value="' + result[j].page_groups_id + '">' + result[j].page_group_name + '</option>';
+                        //}
+                        //$('#groupDropdown').html(options);
+                        //document.getElementById("groupsPresent").style.display = "block";
                     } else {
                         document.getElementById("noGroups").style.display = "block";
                     }
@@ -284,19 +295,19 @@
         selectedPage = document.getElementById("pageDropdown").value;
         //call the getGroups function.
         getGroups();
-        var tbl = '<table id="example1" class="table table-bordered table-striped">';
-        tbl += '<thead class="tbl-head"><tr>';
-        tbl += '<th style="width: 250px">Group Name</th>';
-        tbl += '<th>Column Contents</th>';
-        tbl += '</tr></thead>';
+        //var tbl = '<table id="example1" class="table table-bordered table-striped">';
+        //tbl += '<thead class="tbl-head"><tr>';
+        //tbl += '<th style="width: 250px">Group Name</th>';
+        //tbl += '<th>Column Contents</th>';
+        //tbl += '</tr></thead>';
 
-        tbl += '<tr>';
-        tbl += '<td> Column Name one</td>';
-        tbl += '</tr>';
+        //tbl += '<tr>';
+        //tbl += '<td> Column Name one</td>';
+        //tbl += '</tr>';
 
-        //after loop.
-        tbl += '</table>';
-        $("#userData").html(tbl);
+        ////after loop.
+        //tbl += '</table>';
+        //$("#tableData").html(tbl);
     }
 
     //On changing the Grouo of the selected page.
@@ -331,15 +342,17 @@
                 <tr>
                     <td>
                         <input type="text" class="form-control" value="" id="group_name_input" placeholder="Enter Group Name">
-                        <div id="Create_group" style="width: 140px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
-                            onmouseover="this.style.opacity=0.90" 
-                            onmouseout="this.style.opacity=1" 
+                    </td>
+                    <td>` + createColumnCards(result, 1) + `</td>
+                    <td style="display: flex; justify-content: center;">
+                        <div id="Create_group" style="width: 100px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
+                            onmouseover="this.style.opacity=0.90"
+                            onmouseout="this.style.opacity=1"
                             onclick="saveGroup()">
-                            <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
+                            <i class="fas fa-plus" style="font-size: 14px; color: #ffffff;"></i>
                             <span style="margin-left: 5px; color: #ffffff;">SAVE</span>
                         </div>
                     </td>
-                    <td>` + createColumnCards(result) + `</td>
                 </tr>
             `;
 
@@ -351,7 +364,7 @@
             }
         });
     }
-    function createColumnCards(data) {
+    function createColumnCards(data, display) {
         var cardHTML = '<div class="card-container" id="column_container">';
         data.forEach(function (item) {
             cardHTML += '<div class="card-custom' + (item.required === 1 ? ' blocked-card' : '') + '">';
@@ -359,7 +372,12 @@
             cardHTML += '<input type="checkbox" class="form-check-inpu" id="check' + item.column_id + '" value="' + item.column_id + '"';
             if (item.required === 1) {
                 cardHTML += ' checked disabled';
-                selectedIds.push({ column_id: item.column_id, page_id: selectedPage });
+                if (display == 1) {
+                    selectedIds.push({ column_id: item.column_id, page_id: selectedPage });
+                }
+            }
+            if (display == 0 && item.selected == 1) {
+                cardHTML += ' checked';
             }
             cardHTML += '>';
             cardHTML += '<label class="form-check-labe" for="check' + item.column_id + '">' + item.column_name + '</label>';
@@ -410,6 +428,77 @@
                 console.log("Error:", error);
             }
         });
+    }
+    function createTable(data) {
+        const tableContainer = document.getElementById('tableData_new');
+        tableContainer.innerHTML = "";
+        const table = document.createElement('table');
+        table.className = 'table table-bordered table-striped';
+        table.id = "example1";
+
+        // Create table header
+        const thead = document.createElement('thead');
+        thead.className = "tbl-head";
+        thead.innerHTML = `
+        <tr>
+            <th style="width: 250px">Group Name</th>
+            <th>Group Elements</th>
+            <th style="width: 250px">Action</th>
+        </tr>
+    `;
+        table.appendChild(thead);
+
+        // Create table body
+        const tbody = document.createElement('tbody');
+
+        data.forEach(group => {
+            const tr = document.createElement('tr');
+
+            // Group Name
+            const groupNameTd = document.createElement('td');
+            groupNameTd.textContent = group.page_group_name;
+            tr.appendChild(groupNameTd);
+
+            // Group Elements
+            const groupElementsTd = document.createElement('td');
+            groupElementsTd.innerHTML = createColumnCards(group.column_data, 0);
+            tr.appendChild(groupElementsTd);
+
+            // Action
+            const actionTd = document.createElement('td');
+            const button = document.createElement('div');
+            //button.className = 'action-button';
+            button.style = "display: flex; flex-direction: row;";
+            var buttonContent = group.is_active === 1 ? 'Deactivate' : 'Activate';
+            var buttonColor = group.is_active === 1 ? '#EE403D' : '#86C466';
+            button.innerHTML = `
+                <div id="Create_group" style="width: 100px; height: 34.76px; position: relative; background: `+ buttonColor +`; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
+                            onmouseover="this.style.opacity=0.90"
+                            onmouseout="this.style.opacity=1"
+                            >
+                            <span style="margin-left: 5px; color: #ffffff;">`+ buttonContent +`</span>
+                </div>
+                <div id="Create_group" style="width: 100px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
+                            onmouseover="this.style.opacity=0.90"
+                            onmouseout="this.style.opacity=1"
+                            onclick="saveGroup()">
+                            <i class="fas fa-plus" style="font-size: 14px; color: #ffffff;"></i>
+                            <span style="margin-left: 5px; color: #ffffff;">Update</span>
+                </div>
+            `;
+            
+            button.onclick = function () {
+                // Your activation/deactivation logic here
+                alert(`${button.textContent} button clicked for ${group.page_group_name}`);
+            };
+            actionTd.appendChild(button);
+            tr.appendChild(actionTd);
+
+            tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        tableContainer.appendChild(table);
     }
 
 </script>

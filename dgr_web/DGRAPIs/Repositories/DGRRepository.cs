@@ -19656,21 +19656,21 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             return Data;
         }
-        internal async Task<List<GroupData>> GetGroupList_CA(int page_id)
+        internal async Task<List<groupsData>> GetGroupList_CA(int page_id)
         {
             string functionName = "GetPageList";
             int result = 0;
 
-            List<GroupData> Data = new List<GroupData>();
+            List<groupsData> Data = new List<groupsData>();
 
             //get data from hfe_pages table as per filter.
             string fetchQry = "";
 
-            fetchQry = $"SELECT page_groups_id, page_group_name FROM page_groups WHERE page_id = {page_id} AND is_active = 1;";
+            fetchQry = $"SELECT page_groups_id, page_group_name, is_active FROM page_groups WHERE page_id = {page_id} AND is_active = 1;";
 
             try
             {
-                Data = await Context.GetData<GroupData>(fetchQry).ConfigureAwait(false);
+                Data = await Context.GetData<groupsData>(fetchQry).ConfigureAwait(false);
                 result = 1;
             }
             catch (Exception e)
@@ -19678,7 +19678,67 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string msg = "Exception while fetching data from hfe_pages table due to, " + e.ToString();
                 LogError(0, 1, 7, functionName, msg, backend);
             }
+            if(result == 1)
+            {
+                if (Data.Count > 0)
+                {
+                    foreach (var unit in Data)
+                    {
+                        int[] columnIdArray = new int[0];
+                        try
+                        {
+                            string fetchPageColumns = $"SELECT t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                            unit.column_data = await Context.GetData<ColumnData>(fetchPageColumns).ConfigureAwait(false);
+                            result = 2;
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while fetching page elements, due to : " + e.ToString();
+                        }
 
+                        if(result == 2)
+                        {
+                            string fetch = $"SELECT pge_id, column_id FROM page_group_elements WHERE page_groups_id = {unit.page_groups_id}";
+                            List<int> columnIdInGroup = new List<int>();
+                            List<ColumnData> columnData = new List<ColumnData>();
+                            try
+                            {
+                                columnData = await Context.GetData<ColumnData>(fetch).ConfigureAwait(false);
+                                if(columnData.Count > 0)
+                                {
+                                    foreach(var ele in columnData)
+                                    {
+                                        columnIdInGroup.Add(ele.column_id);
+                                    }
+                                    columnIdArray = columnIdInGroup.ToArray();
+                                    result = 3;
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                string msg = "Exception while fetching column data due to : " + e.ToString();
+                            }
+                        }
+                        if(result == 3)
+                        {
+                            if(unit.column_data.Count > 0)
+                            {
+                                foreach (var ele in unit.column_data)
+                                {
+                                    if (columnIdArray.Contains(ele.column_id))
+                                    {
+                                        ele.selected = 1;
+                                    }
+                                    else
+                                    {
+                                        ele.selected = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             return Data;
         }
         internal async Task<List<ColumnData>> GetCGColumns_CA(int page_id)

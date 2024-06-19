@@ -31,6 +31,7 @@ namespace DGRAPIs.Models
         public int column_id { get; set; }
         public string column_name { get; set; }
         public int required { get; set; }
+        public int selected { get; set; }
 
     }
     public class CreateGroupData
@@ -64,6 +65,15 @@ namespace DGRAPIs.Models
         public int column_id { get; set; }
         public string column_name { get; set; }
         public int required { get; set; }
+    }
+
+    public class groupsData
+    {
+        public int page_groups_id { get; set; }
+        public string page_group_name { get; set; }
+        public int page_id { get; set; }
+        public int is_active { get; set; }
+        public List<ColumnData> column_data { get; set; }
     }
 
 }

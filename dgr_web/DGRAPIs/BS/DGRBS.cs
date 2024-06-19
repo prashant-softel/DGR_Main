@@ -214,7 +214,7 @@ namespace DGRAPIs.BS
 
         //COLUMN ACCESS START
         Task<List<PageData>> GetPageList(int type, int pageType);
-        Task<List<GroupData>> GetGroupList_CA(int page_id);
+        Task<List<groupsData>> GetGroupList_CA(int page_id);
         Task<List<ColumnData>> GetCGColumns_CA(int page_id);
         Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name);
         Task<List<pageColumns>> GetPageColumns(int page_id);
@@ -2936,7 +2936,7 @@ namespace DGRAPIs.BS
             }
 
         }
-        public async Task<List<GroupData>> GetGroupList_CA(int page_id)
+        public async Task<List<groupsData>> GetGroupList_CA(int page_id)
         {
             try
             {
