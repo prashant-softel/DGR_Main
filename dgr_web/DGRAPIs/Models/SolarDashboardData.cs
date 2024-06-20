@@ -22,6 +22,8 @@ namespace DGRAPIs.Models
         public double tarkwh { get; set; }
         public double tarIR { get; set; }
         public double ac_capacity { get; set; }
+        public int site_id { get; set; }
+        public double expected_power { get; set; }
 
     }
     public class SolarDashboardData1
