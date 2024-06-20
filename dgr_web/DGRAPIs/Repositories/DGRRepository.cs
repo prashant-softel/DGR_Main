@@ -19666,7 +19666,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             //get data from hfe_pages table as per filter.
             string fetchQry = "";
 
-            fetchQry = $"SELECT page_groups_id, page_group_name, is_active FROM page_groups WHERE page_id = {page_id} AND is_active = 1;";
+            fetchQry = $"SELECT page_groups_id, page_group_name, is_active FROM page_groups WHERE page_id = {page_id};";
 
             try
             {
@@ -19868,6 +19868,64 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
 
             return finalData;
+        }
+        internal async Task<int> UpdateGroup_CA(int[] set, int page_id, int page_groups_id)
+        {
+            int finalRes = 0;
+            string deleteGroupEleQry = $"DELETE FROM page_group_elements WHERE page_groups_id = {page_groups_id};";
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(deleteGroupEleQry).ConfigureAwait(false);
+                finalRes = 1;
+
+            }
+            catch (Exception e)
+            {
+                string msg = "Error deleting page_groups elements from table.";
+                return finalRes;
+            }
+            if (finalRes == 1)
+            {
+                string contentQry = "INSERT INTO page_group_elements (page_groups_id, column_id) VALUES";
+                foreach (int ele in set)
+                {
+                    contentQry += $" ({page_groups_id}, {ele}),";
+                }
+                contentQry = contentQry.Substring(0, (contentQry.Length - 1));
+
+                try
+                {
+                    int res = await Context.ExecuteNonQry<int>(contentQry).ConfigureAwait(false);
+                    if (res > 0)
+                    {
+                        finalRes = 1;
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while inserting column elements in column_elements table, due to : " + e.ToString();
+                    return finalRes;
+                }
+            }
+
+            return finalRes;
+        }
+        internal async Task<int> ActiDeactiGroup_CA(int page_groups_id, int status)
+        {
+            int finalRes = 0;
+            string updateGroupQry = $"UPDATE page_groups SET is_active = {status} WHERE page_groups_id = {page_groups_id};";
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(updateGroupQry).ConfigureAwait(false);
+                finalRes = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Error deleting page_groups elements from table.";
+                return finalRes;
+            }
+
+            return finalRes;
         }
 
         //COLUMN ACCESS CODE ENDS

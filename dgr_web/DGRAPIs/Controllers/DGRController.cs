@@ -3112,6 +3112,42 @@ namespace DGRAPIs.Controllers
             }
         }
 
+        [Route("UpdateGroup_CA")]
+        [HttpPost]
+        public async Task<IActionResult> UpdateGroup_CA(int[] set, int page_id, int page_groups_id)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.UpdateGroup_CA(set, page_id, page_groups_id);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        [Route("ActiDeactiGroup_CA")]
+        [HttpGet]
+        public async Task<IActionResult> ActiDeactiGroup_CA(int page_groups_id, int status)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.ActiDeactiGroup_CA(page_groups_id, status);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
         //COLUMN ACCESS CODE END
         #endregion
     }

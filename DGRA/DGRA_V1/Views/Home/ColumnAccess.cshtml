@@ -138,8 +138,6 @@
                                 <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Page : </label>
                                 <select class="form-control col-sm-8" id="pageDropdown" placeholder="Select Page" onchange="pageChange()" value="" style="height: 37px; margin-left: 5px;">
                                     <option value="0">Select Page</option>
-                                    <option value="1">SPV Wise</option>
-                                    <option value="2">Site Wise</option>
                                 </select>
                             </div>
                         </div>
@@ -166,7 +164,7 @@
                         <div class="col-md-3" id="noGroups" style="display: none">
                             No Groups Created for this page.
                         </div>
-                        <div class="col-md-3" id="button_div" style="display: flex; justify-content: end; ">
+                        <div class="col-md-3" id="button_div" style="display: none; justify-content: end; ">
                             <div id="Create_group" style="width: 140px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px; " onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity= 1" onclick="createFunc()">
                                 <i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i>
                                 <span style="margin-left: 5px; color: #ffffff;">CREATE GROUP</span>
@@ -193,6 +191,9 @@
     var selectedGroup = 0;
     var dataRendered = false;
     var selectedIds = [];
+    var groupsSelectedIds = [];
+    var rowLength = 0;
+    var isCreated = 0;
 
     //Global Variables defination END.
 
@@ -260,12 +261,10 @@
                 success: function (result, status, xhr) {
                     var options = "<option value='0'>Select Group</option>";
                     if (result.length > 0) {
-                        createTable(result);
-                        //for (var j = 0; j < result.length; j++) {
-                        //    options += '<option value="' + result[j].page_groups_id + '">' + result[j].page_group_name + '</option>';
-                        //}
-                        //$('#groupDropdown').html(options);
-                        //document.getElementById("groupsPresent").style.display = "block";
+                        rowLength = result.length;
+                        document.getElementById("noGroups").style.display = "none";
+                        createTable(result);                        
+                        document.getElementById("button_div").style.display = "flex";
                     } else {
                         document.getElementById("noGroups").style.display = "block";
                     }
@@ -294,20 +293,8 @@
         //set the selected page_id to the selectedPage global variable.
         selectedPage = document.getElementById("pageDropdown").value;
         //call the getGroups function.
+        document.getElementById("tableData_new").innerHTML = "";
         getGroups();
-        //var tbl = '<table id="example1" class="table table-bordered table-striped">';
-        //tbl += '<thead class="tbl-head"><tr>';
-        //tbl += '<th style="width: 250px">Group Name</th>';
-        //tbl += '<th>Column Contents</th>';
-        //tbl += '</tr></thead>';
-
-        //tbl += '<tr>';
-        //tbl += '<td> Column Name one</td>';
-        //tbl += '</tr>';
-
-        ////after loop.
-        //tbl += '</table>';
-        //$("#tableData").html(tbl);
     }
 
     //On changing the Grouo of the selected page.
@@ -339,11 +326,11 @@
                 var options = "<option value='0'>Select Group</option>";
                 if (result.length > 0) {
                     var newRow = `
-                <tr>
+                <tr data-row-index="${rowLength}">
                     <td>
                         <input type="text" class="form-control" value="" id="group_name_input" placeholder="Enter Group Name">
                     </td>
-                    <td>` + createColumnCards(result, 1) + `</td>
+                    <td>` + createColumnCards(result, 1, 0) + `</td>
                     <td style="display: flex; justify-content: center;">
                         <div id="Create_group" style="width: 100px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
                             onmouseover="this.style.opacity=0.90"
@@ -358,18 +345,21 @@
 
                     $('#example1 tbody').append(newRow);
                     attachCheckboxEvents();
+                    isCreated = 1;
+                    document.getElementById("button_div").style.display = "none";
                 } else {
                     
                 }
             }
         });
     }
-    function createColumnCards(data, display) {
+    function createColumnCards(data, display, index) {
         var cardHTML = '<div class="card-container" id="column_container">';
+        var tempArr = [];
         data.forEach(function (item) {
             cardHTML += '<div class="card-custom' + (item.required === 1 ? ' blocked-card' : '') + '">';
 
-            cardHTML += '<input type="checkbox" class="form-check-inpu" id="check' + item.column_id + '" value="' + item.column_id + '"';
+            cardHTML += '<input type="checkbox" class="form-check-inpu" id="check' + item.column_id + '_row' + index + '" value="' + item.column_id + '"';
             if (item.required === 1) {
                 cardHTML += ' checked disabled';
                 if (display == 1) {
@@ -378,12 +368,15 @@
             }
             if (display == 0 && item.selected == 1) {
                 cardHTML += ' checked';
+                tempArr.push(item.column_id);
             }
             cardHTML += '>';
-            cardHTML += '<label class="form-check-labe" for="check' + item.column_id + '">' + item.column_name + '</label>';
+            cardHTML += '<label class="form-check-labe" for="check' + item.column_id + '_row"' + index + '>' + item.column_name + '</label>';
 
             cardHTML += '</div>';
         });
+        console.log("tempArray : " + tempArr);
+        groupsSelectedIds[index] = [...tempArr];
         cardHTML += '</div>';
         return cardHTML;
     }
@@ -406,28 +399,36 @@
         console.log(selectedIds); // Output the IDs for debugging
     }
     function attachCheckboxEvents() {
-        $('#example1 tbody input[type="checkbox"]').off('change').on('change', handleCheckboxChange);
+        const rowSelector = `#example1 tbody tr[data-row-index="${rowLength}"] input[type="checkbox"]`;
+        $(rowSelector).off('change').on('change', handleCheckboxChange);
     }
     function saveGroup() {
         var group_name = document.getElementById("group_name_input").value;
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("CreateGroup_CA", "Home")' + '?page_id=' + selectedPage + '&group_name=' + group_name,
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(selectedIds),
-            success: function (result, status, xhr) {
-                console.log("result after adding : ");
-                console.log(result);
-                if (Number(result) > 0) {
-                    console.log("Success...!");
-                }
+        if (group_name == "") {
+            alert("Enter Group Name.");
+            return false;
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CreateGroup_CA", "Home")' + '?page_id=' + selectedPage + '&group_name=' + group_name,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(selectedIds),
+                success: function (result, status, xhr) {
+                    console.log("result after adding : ");
+                    console.log(result);
+                    if (Number(result) > 0) {
+                        console.log("Success...!");
+                        getGroups();
+                        document.getElementById("button_div").style.display = "flex";
+                    }
 
-            },
-            error: function (xhr, status, error) {
-                console.log("Error:", error);
-            }
-        });
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        }
     }
     function createTable(data) {
         const tableContainer = document.getElementById('tableData_new');
@@ -451,8 +452,9 @@
         // Create table body
         const tbody = document.createElement('tbody');
 
-        data.forEach(group => {
+        data.forEach((group, index) => {
             const tr = document.createElement('tr');
+            tr.setAttribute('data-row-index', index);
 
             // Group Name
             const groupNameTd = document.createElement('td');
@@ -461,37 +463,39 @@
 
             // Group Elements
             const groupElementsTd = document.createElement('td');
-            groupElementsTd.innerHTML = createColumnCards(group.column_data, 0);
+            groupElementsTd.innerHTML = createColumnCards(group.column_data, 0, index);
             tr.appendChild(groupElementsTd);
 
             // Action
             const actionTd = document.createElement('td');
-            const button = document.createElement('div');
-            //button.className = 'action-button';
-            button.style = "display: flex; flex-direction: row;";
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style = "display: flex; flex-direction: row;";
+
             var buttonContent = group.is_active === 1 ? 'Deactivate' : 'Activate';
             var buttonColor = group.is_active === 1 ? '#EE403D' : '#86C466';
-            button.innerHTML = `
-                <div id="Create_group" style="width: 100px; height: 34.76px; position: relative; background: `+ buttonColor +`; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
-                            onmouseover="this.style.opacity=0.90"
-                            onmouseout="this.style.opacity=1"
-                            >
-                            <span style="margin-left: 5px; color: #ffffff;">`+ buttonContent +`</span>
-                </div>
-                <div id="Create_group" style="width: 100px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;"
-                            onmouseover="this.style.opacity=0.90"
-                            onmouseout="this.style.opacity=1"
-                            onclick="saveGroup()">
-                            <i class="fas fa-plus" style="font-size: 14px; color: #ffffff;"></i>
-                            <span style="margin-left: 5px; color: #ffffff;">Update</span>
-                </div>
-            `;
-            
-            button.onclick = function () {
-                // Your activation/deactivation logic here
-                alert(`${button.textContent} button clicked for ${group.page_group_name}`);
+
+            const actionButton = document.createElement('div');
+            actionButton.style = `width: 100px; height: 34.76px; position: relative; background: ${buttonColor}; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;`;
+            actionButton.onmouseover = function () { this.style.opacity = 0.90; };
+            actionButton.onmouseout = function () { this.style.opacity = 1; };
+            actionButton.innerHTML = `<span style="margin-left: 5px; color: #ffffff;">${buttonContent}</span>`;
+            actionButton.onclick = function () {
+                activateDeactivate(group.page_groups_id, buttonContent);
             };
-            actionTd.appendChild(button);
+
+            const updateButton = document.createElement('div');
+            updateButton.style = "width: 100px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px; cursor: default; margin-right: 10px;";
+            updateButton.onmouseover = function () { this.style.opacity = 0.90; };
+            updateButton.onmouseout = function () { this.style.opacity = 1; };
+            updateButton.innerHTML = `<i class="fas fa-plus" style="font-size: 14px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">Update</span>`;
+            updateButton.onclick = function () {
+                const rowIndex = this.closest('tr').getAttribute('data-row-index');
+                updateGroup(rowIndex, group.page_groups_id, group.page_group_name);
+            };
+
+            buttonContainer.appendChild(actionButton);
+            buttonContainer.appendChild(updateButton);
+            actionTd.appendChild(buttonContainer);
             tr.appendChild(actionTd);
 
             tbody.appendChild(tr);
@@ -499,6 +503,103 @@
 
         table.appendChild(tbody);
         tableContainer.appendChild(table);
+    }
+    function updateGroup(rowIndex, page_group_id, pageGroupName) {
+        console.log("Inside updategroup function with row_id : " + rowIndex + " Page group id : " + page_group_id);
+        var returnedRes = getCheckedCards(rowIndex);
+        console.log("Data from object : " + groupsSelectedIds[rowIndex]);
+        var isArraysame = arraysHaveSameElements(returnedRes, groupsSelectedIds[rowIndex]);
+        if (isArraysame) {
+            console.log("No change to Update.");
+            alert("No Change to Update.");
+        } else {
+            //console.log("Go for update. ");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateGroup_CA", "Home")' + '?page_id=' + selectedPage + '&page_groups_id=' + page_group_id,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(returnedRes),
+                success: function (result, status, xhr) {
+                    console.log("result after adding : ");
+                    console.log(result);
+                    if (Number(result) > 0) {
+                        console.log("Success...!");
+                        alert("Successfully Updated " + pageGroupName);
+                        getGroups();
+                        document.getElementById("button_div").style.display = "flex";
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        }
+    }
+
+    function activateDeactivate(page_group_id, action) {
+        var status = 0;
+
+        if (action == "Deactivate") {
+            status = 0;
+        } else {
+            status = 1;
+        }
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ActiDeactiGroup_CA", "Home")' + '?page_groups_id=' + page_group_id + '&status=' + status,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (result, status, xhr) {
+                console.log("result after adding : ");
+                console.log(result);
+                if (Number(result) > 0) {
+                    console.log("Success...!");
+                    if (status == 0) {
+                        alert("Activated..!");
+                    } else {
+                        alert("Deactivated..!");
+                    }
+                    getGroups();
+                    document.getElementById("button_div").style.display = "flex";
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", error);
+            }
+        });
+    }
+
+    function getCheckedCards(rowIndex) {
+        // Get the row by index
+        const row = document.querySelector(`tr[data-row-index="${rowIndex}"]`);
+        if (row) {
+            // Get all checked checkboxes in this row
+            const checkedCheckboxes = row.querySelectorAll('.form-check-inpu:checked');
+            let checkedIds = [];
+            checkedCheckboxes.forEach(checkbox => {
+                checkedIds.push(Number(checkbox.value));
+            });
+            console.log('Checked cards for row index ' + rowIndex + ':', checkedIds);
+            return checkedIds;
+            // You can now use checkedIds array as per your requirement
+        } else {
+            console.error('Row not found');
+        }
+    }
+    function arraysHaveSameElements(arr1, arr2) {
+        if (arr1.length !== arr2.length) {
+            return false; // Different lengths
+        }
+        // Sort and compare
+        let sortedArr1 = [...arr1].sort();
+        let sortedArr2 = [...arr2].sort();
+        for (let i = 0; i < sortedArr1.length; i++) {
+            if (sortedArr1[i] !== sortedArr2[i]) {
+                return false; // Different elements
+            }
+        }
+        return true; // Same elements
     }
 
 </script>

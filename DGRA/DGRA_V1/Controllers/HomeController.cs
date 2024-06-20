@@ -1271,5 +1271,68 @@ namespace DGRA_V1.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateGroup_CA([FromBody] int[] groupData, int page_id, int page_groups_id)
+        {
+            string line = "";
+            //string ty = typeof(ACMFinalData).ToString();
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/UpdateGroup_CA?page_id=" + page_id + "&page_groups_id=" + page_groups_id;
+
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
+                    // Convert acmDataList to JSON
+                    var json = JsonConvert.SerializeObject(groupData);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Make the POST request using HttpClient
+                    var response = await client.PostAsync(url, data);
+                    // Check if the request was successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content
+                        line = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        TempData["notification"] = "Error making API request";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Present!";
+            }
+
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> ActiDeactiGroup_CA(int page_groups_id, int status)
+        {
+            string line = "";
+            try
+            {
+                //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail="+ useremail + "&site="+ site + "&role="+ role + "&pages="+ pages + "&reports="+ reports + "&read="+ read + "&write="+ write + "";
+                // var url = "http://localhost:23835/api/Login/SubmitUserAccess?login_id=" + login_id+"&siteList="+ site +"&pageList="+ pages +"&reportList="+ reports;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/ActiDeactiGroup_CA?page_groups_id=" + page_groups_id + "&status=" + status;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
+
     }
 }
