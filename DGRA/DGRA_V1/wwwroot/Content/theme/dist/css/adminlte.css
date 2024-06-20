@@ -53082,8 +53082,12 @@ a.text-muted:hover {
 .table th, .table td {
     vertical-align: middle !important;
 }
-.dataTables_filter {
+/*.dataTables_filter {
     margin-top: -2.6% !important;
+}*/
+div.dt-buttons {
+    position: initial;
+    margin-bottom: -3.2%;
 }
 
 table th {
