@@ -959,5 +959,122 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
         }
 
+        public async Task<IActionResult> GetCustomGroup(int siteType)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomGroup?siteType="+siteType;
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+
+        public async Task<IActionResult> GetWindGroupOfSite(string fy, string fromDate, string toDate, string site_list)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetWindPerformanceGroupBySite?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site_list=" + site_list;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCustomeWindDaily(string fromDate, string toDate, string site_list)
+        {
+
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomeWindDaily?fromDate=" + fromDate + "&toDate=" + toDate + "&site_list=" + site_list;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCustomeWindMonthly(string fy, string month, string site_list)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomeWindMonthly?fy=" + fy + "&month=" + month + "&site_list=" + site_list + "";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCustomeWindYearly(string fromDate, string toDate, string site_list)
+        {
+            string month = "";
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomeWindYearly?fromDate=" + fromDate + "&toDate=" + toDate + "&site_list=" + site_list + "&month=" + month + "";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+
+
     }
 }

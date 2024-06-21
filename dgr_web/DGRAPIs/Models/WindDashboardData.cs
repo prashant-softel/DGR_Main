@@ -22,7 +22,8 @@ namespace DGRAPIs.Models
         public double tarwind { get; set; }
         public dynamic tar_date { get; set; }
         public double total_mw { get; set; }
-       
+        public int site_id { get; set; }
+        public double expected_power { get; set; }
     }
     public class WindDashboardData1
     {

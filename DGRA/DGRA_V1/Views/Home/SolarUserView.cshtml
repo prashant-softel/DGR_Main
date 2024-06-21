@@ -114,6 +114,13 @@
             <div class="row">
                 <div class="col-sm-1"></div>
                 <div class="col-sm-5">
+                    <div id="customGroup"></div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-5">
 
                     <div id="views"></div>
 
@@ -176,6 +183,7 @@
 <script type="text/javascript">
     id = 0;
     var rcont = 1;
+    const group_page = ['24', '26'];
     window.onload = function () {
 
         function GetURLParameter(sParam) {
@@ -255,6 +263,11 @@
         getPageList(id);
     }
     function getPageList(id) {
+        var group_page_list = "";
+        for (var n = 0; n < group_page.length; n++) {
+            group_page_list += group_page[n] + ",";
+        }
+        group_page_list = group_page_list != "" ? group_page_list.slice(0, -1) : group_page_list;
 
         $.ajax({
             type: "POST",
@@ -314,6 +327,46 @@
                 }
             }
         });
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCustomGroup", "Home")' + '?login_id=' + id + '&site_type=2&groupPage=' + group_page_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                $("#customGroup").html();
+                //if (result.length > 0) {
+                    var tbl_custom = '<table class="table table-bordered table-striped customGroup-page">';
+                    let customcount = 0;
+                //$(".custom").attr('checked', true);
+                    for (var k = 0; k < result.length; k++)
+                    {
+                        if (result[k].cust_group == 1)
+                        {
+                            customcount = 1;
+                        }
+
+                    }
+                    //tbl_custom += '</th >';
+                    //tbl_custom += '<tr><th style="width:5.4rem">';
+                tbl_custom += '<tr><th style="width:5.4rem"><input type="checkbox"  disabled="disabled" class="form-check-input custom-pages" id="custom" name="custom" data-pageid ="" style="margin-left: 15px; margin-top: -6px;"></th>';
+                    tbl_custom += '<th>Custom Group By Site</th>';
+                    tbl_custom += '</tr > ';
+                    tbl_custom += '</table > ';
+                    $("#customGroup").html(tbl_custom);
+
+                console.log("inside", customcount);
+                if(customcount == 1)
+                {
+                    console.log("inside");
+                    $(".custom-pages").attr('checked', true);
+                    //tbl_custom += '<input type="checkbox"  disabled="disabled" class="form-check-input custom-pages" id="custom" name="cusotm" data-pageid ="" style="margin-left: 15px; margin-top: -6px;">';
+                }
+
+
+            }
+        });
+
 
          $.ajax({
             type: "POST",
@@ -479,37 +532,6 @@
                             $(".checkAllR").attr('checked', false);
                         }
                     });
-                    //$("input[type='checkbox'].view-pages").change(function () {
-                    //    var a = $("input[type='checkbox'].view-pages");
-                    //    console.log(a.length);
-                    //    if (a.length == a.filter(":checked").length) {
-                    //        $(".checkAllP").attr('checked', true);
-                    //    }
-                    //    else
-                    //    {
-                    //        $(".checkAllP").attr('checked', false);
-
-                    //    }
-                    //});
-                    //$("input[type='checkbox'].report-pages").change(function () {
-                    //    var a = $("input[type='checkbox'].report-pages");
-                    //    console.log(a.length);
-                    //    if (a.length == a.filter(":checked").length) {
-                    //        $(".checkAllR").attr('checked', true);
-                    //    }
-                    //    else
-                    //    {
-                    //        $(".checkAllR").attr('checked', false);
-                    //    }
-                    //});
-
-                    //$("input.view-pages").attr("disabled", true);
-                    //$("input.report-pages").attr("disabled", true);
-
-                    //$('.site').prop('disabled', false);
-                    //$("input.upload_access").attr("disabled", true);
-
-
                 }
             }
         });
@@ -553,6 +575,7 @@
         $("input.import-pages").attr("disabled", false);
         $("input.report-pages").attr("disabled", false);
         $("input.notification").attr("disabled", false);
+        $("input.custom-pages").attr("disabled", false);
         $("input.checkAllP").attr("disabled", false);
         $("input.checkAllR").attr("disabled", false);
         $("input.delete_btn").attr("disabled", false);
@@ -571,6 +594,7 @@
         $("input.import-pages").attr("disabled", true);
         $("input.report-pages").attr("disabled", true);
         $("input.notification").attr("disabled", true);
+        $("input.custom-pages").attr("disabled", true);
         $("input.checkAllP").attr("disabled", true);
         $("input.checkAllR").attr("disabled", true);
         $('.site').prop('disabled', true);
@@ -593,34 +617,7 @@
         row += '<td><input  type="checkbox" class="form-check-input upload_access" id="upload_access1" name="upload_access" value="1" style="margin-left: 25px; margin-top: -6px;"></td>';
         row += '<td><input  type="button" class="btn btn-block btn-danger delete_btn" id="delete_btn" name="button1" value="Delete" style="width: 50%; margin-left: 25px;"></td></tr >';
         $(table).find('tbody').append(row);
-
-        //$('.site').prop('disabled', false);
-        //$("input.upload_access").attr("disabled", false);
-        //document.getElementById("add_site_btn").disabled = false
-        //document.getElementById("delete_btn").disabled = false;
         rcont++;
-        // var rowCount = table.rows.length;
-        //var row = table.insertRow(row);
-        //Column 1
-        /* debugger;
-         var cell1 = row.insertCell(0);
-         var element1 = document.createElement("input");
-         element1.type = "button";
-         var btnName = "button" + (rowCount + 1);
-         element1.name = btnName;
-         element1.setAttribute('value', 'Delete'); // or element1.value = "button";
-         element1.onclick = function () {
-             removeRow(btnName);
-         }
-         cell1.appendChild(element1);
-         //Column 2
-         var cell2 = row.insertCell(1);
-         cell2.innerHTML = rowCount + 1;
-         //Column 3
-         var cell3 = row.insertCell(2);
-         var element3 = document.createElement("input");
-         element3.type = "text";
-         cell3.appendChild(element3);*/
     }
 
     $('table').on('click', '.delete_btn', function () {
@@ -658,6 +655,7 @@
         let report_arr = {};
         let import_approval = 0;
         let heatmap = 0;
+	 let selected_report_page = [];
         $('.view-pages').each(function () {
         var page_id = $(this).attr('data-pageid');
         var isSet = $(this).is(":checked");
@@ -668,6 +666,9 @@
             var page_id = $(this).attr('data-pageid');
             var isSet = $(this).is(":checked");
             report_arr[page_id] = isSet;
+	     if (isSet == true) {
+                selected_report_page.push(page_id);
+            }
         });
         $('.import-pages').each(function () {
             var page_id = $(this).attr('data-pageid');
@@ -690,7 +691,17 @@
                 email_arr.push(notification_name);
             }
         });
-        console.log(import_approval);
+
+        var getVal = $('#custom').is(":checked");
+        if (getVal == true) {
+            var matchval = group_page.filter(value => selected_report_page.includes(value));
+            console.log("FInd Values");
+            console.log(matchval);
+            if (matchval.length == 0) {
+                alert("Please Select Generation Report or Performance Summery");
+                return false;
+            }
+        }
 
         $.ajax({
             type: "POST",
@@ -698,9 +709,19 @@
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (result, status, xhr) {
-                alert("Success");
-               // location.href = "/Home/WindSiteUserMaster";
-                location.href = '@Url.Action("SiteUserMaster", "Home")';
+                if (getVal == true) {
+                    var group_page_list = "";
+                    for (var n = 0; n < group_page.length; n++) {
+                        group_page_list += group_page[n] + ",";
+                    }
+                    group_page_list = group_page_list != "" ? group_page_list.slice(0, -1) : group_page_list;
+                    submitGroupAccess(id, group_page_list);
+                }
+                else {
+                    alert("Success");
+                    location.href = '@Url.Action("SiteUserMaster", "Home")';
+                }
+
             }
         });
 
@@ -714,5 +735,17 @@
              }
          });
     }
-
+    function submitGroupAccess(login_id, page_group)
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SubmitGroupBySiteAccess", "Home")' + '?login_id=' + login_id + '&reportgroup=' + page_group + '&site_type=2',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (result, status, xhr) {
+                alert("Success");
+                location.href = '@Url.Action("SiteUserMaster", "Home")';
+            }
+        });
+    }
 </script>

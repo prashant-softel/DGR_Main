@@ -62,13 +62,6 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title text-center">Wind Generation Reports</h3>
-
-                <!--<div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-
-                </div>-->
             </div>
             <div class="card-body" style="padding: 0.25rem;">
                 <div class="row">
@@ -87,7 +80,11 @@
                                         <a class="nav-link" id="custom-tabs-three-yearly-tab" data-toggle="pill" href="#custom-tabs-three-yearly" role="tab" aria-controls="custom-tabs-three-yearly" aria-selected="false">Yearly Gen Report</a>
                                     </li>
 
-
+                                    <div style="float: right;width: 65%;" id="customDiv">
+                                        <div style="float: right;">
+                                            <input type="checkbox" class="form-check-input group_by_site" id="group_by_site" name="group_by_site" value="1" style="width: 17px; height: 16px;" onclick="grouping_site()"> <b>&nbsp;&nbsp;&nbsp;Custom Grouping of Site </b>
+                                        </div>
+                                    </div>
 
                                 </ul>
 
@@ -97,7 +94,7 @@
 
                                 <div class="tab-content" id="custom-tabs-three-tabContent">
                                     <div class="tab-pane fade show active" id="custom-tabs-three-daily" role="tabpanel" aria-labelledby="custom-tabs-three-daily-tab">
-                                        <div class="row">
+                                        <div class="row" id="daily_sec">
                                             <div class="col-sm-4">
                                                 <div class="input-group " style="margin-left: -14%; width: 118%;">
                                                     <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
@@ -133,7 +130,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="daily_sec1">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -151,7 +148,6 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
-
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <label class="col-sm-3 col-form-label text-right">WTG : </label>
@@ -160,7 +156,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="daily_sec2">
                                             <div class="col-sm-5 text-left">
                                                 <div class="table-responsive pad">
                                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -179,14 +175,38 @@
                                             </div>
                                             <div class="col-sm-5 text-center"></div>
                                         </div>
-
+                                        <!--daily Group site -->
+                                        <div class="row" id="daily_group" style="display:none">
+                                            <div class="col-sm-4">
+                                                <div class="input-group " style="margin-left: -14%; width: 118%;">
+                                                    <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="text" class="form-control float-right col-sm-6" id="custom_daterange" name="custom_daterange">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
+                                                        <select class="form-control  col-sm-8" id="cust_daily_group" name="cust_daily_group[]" value="" multiple></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 text-center">
+                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomDailyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                            </div>
+                                        </div>
                                         <hr>
                                         <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
+                                        <div id="reportsDailyGroup" style="overflow-x: auto;" class="reportsDailyGroup"></div>
                                         <div id="loaderD" class="loader  center" style="display:none"></div>
-
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-three-monthly" role="tabpanel" aria-labelledby="custom-tabs-three-monthly-tab">
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -232,7 +252,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec1">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -260,8 +280,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec2">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -276,7 +295,7 @@
                                             </div>
                                             <div class="col-sm-5"></div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="monthly_sec3">
                                             <div class="col-sm-5">
                                                 <div class="table-responsive pad">
                                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -291,13 +310,66 @@
                                             </div>
                                             <div class="col-sm-7"></div>
                                         </div>
+                                        <!-- Monthly Group by Site -->
+                                        <div class="row" id="monthly_group" style="display:none">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-3 col-form-label text-right">FY : </label>
+                                                        <select class="form-control  col-sm-8" id="fyM_group" name="fyM_group" value="">
+                                                            <option value="">Select Financial Year</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
 
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-3 col-form-label text-right">Month : </label>
+                                                        <select class="form-control  col-sm-8" id="monthM_group" name="monthM_group[]" value="" multiple>
+                                                            <option value="04">April</option>
+                                                            <option value="05">May</option>
+                                                            <option value="06">June</option>
+                                                            <option value="07">July</option>
+                                                            <option value="08">August</option>
+                                                            <option value="09">September</option>
+                                                            <option value="10">October</option>
+                                                            <option value="11">November</option>
+                                                            <option value="12">December</option>
+                                                            <option value="01">January</option>
+                                                            <option value="02">February</option>
+                                                            <option value="03">March</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Custom Group : </label>
+                                                            <select class="form-control  col-sm-8" id="custM_group" name="custM_group[]" value="" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row" id="monthly_group1" style="display:none">
+                                            <div class="col-sm-5"></div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomMonthGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                            </div>
+                                            <div class="col-sm-5"></div>
+                                        </div>
                                         <hr>
                                         <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
+                                        <div id="reportsMonthlyGroup" style="overflow-x: auto;" class="reportsMonthlyGroup"></div>
                                         <div id="loaderM" class="loader  center" style="display:none"></div>
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-three-yearly" role="tabpanel" aria-labelledby="custom-tabs-three-yearly-tab">
-                                        <div class="row">
+                                        <div class="row" id="yearly_sec">
                                             <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <div class="row">
@@ -328,7 +400,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="row">
+                                        <div class="row" id="yearly_sec1">
                                             <div class="col-sm-4">
 
                                                 <div class="form-group">
@@ -355,8 +427,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="row">
+                                        <div class="row" id="yearly_sec2">
                                             <div class="col-sm-5 text-left">
                                                 <div class="table-responsive pad">
                                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -374,9 +445,34 @@
                                             </div>
                                             <div class="col-sm-5 text-center"></div>
                                         </div>
+                                        <!-- Yearly Group -->
+                                        <div class="row" id="yearly_group" style="display:none">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-2 col-form-label text-right">FY : </label>
+                                                        <select class="form-control  col-sm-8" id="fyY_group" name="fyY_group" value="">
+                                                            <option value="">Select Financial Year</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
+                                                        <select class="form-control  col-sm-8" id="customY_group" name="customY_group[]" value="" onchange="" multiple></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 text-center">
+                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomYearlyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                            </div>
 
+                                        </div>
                                         <hr>
                                         <div id="reportsYearly" style="overflow-x: auto;" class="reportsYearly"></div>
+                                        <div id="reportsYearlyGroup" style="overflow-x: auto;" class="reportsYearlyGroup"></div>
                                         <div id="loaderY" class="loader  center" style="display:none"></div>
                                     </div>
 
@@ -385,40 +481,21 @@
                             <!-- /.card -->
                         </div>
                     </div>
-
-                    <!-- <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
-                                        <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
-                                        <div id="reportsYearly" style="overflow-x: auto; " class="reportsYearly"></div>
-                    -->
-
                 </div>
-
-                <!--<div class="card-footer">
-                    Footer
-                </div>-->
-
             </div>
-
-
-    </section>
-
-</div>
+        </section>
+    </div>
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <!--Date Range -->
 <script src="~/Content/theme/plugins/moment/moment.min.js"></script>
 <script src="~/Content/theme/plugins/inputmask/jquery.inputmask.min.js"></script>
 <script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
 <script src="~/Content/theme/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
-
 <script src="~/Content/theme/plugins/summernote/summernote-bs4.min.js"></script>
 <script src="~/Content/theme/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
 <script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
@@ -437,10 +514,72 @@
     var exceldata4;
     var exceldata5;
     var exceldata6;
+
+
+    //-- Selection Disable Enable
+    function grouping_site() {
+        var checkBox = document.getElementById("group_by_site");
+        console.log(checkBox.checked);
+        if (checkBox.checked == true) {
+            document.getElementById('daily_sec').style.display           = 'none';
+            document.getElementById('daily_sec1').style.display          = 'none';
+            document.getElementById('daily_sec2').style.display          = 'none';
+            document.getElementById('monthly_sec').style.display         = 'none';
+            document.getElementById('monthly_sec1').style.display        = 'none';
+            document.getElementById('monthly_sec2').style.display        = 'none';
+            document.getElementById('monthly_sec3').style.display        = 'none';
+            document.getElementById('yearly_sec').style.display          = 'none';
+            document.getElementById('yearly_sec1').style.display         = 'none';
+            document.getElementById('yearly_sec2').style.display         = 'none';
+            document.getElementById('daily_group').style.display         = 'flex';
+            document.getElementById('monthly_group').style.display       = 'flex';
+            document.getElementById('monthly_group1').style.display      = 'flex';
+            document.getElementById('yearly_group').style.display        = 'flex';
+            document.getElementById('reportsDaily').style.display        = 'none';
+            document.getElementById('reportsMonthly').style.display      = 'none';
+            document.getElementById('reportsYearly').style.display       = 'none';
+            document.getElementById('reportsDailyGroup').style.display   = 'block';
+            document.getElementById('reportsMonthlyGroup').style.display = 'block';
+            document.getElementById('reportsYearlyGroup').style.display  = 'block';
+        }
+        else {
+            document.getElementById('daily_sec').style.display           = 'flex';
+            document.getElementById('daily_sec1').style.display          = 'flex';
+            document.getElementById('daily_sec2').style.display          = 'flex';
+            document.getElementById('monthly_sec').style.display         = 'flex';
+            document.getElementById('monthly_sec1').style.display        = 'flex';
+            document.getElementById('monthly_sec2').style.display        = 'flex';
+            document.getElementById('monthly_sec3').style.display        = 'flex';
+            document.getElementById('yearly_sec').style.display          = 'flex';
+            document.getElementById('yearly_sec1').style.display         = 'flex';
+            document.getElementById('yearly_sec2').style.display         = 'flex';
+            document.getElementById('daily_group').style.display         = 'none';
+            document.getElementById('monthly_group').style.display       = 'none';
+            document.getElementById('monthly_group1').style.display      = 'none';
+            document.getElementById('yearly_group').style.display        = 'none';
+            document.getElementById('reportsDaily').style.display        = 'block';
+            document.getElementById('reportsMonthly').style.display      = 'block';
+            document.getElementById('reportsYearly').style.display       = 'block';
+            document.getElementById('reportsDailyGroup').style.display   = 'none';
+            document.getElementById('reportsMonthlyGroup').style.display = 'none';
+            document.getElementById('reportsYearlyGroup').style.display  = 'none';
+        }
+    }
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     var windUserAccess ="@Html.Raw(windSiteList.TrimEnd(','))";
     $(document).ready(function () {
+        if (userRole != "Admin") {
+            document.getElementById("customDiv").style.display = "none";
+            GetCustomGroupAccess();
+        }
         $('#daterange').daterangepicker(
+            {
+                maxDate: new Date(),
+                locale: {
+                    format: 'DD/MM/YYYY',
+                }
+            });
+        $('#custom_daterange').daterangepicker(
             {
                 maxDate: new Date(),
                 locale: {
@@ -453,6 +592,11 @@
                     "minimumCountSelected": 2,
                     "placeholder": "Select Month(s)",
                     filter:true
+        });
+        $('select#monthM_group').multipleSelect({
+            "minimumCountSelected": 2,
+            "placeholder": "Select Month(s)",
+            filter: true
         });
         $('select#country').multipleSelect({
             "placeholder": "Select country",
@@ -468,19 +612,18 @@
         });
         var selcountry = $('select#country option:selected').val();
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
-
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetStateList", "WindReport")' + '?countryname=' + selcountry + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
-            //data: '{"countryname":"' + selcountry + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var i = 0; i < result.length; i++) {
+                for (var i = 0; i < result.length; i++)
+                {
                     options += '<option value="' + result[i].state + '">' + result[i].state + '</option>';
                 }
-
 
                 $("#state").html(options);
                 $("#stateM").html(options);
@@ -506,49 +649,87 @@
         GetSPV(false);
         GetSPVM(false);
         GetSPVY(false);
+        getCutomeGroup();
     }
-    function getYear() {
-    $.ajax({
-        type: "GET",
-        url: "/WindReport/GetFinacialYear",
-        url: '@Url.Action("GetFinacialYear", "WindReport")',
-        contentType: "application/json; charset=utf-8",
-        datatype: "html",
-        success: function (result, status, xhr) {
-            var options = "";
-            options += '<option value="">Select Financial Year</option>';
-            for (var i = 0; i < result.length; i++) {
-                options += '<option value="' + result[i].financial_year + '">' + result[i].financial_year + '</option>';
+    function GetCustomGroupAccess()
+    {
+        console.log("call function");
+        var login_id = @HttpContextAccessor.HttpContext.Session.GetString("userid");
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomGroupAccess", "Home")' + '?login_id=' + login_id + '&site_type=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                if (result.length > 0) {
+                    CustomGroupOfSite = true;
+                    document.getElementById("customDiv").style.display = "block";
+                }
+                else {
+                    CustomGroupOfSite = false;
+                    document.getElementById("customDiv").style.display = "none";
+                }
             }
-            $("#fyM").html(options);
-            $("#fyY").html(options);
-            $('select#fyM').multipleSelect({
-                "placeholder": "Select month",
-                filter: true
-            });
-            $('select#fyY').multipleSelect({
-                "placeholder": "Select year",
-                filter: true
-            });
-        }
-    });
+        });
+    }
+    
+    function getYear() {
+        $.ajax({
+            type: "GET",
+            url: "/WindReport/GetFinacialYear",
+            url: '@Url.Action("GetFinacialYear", "WindReport")',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var options = "";
+                options += '<option value="">Select Financial Year</option>';
+                for (var i = 0; i < result.length; i++)
+                {
+                    options += '<option value="' + result[i].financial_year + '">' + result[i].financial_year + '</option>';
+                }
+                $("#fyM").html(options);
+                $("#fyM_group").html(options);
+                $("#fyY").html(options);
+                $("#fyY_group").html(options);
+                $('select#fyM').multipleSelect({
+                    "placeholder": "Select month",
+                    filter: true
+                });
+                $('select#fyM_group').multipleSelect({
+                    "placeholder": "Select month",
+                    filter: true
+                });
+                $('select#fyY').multipleSelect({
+                    "placeholder": "Select year",
+                    filter: true
+                });
+                $('select#fyY_group').multipleSelect({
+                    "placeholder": "Select year",
+                    filter: true
+                });
+            }
+        });
     }
 
-    function GetSPVY(fliterVal) {
+    function GetSPVY(fliterVal)
+    {
         let state_id = "";
-
         let site_ids = "";
-         if (fliterVal == false) {
+        if (fliterVal == false)
+        {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         if($('#stateY').val())
         {
-            $('select#stateY option:selected').each(function () {
+            $('select#stateY option:selected').each(function ()
+            {
                 state_id += "'"+$(this).val() + "',";
             });
             state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
         }
-        if (state_id != "") {
+        if (state_id != "")
+        {
              site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         $.ajax({
@@ -556,14 +737,14 @@
             url: '@Url.Action("GetSPVList", "WindReport")' + '?state=' + state_id + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
-
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var j = 0; j < result.length; j++) {
+                for (var j = 0; j < result.length; j++)
+                {
                     options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
                 }
                 $("#spvY").multipleSelect('destroy');
-
                 $("#spvY").html(options);
                 $('select#spvY').multipleSelect({
                     "minimumCountSelected": 2,
@@ -574,10 +755,12 @@
         });
         getSiteY(false);
     }
-    function GetSPVM(fliterVal) {
+    function GetSPVM(fliterVal)
+    {
         let state_id = "";
         let site_ids = "";
-         if (fliterVal == false) {
+        if (fliterVal == false)
+        {
              site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         if($('#stateM').val())
@@ -587,7 +770,8 @@
             });
             state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
         }
-        if (state_id != "") {
+        if (state_id != "")
+        {
              site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         $.ajax({
@@ -595,14 +779,14 @@
             url: '@Url.Action("GetSPVList", "WindReport")' + '?state=' + state_id + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
-
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var j = 0; j < result.length; j++) {
+                for (var j = 0; j < result.length; j++)
+                {
                     options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
                 }
                 $("#spvM").multipleSelect('destroy');
-
                 $("#spvM").html(options);
                 $('select#spvM').multipleSelect({
                     "minimumCountSelected": 2,
@@ -613,11 +797,12 @@
         });
         getSiteM(false);
     }
-    function GetSPV(fliterVal) {
+    function GetSPV(fliterVal)
+    {
         let state_id = "";
         let site_ids = "";
-
-        if (fliterVal == false) {
+        if (fliterVal == false)
+        {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         if($('#state').val())
@@ -627,19 +812,20 @@
             });
             state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
         }
-        if (state_id != "") {
+        if (state_id != "")
+        {
              site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         $.ajax({
             type: "GET",
-            ///url: "/WindReport/GetSPVList?state=" + val,
             url: '@Url.Action("GetSPVList", "WindReport")' + '?state=' + state_id + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
-
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var j = 0; j < result.length; j++) {
+                for (var j = 0; j < result.length; j++)
+                {
                     options += '<option value="' + result[j].spv + '">' + result[j].spv + '</option>';
                 }
                 $("#spv").multipleSelect('destroy');
@@ -649,14 +835,15 @@
                     "placeholder": "Select SPV(s)",
                     filter:true
                 });
-
             }
         });
         getSite(false);
     }
-    function getSite(fliterVal) {
+    function getSite(fliterVal)
+    {
         var site_ids = "";
-        if (fliterVal == false) {
+        if (fliterVal == false)
+        {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         let state_id = "";
@@ -678,14 +865,15 @@
             url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state_id + '&spv=' + spv + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
                 }
                 $("#site").multipleSelect('destroy');
                 $("#site").html("").html(options);
-
                 $('select#site').multipleSelect({
                     "minimumCountSelected": 2,
                     "placeholder": "Select Site(s)",
@@ -695,10 +883,12 @@
         });
          GetWTG(false);
     }
-    function getSiteM(fliterVal) {
+    function getSiteM(fliterVal)
+    {
         let state_id = "";
         var site_ids = "";
-        if (fliterVal == false) {
+        if (fliterVal == false)
+        {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
          $('select#stateM option:selected').each(function () {
@@ -706,25 +896,25 @@
             //console.log($(this).val());
         });
         state_id = state_id != "" ? state_id.slice(0, -1) : state_id;
-
         let spv = "";
-
         $('select#spvM option:selected').each(function () {
             spv += $(this).val() + ",";
         });
         spv = spv != "" ? spv.slice(0, -1) : spv;
-        if (state_id != "" || spv != "") {
+        if (state_id != "" || spv != "")
+        {
              site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state_id + '&spv=' + spv+ '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
                 }
                 $("#siteM").multipleSelect('destroy');
@@ -738,10 +928,12 @@
         });
          GetWTGM(false);
     }
-    function getSiteY(fliterVal) {
+    function getSiteY(fliterVal)
+    {
         let state_id = "";
         var site_ids = "";
-        if (fliterVal == false) {
+        if (fliterVal == false)
+        {
             site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
         }
         $('select#stateY option:selected').each(function () {
@@ -754,16 +946,16 @@
             spv += $(this).val() + ",";
         });
         spv = spv != "" ? spv.slice(0, -1) : spv;
-
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state_id + '&spv=' + spv + '&sitelist=' + site_ids,
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
                 }
                 $("#siteY").multipleSelect('destroy');
@@ -777,39 +969,41 @@
         });
         GetWTGY(false);
     }
-    function GetWTG(fliterVal) {
+    function GetWTG(fliterVal)
+    {
         let siteid = "";
         let state = "";
         $('select#state option:selected').each(function () {
             state += $(this).val() + ",";
 
         });
-
         let spv = "";
         $('select#spv option:selected').each(function () {
             spv += $(this).val() + ",";
             // console.log($(this).val());
 
         });
-
-         if (fliterVal == false) {
-             siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
-            }
-            else {
+        if (fliterVal == false)
+        {
+            siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
+        }
+        else
+        {
              $('select#site option:selected').each(function () {
                  siteid += $(this).val() + ",";
                  });
                 siteid = siteid != "" ? siteid.slice(0, -1) : siteid;
-            }
+        }
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid+ '&state=' + state + '&spv=' + spv,
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].wtg + '">' + result[k].wtg + '</option>';
                 }
                 $("#wtg").multipleSelect('destroy');
@@ -819,44 +1013,41 @@
                     "placeholder": "Select WTG(s)",
                     filter:true
                 });
-
             }
         });
     }
-    function GetWTGM(fliterVal) {
-
-
+    function GetWTGM(fliterVal)
+    {
         let siteid = "";
         let state = "";
         $('select#stateM option:selected').each(function () {
             state += $(this).val() + ",";
-
         });
-
         let spv = "";
         $('select#spvM option:selected').each(function () {
             spv += $(this).val() + ",";
-            // console.log($(this).val());
-
         });
-         if (fliterVal == false) {
+        if (fliterVal == false)
+        {
              siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
-            }
-            else {
+        }
+        else
+        {
              $('select#siteM option:selected').each(function () {
                  siteid += $(this).val() + ",";
                  });
                 siteid = siteid != "" ? siteid.slice(0, -1) : siteid;
-            }
+        }
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid + '&state=' + state + '&spv=' + spv,
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].wtg + '">' + result[k].wtg + '</option>';
                 }
                 $("#wtgM").multipleSelect('destroy');
@@ -869,43 +1060,38 @@
             }
         });
     }
-    function GetWTGY(fliterVal) {
+    function GetWTGY(fliterVal)
+    {
         let siteid = "";
         let state = "";
         $('select#stateY option:selected').each(function () {
             state += $(this).val() + ",";
-
         });
-
         let spv = "";
         $('select#spvY option:selected').each(function () {
             spv += $(this).val() + ",";
-            // console.log($(this).val());
-
         });
-         if (fliterVal == false) {
+        if (fliterVal == false)
+        {
              siteid = "@Html.Raw(windSiteList.TrimEnd(','))";
-            }
-            else {
-                $('select#siteY option:selected').each(function () {
-                    siteid += $(this).val() + ",";
-                 });
+        }
+        else
+        {
+            $('select#siteY option:selected').each(function () {
+                siteid += $(this).val() + ",";
+            });
                 siteid = siteid != "" ? siteid.slice(0, -1) : siteid;
-            }
-       // $('select#siteY option:selected').each(function () {
-         //   siteid += $(this).val() + ",";
-        //});
-
-
+        }
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetWTGList", "WindReport")' + '?siteid=' + siteid + '&state=' + state + '&spv=' + spv,
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].wtg + '">' + result[k].wtg + '</option>';
                 }
                 $("#wtgY").multipleSelect('destroy');
@@ -918,20 +1104,60 @@
             }
         });
     }
+     function getCutomeGroup()
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCustomGroup", "WindReport")?siteType=2',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var options = "";
+                for (var k = 0; k < result.length; k++)
+                {
+                    options += '<option value="' + result[k].site_ids + '">' + result[k].cust_group + '</option>';
+                }
+                $("#cust_daily_group").multipleSelect('destroy');
+                $("#cust_daily_group").html("").html(options);
+                $('select#cust_daily_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter:true
+                });
+                $("#custM_group").multipleSelect('destroy');
+                $("#custM_group").html("").html(options);
+                $('select#custM_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter: true
+                });
+                $("#customY_group").multipleSelect('destroy');
+                $("#customY_group").html("").html(options);
+                $('select#customY_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter: true
+                });
+            }
+        });
+    }
 
-
-    function GetDailyGenReport() {
-
+    function GetDailyGenReport()
+    {
         var ReportType = $("input[name='daily']:checked").val();
-        if (ReportType == "WTG") {
+        if (ReportType == "WTG")
+        {
             GetDailyGenReportWTGWise();
         }
-        else {
+        else
+        {
             GetDailyGenReportSiteWise();
         }
     }
     // Daily Gen Report WTG WIse
-    function GetDailyGenReportWTGWise() {
+    function GetDailyGenReportWTGWise()
+    {
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -948,30 +1174,25 @@
             site += $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-
-
-        if(!site){
+        if (!site)
+        {
             $('select#state option:selected').each(function () {
                 state +=  $(this).val() + ",";
             });
             state = state != "" ? state.slice(0, -1) : state;
-
             $('select#spv option:selected').each(function () {
                 spv += $(this).val() + ",";
             });
             spv = spv != "" ? spv.slice(0, -1) : spv;
         }
-
         $('select#wtg option:selected').each(function () {
             wtg +=  $(this).val() + ",";
         });
         wtg = wtg != "" ? wtg.slice(0, -1) : wtg;
-
-
-        if (userRole == "User" && site == "") {
+        if (userRole == "User" && site == "")
+        {
             site = windUserAccess;
         }
-
         var reportType = "WTG";
         var reporthead = "WTG Wise Report";
         document.getElementById("loaderD").style.display = 'flex';
@@ -980,9 +1201,8 @@
             url: '@Url.Action("GetWindDailyGenerationReportWTGWise", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&wtg=' + wtg,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
-            success: function (result, status, xhr) {
-
-                //var tbl = '<div class="text-center"><h5></h5></div>';
+            success: function (result, status, xhr)
+            {
                 var tbl = '<table id="example1"  class="table table-bordered table-striped" style="width: 220%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>Date</th>';
@@ -1017,12 +1237,13 @@
                 tbl += '<th>LS_Loss</th>';
                 tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
-                if (result.length > 0) {
+                if (result.length > 0)
+                {
                     exceldata1 = result;
                     var total_losses = 0;
                     var total_hourse = 0;
-                    for (var i = 0; i < result.length; i++) {
-
+                    for (var i = 0; i < result.length; i++)
+                    {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
                         total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
                         tbl += '<tr>';
@@ -1063,7 +1284,8 @@
                         tbl += '</tr>';
                     }
                 }
-                else {
+                else
+                {
                     console.log("Data not available");
 
                 }
@@ -1093,9 +1315,6 @@
                             title: 'WTG Wise Daily Generation Report',
                             exportOptions: {
                                 columns: ':visible',
-                                //exportOptions: {
-                                   // rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: '' + cnt + '' }
-                               // }
                             }
                         },
                         {
@@ -1109,55 +1328,50 @@
                         {
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
-
                             action: function () {
-                                //dailyexportToExcelsitewise();
                                 dailyexportToExcelwtgwise();
                             }
                         },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
-                            //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA_A(%) i") {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA_B(%) i") {
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA_C(%) i") {
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
                     }
-                    /* "buttons": [
-                         'copy', 'excel', 'csv', 'colvis'
-                     ]*/
                 });
-
-
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 $(document).on("click", "div.dt-button-collection > div > button", function () {
-                    if ($(this).hasClass("active")) {
+                    if ($(this).hasClass("active"))
+                    {
                         $(this).css("background-color", "white");
-                    } else {
+                    }
+                    else
+                    {
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                //$('#example1').removeClass('dataTable');
-               // $('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loaderD").style.display = 'none';
-
+                //document.getElementById("reportsDailyGroup").style.display = 'none';
             }
         });
-
     }
    // -----------------------------------------------
-
     // Daily Gen Report Site WIse
-    function GetDailyGenReportSiteWise() {
+    function GetDailyGenReportSiteWise()
+    {
         var daterange = $('#daterange').val();
         var arr1 = new Array();
         arr1 = daterange.split("-");
@@ -1180,18 +1394,15 @@
             site +=  $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-
-
         let wtg = "";
         $('select#wtg option:selected').each(function () {
             wtg += $(this).val() + ",";
         });
         wtg = wtg != "" ? wtg.slice(0, -1) : wtg;
-
-        if (userRole == "User" && site == "") {
+        if (userRole == "User" && site == "")
+        {
             site = windUserAccess;
         }
-
         var reportType = "WTG";
         var reporthead = "Site Wise Report";
         document.getElementById("loaderD").style.display = 'flex';
@@ -1200,8 +1411,8 @@
             url: '@Url.Action("GetWindDailyGenerationReportSiteWise", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&wtg=' + wtg + '&reportType=' + reportType,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
-            success: function (result, status, xhr) {
-                //var tbl = '<div class="text-center"><h5></h5></div>';
+            success: function (result, status, xhr)
+            {
                 var tbl = '<table id="example1"  class="table table-bordered table-striped" style="width: 220%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>Date</th>';
@@ -1237,17 +1448,15 @@
                 tbl += '<th>LS_Loss</th>';
                 tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
-
-                if (result.length > 0) {
+                if (result.length > 0)
+                {
                     exceldata2 = result;
                     var total_losses = 0;
                     var total_hourse = 0;
-                    for (var i = 0; i < result.length; i++) {
-
+                    for (var i = 0; i < result.length; i++)
+                    {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
                         total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-
-                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -1296,7 +1505,8 @@
                         //console.log(Math.abs(parseFloat(result[i].usmh_loss)).toFixed(2));
                     }
                 }
-                else {
+                else
+                {
                     console.log("Data not available");
 
                 }
@@ -1342,76 +1552,75 @@
                         {
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
-
-                            action: function () {
+                            action: function ()
+                            {
                                 dailyexportToExcelsitewise();
                             }
                         },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
-                            //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA_A(%) i") {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA_B(%) i") {
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA_C(%) i") {
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
                     }
-                    /* "buttons": [
-                         'copy', 'excel', 'csv', 'colvis'
-                     ]*/
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 $("dataTables_filter").css("margin-top", "-35px");
                 $(document).on("click", "div.dt-button-collection > div > button", function () {
-                    if ($(this).hasClass("active")) {
+                    if ($(this).hasClass("active"))
+                    {
                         $(this).css("background-color", "white");
-                    } else {
+                    }
+                    else
+                    {
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                //$('#example1').removeClass('dataTable');
-                //$('#example1').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loaderD").style.display = 'none';
-
+                //document.getElementById("reportsDailyGroup").style.display = 'none';
             }
         });
     }
-
-
-   // -----------------------------------Monthly ---------------------//
-    function GetMonthlyGenReport() {
-
-       var ReportType = $("input[name='monthly']:checked").val();
-        if (ReportType == "WTG") {
+    // -----------------------------------Monthly ---------------------//
+    function GetMonthlyGenReport()
+    {
+        var ReportType = $("input[name='monthly']:checked").val();
+        if (ReportType == "WTG")
+        {
           GetMonthlyGenReportWTGWise();
         }
-        else {
+        else
+        {
            GetMonthlyGenReportSiteWise();
         }
     }
 
     // Mothly Report WTG Wise
-    function GetMonthlyGenReportWTGWise() {
-
-        let site= "";
-        let spv = "";
-        let wtg = "";
+    function GetMonthlyGenReportWTGWise()
+    {
+        let site  = "";
+        let spv   = "";
+        let wtg   = "";
         let state = "";
-
         $('select#siteM option:selected').each(function () {
             site += $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-
-        if(!site){
+        if (!site)
+        {
             $('select#stateM option:selected').each(function () {
                 state +=  $(this).val() + ",";
             });
@@ -1431,24 +1640,23 @@
 
         var country = $('select#countryM option:selected').val();
         var year = $('select#fyM option:selected').val();
-        if (year == "") {
+        if (year == "")
+        {
             alert("Please select financial year");
             return false;
         }
         let month = "";
         $('select#monthM option:selected').each(function () {
-
             month+= $(this).val()+",";
         });
         month = month != "" ? month.slice(0, -1) : month;
-        if (userRole == "User" && site == "") {
+        if (userRole == "User" && site == "")
+        {
             site = windUserAccess;
         }
-
         var arr1 = new Array();
         arr1 = year.split("-");
         var fromDate = "";
-
         var reportType = "WTG";
         var reporthead = "WTG Wise Report";
         document.getElementById("loaderM").style.display = 'flex';
@@ -1457,9 +1665,8 @@
             url: '@Url.Action("GetWindMonthlyGenerationReportWTGWise", "WindReport")' + '?fy=' + arr1[0] + '&month=' + month + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&wtg=' + wtg + '&reportType=' + reportType,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
-            success: function (result, status, xhr) {
-
-                //var tbl = '<div class="text-center"><h5></h5></div>';
+            success: function (result, status, xhr)
+            {
                 var tbl = '<table id="example2"  class="table table-bordered table-striped" style="width: 220%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>FY</th>';
@@ -1487,7 +1694,6 @@
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>LS</th>';
                 tbl += '<th>Total_BD</th>';
-
                 tbl += '<th>USMH_Loss</th>';
                 tbl += '<th>SMH_Loss</th>';
                 tbl += '<th>Others_Loss</th>';
@@ -1496,19 +1702,16 @@
                 tbl += '<th>LS_Loss</th>';
                 tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
-
-                if (result.length > 0) {
+                if (result.length > 0)
+                {
                     exceldata3 = result;
                     var total_losses = 0;
                     var total_hourse = 0;
-                    for (var i = 0; i < result.length; i++) {
-
+                    for (var i = 0; i < result.length; i++)
+                    {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
                         total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-                        //console.log("Total BD", total_hourse);
-                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        console.log("Total BD", total_hourse);
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + year + '</td>';
                         tbl += '<td class="text-left">' + result[i].month + '</td>';
@@ -1554,9 +1757,9 @@
                         tbl += '</tr>';
                     }
                 }
-                else {
+                else
+                {
                     console.log("Data not available");
-                    // tbl += '<tr><th colspan="12" style="text-align:center">Data Not Available <th></tr>';
                 }
                tbl += '</table>';
                 $("#reportsMonthly").html(tbl);
@@ -1585,9 +1788,6 @@
                             title: 'WTG Wise Monthly Generation Report',
                             exportOptions: {
                                 columns: ':visible',
-                               /* exportOptions: {
-                                    rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: '' + cnt + '' }
-                                }*/
                             }
                         },
                         {
@@ -1609,85 +1809,82 @@
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
-                            //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA_A(%) i") {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA_B(%) i") {
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA_C(%) i") {
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
                     }
-                    /* "buttons": [
-                         'copy', 'excel', 'csv', 'colvis'
-                     ]*/
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 $(document).on("click", "div.dt-button-collection > div > button", function () {
-                    if ($(this).hasClass("active")) {
+                    if ($(this).hasClass("active"))
+                    {
                         $(this).css("background-color", "white");
-                    } else {
+                    }
+                    else
+                    {
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                //$('#example2').removeClass('dataTable');
-                //$('#example2').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loaderM").style.display = 'none';
+                document.getElementById("reportsMonthlyGroup").style.display = 'none';
             }
         });
-
     }
     //------------------------------------
     // Mothly Report SIte Wise
-    function GetMonthlyGenReportSiteWise() {
-         let site= "";
-        let spv = "";
-        let wtg = "";
+    function GetMonthlyGenReportSiteWise()
+    {
+        let site  = "";
+        let spv   = "";
+        let wtg   = "";
         let state = "";
-
         $('select#siteM option:selected').each(function () {
             site += $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-
-        if(!site){
+        if (!site)
+        {
             $('select#stateM option:selected').each(function () {
                 state +=  $(this).val() + ",";
              });
             state = state != "" ? state.slice(0, -1) : state;
-
             $('select#spvM option:selected').each(function () {
                 spv += $(this).val() + ",";
             });
             spv = spv != "" ? spv.slice(0, -1) : spv;
         }
-
         $('select#wtgM option:selected').each(function () {
             wtg +=  $(this).val() + ",";
           });
         wtg = wtg != "" ? wtg.slice(0, -1) : wtg;
-
         var country = $('select#countryM option:selected').val();
         var fyyear = $('select#fyM option:selected').val();
-        if (fyyear == "") {
+        if (fyyear == "")
+        {
             alert("Please select financial year");
             return false;
         }
         let month = "";
         $('select#monthM option:selected').each(function () {
-
             month+= $(this).val()+",";
         });
         month = month != "" ? month.slice(0, -1) : month;
-        if (userRole == "User" && site == "") {
+        if (userRole == "User" && site == "")
+        {
             site = windUserAccess;
         }
-
         var arr1 = new Array();
         arr1 = fyyear.split("-");
         var fromDate = "";
@@ -1700,9 +1897,8 @@
             url: '@Url.Action("GetWindMonthlyGenerationReportSiteWise", "WindReport")' + '?fy=' + arr1[0] + '&month=' + month + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&wtg=' + wtg + '&reportType=' + reportType,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
-            success: function (result, status, xhr) {
-
-                //var tbl = '<div class="text-center"><h5></h5></div>';
+            success: function (result, status, xhr)
+            {
                 var tbl = '<table id="example2"  class="table table-bordered table-striped" style="width: 220%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>FY</th>';
@@ -1738,19 +1934,16 @@
                 tbl += '<th>LS_Loss</th>';
                 tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
-                if (result.length > 0) {
-                     exceldata4 = result ;
+                if (result.length > 0)
+                {
+                    exceldata4 = result ;
                     var total_losses = 0;
                     var total_hourse = 0;
-                    for (var i = 0; i < result.length; i++) {
-
+                    for (var i = 0; i < result.length; i++)
+                    {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
                         total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-
                         cnt++;
-                        //var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
                         tbl += '<td class="text-left">' + result[i].month + '</td>';
@@ -1796,7 +1989,8 @@
                         tbl += '</tr>';
                     }
                 }
-                else {
+                else
+                {
                     console.log("Data not available");
 
                 }
@@ -1827,14 +2021,11 @@
                             title: 'Site Wise Monthly Generation Report',
                             exportOptions: {
                                 columns: ':visible',
-                                /*exportOptions: {
-                                    rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: ''+ cnt +'' }
-                                }*/
                             }
                         },
                         {
                             extend: 'csv',
-                           title: 'Site Wise Monthly Generation Report',
+                            title: 'Site Wise Monthly Generation Report',
                             exportOptions: {
                                 columns: ':visible'
                             }
@@ -1843,121 +2034,118 @@
                         {
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
-
-                            action: function () {
+                            action: function ()
+                            {
                                 monthlyexportToExcelsitewise();
                             }
                         },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
-                            //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA_A(%) i") {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA_B(%) i") {
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA_C(%) i") {
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
                     }
-                    /* "buttons": [
-                         'copy', 'excel', 'csv', 'colvis'
-                     ]*/
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 $(document).on("click", "div.dt-button-collection > div > button", function () {
-                    if ($(this).hasClass("active")) {
+                    if ($(this).hasClass("active"))
+                    {
                         $(this).css("background-color", "white");
-                    } else {
+                    }
+                    else
+                    {
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                //$('#example2').removeClass('dataTable');
-               // $('#example2').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loaderM").style.display = 'none';
+                //document.getElementById("reportsMonthlyGroup").style.display = 'none';
             }
         });
-
     }
 
     // -----------------------------------Yearly ---------------------//
-    function GetYearlyGenReport() {
-
+    function GetYearlyGenReport()
+    {
         var ReportType = $("input[name='yearly']:checked").val();
-        if (ReportType == "WTG") {
+        if (ReportType == "WTG")
+        {
             GetYearlyGenReportWTGWise();
         }
-        else {
+        else
+        {
             GetYearlyGenReportSiteWise();
         }
     }
 
     // Yearly WTG Wise
-    function GetYearlyGenReportWTGWise() {
+    function GetYearlyGenReportWTGWise()
+    {
         var country = $('select#countryY option:selected').val();
-        let site = "";
-        let spv = "";
-        let wtg = "";
+        let site  = "";
+        let spv   = "";
+        let wtg   = "";
         let state = "";
-
         $('select#siteY option:selected').each(function () {
             site += $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-
-        if (!site) {
+        if (!site)
+        {
             $('select#stateY option:selected').each(function () {
                 state += $(this).val() + ",";
             });
             state = state != "" ? state.slice(0, -1) : state;
-
             $('select#spvY option:selected').each(function () {
                 spv += $(this).val() + ",";
-           });
+            });
             spv = spv != "" ? spv.slice(0, -1) : spv;
-
         }
-
         $('select#wtgY option:selected').each(function () {
             wtg += $(this).val() + ",";
         });
         wtg = wtg != "" ? wtg.slice(0, -1) : wtg;
-
         var fyyear = $('select#fyY option:selected').val();
-        if (fyyear == "") {
+        if (fyyear == "")
+        {
             alert("Please select financial year");
             return false;
         }
-        //var month = $('select#monthM option:selected').val();
         var arr1 = new Array();
-        arr1 = fyyear.split("-");
-        if (userRole == "User" && site == "") {
+        arr1     = fyyear.split("-");
+        if (userRole == "User" && site == "")
+        {
             site = windUserAccess;
         }
-
         var fromDate = "";
-        var toDate = "";
-        if (fyyear) {
+        var toDate   = "";
+        if (fyyear)
+        {
             fromDate = arr1[0] + '-04-01';
-            toDate = '20' + arr1[1] + '-03-31';
+            toDate   = '20' + arr1[1] + '-03-31';
         }
         var reportType = "WTG";
         var reporthead = "WTG Wise Report";
         document.getElementById("loaderY").style.display = 'flex';
-
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetWindYearlyGenerationReportWTGWise", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&wtg=' + wtg + '&reportType=' + reportType,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
-            success: function (result, status, xhr) {
-
-               // var tbl = '<div class="text-center"><h5></h5></div>';
+            success: function (result, status, xhr)
+            {
                 var tbl = '<table id="example3"  class="table table-bordered table-striped" style="width: 220%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>FY</th>';
@@ -1984,7 +2172,6 @@
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>LS</th>';
                 tbl += '<th>Total_BD</th>';
-
                 tbl += '<th>USMH_Loss</th>';
                 tbl += '<th>SMH_Loss</th>';
                 tbl += '<th>Others_Loss</th>';
@@ -1993,19 +2180,15 @@
                 tbl += '<th>LS_Loss</th>';
                 tbl += '<th>Total_Loss</th>';
                 tbl += '</tr></thead>';
-
-                if (result.length > 0) {
+                if (result.length > 0)
+                {
                     exceldata5 = result;
                     var total_losses = 0;
                     var total_hourse = 0;
-                    for (var i = 0; i < result.length; i++) {
-
+                    for (var i = 0; i < result.length; i++)
+                    {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
                         total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-
-                       // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear  + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -2050,9 +2233,9 @@
                         tbl += '</tr>';
                     }
                 }
-                else {
+                else
+                {
                     console.log("Data not available");
-                    // tbl += '<tr><th colspan="12" style="text-align:center">Data Not Available <th></tr>';
                 }
                 tbl += '</table>';
                 $("#reportsYearly").html(tbl);
@@ -2081,9 +2264,6 @@
                             title: 'WTG Wise Yearly Generation Report',
                             exportOptions: {
                                 columns: ':visible',
-                                /*exportOptions: {
-                                    rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: '' + cnt + '' }
-                                }*/
                             }
                         },
                         {
@@ -2098,7 +2278,6 @@
 
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
-
                             action: function () {
                                 yearlyexportToExcelwtgwise();
                             }
@@ -2106,88 +2285,83 @@
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
-                            //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA_A(%) i") {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA_B(%) i") {
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA_C(%) i") {
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
                     }
-                    /* "buttons": [
-                         'copy', 'excel', 'csv', 'colvis'
-                     ]*/
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
                 $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
                 $(document).on("click", "div.dt-button-collection > div > button", function () {
-                    if ($(this).hasClass("active")) {
+                    if ($(this).hasClass("active"))
+                    {
                         $(this).css("background-color", "white");
-                    } else {
+                    }
+                    else
+                    {
                         $(this).css("background-color", "#31576d");
                     }
                 });
-                //$('#example3').removeClass('dataTable');
-                //$('#example3').wrap("<div class='scrolledTable'></div>");
                 document.getElementById("loaderY").style.display = 'none';
+                //document.getElementById("reportsYearlyGroup").style.display = 'none';
             }
         });
-
     }
 
     // Yearly SIte Wise
-    function GetYearlyGenReportSiteWise() {
+    function GetYearlyGenReportSiteWise()
+    {
         var country = $('select#countryY option:selected').val();
-        let site = "";
-        let spv = "";
-        let wtg = "";
+        let site  = "";
+        let spv   = "";
+        let wtg   = "";
         let state = "";
-
         $('select#siteY option:selected').each(function () {
             site += $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-
-        if (!site) {
+        if (!site)
+        {
             $('select#stateY option:selected').each(function () {
                 state += $(this).val() + ",";
             });
             state = state != "" ? state.slice(0, -1) : state;
-
             $('select#spvY option:selected').each(function () {
                 spv += $(this).val() + ",";
 
             });
             spv = spv != "" ? spv.slice(0, -1) : spv;
-
         }
-
         $('select#wtgY option:selected').each(function () {
             wtg += $(this).val() + ",";
-
         });
         wtg = wtg != "" ? wtg.slice(0, -1) : wtg;
-
         var fyyear = $('select#fyY option:selected').val();
-        //var month = $('select#monthM option:selected').val();
-        if (userRole == "User" && site == "") {
+        if (userRole == "User" && site == "")
+        {
             site = windUserAccess;
         }
-        if (fyyear == "") {
+        if (fyyear == "")
+        {
             alert("Please select financial year");
             return false;
         }
-        var arr1 = new Array();
-        arr1 = fyyear.split("-");
-        var fromDate = "";
-        fromDate = arr1[0] + '-04-01';
-        toDate = '20' + arr1[1] + '-03-31';
-
+        var arr1       = new Array();
+        arr1           = fyyear.split("-");
+        var fromDate   = "";
+        fromDate       = arr1[0] + '-04-01';
+        toDate         = '20' + arr1[1] + '-03-31';
         var reportType = "Site";
         var reporthead = "Site Wise Report";
         document.getElementById("loaderY").style.display = 'flex';
@@ -2196,9 +2370,8 @@
             url: '@Url.Action("GetWindYearlyGenerationReportSiteWise", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&country=' + country + '&state=' + state + '&spv=' + spv + '&site=' + site + '&wtg=' + wtg + '&reportType=' + reportType,
             contentType: "application/json; charset=utf-8",
             datatype: "JSON",
-            success: function (result, status, xhr) {
-
-                //var tbl = '<div class="text-center"><h5></h5></div>';
+            success: function (result, status, xhr)
+            {
                 var tbl = '<table id="example3"  class="table table-bordered table-striped" style="width: 220%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>FY</th>';
@@ -2225,7 +2398,6 @@
                 tbl += '<th>EGBDH</th>';
                 tbl += '<th>LS</th>';
                 tbl += '<th>Total_BD</th>';
-
                 tbl += '<th>USMH_Loss</th>';
                 tbl += '<th>SMH_Loss</th>';
                 tbl += '<th>Others_Loss</th>';
@@ -2238,13 +2410,10 @@
                 var total_hourse = 0;
                 if (result.length > 0) {
                      exceldata6 = result;
-                    for (var i = 0; i < result.length; i++) {
-                        // var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                    for (var i = 0; i < result.length; i++)
+                    {
                         total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-
-                        //total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
                         total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-
                         tbl += '<tr>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -2289,9 +2458,9 @@
                         tbl += '</tr>';
                     }
                 }
-                else {
+                else
+                {
                     console.log("Data not available");
-                    // tbl += '<tr><th colspan="12" style="text-align:center">Data Not Available <th></tr>';
                 }
                 tbl += '</table>';
                 $("#reportsYearly").html(tbl);
@@ -2320,9 +2489,6 @@
                             title: 'Site Wise Yearly Generation Report',
                             exportOptions: {
                                 columns: ':visible',
-                                /*exportOptions: {
-                                    rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: '' + cnt + '' }
-                                }*/
                             }
                         },
                         {
@@ -2336,29 +2502,722 @@
                         {
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
-
-                            action: function () {
-                                yearlyexportToExcelsitewise();
+                            action: function ()
+                            {
+                                yearlyexportToExcelwtgwise();
                             }
                         },
                     ],
                     initComplete: function () {
                         this.api().columns().header().to$().each(function () {
-                            //$(this).attr('title', 'title for ' + $(this).text())
-                            if ($(this).text() == "EGA_A(%) i") {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
                             }
-                            if ($(this).text() == "EGA_B(%) i") {
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
                                 $(this).attr('title', 'External Grid Breakdown & Shutdown')
                             }
-                            if ($(this).text() == "EGA_C(%) i") {
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
                                 $(this).attr('title', 'Load Shedding')
                             }
                         })
                     }
-                    /* "buttons": [
-                         'copy', 'excel', 'csv', 'colvis'
-                     ]*/
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active"))
+                    {
+                        $(this).css("background-color", "white");
+                    }
+                    else
+                    {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                document.getElementById("loaderY").style.display = 'none';
+                //document.getElementById("reportsYearlyGroup").style.display = 'none';
+            }
+        });
+    }
+    function dailyexportToExcelwtgwise()
+    {
+        result = exceldata1;
+        var columns = [
+            "Date", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others","IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "Others_Loss", "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", "Total_Loss"
+        ];
+        console.log(exceldata1);
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row          = [];
+            var total_losses = 0;
+            var total_hourse = 0;
+            for (var i = 0; i < result.length; i++)
+            {
+                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
+                row.push(result[i].country);
+                row.push(result[i].state);
+                row.push(result[i].spv);
+                row.push(result[i].site);
+                row.push(result[i].wtg);
+                row.push(result[i].wind_speed);
+                row.push(result[i].kwh);
+                row.push(result[i].plf);
+                row.push(result[i].ma_actual);
+                row.push(result[i].ma_contractual);
+                row.push(result[i].iga);
+                row.push(result[i].ega);
+                row.push(result[i].ega_b);
+                row.push(result[i].ega_c);
+                row.push(result[i].grid_hrs);
+                row.push(result[i].lull_hrs);
+                row.push(result[i].unschedule_num);
+                row.push(result[i].schedule_num);
+                row.push(result[i].others_num);
+                row.push(result[i].igbdh_num);
+                row.push(result[i].egbdh_num);
+                row.push(result[i].load_shedding_num);
+                row.push(total_hourse);
+                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+                row.push(Math.abs(parseFloat(result[i].smh_loss)));
+                row.push(Math.abs(parseFloat(result[i].others_loss)));
+                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+                row.push(Math.abs(parseFloat(total_losses)));
+                rows.push(row);
+            }
+            var data = [columns].concat(rows);
+            var ws   = XLSX.utils.aoa_to_sheet(data);
+            var wb   = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "WTGWise Daily Gen Report");
+            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            function s2ab(s)
+            {
+                var buf  = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Daily Gen Report.xlsx");
+        }
+    }
+    function dailyexportToExcelsitewise()
+    {
+        result = exceldata2;
+        var columns = [
+            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "Others_Loss", "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", "Total_Loss"
+        ];
+        console.log(result);
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row = [];
+            var total_losses = 0;
+            var total_hourse = 0;
+            for (var i = 0; i < result.length; i++)
+            {
+                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
+                row.push(result[i].country);
+                row.push(result[i].state);
+                row.push(result[i].spv);
+                row.push(result[i].site);
+                row.push(result[i].total_mw);
+                row.push(result[i].wind_speed);
+                row.push(result[i].kwh);
+                row.push(result[i].plf);
+                row.push(result[i].ma_actual);
+                row.push(result[i].ma_contractual);
+                row.push(result[i].iga);
+                row.push(result[i].ega);
+                row.push(result[i].ega_b);
+                row.push(result[i].ega_c);
+                row.push(result[i].plf);
+                row.push(result[i].grid_hrs);
+                row.push(result[i].lull_hrs);
+                row.push(result[i].production_hrs);
+                row.push(result[i].unschedule_num);
+                row.push(result[i].schedule_num);
+                row.push(result[i].others_num);
+                row.push(result[i].igbdh_num);
+                row.push(result[i].egbdh_num);
+                row.push(result[i].load_shedding_num);
+                row.push(total_hourse);
+                row.push(result[i].load_shedding_num);
+                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+                row.push(Math.abs(parseFloat(result[i].smh_loss)));
+                row.push(Math.abs(parseFloat(result[i].others_loss)));
+                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+                row.push(Math.abs(parseFloat(total_losses)));
+                rows.push(row);
+            }
+            var data = [columns].concat(rows);
+            var ws   = XLSX.utils.aoa_to_sheet(data);
+            var wb   = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "SiteWise Daily GenReport");
+            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            function s2ab(s)
+            {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Daily GenReport.xlsx");
+        }
+    }
+    function monthlyexportToExcelwtgwise()
+    {
+        var year = $('select#fyM option:selected').val();
+        result = exceldata3;
+        var columns = [
+            "FY","Month", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
+        ];
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row = [];
+            var total_losses = 0;
+            var total_hourse = 0;
+            for (var i = 0; i < result.length; i++)
+            {
+                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+                console.log("Total BD", total_hourse);
+                row.push(year);
+                row.push(result[i].month);
+                row.push(result[i].country);
+                row.push(result[i].state);
+                row.push(result[i].spv);
+                row.push(result[i].site);
+                row.push(result[i].wtg);
+                row.push(result[i].wind_speed);
+                row.push(result[i].kwh);
+                row.push(result[i].plf);
+                row.push(result[i].ma_actual);
+                row.push(result[i].ma_contractual);
+                row.push(result[i].iga);
+                row.push(result[i].ega);
+                row.push(result[i].ega_b);
+                row.push(result[i].ega_c);
+                row.push(result[i].plf);
+                row.push(result[i].grid_hrs);
+                row.push(result[i].lull_hrs);
+                row.push(result[i].production_hrs);
+                row.push(result[i].unschedule_num);
+                row.push(result[i].schedule_num);
+                row.push(result[i].others_num);
+                row.push(result[i].igbdh_num);
+                row.push(result[i].egbdh_num);
+                row.push(result[i].load_shedding_num);
+                row.push(total_hourse);
+                row.push(result[i].load_shedding_num);
+                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+                row.push(Math.abs(parseFloat(result[i].smh_loss)));
+                row.push(Math.abs(parseFloat(result[i].others_loss)));
+                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+                row.push(Math.abs(parseFloat(total_losses)));
+                rows.push(row);
+            }
+            var data = [columns].concat(rows);
+            var ws   = XLSX.utils.aoa_to_sheet(data);
+            var wb   = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "WTGWise Monthly GenReport");
+            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            function s2ab(s)
+            {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Monthly GenReport.xlsx");
+        }
+    }
+    function monthlyexportToExcelsitewise()
+    {
+        var year = $('select#fyM option:selected').val();
+        result = exceldata4;
+        var columns = [
+            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
+        ];
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row = [];
+            var total_losses = 0;
+            var total_hourse = 0;
+            for (var i = 0; i < result.length; i++)
+            {
+                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+                console.log("Total BD", total_hourse);
+                row.push(year);
+                row.push(result[i].month);
+                row.push(result[i].country);
+                row.push(result[i].state);
+                row.push(result[i].spv);
+                row.push(result[i].site);
+                row.push(result[i].total_mw);
+                row.push(result[i].wind_speed);
+                row.push(result[i].kwh);
+                row.push(result[i].plf);
+                row.push(result[i].ma_actual);
+                row.push(result[i].ma_contractual);
+                row.push(result[i].iga);
+                row.push(result[i].ega);
+                row.push(result[i].ega_b);
+                row.push(result[i].ega_c);
+                row.push(result[i].plf);
+                row.push(result[i].grid_hrs);
+                row.push(result[i].lull_hrs);
+                row.push(result[i].production_hrs);
+                row.push(result[i].unschedule_num);
+                row.push(result[i].schedule_num);
+                row.push(result[i].others_num);
+                row.push(result[i].igbdh_num);
+                row.push(result[i].egbdh_num);
+                row.push(result[i].load_shedding_num);
+                row.push(total_hourse);
+                row.push(result[i].load_shedding_num);
+                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+                row.push(Math.abs(parseFloat(result[i].smh_loss)));
+                row.push(Math.abs(parseFloat(result[i].others_loss)));
+                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+                row.push(Math.abs(parseFloat(total_losses)));
+                rows.push(row);
+            }
+            var data = [columns].concat(rows);
+            var ws   = XLSX.utils.aoa_to_sheet(data);
+            var wb   = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "SiteWise Monthly Gen Report");
+            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            function s2ab(s)
+            {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Monthly GenReport.xlsx");
+        }
+    }
+    function yearlyexportToExcelwtgwise()
+    {
+        var fyyear = $('select#fyM option:selected').val();
+        result = exceldata5;
+        var columns = [
+            "Date", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
+        ];
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row = [];
+            var total_losses = 0;
+            var total_hourse = 0;
+            for (var i = 0; i < result.length; i++)
+            {
+                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+                row.push(fyyear);
+                row.push(result[i].month);
+                row.push(result[i].country);
+                row.push(result[i].state);
+                row.push(result[i].spv);
+                row.push(result[i].site);
+                row.push(result[i].wtg);
+                row.push(result[i].wind_speed);
+                row.push(result[i].kwh);
+                row.push(result[i].plf);
+                row.push(result[i].ma_actual);
+                row.push(result[i].ma_contractual);
+                row.push(result[i].iga);
+                row.push(result[i].ega);
+                row.push(result[i].ega_b);
+                row.push(result[i].ega_c);
+                row.push(result[i].plf);
+                row.push(result[i].grid_hrs);
+                row.push(result[i].lull_hrs);
+                row.push(result[i].production_hrs);
+                row.push(result[i].unschedule_num);
+                row.push(result[i].schedule_num);
+                row.push(result[i].others_num);
+                row.push(result[i].igbdh_num);
+                row.push(result[i].egbdh_num);
+                row.push(result[i].load_shedding_num);
+                row.push(total_hourse);
+                row.push(result[i].load_shedding_num);
+                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+                row.push(Math.abs(parseFloat(result[i].smh_loss)));
+                row.push(Math.abs(parseFloat(result[i].others_loss)));
+                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+                row.push(Math.abs(parseFloat(total_losses)));
+                rows.push(row);
+            }
+            var data = [columns].concat(rows);
+            var ws   = XLSX.utils.aoa_to_sheet(data);
+            var wb   = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "WTGWise Yearly GenReport");
+            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            function s2ab(s)
+            {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise  Yearly GenReport.xlsx");
+        }
+    }
+    function yearlyexportToExcelsitewise() {
+        var fyyear  = $('select#fyM option:selected').val();
+        result      = exceldata6;
+        var columns = [
+            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
+            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
+        ];
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row = [];
+            var total_losses = 0;
+            var total_hourse = 0;
+            for (var i = 0; i < result.length; i++)
+            {
+                total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+                row.push(fyyear);
+                row.push(result[i].month);
+                row.push(result[i].country);
+                row.push(result[i].state);
+                row.push(result[i].spv);
+                row.push(result[i].site);
+                row.push(result[i].total_mw);
+                row.push(result[i].wind_speed);
+                row.push(result[i].kwh);
+                row.push(result[i].plf);
+                row.push(result[i].ma_actual);
+                row.push(result[i].ma_contractual);
+                row.push(result[i].iga);
+                row.push(result[i].ega);
+                row.push(result[i].ega_b);
+                row.push(result[i].ega_c);
+                row.push(result[i].plf);
+                row.push(result[i].grid_hrs);
+                row.push(result[i].lull_hrs);
+                row.push(result[i].production_hrs);
+                row.push(result[i].unschedule_num);
+                row.push(result[i].schedule_num);
+                row.push(result[i].others_num);
+                row.push(result[i].igbdh_num);
+                row.push(result[i].egbdh_num);
+                row.push(result[i].load_shedding_num);
+                row.push(total_hourse);
+                row.push(result[i].load_shedding_num);
+                row.push(Math.abs(parseFloat(result[i].usmh_loss)));
+                row.push(Math.abs(parseFloat(result[i].smh_loss)));
+                row.push(Math.abs(parseFloat(result[i].others_loss)));
+                row.push(Math.abs(parseFloat(result[i].igbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].egbdh_loss)));
+                row.push(Math.abs(parseFloat(result[i].loadShedding_loss)));
+                row.push(Math.abs(parseFloat(total_losses)));
+                rows.push(row);
+            }
+            var data = [columns].concat(rows);
+            var ws = XLSX.utils.aoa_to_sheet(data);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "SiteWise Yearly GenReport");
+            var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            function s2ab(s)
+            {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Yearly GenReport.xlsx");
+        }
+    }
+    function GetCustomDailyGenReport()
+    {
+        var daterange = $('#custom_daterange').val();
+        var arr1 = new Array();
+        arr1 = daterange.split("-");
+        var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        let site_list = "";
+        $('select#cust_daily_group option:selected').each(function () {
+            site_list += $(this).val() + ",";
+        });
+        site_list = site_list != "" ? site_list.slice(0, -1) : site_list;
+        document.getElementById("loaderD").style.display = 'flex';
+        var reportType = "Site";
+        var reporthead = "Site Wise Report";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomeWindDaily", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + site_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr)
+            {
+                var tbl = '<table id="example_daily_group"  class="table table-bordered table-striped" style="width:220%">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>Date</th>';
+                tbl += '<th>Country</th>';
+                tbl += '<th>State</th>';
+                tbl += '<th>Group Name</th>';
+                //tbl += '<th>Site</th>';
+                tbl += '<th>Capacity<br>(MW)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
+                tbl += '<th>kWh</th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>Gen_Hrs</th>';
+                tbl += '<th>Lull_Hrs</th>';
+                tbl += '<th>USMH</th>';
+                tbl += '<th>SMH</th>';
+                tbl += '<th>Others</th>';
+                tbl += '<th>IGBDH</th>';
+                tbl += '<th>EGBDH</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
+                tbl += '</tr></thead>';
+                if (result.length > 0)
+                {
+                    var total_losses = 0;
+                    var total_hourse = 0;
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                        total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
+                        let chielditem = result[i].item;
+                        let total_wind_speed = 0;
+                        let total_plf        = 0;
+                        let total_ma_act     = 0;
+                        let total_ma_con     = 0;
+                        let total_iga        = 0;
+                        let total_ega_a      = 0;
+                        let total_ega_b      = 0;
+                        let total_ega_c      = 0;
+                        let total_capacity   = 0;
+                        let avg_wind_speed   = 0;
+                        let avg_plf          = 0;
+                        let avg_ma_act       = 0;
+                        let avg_ma_con       = 0;
+                        let avg_iga          = 0;
+                        let avg_ega_a        = 0;
+                        let avg_ega_b        = 0;
+                        let avg_ega_c        = 0;
+                        for (var k = 0; k < chielditem.length; k++) {
+                            total_capacity   += chielditem[k].total_mw;
+                            total_wind_speed += chielditem[k].wind_speed * chielditem[k].total_mw;
+                            total_plf        += chielditem[k].plf * chielditem[k].total_mw;
+                            total_ma_act     += chielditem[k].ma_actual * chielditem[k].total_mw;
+                            total_ma_con     += chielditem[k].ma_contractual * chielditem[k].total_mw;
+                            total_iga        += chielditem[k].iga * chielditem[k].total_mw;
+                            total_ega_a      += chielditem[k].ega * chielditem[k].total_mw;
+                            total_ega_b      += chielditem[k].ega_b * chielditem[k].total_mw;
+                            total_ega_c      += chielditem[k].ega_c * chielditem[k].total_mw;
+                        }
+                        if (total_capacity != 0) {
+                            avg_wind_speed = total_wind_speed / total_capacity;
+                            avg_plf        = total_plf / total_capacity;
+                            avg_ma_act     = total_ma_act / total_capacity;
+                            avg_ma_con     = total_ma_con / total_capacity;
+                            avg_iga        = total_iga / total_capacity;
+                            avg_ega_a      = total_ega_a / total_capacity;
+                            avg_ega_b      = total_ega_b / total_capacity;
+                            avg_ega_c      = total_ega_c / total_capacity;
+                        }
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        tbl += '<tr>';
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn = '<div class="grp-btn" id = "parant_' + chield_class + '" onclick = "showchield(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phide_' + chield_class + '" onclick="hidechield(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+
+                        }
+                        //tbl += '<tr>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                        //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td>';
+                        tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_act.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_con.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].unschedule_num.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].schedule_num.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].others_num.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].igbdh_num.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].egbdh_num.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + result[i].load_shedding_num.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">'  + total_hourse.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '</tr>';
+
+                        var total_losses_chield = 0;
+                        var total_hourse_chield = 0;
+                        for (var j = 0; j < chielditem.length; j++)
+                        {
+                            total_losses_chield = Math.abs(parseFloat(chielditem[j].usmh_loss)) + Math.abs(parseFloat(chielditem[j].smh_loss)) + Math.abs(parseFloat(chielditem[j].others_loss)) + Math.abs(parseFloat(chielditem[j].igbdh_loss)) + Math.abs(parseFloat(chielditem[j].egbdh_loss)) + Math.abs(parseFloat(chielditem[j].loadShedding_loss));
+                            total_hourse_chield = chielditem[j].unschedule_num + chielditem[j].schedule_num + chielditem[j].others_num + chielditem[j].igbdh_num + chielditem[j].egbdh_num + chielditem[j].load_shedding_num;
+                            tbl += '<tr  class="' + chield_class +'" style="display:none">';
+                            tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + chielditem[j].date.split("T")[0].split("-").reverse().join("-"); + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].country + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].state + '</td>';
+                            //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                            tbl += '<td class="text-left" style="padding-left: 1rem !important;">' + chielditem[j].site + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_mw.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].wind_speed.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_actual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_contractual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_b.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_c.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].grid_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + chielditem[j].unschedule_num.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + chielditem[j].schedule_num.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + chielditem[j].others_num.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + chielditem[j].igbdh_num.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + chielditem[j].egbdh_num.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + chielditem[j].load_shedding_num.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + total_hourse_chield.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].others_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses_chield)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '</tr>';
+                        }
+                    }
+                }
+                else
+                {
+                    console.log("Data not available");
+                }
+                tbl += '</table>';
+                //document.getElementById("reportsDaily").style.display = 'none';
+               // document.getElementById("reportsDailyGroup").style.display = 'block';
+                document.getElementById("loaderD").style.display = 'none';
+                //$("#reportsDailyGroup").html(tbl);
+                $("#reportsDailyGroup").html("");
+                $("#reportsDailyGroup").html(tbl);
+                $('#example_daily_group').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    "order": [[4, "asc"]],
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis',
+                        //{
+                            //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            //className: 'btn ml-1   ',
+                            //action: function () {
+                            //   YearlyexportToExcelGenReportSiteWise();
+                            //}
+                        //},
+                    ],
+                    initComplete: function ()
+                    {
+                        this.api().columns().header().to$().each(function ()
+                        {
+
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');
                 $(".dt-buttons > button").addClass('btn btn-secondary');
@@ -2367,433 +3226,648 @@
                 $(document).on("click", "div.dt-button-collection > div > button", function () {
                     if ($(this).hasClass("active")) {
                         $(this).css("background-color", "white");
-                    } else {
+                    }
+                    else {
                         $(this).css("background-color", "#31576d");
                     }
                 });
-               // $('#example3').removeClass('dataTable');
-                //$('#example3').wrap("<div class='scrolledTable'></div>");
-                document.getElementById("loaderY").style.display = 'none';
+                document.getElementById("loaderD").style.display = 'none';
+            }
+        });
+    }
+    function GetCustomMonthGenReport()
+    {
+        let site_list = "";
+        $('select#custM_group option:selected').each(function () {
+            site_list += $(this).val() + ",";
+        });
+        site_list = site_list != "" ? site_list.slice(0, -1) : site_list;
+
+        var fyyear = $('select#fyM_group option:selected').val();
+        if (fyyear == "") {
+            alert("Please select financial year");
+            return false;
+        }
+        let month = "";
+        $('select#monthM_group option:selected').each(function () {
+            month+= $(this).val()+",";
+        });
+        month = month != "" ? month.slice(0, -1) : month;
+        document.getElementById("loaderM").style.display = 'flex';
+        var arr1 = new Array();
+        arr1 = fyyear.split("-");
+        var fromDate = "";
+        var reportType = "Site";
+        var reporthead = "Site Wise Report";
+        var cnt = 0;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomeWindMonthly", "WindReport")' + '?fy=' + arr1[0] + '&month=' + month + '&site_list=' + site_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr)
+            {
+
+                var tbl = '<table id="example_monthly_group"  class="table table-bordered table-striped" style="width: 220%;">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>FY</th>';
+                tbl += '<th>Month</th>';
+                tbl += '<th>Country</th>';
+                tbl += '<th>State</th>';
+                //tbl += '<th>SPV</th>';
+                tbl += '<th>Group Name</th>';
+                tbl += '<th>Capacity<br>(MW)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
+                tbl += '<th>kWh</th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>Gen_Hrs</th>';
+                tbl += '<th>Lull_Hrs</th>';
+                tbl += '<th>USMH</th>';
+                tbl += '<th>SMH</th>';
+                tbl += '<th>Others</th>';
+                tbl += '<th>IGBDH</th>';
+                tbl += '<th>EGBDH</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
+                tbl += '</tr></thead>';
+                if (result.length > 0)
+                {
+                    var total_losses = 0;
+                    var total_hourse = 0;
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                        total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+
+                        let chielditem       = result[i].item;
+                        let total_wind_speed = 0;
+                        let total_plf        = 0;
+                        let total_ma_act     = 0;
+                        let total_ma_con     = 0;
+                        let total_iga        = 0;
+                        let total_ega_a      = 0;
+                        let total_ega_b      = 0;
+                        let total_ega_c      = 0;
+                        let total_capacity   = 0;
+                        let avg_wind_speed   = 0;
+                        let avg_plf          = 0;
+                        let avg_ma_act       = 0;
+                        let avg_ma_con       = 0;
+                        let avg_iga          = 0;
+                        let avg_ega_a        = 0;
+                        let avg_ega_b        = 0;
+                        let avg_ega_c        = 0;
+                        for (var k = 0; k < chielditem.length; k++)
+                        {
+                            total_capacity   += chielditem[k].total_mw;
+                            total_wind_speed += chielditem[k].wind_speed * chielditem[k].total_mw;
+                            total_plf        += chielditem[k].plf * chielditem[k].total_mw;
+                            total_ma_act     += chielditem[k].ma_actual * chielditem[k].total_mw;
+                            total_ma_con     += chielditem[k].ma_contractual * chielditem[k].total_mw;
+                            total_iga        += chielditem[k].iga * chielditem[k].total_mw;
+                            total_ega_a      += chielditem[k].ega * chielditem[k].total_mw;
+                            total_ega_b      += chielditem[k].ega_b * chielditem[k].total_mw;
+                            total_ega_c      += chielditem[k].ega_c * chielditem[k].total_mw;
+
+                        }
+                        if (total_capacity != 0) {
+                            avg_wind_speed = total_wind_speed / total_capacity;
+                            avg_plf        = total_plf / total_capacity;
+                            avg_ma_act     = total_ma_act / total_capacity;
+                            avg_ma_con     = total_ma_con / total_capacity;
+                            avg_iga        = total_iga / total_capacity;
+                            avg_ega_a      = total_ega_a / total_capacity;
+                            avg_ega_b      = total_ega_b / total_capacity;
+                            avg_ega_c      = total_ega_c / total_capacity;
+                        }
+
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn = '<div class="grp-btn" id = "parantM_' + chield_class + '" onclick = "showchieldMonthly(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phideM_' + chield_class + '" onclick="hidechieldMonthly(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
+                        tbl += '<td class="text-left">' + result[i].month + '</td>';
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                        //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;"">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td>';
+                        tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_act.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_con.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].schedule_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].others.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '</tr>';
+                        for (var j = 0; j < chielditem.length; j++)
+                        {
+                            total_losses_chield = Math.abs(parseFloat(chielditem[j].usmh_loss)) + Math.abs(parseFloat(chielditem[j].smh_loss)) + Math.abs(parseFloat(chielditem[j].others_loss)) + Math.abs(parseFloat(chielditem[j].igbdh_loss)) + Math.abs(parseFloat(chielditem[j].egbdh_loss)) + Math.abs(parseFloat(chielditem[j].loadShedding_loss));
+                            total_hourse_chield = chielditem[j].unschedule_hrs + chielditem[j].schedule_hrs + chielditem[j].others + chielditem[j].igbdh + chielditem[j].egbdh + chielditem[j].load_shedding;
+                            tbl += '<tr class="' + chield_class +'" style="display:none">';
+                            tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].month + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].country + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].state + '</td>';
+                            //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                            tbl += '<td class="text-left"  style="padding-left: 1rem !important;">' + chielditem[j].site + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_mw.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].wind_speed.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_actual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_contractual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_b.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_c.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].grid_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].unschedule_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].schedule_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].others.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + total_hourse_chield.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].others_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses_chield)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '</tr>';
+                        }
+
+                    }
+                }
+                else
+                {
+                    console.log("Data not available");
+                }
+                tbl += '</table>';
+                //document.getElementById("reportsMonthly").style.display = 'none';
+                //document.getElementById("reportsMonthlyGroup").style.display = 'block';
+                //$("#reportsMonthlyGroup").html(tbl);
+                $("#reportsMonthlyGroup").html("");
+                $("#reportsMonthlyGroup").html(tbl);
+                $('#example_monthly_group').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    "order": [[5, "asc"]],
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible',
+                                rows: { selected: false, search: 'none', order: 'applied', page: 'all', range: ''+cnt+''}
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Monthly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis',
+                        //{
+                           // text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            //className: 'btn ml-1   ',
+                           // action: function () {
+                               // MonthlyexportToExcelGenReportSiteWise();
+                           // }
+                        //},
+                    ],
+                    initComplete: function ()
+                    {
+                        this.api().columns().header().to$().each(function ()
+                        {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $(document).on("click", "div.dt-button-collection > div > button", function ()
+                {
+                    if ($(this).hasClass("active"))
+                    {
+                        $(this).css("background-color", "white");
+                    }
+                    else
+                    {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                document.getElementById("loaderM").style.display = 'none';
             }
         });
 
     }
-    function dailyexportToExcelwtgwise() {
-
-        result = exceldata1;
-        var columns = [
-            "Date", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh",
-            "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C",
-            "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others", "IGBDH", "EGBDH",
-            "LS", "Total_BD", "USMH_Loss", "SMH_Loss", "Others_Loss", "IGBDH_Loss",
-            "EGBDH_Loss", "LS_Loss", "Total_Loss"
-        ];
-        //console.log(exceldata1);
-        var rows = [];
-        var total_losses = 0;
-        var total_hourse = 0;
-        for (var i = 0; i < result.length; i++)
-        {
-            var row = [];
-            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-            total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-
-            row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
-            row.push(result[i].country);
-            row.push(result[i].state);
-            row.push(result[i].spv);
-            row.push(result[i].site);
-            row.push(result[i].wtg);
-            row.push(result[i].wind_speed);
-            row.push(result[i].kwh);
-            row.push(result[i].plf);
-            row.push(result[i].ma_actual);
-            row.push(result[i].ma_contractual);
-            row.push(result[i].iga);
-            row.push(result[i].ega);
-            row.push(result[i].ega_b);
-            row.push(result[i].ega_c);
-            //row.push(result[i].plf);
-            row.push(result[i].grid_hrs);
-            row.push(result[i].lull_hrs);
-            //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
-            row.push(total_hourse);
-            //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
-            rows.push(row);
-        }
-        var data = [columns].concat(rows);
-        var ws = XLSX.utils.aoa_to_sheet(data);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "WTGWise Daily Gen Report");
-        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-        function s2ab(s) {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-            return buf;
-        }
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Daily Gen Report.xlsx");
-    }
-
-
-    function dailyexportToExcelsitewise()
+    function GetCustomYearlyGenReport()
     {
-        result = exceldata2;
-        var columns = [
-            "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind",
-            "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C",
-            "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss",
-            "Others_Loss", "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", "Total_Loss"
-        ];
-        //console.log(result);
-        var rows = [];
-        var total_losses = 0;
-        var total_hourse = 0;
-        for (var i = 0; i < result.length; i++)
-        {
-            var row = [];
-            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-            total_hourse = result[i].unschedule_num + result[i].schedule_num + result[i].others_num + result[i].igbdh_num + result[i].egbdh_num + result[i].load_shedding_num;
-            row.push(result[i].date.split("T")[0].split("-").reverse().join("-"));
-            row.push(result[i].country);
-            row.push(result[i].state);
-            row.push(result[i].spv);
-            row.push(result[i].site);
-            row.push(result[i].total_mw);
-            row.push(result[i].wind_speed);
-            row.push(result[i].kwh);
-            row.push(result[i].plf);
-            row.push(result[i].ma_actual);
-            row.push(result[i].ma_contractual);
-            row.push(result[i].iga);
-            row.push(result[i].ega);
-            row.push(result[i].ega_b);
-            row.push(result[i].ega_c);
-            //row.push(result[i].plf);
-            row.push(result[i].grid_hrs);
-            row.push(result[i].lull_hrs);
-            //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
-            row.push(total_hourse);
-            //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
-            rows.push(row);
+        let site_list = "";
+        $('select#customY_group option:selected').each(function () {
+            site_list += $(this).val() + ",";
+        });
+        site_list = site_list != "" ? site_list.slice(0, -1) : site_list;
+        var fyyear = $('select#fyY_group option:selected').val();
+        if (fyyear == "") {
+            alert("Please select financial year");
+            return false;
         }
-        var data = [columns].concat(rows);
-        var ws = XLSX.utils.aoa_to_sheet(data);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SiteWise Daily GenReport");
-        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-        function s2ab(s)
-        {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-            return buf;
-        }
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Daily GenReport.xlsx");
-}
-   function monthlyexportToExcelwtgwise() {
-        var year = $('select#fyM option:selected').val();
-        result = exceldata3;
-        var columns = [
-            "FY", "Month", "Country", "State", "SPV", "Site", "WTG",
-            "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A",
-            "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss",
-            'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-        ];
-        var rows = [];
-        var total_losses = 0;
-        var total_hourse = 0;
-       for (var i = 0; i < result.length; i++)
-       {
-            var row = [];
-            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-            row.push(year);
-            row.push(result[i].month);
-            row.push(result[i].country);
-            row.push(result[i].state);
-            row.push(result[i].spv);
-            row.push(result[i].site);
-            row.push(result[i].wtg);
-            row.push(result[i].wind_speed);
-            row.push(result[i].kwh);
-            row.push(result[i].plf);
-            row.push(result[i].ma_actual);
-            row.push(result[i].ma_contractual);
-            row.push(result[i].iga);
-            row.push(result[i].ega);
-            row.push(result[i].ega_b);
-            row.push(result[i].ega_c);
-            //row.push(result[i].plf);
-            row.push(result[i].grid_hrs);
-            row.push(result[i].lull_hrs);
-            //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
-            row.push(total_hourse);
-            //row.push(result[i].load_shedding_num);
-           row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
-           row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
-           row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
-           row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
-           row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
-           row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
-           row.push(Math.abs(parseFloat(total_losses)) * 1000000);
-           rows.push(row);
-       }
-       var data = [columns].concat(rows);
-       var ws = XLSX.utils.aoa_to_sheet(data);
-       var wb = XLSX.utils.book_new();
-       XLSX.utils.book_append_sheet(wb, ws, "WTGWise Monthly GenReport");
-       var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-       function s2ab(s) {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-            return buf;
-       }
-       saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise Monthly GenReport.xlsx");
+        document.getElementById("loaderY").style.display = 'flex';
+        var arr1 = new Array();
+        arr1 = fyyear.split("-");
+        var fromDate = "";
+        fromDate = arr1[0] + '-04-01';
+        toDate = '20' + arr1[1] + '-03-31';
+        var reportType = "Site";
+        var reporthead = "Site Wise Report";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomeWindYearly", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + site_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr)
+            {
+                var tbl = '<table id="example_yearly_group"  class="table table-bordered table-striped" style="width: 220%;">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>FY</th>';
+                tbl += '<th>Country</th>';
+                tbl += '<th>State</th>';
+               // tbl += '<th>SPV</th>';
+                tbl += '<th>Group Name</th>';
+                tbl += '<th>Capacity<br>(MW)</th>';
+                tbl += '<th>Wind<br>(m/s)</th>';
+                tbl += '<th>kWh</th>';
+                tbl += '<th>PLF<br>(%)</th>';
+                tbl += '<th>MA_ACT<br>(%)</th>';
+                tbl += '<th>MA_CON<br>(%)</th>';
+                tbl += '<th>IGA<br>(%)</th>';
+                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                tbl += '<th>Gen_Hrs</th>';
+                tbl += '<th>Lull_Hrs</th>';
+                tbl += '<th>USMH</th>';
+                tbl += '<th>SMH</th>';
+                tbl += '<th>Others</th>';
+                tbl += '<th>IGBDH</th>';
+                tbl += '<th>EGBDH</th>';
+                tbl += '<th>LS</th>';
+                tbl += '<th>Total_BD</th>';
+                tbl += '<th>USMH_Loss</th>';
+                tbl += '<th>SMH_Loss</th>';
+                tbl += '<th>Others_Loss</th>';
+                tbl += '<th>IGBDH_Loss</th>';
+                tbl += '<th>EGBDH_Loss</th>';
+                tbl += '<th>LS_Loss</th>';
+                tbl += '<th>Total_Loss</th>';
+                tbl += '</tr></thead>';
+
+                if (result.length > 0)
+                {
+                    var total_losses = 0;
+                    var total_hourse = 0;
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
+                        total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
+                        let chielditem       = result[i].item;
+                        let total_wind_speed = 0;
+                        let total_plf        = 0;
+                        let total_ma_act     = 0;
+                        let total_ma_con     = 0;
+                        let total_iga        = 0;
+                        let total_ega_a      = 0;
+                        let total_ega_b      = 0;
+                        let total_ega_c      = 0;
+                        let total_capacity   = 0;
+                        let avg_wind_speed   = 0;
+                        let avg_plf          = 0;
+                        let avg_ma_act       = 0;
+                        let avg_ma_con       = 0;
+                        let avg_iga          = 0;
+                        let avg_ega_a        = 0;
+                        let avg_ega_b        = 0;
+                        let avg_ega_c        = 0;
+                        for (var k = 0; k < chielditem.length; k++) {
+                            total_capacity   += chielditem[k].total_mw;
+                            total_wind_speed += chielditem[k].wind_speed * chielditem[k].total_mw;
+                            total_plf        += chielditem[k].plf * chielditem[k].total_mw;
+                            total_ma_act     += chielditem[k].ma_actual * chielditem[k].total_mw;
+                            total_ma_con     += chielditem[k].ma_contractual * chielditem[k].total_mw;
+                            total_iga        += chielditem[k].iga * chielditem[k].total_mw;
+                            total_ega_a      += chielditem[k].ega * chielditem[k].total_mw;
+                            total_ega_b      += chielditem[k].ega_b * chielditem[k].total_mw;
+                            total_ega_c      += chielditem[k].ega_c * chielditem[k].total_mw;
+
+                        }
+                        if (total_capacity != 0) {
+                            avg_wind_speed = total_wind_speed / total_capacity;
+                            avg_plf        = total_plf / total_capacity;
+                            avg_ma_act     = total_ma_act / total_capacity;
+                            avg_ma_con     = total_ma_con / total_capacity;
+                            avg_iga        = total_iga / total_capacity;
+                            avg_ega_a      = total_ega_a / total_capacity;
+                            avg_ega_b      = total_ega_b / total_capacity;
+                            avg_ega_c      = total_ega_c / total_capacity;
+                        }
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn = '<div class="grp-btn" id = "parantY_' + chield_class + '" onclick = "showchieldYearly(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phideY_' + chield_class + '" onclick="hidechieldYearly(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn + '<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td>';
+                        tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_wind_speed.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_act.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ma_con.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_a.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_b.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ega_c.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].unschedule_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].schedule_hrs.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].others.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
+                        tbl += '</tr>';
+
+                        var total_losses_chield = 0;
+                        var total_hourse_chield = 0;
+                        for (var j = 0; j < chielditem.length; j++)
+                        {
+                            total_losses_chield = Math.abs(parseFloat(chielditem[j].usmh_loss)) + Math.abs(parseFloat(chielditem[j].smh_loss)) + Math.abs(parseFloat(chielditem[j].others_loss)) + Math.abs(parseFloat(chielditem[j].igbdh_loss)) + Math.abs(parseFloat(chielditem[j].egbdh_loss)) + Math.abs(parseFloat(chielditem[j].loadShedding_loss));
+                            total_hourse_chield = chielditem[j].unschedule_hrs + chielditem[j].schedule_hrs + chielditem[j].others + chielditem[j].igbdh + chielditem[j].egbdh + chielditem[j].load_shedding;
+                            tbl += '<tr class="' + chield_class +'" style="display:none">';
+                            tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].country + '</td>';
+                            tbl += '<td class="text-left">' + chielditem[j].state + '</td>';
+                            tbl += '<td class="text-left"  style="padding-left: 1rem !important;text-wrap: nowrap;"">' + chielditem[j].site + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].total_mw.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].wind_speed.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_actual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ma_contractual.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_b.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].ega_c.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].grid_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].unschedule_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].schedule_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].others.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].igbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].egbdh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].load_shedding.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + total_hourse_chield.toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].others_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(chielditem[j].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td  class="text-right">' + (Math.abs(parseFloat(total_losses_chield)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '</tr>';
+
+                        }
+                    }
+                }
+                else
+                {
+                    console.log("Data not available");
+                }
+                tbl += '</table>';
+                //$("#reportsYearlyGroup").html(tbl);
+                 //document.getElementById("reportsYearly").style.display = 'none';
+               // document.getElementById("reportsYearlyGroup").style.display = 'block';
+                $("#reportsYearlyGroup").html("");
+                $("#reportsYearlyGroup").html(tbl);
+                    $('#example_yearly_group').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    "order": [[4, "asc"]],
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Yearly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Yearly Generation Reports Group By Site',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis',
+                        //{
+                            //text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                           // className: 'btn ml-1   ',
+                            //action: function () {
+                             //   YearlyexportToExcelGenReportSiteWise();
+                           // }
+                        //},
+                    ],
+                    initComplete: function ()
+                    {
+                        this.api().columns().header().to$().each(function ()
+                        {
+                            if ($(this).text() == "EGA_A(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown, Shutdown & Load Shedding')
+                            }
+                            if ($(this).text() == "EGA_B(%) i")
+                            {
+                                $(this).attr('title', 'External Grid Breakdown & Shutdown')
+                            }
+                            if ($(this).text() == "EGA_C(%) i")
+                            {
+                                $(this).attr('title', 'Load Shedding')
+                            }
+                        })
+                    }
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $("dataTables_filter").css("margin-top", "-35px");
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active"))
+                    {
+                        $(this).css("background-color", "white");
+                    }
+                    else
+                    {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                document.getElementById("loaderY").style.display = 'none';
+            }
+        });
     }
-    function monthlyexportToExcelsitewise() {
-        var year = $('select#fyM option:selected').val();
-        result = exceldata4;
-        var columns = [
-            "FY", "Month", "Country" ,"State", "SPV", "Site", "Capacity", "Wind",
-            "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C",
-            "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
-            "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss",
-            'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-        ];
-        var rows = [];
-        var total_losses = 0;
-        var total_hourse = 0;
-        for (var i = 0; i < result.length; i++)
-        {
-            var row = [];
-            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-              
-            row.push(year);
-            row.push(result[i].month);
-            row.push(result[i].country);
-            row.push(result[i].state);
-            row.push(result[i].spv);
-            row.push(result[i].site);
-            row.push(result[i].total_mw);
-            row.push(result[i].wind_speed);
-            row.push(result[i].kwh);
-            row.push(result[i].plf);
-            row.push(result[i].ma_actual);
-            row.push(result[i].ma_contractual);
-            row.push(result[i].iga);
-            row.push(result[i].ega);
-            row.push(result[i].ega_b);
-            row.push(result[i].ega_c);
-            //row.push(result[i].plf);
-            row.push(result[i].grid_hrs);
-            row.push(result[i].lull_hrs);
-            //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
-            row.push(total_hourse);
-            //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
-            rows.push(row);
+    function showchield(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
         }
-        var data = [columns].concat(rows);
-        var ws = XLSX.utils.aoa_to_sheet(data);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SiteWise Monthly Gen Report");
-        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-        function s2ab(s)
-        {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-            return buf;
-        }
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Monthly GenReport.xlsx");
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phide_" + iden[1]).style.display = "inline-block";
+
     }
-
-    function yearlyexportToExcelwtgwise() {
-        var fyyear = $('select#fyY option:selected').val();
-        result = exceldata5;
-        var columns = [
-            "FY", "Country", "State", "SPV", "Site", "WTG", "Wind", "kWh", "PLF",
-            "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs",
-            "USMH", "SMH", "Others", "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss",
-            "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-        ];
-        var rows = [];
-        var total_losses = 0;
-        var total_hourse = 0;
-        for (var i = 0; i < result.length; i++)
-        {
-            var row = [];
-            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-            row.push(fyyear);
-            //row.push(result[i].month);
-            row.push(result[i].country);
-            row.push(result[i].state);
-            row.push(result[i].spv);
-            row.push(result[i].site);
-            row.push(result[i].wtg);
-            row.push(result[i].wind_speed);
-            row.push(result[i].kwh);
-            row.push(result[i].plf);
-            row.push(result[i].ma_actual);
-            row.push(result[i].ma_contractual);
-            row.push(result[i].iga);
-            row.push(result[i].ega);
-            row.push(result[i].ega_b);
-            row.push(result[i].ega_c);
-            //row.push(result[i].plf);
-            row.push(result[i].grid_hrs);
-            row.push(result[i].lull_hrs);
-            //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
-            row.push(total_hourse);
-            //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
-            rows.push(row);
+    function hidechield(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
         }
-        var data = [columns].concat(rows);
-        var ws = XLSX.utils.aoa_to_sheet(data);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "WTGWise Yearly GenReport");
-        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-        function s2ab(s) {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-            return buf;
-        }
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "WTGWise  Yearly GenReport.xlsx");
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parant_" + iden[1]).style.display = "inline-block";
     }
-
-    function yearlyexportToExcelsitewise() {
-        var fyyear = $('select#fyY option:selected').val();
-        result = exceldata6;
-        var columns = [
-            "FY", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh",
-            "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs",
-            "Lull_Hrs", "USMH", "SMH", "Others", "IGBDH", "EGBDH", "LS", "Total_BD",
-            "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
-        ];
-        var rows = [];
-        var total_losses = 0;
-        var total_hourse = 0;
-        for (var i = 0; i < result.length; i++)
-        {
-            var row = [];
-            total_losses = Math.abs(parseFloat(result[i].usmh_loss)) + Math.abs(parseFloat(result[i].smh_loss)) + Math.abs(parseFloat(result[i].others_loss)) + Math.abs(parseFloat(result[i].igbdh_loss)) + Math.abs(parseFloat(result[i].egbdh_loss)) + Math.abs(parseFloat(result[i].loadShedding_loss));
-            total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-            row.push(fyyear);
-            //row.push(result[i].month);
-            row.push(result[i].country);
-            row.push(result[i].state);
-            row.push(result[i].spv);
-            row.push(result[i].site);
-            row.push(result[i].total_mw);
-            row.push(result[i].wind_speed);
-            row.push(result[i].kwh);
-            row.push(result[i].plf);
-            row.push(result[i].ma_actual);
-            row.push(result[i].ma_contractual);
-            row.push(result[i].iga);
-            row.push(result[i].ega);
-            row.push(result[i].ega_b);
-            row.push(result[i].ega_c);
-            //row.push(result[i].plf);
-            row.push(result[i].grid_hrs);
-            row.push(result[i].lull_hrs);
-            //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
-            row.push(total_hourse);
-            //row.push(result[i].load_shedding_num);
-            row.push(Math.abs(parseFloat(result[i].usmh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].smh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].others_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000);
-            row.push(Math.abs(parseFloat(total_losses)) * 1000000);
-            rows.push(row);
+    //-------Monthly------//
+    function showchieldMonthly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
         }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phideM_" + iden[1]).style.display = "inline-block";
 
-        var data = [columns].concat(rows);
-        var ws = XLSX.utils.aoa_to_sheet(data);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SiteWise Yearly GenReport");
-        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-        function s2ab(s) {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-            return buf;
+    }
+    function hidechieldMonthly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
         }
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "SiteWise Yearly GenReport.xlsx");
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parantM_" + iden[1]).style.display = "inline-block";
     }
 
+    //-------Yearly------//
+    function showchieldYearly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phideY_" + iden[1]).style.display = "inline-block";
+
+    }
+    function hidechieldYearly(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parantY_" + iden[1]).style.display = "inline-block";
+    }
 </script>

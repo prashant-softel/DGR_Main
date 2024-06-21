@@ -801,5 +801,146 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
+        public async Task<IActionResult> GetGroupSPVList(int siteType)
+        {
+            string line = "";
+            // state = "RJ";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetGroupBySPVSite?siteType=" + siteType;
+                // var url = "http://localhost:23835/api/DGR/GetSPVList?state=" + state + "";
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+
+        }
+        public async Task<IActionResult> GetSolarGroupOfSite(string fy, string fromDate, string toDate, string site_list)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarPerformanceGroupBySite?fy=" + fy + "&fromDate=" + fromDate + "&toDate=" + toDate + "&site_list=" + site_list;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCustomGroup(int siteType)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomGroup?siteType=" + siteType;
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCustomeSolarDaily(string fromDate, string toDate,  string site_list)
+        {
+           
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomeSolarDaily?fromDate=" + fromDate + "&toDate=" + toDate + "&site_list=" + site_list;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                   Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCustomeSolarMonthly(string fy, string month, string site_list)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomeSolarMonthly?fy=" + fy + "&month=" + month + "&site_list=" + site_list + "";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+        public async Task<IActionResult> GetCustomeSolarYearly(string fromDate, string toDate,string site_list)
+        {
+            string month = "";
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCustomeSolarYearly?fromDate=" + fromDate + "&toDate=" + toDate + "&site_list=" + site_list + "&month=" + month + "";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
     }
 }

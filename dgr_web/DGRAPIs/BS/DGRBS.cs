@@ -211,6 +211,19 @@ namespace DGRAPIs.BS
         Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate);
         //DGR_v3 Email_report changes
         Task<int> dgrUploadingReminder();
+        Task<List<SPVGroup>> getGroupBySPV(int siteType);
+        Task<int> WindReviewMail();
+        Task<int> SolarReviewMail();
+        Task<int> MonthlyMailSend(string fname);
+        Task<List<WindPerformanceGroup>> GetWindPerformanceGroupBySite(string fy, string fromDate, string todate, string site_list);
+        Task<List<SolarPerformanceGroup>> GetSolarPerformanceGroupBySite(string fy, string fromDate, string todate, string site_list);
+        Task<List<CustomeGroup>> GetCustomGroup(int siteType);
+        Task<List<SolarDailyGenReportsGroup>> GetCustomeSolarDaily(string fromDate, string toDate, string site_list);
+        Task<List<SolarDailyGenReportsGroup>> GetCustomeSolarMonthly(string fy, string month, string site_list);
+        Task<List<SolarDailyGenReportsGroup>> GetCustomeSolarYearly(string fromDate, string toDate, string site_list);
+        Task<List<WindDailyGenReportsGroup>> GetCustomeWindDaily(string fromDate, string toDate, string site_list);
+        Task<List<WindDailyGenReportsGroup>> GetCustomeWindMonthly(string fy, string month, string site_list);
+        Task<List<WindDailyGenReportsGroup>> GetCustomeWindYearly(string fromDate, string toDate, string site_list);
     }
     public class DGRBS : IDGRBS
     {
@@ -2900,6 +2913,201 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.dgrUploadingReminder();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<CustomeGroup>> GetCustomGroup(int siteType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCustomGroup(siteType);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<int> SolarReviewMail()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.SolarReviewMail();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<int> WindReviewMail()
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.WindReviewMail();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<int> MonthlyMailSend(string fname)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.MonthlyMailSend(fname);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<WindPerformanceGroup>> GetWindPerformanceGroupBySite(string fy, string fromDate, string todate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindPerformanceGroupBySite(fy, fromDate, todate, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SolarPerformanceGroup>> GetSolarPerformanceGroupBySite(string fy, string fromDate, string todate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetSolarPerformanceGroupBySite(fy, fromDate, todate, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SPVGroup>> getGroupBySPV(int siteType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.getGroupBySPV(siteType);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SolarDailyGenReportsGroup>> GetCustomeSolarDaily(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCustomeSolarDaily(fromDate, toDate, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SolarDailyGenReportsGroup>> GetCustomeSolarMonthly(string fy, string month, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCustomeSolarMonthly(fy, month, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<SolarDailyGenReportsGroup>> GetCustomeSolarYearly(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCustomeSolarYearly(fromDate, toDate, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<WindDailyGenReportsGroup>> GetCustomeWindDaily(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCustomeWindDaily(fromDate, toDate, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<WindDailyGenReportsGroup>> GetCustomeWindMonthly(string fy, string month, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCustomeWindMonthly(fy, month, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<List<WindDailyGenReportsGroup>> GetCustomeWindYearly(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCustomeWindYearly(fromDate, toDate, site_list);
 
                 }
             }

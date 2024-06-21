@@ -82,16 +82,22 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title text-center">Solar Performance Summary</h3>
-                <!--<div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                <i class="fas fa-minus"></i>
-                </button>
-                </div>-->
             </div>
             <div class="card-body">
-                <div class="row" >
-                   
-                    <div class="col-sm-3" style=" margin-left: 15px;">
+                <div class="row" style="margin-top: -14px;">
+                    <div class="chart col-sm-10">
+                    </div>
+                    <div class="chart col-sm-2 text-center" id="customDiv">
+                        <span style=" margin-left:-20px; margin-top: -6px; ">
+                            <input type="checkbox" class="form-check-input group_by_site" id="group_by_site" name="group_by_site" value="1" style="width: 17px; height: 16px;" onclick="grouping_site()">
+                        </span> <span><b>&nbsp;&nbsp;&nbsp;Custom Grouping of Site </b></span>
+                    </div>
+
+                </div>
+                <hr>
+                <!-- No Group-->
+                <div class="row" id="no_group" style="display:flex">
+                    <div class="col-sm-4">
                         <div class="input-group ">
                             <label class="col-sm-3.1 col-form-label text-left">Date Range :&nbsp;&nbsp;</label>
                             <div class="input-group-prepend">
@@ -124,31 +130,53 @@
                         <button type="button" class="btn btn-block btn-primary "  onclick="GetPRReport();" style="margin-left: 2rem; width: 5rem; line-height: 1.3;">Search</button>
                     </div>
                 </div>
-           
-            
-            <div class="col-sm-5">
-                <div class="card-body table-responsive pad" style="margin-left: -4%; padding-bottom: 2px;">
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn bg-olive">
-                            <input type="radio" name="reportType" value="Site" id="pr_b1" autocomplete="off" checked> Site Wise Report
-                        </label>
-                        <label class="btn bg-olive">
-                            <input type="radio" name="reportType" value="SPV" id="pr_b2" autocomplete="off"> SPV Wise Report
-                        </label>
+                <div class="col-sm-5" id="no_group_tab" style="display:flex">
+                    <div class="card-body table-responsive pad" style="margin-left: -4%; padding-bottom: 2px;">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn bg-olive">
+                                <input type="radio" name="reportType" value="Site" id="pr_b1" autocomplete="off" checked> Site Wise Report
+                            </label>
+                            <label class="btn bg-olive">
+                                <input type="radio" name="reportType" value="SPV" id="pr_b2" autocomplete="off"> SPV Wise Report
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-2 text-center">
+                <div class="col-sm-2 text-center"></div>
+                <div class="col-sm-5 text-center"></div>
+                <!--Custom Group By Site -->
+                <div class="row" id="groupbysite" style="display:none">
+                    <div class="col-sm-4">
+                        <div class="input-group ">
+                            <label class="col-sm-2 col-form-label text-left">Date : </label>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control float-right col-sm-8" id="daterange_group" name="daterange">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
+                                <select class="form-control  col-sm-8" id="cust_group" name="cust_group[]" value="" multiple></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1 text-center"></div>
+                    <div class="col-sm-1 text-left">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReportGroup();" style="margin-left:-5rem; width: 5rem;">Search</button>
+                    </div>
 
+                </div>
+                <hr>
+                <div id="reportsDailygroup" style="overflow-x: auto;" class="reportsDailygroup"></div>
+                <div id="pr_reports" style="overflow-x: auto;" class="pr_reports"></div>
+                <div id="loader" class="loader  center" style="display:none"></div>
             </div>
-            <div class="col-sm-5 text-center"></div>
-       
-        <hr>
-        <div id="pr_reports" style="overflow-x: auto;" class="pr_reports"></div>
-        <div id="loader" class="loader  center" style="display:none"></div>
-</div>
         </div>
-</div>
     </section>
 </div>
 
@@ -179,8 +207,42 @@
      var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     var exceldata1;
     var exceldata2;
+    var CustomGroupOfSite = false;
+    //-- Selection Disable Enable
+    function grouping_site() {
+        var checkBox = document.getElementById("group_by_site");
+        console.log(checkBox.checked);
+        if (checkBox.checked == true) {
+            document.getElementById('no_group').style.display          = 'none';
+            document.getElementById('no_group_tab').style.display      = 'none';
+            document.getElementById('groupbysite').style.display       = 'flex';
+            document.getElementById('reportsDailygroup').style.display = 'block';
+            document.getElementById('pr_reports').style.display        = 'none';
+        }
+        else {
+            document.getElementById('no_group').style.display          = 'flex';
+            document.getElementById('no_group_tab').style.display      = 'flex';
+            document.getElementById('groupbysite').style.display       = 'none';
+            document.getElementById('reportsDailygroup').style.display = 'none';
+            document.getElementById('pr_reports').style.display        = 'block';
+
+
+        }
+    }
     $(document).ready(function () {
+        console.log("Role=>", userRole);
+        if (userRole != "Admin") {
+            document.getElementById("customDiv").style.display = "none";
+            GetCustomGroupAccess();
+        }
         $('#daterange').daterangepicker(
+            {
+                maxDate: new Date(),
+                locale: {
+                    format: 'DD/MM/YYYY',
+                }
+            });
+        $('#daterange_group').daterangepicker(
             {
                 maxDate: new Date(),
                 locale: {
@@ -190,12 +252,38 @@
     });
 
     window.onload = function () {
+        getCutomeGroup();
         GetSPV();
+        
+        
+    }
+    function GetCustomGroupAccess()
+    {
+        console.log("call function");
+        var login_id = @HttpContextAccessor.HttpContext.Session.GetString("userid");
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCustomGroupAccess", "Home")' + '?login_id=' + login_id + '&site_type=2',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                if (result.length > 0) {
+                    CustomGroupOfSite = true;
+                    document.getElementById("customDiv").style.display = "block";
+                }
+                else {
+                    CustomGroupOfSite = false;
+                    document.getElementById("customDiv").style.display = "none";
+                }
+            }
+        });
     }
     var today = new Date();
     fyear = getFinancialYear(today);
     var Fy = fyear;
-     function GetSPV() {
+
+    function GetSPV()
+    {
         let state = "";
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
         $.ajax({
@@ -215,12 +303,20 @@
                     "placeholder": "Select SPV(s)",
                     filter:true
                 });
+                $("#spv_group").multipleSelect('destroy');
+                $("#spv_group").html(options);
+                $('select#spv_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select SPV(s)",
+                    filter: true
+                });
             }
         });
         GetSite();
     }
 
-    function GetSite() {
+    function GetSite()
+    {
         let state = "";
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
 
@@ -248,9 +344,33 @@
             }
         });
     }
+    function getCutomeGroup()
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCustomGroup", "SolarReport")?siteType=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var options = "";
+                for (var k = 0; k < result.length; k++)
+                {
+                    options += '<option value="' + result[k].site_ids + '">' + result[k].cust_group + '</option>';
+                }
+                $("#cust_group").multipleSelect('destroy');
+                $("#cust_group").html("").html(options);
+                $('select#cust_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter:true
+                });
+            }
+        });
+    }
 
-
-    function GetPRReport() {
+    function GetPRReport()
+    {
         var ReportType = $("input[name='reportType']:checked").val();
         if (ReportType == "SPV") {
             GetSolarPRReportSPVWise();
@@ -260,248 +380,228 @@
         }
     }
 
-        function ExportToExcelSPVWise() {
-
-    console.log(exceldata1)
-    result = exceldata1;
-
-    var columns = [
+    function ExportToExcelSPVWise()
+    {
+        result = exceldata1;
+        var columns = [
          "SPV","Capacity","Energy (in MU)  Tar"," Energy (in MU) Exp"," Energy (in MU) Act"," Energy (in MU) T.var(%)"," Energy (in MU) E.var(%)","Revenue (MINR)","GHI (kWh/m^2)  Tar",
          "GHI (kWh/m^2)  Act ","GHI (kWh/m^2)  Var (%) ","POA (kWh/m^2)  Tar","POA (kWh/m^2)  Act ",
-       "POA (kWh/m^2) Var (%)  ","GHI VS POA Gain (%)  Tar ","GHI VS POA Gain (%)  Act ","GHI VS POA Gain(%)  Var (%)  ","PLF (%)  Tar ","PLF (%)  Act ","PLF (%)  Var (%) ","PR (%)  Tar ","PR (%)  Act ","PR (%)  Var (%)  ","Temp Corr. PR (%)  Tar","Temp Corr. PR (%)  Act ","Temp Corr. PR (%)  Var (%) ","MA (%)  Tar","MA (%)  Act ","MA (%)  Var (%) ","IGA (%)  Tar","IGA (%)  Act ","IGA (%)  Var (%) ","EGA (%)  Tar","EGA (%)  Act ","EGA (%)  Var (%) "
-    ];
-
-    var rows = [];
-
-    for (var i = 0; i < result.length; i++) {
-        var row = [];
-       let total_capacity = 0;
-                    let total_tar_kwh = 0;
-                    let total_act_kwh = 0;
-                    let total_expected_kwh = 0;
-                    let total_minr = 0;
-                    let total_capTarGhi = 0;
-                    let total_tar_ghi = 0;
-                    let total_act_ghi = 0;
-                    let total_capTarPlf = 0;
-                    let total_tar_plf = 0;
-                    let total_act_plf = 0;
-                    let total_capTarGain = 0;
-                    let total_tar_gain = 0;
-                    let total_act_gain = 0;
-                    let total_capTarPoa = 0;
-                    let total_tar_poa = 0;
-                    let total_act_poa = 0;
-                    let total_capTarPr = 0;
-                    let total_tar_pr = 0;
-                    let total_act_pr = 0;
-                    let total_capTarMa = 0;
-                    let total_tar_ma = 0;
-                    let total_act_ma = 0;
-                    let total_capTarIga = 0;
-                    let total_tar_iga = 0;
-                    let total_act_iga = 0;
-                    let total_capTarEga = 0;
-                    let total_tar_ega = 0;
-                    let total_act_ega = 0;
-                    let total_capActGhi = 0;
-                    let total_capActPlf = 0;
-                    let total_capActGain = 0;
-                    let total_capActPoa = 0;
-                    let total_capActPr = 0;
-                    let total_capActMa = 0;
-                    let total_capActIga = 0;
-                    let total_capActEga = 0;
-
-                    let total_capTarTCPr = 0;
-                    let total_capActTCPr = 0;
-                    let total_tar_TCpr = 0;
-                    let total_act_TCpr = 0;
-
-
-
-                        let t_var = 0;
-                        let e_var = 0;
-                        let minr = 0;
-                        let ghi_var = 0;
-                        let poa_var = 0;
-                        let gain_tar = 0;
-                        let gain_act = 0;
-                        let gain_var = 0;
-                        let plf_var = 0;
-                        let pr_var = 0;
-                        let ma_var = 0;
-                        let iga_var = 0;
-                        let ega_var = 0;
-                        let act_prval = 0;
-
-                        let TCPr_var = 0;
-
-                        minr = ((result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif);
-                        if (result[i].tar_kwh != 0) {
-                            t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
-                        }
-                        if (result[i].expected_kwh != 0) {
-                            //e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
-                            e_var = ((result[i].act_kwh - result[i].expected_kwh) / (result[i].expected_kwh)) * 100;
-                            if (result[i].site == "Maragutti") {
-                                console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
-                                //    console.log(temp_e_var);
-                            }
-                            //temp_e_var = temp_e_var / result[i].expected_kwh;
-                            //if (result[0]) {
-                            //    console.log(temp_e_var);
-                            //}
-                            //temp_e_var = temp_e_var * 100;
-                            //if (result[0]) {
-                            //    console.log(temp_e_var);
-                            //}
-                            //e_var = temp_e_var;
-                        }
-                        if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0) {
-                            act_prval = 0
-                        }
-                        else {
-                            act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
-                        }
-                        if (result[i].tar_ghi != 0) {
-                            ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
-                        }
-                        if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
-                        }
-
-                        TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
-
-                        pr_var = (act_prval - result[i].tar_pr) ;
-                        plf_var = (result[i].act_plf - result[i].tar_plf);
-                        ma_var = (result[i].act_ma - result[i].tar_ma);
-                        iga_var = (result[i].act_iga - result[i].tar_iga);
-                        ega_var = (result[i].act_ega - result[i].tar_ega);
-
-
-                        console.log(result[i].pr_expected_kwh, result[i].act_kwh, act_prval);
-                        if (result[i].tar_poa == 0 || result[i].tar_ghi == 0) {
-                            gain_tar = 0;
-                        } else {
-                            gain_tar = (result[i].tar_poa / result[i].tar_ghi) * 100;
-                        }
-                        if (result[i].act_poa == 0 || result[i].act_ghi == 0) {
-                            gain_act = 0;
-                        } else {
-                            gain_act = (result[i].act_poa / result[i].act_ghi) * 100;
-                        }
-                        if (gain_act == 0 || gain_tar == 0) {
-                            gain_var = 0;
-                        } else {
-                            gain_var = (gain_act - gain_tar);
-                        }
-
-
-
-                        total_capacity += result[i].capacity;
-                        total_tar_kwh += result[i].tar_kwh;
-                        total_expected_kwh += Number(result[i].expected_kwh);
-                        total_act_kwh += result[i].act_kwh;
-                        total_minr += minr;
-                        total_tar_ghi += result[i].tar_ghi;
-                        total_act_ghi += result[i].act_ghi;
-                        total_tar_poa += result[i].tar_poa;
-                        total_act_poa += result[i].act_poa;
-                        total_tar_gain += gain_tar;
-                        total_act_gain += gain_act;
-                        total_tar_plf += result[i].tar_plf;
-                        total_act_plf += result[i].act_plf;
-                        total_tar_pr += result[i].tar_pr;
-                        total_act_pr += act_prval;
-                        total_tar_ma += result[i].tar_ma;
-                        total_act_ma += result[i].act_ma;
-                        total_tar_iga += result[i].tar_iga;
-                        total_act_iga += result[i].act_iga;
-                        total_tar_ega += result[i].tar_ega;
-                        total_act_ega += result[i].act_ega;
-                        total_capTarGhi += result[i].tar_ghi * result[i].capacity;
-                        total_capTarPoa += result[i].tar_poa * result[i].capacity;
-                        total_capTarPlf += result[i].tar_plf * result[i].capacity;
-                        total_capTarPr += result[i].tar_pr * result[i].capacity;
-                        total_capTarGain += gain_tar * result[i].capacity;
-                        total_capTarMa += result[i].tar_ma * result[i].capacity
-                        total_capTarIga += result[i].tar_iga * result[i].capacity;
-                        total_capTarEga += result[i].tar_ega * result[i].capacity;
-                        total_capActGhi += result[i].act_ghi * result[i].capacity;
-                        total_capActPoa += result[i].act_poa * result[i].capacity;
-                        total_capActPlf += result[i].act_plf * result[i].capacity;
-                        total_capActPr += act_prval * result[i].capacity;
-                        total_capActGain += gain_act * result[i].capacity;
-                        total_capActMa += result[i].act_ma * result[i].capacity;
-                        total_capActIga += result[i].act_iga * result[i].capacity;
-                        total_capActEga += result[i].act_ega * result[i].capacity;
-
-                        total_tar_TCpr += result[i].tar_pr;
-                        total_act_TCpr += result[i].temp_corrected_pr;
-                        total_capTarTCPr += result[i].tar_pr * result[i].capacity;
-                        total_capActTCPr += result[i].temp_corrected_pr * result[i].capacity;
-
-       row.push(result[i].spv);
-        row.push(result[i].capacity);
-        row.push(result[i].tar_kwh);
-        row.push(result[i].expected_kwh);
-        row.push(result[i].act_kwh);
-        row.push( t_var);
-        row.push(e_var);
-        row.push(minr);
-        row.push( result[i].tar_ghi);
-        row.push( result[i].act_ghi);
-        row.push( ghi_var);
-        row.push(result[i].tar_poa);
-        row.push(result[i].act_poa);
-        row.push(poa_var);
-        row.push( gain_tar);
-        row.push(gain_act);
-        row.push(gain_var);
-        row.push(result[i].tar_plf);
-        row.push(result[i].act_plf);
-        row.push(plf_var);
-        row.push(result[i].tar_pr);
-        row.push(act_prval);
-        row.push(pr_var);
-        row.push(result[i].tar_pr);
-        row.push(result[i].temp_corrected_pr);
-        row.push(TCPr_var);
-        row.push(result[i].tar_ma);
-        row.push(result[i].act_ma);
-        row.push(ma_var);
-        row.push(result[i].tar_iga);
-        row.push(result[i].act_iga);
-        row.push(iga_var);
-        row.push(result[i].tar_ega);
-           row.push( result[i].act_ega);
-        row.push( ega_var);
-        rows.push(row);
-
-
-
+         "POA (kWh/m^2) Var (%)  ","GHI VS POA Gain (%)  Tar ","GHI VS POA Gain (%)  Act ","GHI VS POA Gain(%)  Var (%)  ","PLF (%)  Tar ","PLF (%)  Act ","PLF (%)  Var (%) ","PR (%)  Tar ","PR (%)  Act ","PR (%)  Var (%)  ","Temp Corr. PR (%)  Tar","Temp Corr. PR (%)  Act ","Temp Corr. PR (%)  Var (%) ","MA (%)  Tar","MA (%)  Act ","MA (%)  Var (%) ","IGA (%)  Tar","IGA (%)  Act ","IGA (%)  Var (%) ","EGA (%)  Tar","EGA (%)  Act ","EGA (%)  Var (%) "
+        ];
+        var rows = [];
+        for (var i = 0; i < result.length; i++)
+        {
+            var row                 = [];
+            let total_capacity      = 0;
+            let total_tar_kwh       = 0;
+            let total_act_kwh       = 0;
+            let total_expected_kwh  = 0;
+            let total_minr          = 0;
+            let total_capTarGhi     = 0;
+            let total_tar_ghi       = 0;
+            let total_act_ghi       = 0;
+            let total_capTarPlf     = 0;
+            let total_tar_plf       = 0;
+            let total_act_plf       = 0;
+            let total_capTarGain    = 0;
+            let total_tar_gain      = 0;
+            let total_act_gain      = 0;
+            let total_capTarPoa     = 0;
+            let total_tar_poa       = 0;
+            let total_act_poa       = 0;
+            let total_capTarPr      = 0;
+            let total_tar_pr        = 0;
+            let total_act_pr        = 0;
+            let total_capTarMa      = 0;
+            let total_tar_ma        = 0;
+            let total_act_ma        = 0;
+            let total_capTarIga     = 0;
+            let total_tar_iga       = 0;
+            let total_act_iga       = 0;
+            let total_capTarEga     = 0;
+            let total_tar_ega       = 0;
+            let total_act_ega       = 0;
+            let total_capActGhi     = 0;
+            let total_capActPlf     = 0;
+            let total_capActGain    = 0;
+            let total_capActPoa     = 0;
+            let total_capActPr      = 0;
+            let total_capActMa      = 0;
+            let total_capActIga     = 0;
+            let total_capActEga     = 0;
+            let total_capTarTCPr    = 0;
+            let total_capActTCPr    = 0;
+            let total_tar_TCpr      = 0;
+            let total_act_TCpr      = 0;
+            let t_var               = 0;
+            let e_var               = 0;
+            let minr                = 0;
+            let ghi_var             = 0;
+            let poa_var             = 0;
+            let gain_tar            = 0;
+            let gain_act            = 0;
+            let gain_var            = 0;
+            let plf_var             = 0;
+            let pr_var              = 0;
+            let ma_var              = 0;
+            let iga_var             = 0;
+            let ega_var             = 0;
+            let act_prval           = 0;
+            let TCPr_var            = 0;
+            minr = ((result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif);
+            if (result[i].tar_kwh != 0)
+            {
+                t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
+            }
+            if (result[i].expected_kwh != 0)
+            {
+                e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                if (result[i].site == "Maragutti")
+                {
+                    console.log("Actual : ", result[i].act_kwh, "Expected : ", result[i].expected_kwh, "evar : " + e_var);
+                }
+            }
+            if (result[i].pr_expected_kwh == 0 || result[i].act_kwh == 0)
+            {
+                act_prval = 0
+            }
+            else
+            {
+                act_prval = (result[i].act_kwh / result[i].pr_expected_kwh) * 100;
+            }
+            if (result[i].tar_ghi != 0)
+            {
+                ghi_var = ((result[i].act_ghi - result[i].tar_ghi) / result[i].tar_ghi) * 100;
+            }
+            if (result[i].tar_poa != 0)
+            {
+                poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
+            }
+            TCPr_var    = (result[i].temp_corrected_pr - result[i].tar_pr)
+            pr_var      = (act_prval - result[i].tar_pr) ;
+            plf_var     = (result[i].act_plf - result[i].tar_plf);
+            ma_var      = (result[i].act_ma - result[i].tar_ma);
+            iga_var     = (result[i].act_iga - result[i].tar_iga);
+            ega_var     = (result[i].act_ega - result[i].tar_ega);
+            console.log(result[i].pr_expected_kwh, result[i].act_kwh, act_prval);
+            if (result[i].tar_poa == 0 || result[i].tar_ghi == 0)
+            {
+                gain_tar = 0;
+            }
+            else
+            {
+                gain_tar = (result[i].tar_poa / result[i].tar_ghi) * 100;
+            }
+            if (result[i].act_poa == 0 || result[i].act_ghi == 0)
+            {
+                gain_act = 0;
+            }
+            else
+            {
+                gain_act = (result[i].act_poa / result[i].act_ghi) * 100;
+            }
+            if (gain_act == 0 || gain_tar == 0)
+            {
+                gain_var = 0;
+            }
+            else
+            {
+                gain_var = (gain_act - gain_tar);
+            }
+            total_capacity      += result[i].capacity;
+            total_tar_kwh       += result[i].tar_kwh;
+            total_expected_kwh  += Number(result[i].expected_kwh) / 1000000;
+            total_act_kwh       += result[i].act_kwh;
+            total_minr          += minr;
+            total_tar_ghi       += result[i].tar_ghi;
+            total_act_ghi       += result[i].act_ghi;
+            total_tar_poa       += result[i].tar_poa;
+            total_act_poa       += result[i].act_poa;
+            total_tar_gain      += gain_tar;
+            total_act_gain      += gain_act;
+            total_tar_plf       += result[i].tar_plf;
+            total_act_plf       += result[i].act_plf;
+            total_tar_pr        += result[i].tar_pr;
+            total_act_pr        += act_prval;
+            total_tar_ma        += result[i].tar_ma;
+            total_act_ma        += result[i].act_ma;
+            total_tar_iga       += result[i].tar_iga;
+            total_act_iga       += result[i].act_iga;
+            total_tar_ega       += result[i].tar_ega;
+            total_act_ega       += result[i].act_ega;
+            total_capTarGhi     += result[i].tar_ghi * result[i].capacity;
+            total_capTarPoa     += result[i].tar_poa * result[i].capacity;
+            total_capTarPlf     += result[i].tar_plf * result[i].capacity;
+            total_capTarPr      += result[i].tar_pr * result[i].capacity;
+            total_capTarGain    += gain_tar * result[i].capacity;
+            total_capTarMa      += result[i].tar_ma * result[i].capacity
+            total_capTarIga     += result[i].tar_iga * result[i].capacity;
+            total_capTarEga     += result[i].tar_ega * result[i].capacity;
+            total_capActGhi     += result[i].act_ghi * result[i].capacity;
+            total_capActPoa     += result[i].act_poa * result[i].capacity;
+            total_capActPlf     += result[i].act_plf * result[i].capacity;
+            total_capActPr      += act_prval * result[i].capacity;
+            total_capActGain    += gain_act * result[i].capacity;
+            total_capActMa      += result[i].act_ma * result[i].capacity;
+            total_capActIga     += result[i].act_iga * result[i].capacity;
+            total_capActEga     += result[i].act_ega * result[i].capacity;
+            total_tar_TCpr      += result[i].tar_pr;
+            total_act_TCpr      += result[i].temp_corrected_pr;
+            total_capTarTCPr    += result[i].tar_pr * result[i].capacity;
+            total_capActTCPr    += result[i].temp_corrected_pr * result[i].capacity;
+            row.push(result[i].spv);
+            row.push(result[i].capacity);
+            row.push(result[i].tar_kwh);
+            row.push(result[i].expected_kwh / 1000000);
+            row.push(result[i].act_kwh);
+            row.push( t_var);
+            row.push(e_var);
+            row.push(minr);
+            row.push( result[i].tar_ghi);
+            row.push( result[i].act_ghi);
+            row.push( ghi_var);
+            row.push(result[i].tar_poa);
+            row.push(result[i].act_poa);
+            row.push(poa_var);
+            row.push( gain_tar);
+            row.push(gain_act);
+            row.push(gain_var);
+            row.push(result[i].tar_plf);
+            row.push(result[i].act_plf);
+            row.push(plf_var);
+            row.push(result[i].tar_pr);
+            row.push(act_prval);
+            row.push(pr_var);
+            row.push(result[i].tar_pr);
+            row.push(result[i].temp_corrected_pr);
+            row.push(TCPr_var);
+            row.push(result[i].tar_ma);
+            row.push(result[i].act_ma);
+            row.push(ma_var);
+            row.push(result[i].tar_iga);
+            row.push(result[i].act_iga);
+            row.push(iga_var);
+            row.push(result[i].tar_ega);
+            row.push( result[i].act_ega);
+            row.push( ega_var);
+            rows.push(row);
+        }
+        var data = [columns].concat(rows);
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar PerformanceSum SPVWise");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar PerformanceSum SPVWise.xlsx");
     }
-
-    var data = [columns].concat(rows);
-
-    var ws = XLSX.utils.aoa_to_sheet(data);
-    var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Solar PerformanceSum SPVWise");
-    var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-    function s2ab(s) {
-        var buf = new ArrayBuffer(s.length);
-        var view = new Uint8Array(buf);
-        for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-        return buf;
-    }
-
-    saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar PerformanceSum SPVWise.xlsx");
-
-}
     // Daily Gen Report SPV WIse
-    function GetSolarPRReportSPVWise() {
+    function GetSolarPRReportSPVWise()
+    {
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
         let site = "";
         let spv = "";
@@ -527,15 +627,11 @@
         document.getElementById("loader").style.display = 'flex';
         $.ajax({
             type: "GET",
-
-            //url: "/SolarReport/GetSolarPRReportINVWise?fy=" + fyear + " &fromDate=" + fromDate + "&toDate=" + toDate,
             url: '@Url.Action("GetSolarPRReportSPVWise", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&sitelist=' + site+ '&spv='+spv,
             contentType: "application/json; charset=utf-8",
-
             datatype: "JSON",
             success: function (result, status, xhr) {
                 console.log(result);
-                //var tbl = '<div class="text-center"><h5>' + reporthead + '</h5></div>';
                 var tbl = '<table id="example1"  class="table table-bordered table-striped" style="width:150%">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th rowspan="2">SPV</th><th rowspan="2">Capacity <br> (MW)</th>';
@@ -2557,7 +2653,875 @@
             }
         });
     }
+    function GetPRReportGroup()
+    {
+        document.getElementById("loader").style.display = 'flex';
+        let custom_site = "";
+        $('select#cust_group option:selected').each(function () {
+            custom_site += $(this).val() + ",";
+        });
+        custom_site = custom_site != "" ? custom_site.slice(0, -1) : custom_site;
+        var daterange = $('#daterange_group').val();
+        var arr1        = new Array();
+        arr1            = daterange.split("-");
+        var fromDate    = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var toDate      = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        var fyear       = Fy;
+        var leble       = [];
+        var revenue_arr = [];
+        var reporthead = "SPV Wise Reports";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSolarGroupOfSite", "SolarReport")' + '?fy=' + fyear + '&fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + custom_site,
+            contentType: "application/json; charset=utf-8",
+            datatype: "JSON",
+            success: function (result, status, xhr) {
+                var tbl = '<table id="example_solar_group"  class="table table-bordered table-striped" style="width:150%">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th rowspan="2" style="width: 12%;text-wrap: nowrap;">Group Name</th><th rowspan="2">Capacity <br>(MW)</th>';
+                tbl += '<th colspan="5" class="text-center"> Energy (in MU)</th >';
+                tbl += '<th>(±)Revenue</th><th colspan="3" class="text-center">GHI (kWh/m<sup>2</sup>)</th>';
+                tbl += '<th colspan="3" class="text-center">POA (kWh/m<sup>2</sup>)</th>';
+                tbl += '<th colspan="3" class="text-center">GHI Vs POA Gain (%)</th>';
+                tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
+                tbl += '<th colspan="3" class="text-center">PR (%)</th>';
+                //tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
+                tbl += '<th colspan="3" class="text-center">MA (%)</th>';
+                tbl += '<th colspan="3" class="text-center">IGA (%)</th>';
+                tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr > ';
+                tbl += '<tr>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Exp</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>T.Var (%)</th>';
+                tbl += '<th>E.Var (%)</th>';
+                tbl += '<th>(MINR)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar </th>';
+                tbl += '<th>Act </th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                //tbl += '<th>Tar</th>';
+                //tbl += '<th>Act</th>';
+                //tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '<th>Tar</th>';
+                tbl += '<th>Act</th>';
+                tbl += '<th>Var (%)</th>';
+                tbl += '</tr></thead>';
+                if (result.length > 0)
+                {
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        let t_var                   = 0;
+                        let e_var                   = 0;
+                        let minr                    = 0;
+                        let gain_tar                = 0;
+                        let gain_act                = 0;
+                        let act_prval               = 0;
+                        let TCPr_var                = 0;
+                        let actual_TempCorrectedPR  = 0;
+                        let total_ghi_tar           = 0;
+                        let total_ghi_act           = 0;
+                        let total_tar_poa           = 0;
+                        let total_act_poa           = 0;
+                        let total_capacity          = 0;
+                        let total_tar_plf           = 0;
+                        let total_act_plf           = 0;
+                        let avg_act_plf             = 0;
+                        let avg_tar_plf             = 0;
+                        let avg_plf_var             = 0;
+                        let avg_tar_ghi             = 0;
+                        let avg_act_ghi             = 0;
+                        let avg_ghi_var             = 0;
+                        let avg_tar_poa             = 0;
+                        let avg_poa_var             = 0;
+                        let avg_act_poa             = 0;
+                        let avg_tar_gain            = 0;
+                        let avg_act_gain            = 0;
+                        let avg_gain_var            = 0;
+                        let total_tar_pr            = 0;
+                        let total_act_pr            = 0;
+                        let avg_tar_pr              = 0;
+                        let avg_act_pr              = 0;
+                        let pr_var                  = 0;
+                        let total_tar_ma            = 0;
+                        let total_act_ma            = 0;
+                        let avg_tar_ma              = 0;
+                        let avg_act_ma              = 0;
+                        let ma_var                  = 0;
+                        let total_tar_iga           = 0;
+                        let total_act_iga           = 0;
+                        let avg_tar_iga             = 0;
+                        let avg_act_iga             = 0;
+                        let iga_var                 = 0;
+                        let total_tar_ega           = 0;
+                        let total_act_ega           = 0;
+                        let avg_tar_ega             = 0;
+                        let avg_act_ega             = 0;
+                        let ega_var                 = 0;
+                        if (result[i].tar_kwh != 0)
+                        {
+                            t_var   = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
+                        }
+                        if (result[i].expected_kwh != 0)
+                        {
+                            e_var   = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;
+                        }
+                        
+                        TCPr_var    = (result[i].temp_corrected_pr - result[i].tar_pr);
+                        let chielditem = result[i].item;
+                        for (var k = 0; k < chielditem.length; k++)
+                        {
 
+                            minr            += ((chielditem[k].act_kwh - chielditem[k].tar_kwh) * chielditem[k].total_tarrif);
+                            total_ghi_tar   += chielditem[k].tar_ghi * chielditem[k].capacity;
+                            total_ghi_act   += chielditem[k].act_ghi * chielditem[k].capacity;
+                            total_tar_poa   += chielditem[k].tar_poa * chielditem[k].capacity;
+                            total_act_poa   += chielditem[k].act_poa * chielditem[k].capacity;
+                            total_capacity  += chielditem[k].capacity;
+                            total_tar_plf   += chielditem[k].tar_plf * chielditem[k].capacity;
+                            total_act_plf   += chielditem[k].act_plf * chielditem[k].capacity;
+                            total_tar_pr    += chielditem[k].tar_pr * chielditem[k].capacity;
+                            total_tar_ma    += chielditem[k].tar_ma * chielditem[k].capacity
+                            total_act_ma    += chielditem[k].act_ma * chielditem[k].capacity;
+                            total_tar_iga   += chielditem[k].tar_iga * chielditem[k].capacity;
+                            total_act_iga   += chielditem[k].act_iga * chielditem[k].capacity;
+                            total_tar_ega   += chielditem[k].tar_ega * chielditem[k].capacity;
+                            total_act_ega   += chielditem[k].act_ega * chielditem[k].capacity;
+                            if (chielditem[k].pr_expected_kwh == 0 || chielditem[k].act_kwh == 0)
+                            {
+                                total_act_pr = 0
+                            }
+                            else
+                            {
+                                total_act_pr += ((chielditem[k].act_kwh / chielditem[k].pr_expected_kwh) * 100) * chielditem[k].capacity;
+                            }
+                            if (chielditem[k].tar_poa == 0 || chielditem[k].tar_ghi == 0)
+                            {
+                                gain_tar = 0;
+                            }
+                            else
+                            {
+                                gain_tar += ((chielditem[k].tar_poa / chielditem[k].tar_ghi) * 100) * chielditem[k].capacity;
+                            }
+                            if (chielditem[k].act_poa == 0 || chielditem[k].act_ghi == 0)
+                            {
+                                gain_act = 0;
+                            }
+                            else
+                            {
+                                gain_act += ((chielditem[k].act_poa / chielditem[k].act_ghi) * 100) * chielditem[k].capacity;
+                            }
+                        }
+                        if (total_capacity != 0)
+                        {
+                            avg_tar_ghi   = total_ghi_tar / total_capacity;
+                            avg_act_ghi   = total_ghi_act / total_capacity;
+                            avg_tar_poa   = total_tar_poa / total_capacity;
+                            avg_act_poa   = total_act_poa / total_capacity;
+                            avg_tar_gain  = gain_tar / total_capacity;
+                            avg_act_gain  = gain_act / total_capacity;
+                            avg_gain_var  = (avg_act_gain - avg_tar_gain);
+                            if (avg_tar_ghi != 0) {
+                                avg_ghi_var = (((avg_act_ghi - avg_tar_ghi) / avg_tar_ghi) * 100);
+                            }
+                            if (avg_tar_poa != 0) {
+                                avg_poa_var = (((avg_act_poa - avg_tar_poa) / avg_tar_poa) * 100);
+                            }
+                            avg_tar_plf  = total_tar_plf / total_capacity;
+                            avg_act_plf  = total_act_plf / total_capacity;
+                            avg_plf_var  = (avg_act_plf - avg_tar_plf);
+                            avg_tar_pr   = total_tar_pr / total_capacity;
+                            avg_act_pr   = total_act_pr / total_capacity;
+                            pr_var       = (avg_act_pr - avg_tar_pr);
+                            avg_tar_ma   = total_tar_ma / total_capacity;
+                            avg_act_ma   = total_act_ma / total_capacity;
+                            ma_var       = (avg_act_ma.toFixed(2) - avg_tar_ma.toFixed(2));
+                            avg_tar_iga  = total_tar_iga / total_capacity;
+                            avg_act_iga  = total_act_iga / total_capacity;
+                            iga_var      = (avg_act_iga - avg_tar_iga);
+                            avg_tar_ega  = total_tar_ega / total_capacity;
+                            avg_act_ega  = total_act_ega / total_capacity;
+                            ega_var      = (avg_act_ega - avg_tar_ega);
+                           
+                        }
+                        
+                        
+                        let chield_class = result[i].cust_group.replace(/\s/g, "");
+                        let expand_btn = "";
+                        if (chielditem.length > 1) {
+                            expand_btn = '<div class="grp-btn" id = "parant_' + chield_class + '" onclick = "showchield(id)" style = "display:inline-block" > <i class="fas fa-plus"></i></div ><div class="grp-btn" id="phide_' + chield_class + '" onclick="hidechield(id)" style="display:none"><i class="fas fa-minus"></i></div>';
 
+                        }
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + expand_btn+'<b>&nbsp;&nbsp;' + result[i].cust_group + '</b></td >';
+                        tbl += '<td class="text-right" >' + result[i].capacity.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].tar_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + (result[i].expected_kwh / 1000000).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + result[i].act_kwh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + t_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right" >' + minr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_ghi_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_poa_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_gain.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_gain.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_gain_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_plf_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
+                        //tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ma_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + iga_var.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_tar_ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + avg_act_ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right">' + ega_var.toFixed(2) + '</td>';
+                        tbl += '</tr>';
+                        for (var j = 0; j < chielditem.length; j++)
+                        {
+                            let t_var_chield                    = 0;
+                            let e_var_chield                    = 0;
+                            let minr_chield                     = 0;
+                            let ghi_var_chield                  = 0;
+                            let poa_var_chield                  = 0;
+                            let gain_tar_chield                 = 0;
+                            let gain_act_chield                 = 0;
+                            let gain_var_chield                 = 0;
+                            let plf_var_chield                  = 0;
+                            let pr_var_chield                   = 0;
+                            let ma_var_chield                   = 0;
+                            let iga_var_chield                  = 0;
+                            let ega_var_chield                  = 0;
+                            let act_prval_chield                = 0;
+                            let TCPr_var_chield                 = 0;
+                            let actual_TempCorrectedPR_chield   = 0;
+                           
+                            minr_chield = ((chielditem[j].act_kwh - chielditem[j].tar_kwh) * chielditem[j].total_tarrif);
+                          
+                           
+                            if (chielditem[j].tar_kwh != 0)
+                            {
+                                t_var_chield        = ((chielditem[j].act_kwh - chielditem[j].tar_kwh) / chielditem[j].tar_kwh) * 100;
+                            }
+                            if (chielditem[j].expected_kwh != 0)
+                            {
+                                e_var_chield        = ((chielditem[j].act_kwh - chielditem[j].expected_kwh / 1000000) / (chielditem[j].expected_kwh / 1000000)) * 100;
+                            }
+                            if (chielditem[j].pr_expected_kwh == 0 || chielditem[j].act_kwh == 0)
+                            {
+                                act_prval_chield    = 0
+                            }
+                            else
+                            {
+                                act_prval_chield    = (chielditem[j].act_kwh / chielditem[j].pr_expected_kwh) * 100;
+                            }
+                            if (chielditem[j].tar_ghi != 0)
+                            {
+                                ghi_var_chield      = ((chielditem[j].act_ghi.toFixed(2) - chielditem[j].tar_ghi.toFixed(2)) / chielditem[j].tar_ghi.toFixed(2)) * 100;
+                            }
+                            if (chielditem[j].tar_poa != 0)
+                            {
+                                poa_var_chield      = ((chielditem[j].act_poa.toFixed(2) - chielditem[j].tar_poa.toFixed(2)) / chielditem[j].tar_poa.toFixed(2)) * 100;
+                            }
+                            pr_var_chield           = (act_prval_chield - chielditem[j].tar_pr);
+                            plf_var_chield          = (chielditem[j].act_plf - chielditem[j].tar_plf);
+                            ma_var_chield           = (chielditem[j].act_ma - chielditem[j].tar_ma);
+                            iga_var_chield          = (chielditem[j].act_iga - chielditem[j].tar_iga);
+                            ega_var_chield          = (chielditem[j].act_ega - chielditem[j].tar_ega);
+                            TCPr_var_chield         = (chielditem[j].temp_corrected_pr - chielditem[j].tar_pr);
+                            if (chielditem[j].tar_poa == 0 || chielditem[j].tar_ghi == 0)
+                            {
+                                gain_tar_chield     = 0;
+                            }
+                            else
+                            {
+                                gain_tar_chield     = (chielditem[j].tar_poa / chielditem[j].tar_ghi) * 100;
+                            }
+                            if (chielditem[j].act_poa == 0 || chielditem[j].act_ghi == 0)
+                            {
+                                gain_act_chield     = 0;
+                            }
+                            else
+                            {
+                                gain_act_chield     = (chielditem[j].act_poa / chielditem[j].act_ghi) * 100;
+                            }
+                            if (gain_act_chield == 0 || gain_tar_chield == 0)
+                            {
+                                gain_var_chield     = 0;
+                            }
+                            else
+                            {
+                                gain_var_chield     = ((gain_act_chield - gain_tar_chield));
+                            }
 
+                            tbl += '<tr class="' + chield_class +'" style="display:none">';
+                            tbl += '<td class="text-left" style="padding-left: 1rem !important;">' + chielditem[j].site + '</td>';
+                            tbl += '<td class="text-right" >' + chielditem[j].capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + (chielditem[j].expected_kwh / 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_kwh.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + t_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + e_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + minr_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ghi_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + poa_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + gain_tar_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + gain_act_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + gain_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_plf.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + plf_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + act_prval_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + pr_var_chield.toFixed(2) + '</td>';
+                            //tbl += '<td class="text-right">' + chielditem[j].tar_pr.toFixed(2) + '</td>';
+                            //tbl += '<td class="text-right">' + chielditem[j].temp_corrected_pr.toFixed(2) + '</td>';
+                            //tbl += '<td class="text-right">' + TCPr_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_ma.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_ma.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ma_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_iga.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + iga_var_chield.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].tar_ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + chielditem[j].act_ega.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ega_var_chield.toFixed(2) + '</td>';
+                            tbl += '</tr>';
+                        }
+                    }
+                }
+                else
+                {
+                }
+                tbl += '</table>';
+                //$("#reportsDailygroup").html("").html(tbl);
+                $("#reportsDailygroup").html("");
+                $("#reportsDailygroup").html(tbl);
+                //document.getElementById("mint_total_" + count).innerHTML = total_minr;
+                //$("#reportsDailygroup").html("").html(tbl);
+                $('#example_solar_group').DataTable({
+                    dom: 'Bfrtip',
+                    searching: false,
+                    paging: false,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    fixedColumns: {
+                        left: 2
+                    },
+                    rowGroup: {
+                        dataSrc: 0,
+                    },
+                    pageLength: 50,
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            footer: true,
+                            title: 'Solar Performance Reports Group By Site',
+                            //titleAttr: 'Export Excel',
+                            "oSelectorOpts": { filter: 'applied', order: 'current' },
+                            exportOptions: {
+                                columns: ':visible',
+                                modifier: {
+                                    page: 'all'
+                                },
+                                format: {
+                                    header: function (data, columnIdx) {
+                                        if (columnIdx == 1) {
+                                            return 'Capacity (MW)';
+                                        }
+                                        else if (columnIdx == 2) {
+                                            return 'Energy (in MU)  Tar';
+                                        }
+                                        else if (columnIdx == 3) {
+                                            return 'Energy (in MU)  Exp';
+                                        }
+                                        else if (columnIdx == 4) {
+                                            return 'Energy (in MU)  Act';
+                                        }
+                                        else if (columnIdx == 5) {
+                                            return 'Energy (in MU)  T.Var (%)';
+                                        }
+                                        else if (columnIdx == 6) {
+                                            return 'Energy (in MU)  E.Var (%)';
+                                        }
+                                        else if (columnIdx == 7) {
+                                            return 'Revenue (MINR) ';
+                                        }
+                                        else if (columnIdx == 8) {
+                                            return 'GHI (kWh/m^2)  Tar';
+                                        }
+                                        else if (columnIdx == 9) {
+                                            return 'GHI (kWh/m^2)  Act';
+                                        }
+                                        else if (columnIdx == 10) {
+                                            return 'GHI (kWh/m^2)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 11) {
+                                            return 'POA (kWh/m^2)  Tar';
+                                        }
+                                        else if (columnIdx == 12) {
+                                            return 'POA (kWh/m^2)  Act ';
+                                        }
+                                        else if (columnIdx == 13) {
+                                            return 'POA (kWh/m^2) Var (%) ';
+                                        }
+                                        else if (columnIdx == 14) {
+                                            return 'GHI VS POA Gain (%)  Tar';
+                                        }
+                                        else if (columnIdx == 15) {
+                                            return 'GHI VS POA Gain (%)  Act ';
+                                        }
+                                        else if (columnIdx == 16) {
+                                            return 'GHI VS POA Gain(%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 17) {
+                                            return 'PLF (%)  Tar';
+                                        }
+                                        else if (columnIdx == 18) {
+                                            return 'PLF (%)  Act ';
+                                        }
+                                        else if (columnIdx == 19) {
+                                            return 'PLF (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 20) {
+                                            return 'PR (%)  Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'PR (%)  Act ';
+                                        }
+                                        else if (columnIdx == 22) {
+                                            return 'PR (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 23) {
+                                            return 'Temp Corr. PR (%)  Tar';
+                                        }
+                                        else if (columnIdx == 24) {
+                                            return 'Temp Corr. PR (%)  Act ';
+                                        }
+                                        else if (columnIdx == 25) {
+                                            return 'Temp Corr. PR (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 26) {
+                                            return 'MA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 27) {
+                                            return 'MA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 28) {
+                                            return 'MA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 29) {
+                                            return 'IGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 30) {
+                                            return 'IGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 31) {
+                                            return 'IGA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 32) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 33) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 34) {
+                                            return 'EGA (%)  Var (%) ';
+                                        }
+                                        else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+
+                        {
+                            extend: 'csv',
+                            footer: true,
+                            title: 'Solar Performance Reports Group By Site',
+                            //titleAttr: 'Export Excel',
+                            "oSelectorOpts": { filter: 'applied', order: 'current' },
+                            exportOptions: {
+                                columns: ':visible',
+                                modifier: {
+                                    page: 'all'
+                                },
+                                format: {
+                                    header: function (data, columnIdx) {
+                                        if (columnIdx == 1) {
+                                            return 'Capacity (MW)';
+                                        }
+                                        else if (columnIdx == 2) {
+                                            return 'Energy (in MU)  Tar';
+                                        }
+                                        else if (columnIdx == 3) {
+                                            return 'Energy (in MU)  Exp';
+                                        }
+                                        else if (columnIdx == 4) {
+                                            return 'Energy (in MU)  Act';
+                                        }
+                                        else if (columnIdx == 5) {
+                                            return 'Energy (in MU)  T.Var (%)';
+                                        }
+                                        else if (columnIdx == 6) {
+                                            return 'Energy (in MU)  E.Var (%)';
+                                        }
+                                        else if (columnIdx == 7) {
+                                            return 'Revenue (MINR) ';
+                                        }
+                                        else if (columnIdx == 8) {
+                                            return 'GHI (kWh/m^2)  Tar';
+                                        }
+                                        else if (columnIdx == 9) {
+                                            return 'GHI (kWh/m^2)  Act';
+                                        }
+                                        else if (columnIdx == 10) {
+                                            return 'GHI (kWh/m^2)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 11) {
+                                            return 'POA (kWh/m^2)  Tar';
+                                        }
+                                        else if (columnIdx == 12) {
+                                            return 'POA (kWh/m^2)  Act ';
+                                        }
+                                        else if (columnIdx == 13) {
+                                            return 'POA (kWh/m^2) Var (%) ';
+                                        }
+                                        else if (columnIdx == 14) {
+                                            return 'GHI VS POA Gain (%)  Tar';
+                                        }
+                                        else if (columnIdx == 15) {
+                                            return 'GHI VS POA Gain (%)  Act ';
+                                        }
+                                        else if (columnIdx == 16) {
+                                            return 'GHI VS POA Gain(%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 17) {
+                                            return 'PLF (%)  Tar';
+                                        }
+                                        else if (columnIdx == 18) {
+                                            return 'PLF (%)  Act ';
+                                        }
+                                        else if (columnIdx == 19) {
+                                            return 'PLF (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 20) {
+                                            return 'PR (%)  Tar';
+                                        }
+                                        else if (columnIdx == 21) {
+                                            return 'PR (%)  Act ';
+                                        }
+                                        else if (columnIdx == 22) {
+                                            return 'PR (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 23) {
+                                            return 'Temp Corr. PR (%)  Tar';
+                                        }
+                                        else if (columnIdx == 24) {
+                                            return 'Temp Corr. PR (%)  Act ';
+                                        }
+                                        else if (columnIdx == 25) {
+                                            return 'Temp Corr. PR (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 26) {
+                                            return 'MA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 27) {
+                                            return 'MA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 28) {
+                                            return 'MA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 29) {
+                                            return 'IGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 30) {
+                                            return 'IGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 31) {
+                                            return 'IGA (%)  Var (%) ';
+                                        }
+                                        else if (columnIdx == 32) {
+                                            return 'EGA (%)  Tar';
+                                        }
+                                        else if (columnIdx == 33) {
+                                            return 'EGA (%)  Act ';
+                                        }
+                                        else if (columnIdx == 34) {
+                                            return 'EGA (%)  Var (%) ';
+                                        }
+                                        else {
+                                            return data;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            extend: 'colvis',
+                            //  columns: ':not(.noVis)',
+                            columnText: function (dt, idx, title) {
+                                if (idx == 1) {
+                                    return 'Capacity (MW)';
+                                }
+                                else if (idx == 2) {
+                                    return 'Energy (in MU)  Tar';
+                                }
+                                else if (idx == 3) {
+                                    return 'Energy (in MU)  Exp';
+                                }
+                                else if (idx == 4) {
+                                    return 'Energy (in MU)  Act';
+                                }
+                                else if (idx == 5) {
+                                    return 'Energy (in MU)  T.Var (%)';
+                                }
+                                else if (idx == 6) {
+                                    return 'Energy (in MU)  E.Var (%)';
+                                }
+                                else if (idx == 7) {
+                                    return 'Revenue (MINR) ';
+                                }
+                                else if (idx == 8) {
+                                    return 'GHI (kWh/m^2)  Tar';
+                                }
+                                else if (idx == 9) {
+                                    return 'GHI (kWh/m^2)  Act';
+                                }
+                                else if (idx == 10) {
+                                    return 'GHI (kWh/m^2)  Var (%) ';
+                                }
+                                else if (idx == 11) {
+                                    return 'POA (kWh/m^2)  Tar';
+                                }
+                                else if (idx == 12) {
+                                    return 'POA (kWh/m^2)  Act ';
+                                }
+                                else if (idx == 13) {
+                                    return 'POA (kWh/m^2) Var (%) ';
+                                }
+                                else if (idx == 14) {
+                                    return 'GHI VS POA Gain (%)  Tar';
+                                }
+                                else if (idx == 15) {
+                                    return 'GHI VS POA Gain (%)  Act ';
+                                }
+                                else if (idx == 16) {
+                                    return 'GHI VS POA Gain(%)  Var (%) ';
+                                }
+                                else if (idx == 17) {
+                                    return 'PLF (%)  Tar';
+                                }
+                                else if (idx == 18) {
+                                    return 'PLF (%)  Act ';
+                                }
+                                else if (idx == 19) {
+                                    return 'PLF (%)  Var (%) ';
+                                }
+                                else if (idx == 20) {
+                                    return 'PR (%)  Tar';
+                                }
+                                else if (idx == 21) {
+                                    return 'PR (%)  Act ';
+                                }
+                                else if (idx == 22) {
+                                    return 'PR (%)  Var (%) ';
+                                }
+                                else if (idx == 23) {
+                                    return 'Temp Corr. PR (%)  Tar';
+                                }
+                                else if (idx == 24) {
+                                    return 'Temp Corr. PR (%)  Act ';
+                                }
+                                else if (idx == 25) {
+                                    return 'Temp Corr. PR (%)  Var (%) ';
+                                }
+                                else if (idx == 26) {
+                                    return 'MA (%)  Tar';
+                                }
+                                else if (idx == 27) {
+                                    return 'MA (%)  Act ';
+                                }
+                                else if (idx == 28) {
+                                    return 'MA (%)  Var (%) ';
+                                }
+                                else if (idx == 29) {
+                                    return 'IGA (%)  Tar';
+                                }
+                                else if (idx == 30) {
+                                    return 'IGA (%)  Act ';
+                                }
+                                else if (idx == 31) {
+                                    return 'IGA (%)  Var (%) ';
+                                }
+                                else if (idx == 32) {
+                                    return 'EGA (%)  Tar';
+                                }
+                                else if (idx == 33) {
+                                    return 'EGA (%)  Act ';
+                                }
+                                else if (idx == 34) {
+                                    return 'EGA (%)  Var (%) ';
+                                }
+                                else {
+                                    return title;
+                                }
+                            }
+                        },
+                        /*{
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
+
+                            action: function () {
+                                ExportToExcelSiteWise();
+                            },
+                            format: {
+                                header: function (data, columnIdx) {
+                                    if (columnIdx == 1) {
+                                        return 'Capacity (MW)';
+                                    }
+                                    else if (columnIdx == 2) {
+                                        return 'JMR Energy (in MU)  Tar';
+                                    }
+                                    else if (columnIdx == 3) {
+                                        return 'JMR Energy (in MU)  Exp';
+                                    }
+                                    else if (columnIdx == 4) {
+                                        return 'JMR Energy (in MU)  Act';
+                                    }
+                                    else if (columnIdx == 5) {
+                                        return 'JMR Energy (in MU)  T.Var (%)';
+                                    }
+                                    else if (columnIdx == 6) {
+                                        return 'JMR Energy (in MU)  E.Var (%)';
+                                    }
+                                    else if (columnIdx == 7) {
+                                        return 'Revenue (MINR) ';
+                                    }
+                                    else if (columnIdx == 8) {
+                                        return 'Wind Speed (m/s)  Tar';
+                                    }
+                                    else if (columnIdx == 9) {
+                                        return 'Wind Speed (m/s)  Act ';
+                                    }
+                                    else if (columnIdx == 10) {
+                                        return 'Wind Speed (m/s)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 11) {
+                                        return 'PLF (%)  Tar';
+                                    }
+                                    else if (columnIdx == 12) {
+                                        return 'PLF (%)  Act ';
+                                    }
+                                    else if (columnIdx == 13) {
+                                        return 'PLF (%)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 14) {
+                                        return 'MA Actual (%)  Tar';
+                                    }
+                                    else if (columnIdx == 15) {
+                                        return 'MA Actual (%)  Act ';
+                                    }
+                                    else if (columnIdx == 16) {
+                                        return 'MA Actual (%)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 17) {
+                                        return 'IGA (%)  Tar';
+                                    }
+                                    else if (columnIdx == 18) {
+                                        return 'IGA (%)  Act ';
+                                    }
+                                    else if (columnIdx == 19) {
+                                        return 'IGA (%)  Var (%) ';
+                                    }
+                                    else if (columnIdx == 20) {
+                                        return 'EGA (%)  Tar';
+                                    }
+                                    else if (columnIdx == 21) {
+                                        return 'EGA (%)  Act ';
+                                    }
+                                    else if (columnIdx == 22) {
+                                        return 'EGA (%)  Var (%) ';
+                                    }
+                                    else {
+                                        return data;
+                                    }
+                                }
+                            }
+                        },*/
+                    ]
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
+                document.getElementById("loader").style.display = 'none';
+            }
+        });
+    }
+
+    function showchield(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "table-row";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("phide_" + iden[1]).style.display = "inline-block";
+
+    }
+    function hidechield(id) {
+        let iden = id.split("_");
+        let elements = document.getElementsByClassName(iden[1]);
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.display = "none";
+        }
+        document.getElementById(id).style.display = "none";
+        document.getElementById("parant_" + iden[1]).style.display = "inline-block";
+    }
 </script>

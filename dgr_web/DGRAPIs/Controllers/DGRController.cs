@@ -3000,6 +3000,203 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        // Operation performance ppt creation for spv 
+        [Route("GetGroupBySPVSite")]
+        [HttpGet]
+        public async Task<IActionResult> getGroupBySPV(int siteType)
+        {
+            try
+            {
+                var data = await _dgrBs.getGroupBySPV(siteType);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("WindReviewMail")]
+        [HttpGet]
+        public async Task<IActionResult> WindReviewMail()
+        {
+            try
+            {
+                var data = await _dgrBs.WindReviewMail();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("SolarReviewMail")]
+        [HttpGet]
+        public async Task<IActionResult> SolarReviewMail()
+        {
+            try
+            {
+                var data = await _dgrBs.SolarReviewMail();
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("MonthlyMailSend")]
+        [HttpGet]
+        public async Task<IActionResult> MonthlyMailSend(string fname)
+        {
+            try
+            {
+                var data = await _dgrBs.MonthlyMailSend(fname);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetWindPerformanceGroupBySite")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindPerformanceGroupBySite(string fy, string fromDate, string todate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindPerformanceGroupBySite(fy, fromDate, todate, site_list);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetSolarPerformanceGroupBySite")]
+        [HttpGet]
+        public async Task<IActionResult> GetSolarPerformanceGroupBySite(string fy, string fromDate, string todate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarPerformanceGroupBySite(fy, fromDate, todate, site_list);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomGroup")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomGroup(int siteType)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCustomGroup(siteType);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomeSolarDaily")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomeSolarDaily(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCustomeSolarDaily(fromDate, toDate, site_list);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomeSolarMonthly")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomeSolarMonthly(string fy, string month, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCustomeSolarMonthly(fy, month, site_list);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomeSolarYearly")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomeSolarYearly(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCustomeSolarYearly(fromDate, toDate, site_list);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomeWindDaily")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomeWindDaily(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCustomeWindDaily(fromDate, toDate, site_list);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomeWindMonthly")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomeWindMonthly(string fy, string month, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCustomeWindMonthly(fy, month, site_list);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomeWindYearly")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomeWindYearly(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCustomeWindYearly(fromDate, toDate, site_list);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
     }
 }

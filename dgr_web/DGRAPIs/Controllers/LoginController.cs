@@ -375,11 +375,51 @@ namespace Login.Controllers
             }
             catch (Exception ex)
             {
-
                 return BadRequest(ex.Message);
             }
         }
+        [Route("GetCustomGroup")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomGroup(int login_id, int site_type,string groupPage)
+        {
+            try
+            {
+                var data = await _loginBs.GetCustomGroup(login_id, site_type, groupPage);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("SubmitGroupBySite")]
+        [HttpGet]
+        public async Task<IActionResult> SubmitGroupBySite(int login_id,string reportgroup, string site_type)
+        {
+            try
+            {
+                var data = await _loginBs.SubmitGroupBySite(login_id, reportgroup, site_type);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCustomGroupAccess")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomGroupAccess(int login_id, int site_type)
+        {
+            try
+            {
+                var data = await _loginBs.GetCustomGroupAccess(login_id, site_type);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
-
-
 }
