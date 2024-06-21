@@ -114,6 +114,13 @@
             <div class="row">
                 <div class="col-sm-1"></div>
                 <div class="col-sm-5">
+                    <div id="customGroup"></div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-5">
 
                     <div id="views"></div>
                  
@@ -176,6 +183,7 @@
 <script type="text/javascript">
     id = 0;
     var rcont = 1;
+    const group_page = ['9', '11'];
     window.onload = function () {
 
         function GetURLParameter(sParam) {
@@ -247,16 +255,19 @@
         getPageList(id);
     }
     function getPageList(id) {
+        var group_page_list = "";
+        for (var n = 0; n < group_page.length; n++) {
+            group_page_list += group_page[n] + ",";
+        }
+        group_page_list = group_page_list != "" ? group_page_list.slice(0, -1) : group_page_list;
 
         $.ajax({
             type: "POST",
-           // url: "/Home/GetPageList?login_id=" + id,
             url: '@Url.Action("GetPageList", "Home")' + '?login_id=' + id + '&site_type=1',
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
             success: function (result, status, xhr) {
-                console.log(result);
+                //console.log(result);
                 $("#views").html();
                 $("#reports").html();
                 $("#importApproval").html();
@@ -306,6 +317,37 @@
                     tbl2 += '</table > ';
                     $("#reports").html(tbl2);
 
+                }
+            }
+        });
+
+         $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCustomGroup", "Home")' + '?login_id=' + id + '&site_type=1&groupPage=' + group_page_list,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                $("#customGroup").html();
+                var tbl_custom = '<table class="table table-bordered table-striped customGroup-page">';
+                let customcount = 0;
+                for (var k = 0; k < result.length; k++)
+                {
+                    if (result[k].cust_group == 1)
+                    {
+                        customcount = 1;
+                    }
+                }
+                tbl_custom += '<tr><th style="width:5.4rem"><input type="checkbox"  disabled="disabled" class="form-check-input custom-pages" id="custom" name="custom" data-pageid ="" style="margin-left: 15px; margin-top: -6px;"></th>';
+                tbl_custom += '<th>Custom Group By Site</th>';
+                tbl_custom += '</tr > ';
+                tbl_custom += '</table > ';
+                $("#customGroup").html(tbl_custom);
+                console.log("inside", customcount);
+                if(customcount == 1)
+                {
+                    console.log("inside");
+                    $(".custom-pages").attr('checked', true);
                 }
             }
         });
@@ -518,6 +560,7 @@
         $("input.view-pages").attr("disabled", false);
         $("input.report-pages").attr("disabled", false);
         $("input.notification").attr("disabled", false);
+        $("input.custom-pages").attr("disabled", false);
         $("input.checkAllP").attr("disabled", false);
         $("input.checkAllR").attr("disabled", false);
         $('.site').prop('disabled', false);
@@ -535,6 +578,7 @@
         $("input.view-pages").attr("disabled", true);
         $("input.report-pages").attr("disabled", true);
         $("input.notification").attr("disabled", true);
+        $("input.custom-pages").attr("disabled", true);
         $("input.checkAllP").attr("disabled", true);
         $("input.checkAllR").attr("disabled", true);
         $('.site').prop('disabled', true);
@@ -619,6 +663,7 @@
         let report_arr = {};
         let import_approval = 0;
         let heatmap = 0;
+	 let selected_report_page = [];
         $('.view-pages').each(function () {
         var page_id = $(this).attr('data-pageid');
         var isSet = $(this).is(":checked");
@@ -630,6 +675,9 @@
             var page_id = $(this).attr('data-pageid');
             var isSet = $(this).is(":checked");
             report_arr[page_id] = isSet;
+	     if (isSet == true) {
+                selected_report_page.push(page_id);
+            }
         });
         $('.import-pages').each(function () {
             var page_id = $(this).attr('data-pageid');
@@ -653,15 +701,35 @@
             }
         });
 
+        var getVal = $('#custom').is(":checked");
+        if (getVal == true) {
+            var matchval = group_page.filter(value => selected_report_page.includes(value));
+            console.log("FInd Values");
+            console.log(matchval);
+            if (matchval.length == 0) {
+                alert("Please Select Generation Report or Performance Summery");
+                return false;
+            }
+        }
+
         $.ajax({
             type: "POST",
             url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + ' &importapproval=' + import_approval + '&heatmap=' + heatmap,
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (result, status, xhr) {
-                 alert("Success");
-                location.href = '@Url.Action("SiteUserMaster", "Home")';
-
+                 if (getVal == true) {
+                    var group_page_list = "";
+                    for (var n = 0; n < group_page.length; n++) {
+                        group_page_list += group_page[n] + ",";
+                    }
+                    group_page_list = group_page_list != "" ? group_page_list.slice(0, -1) : group_page_list;
+                    submitGroupAccess(id, group_page_list);
+                }
+                else {
+                    alert("Success");
+                    location.href = '@Url.Action("SiteUserMaster", "Home")';
+                }
             }
         });
 
@@ -675,5 +743,17 @@
              }
          });
     }
-
+    function submitGroupAccess(login_id, page_group)
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SubmitGroupBySiteAccess", "Home")' + '?login_id=' + login_id + '&reportgroup=' + page_group + '&site_type=1',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (result, status, xhr) {
+                alert("Success");
+                location.href = '@Url.Action("SiteUserMaster", "Home")';
+            }
+        });
+    }
 </script>

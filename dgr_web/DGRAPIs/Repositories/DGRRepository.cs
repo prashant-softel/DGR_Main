@@ -3724,38 +3724,41 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             ////pending : add activity log
             ////delete existing records with reference to site_id, month and year
 
-            string fetchQry = "select monthly_jmr_id, site_id as siteId, JMR_Year as jmrYear, JMR_Month_no as jmrMonth_no from monthly_jmr";
-            List<WindMonthlyJMR> tableData = new List<WindMonthlyJMR>();
-            tableData = await Context.GetData<WindMonthlyJMR>(fetchQry).ConfigureAwait(false);
-            WindMonthlyJMR existingRecord = new WindMonthlyJMR();
+            //string fetchQry = "select monthly_jmr_id, site_id as siteId, JMR_Year as jmrYear, JMR_Month_no as jmrMonth_no from monthly_jmr";
+            //List<WindMonthlyJMR> tableData = new List<WindMonthlyJMR>();
+            //tableData = await Context.GetData<WindMonthlyJMR>(fetchQry).ConfigureAwait(false);
+            //WindMonthlyJMR existingRecord = new WindMonthlyJMR();
             int val = 0;
-            string qry = "insert into monthly_jmr (FY, Site, site_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, netBillableKwh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Month_no, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage) values";
-            string updateQry = "INSERT INTO monthly_jmr(monthly_jmr_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, netBillableKwh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, LineLoss, Line_Loss_percentage, RKVH_percentage) VALUES";
+            string delqry = "delete from monthly_jmr where";
+            string qry = "insert into monthly_jmr (FY, Site, site_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, netBillableKwh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Month_no, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage,remarks) values";
+            //string updateQry = "INSERT INTO monthly_jmr(monthly_jmr_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, netBillableKwh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, LineLoss, Line_Loss_percentage, RKVH_percentage) VALUES";
             string insertValues = "";
-            string updateValues = "";
+            //string updateValues = "";
             foreach (var unit in set)
             {
-                existingRecord = tableData.Find(tSite => tSite.siteId.Equals(unit.siteId) && tSite.jmrYear.Equals(unit.jmrYear) && tSite.jmrMonth_no.Equals(unit.jmrMonth_no));
-                if (existingRecord == null)
-                {
-                    insertValues += "('" + unit.fy + "','" + unit.site + "','" + unit.siteId + "','" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.netBillableKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "', '" + unit.importKvarhLead + "', '" + unit.jmrDate + "','" + unit.jmrMonth + "','" + unit.jmrMonth_no + "', '" + unit.jmrYear + "', '" + unit.lineLoss + "', '" + unit.lineLossPercent + "', '" + unit.rkvhPercent + "'),";
-                }
-                else
-                {
-                    updateValues += "(" + existingRecord.monthly_jmr_id + ",'" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.netBillableKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "','" + unit.importKvarhLead + "','" + unit.jmrDate + "','" + unit.lineLoss + "','" + unit.lineLossPercent + "','" + unit.rkvhPercent + "'),";
-                }
+                //existingRecord = tableData.Find(tSite => tSite.siteId.Equals(unit.siteId) && tSite.jmrYear.Equals(unit.jmrYear) && tSite.jmrMonth_no.Equals(unit.jmrMonth_no));
+                //if (existingRecord == null)
+                //{
+                    insertValues += "('" + unit.fy + "','" + unit.site + "','" + unit.siteId + "','" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.netBillableKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "', '" + unit.importKvarhLead + "', '" + unit.jmrDate + "','" + unit.jmrMonth + "','" + unit.jmrMonth_no + "', '" + unit.jmrYear + "', '" + unit.lineLoss + "', '" + unit.lineLossPercent + "', '" + unit.rkvhPercent + "','"+unit.remarks+"'),";
+                    delqry += " `site_id`='" + unit.siteId + "' and JMR_Year = '" + unit.jmrYear + "' and JMR_Month_no='" + unit.jmrMonth_no + "' or";
+                //}
+                //else
+                //{
+                //updateValues += "(" + existingRecord.monthly_jmr_id + ",'" + unit.controllerKwhInv + "','" + unit.scheduledUnitsKwh + "','" + unit.exportKwh + "','" + unit.importKwh + "','" + unit.netExportKwh + "','" + unit.netBillableKwh + "','" + unit.exportKvah + "','" + unit.importKvah + "','" + unit.exportKvarhLag + "','" + unit.importKvarhLag + "','" + unit.exportKvarhLead + "','" + unit.importKvarhLead + "','" + unit.jmrDate + "','" + unit.lineLoss + "','" + unit.lineLossPercent + "','" + unit.rkvhPercent + "'),";
+                //}
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_jmr_id = VALUES(monthly_jmr_id), Controller_KWH_INV = VALUES(Controller_KWH_INV), Scheduled_Units_kWh = VALUES(Scheduled_Units_kWh), Export_kWh = VALUES(Export_kWh), Import_kWh = VALUES(Import_kWh), Net_Export_kWh = VALUES(Net_Export_kWh),  netBillableKwh = VALUES(netBillableKwh), Export_kVAh = VALUES(Export_kVAh), Import_kVAh = VALUES(Import_kVAh), Export_kVArh_lag = VALUES(Export_kVArh_lag), Import_kVArh_lag = VALUES(Import_kVArh_lag), Export_kVArh_lead = VALUES(Export_kVArh_lead), Import_kVArh_lead = VALUES(Import_kVArh_lead), JMR_date = VALUES(JMR_date), LineLoss = VALUES(LineLoss), Line_Loss_percentage = VALUES(Line_Loss_percentage), RKVH_percentage = VALUES(RKVH_percentage);";
+            await Context.ExecuteNonQry<int>(delqry.Substring(0, (delqry.Length - 2)) + ";").ConfigureAwait(false);
+            //updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_jmr_id = VALUES(monthly_jmr_id), Controller_KWH_INV = VALUES(Controller_KWH_INV), Scheduled_Units_kWh = VALUES(Scheduled_Units_kWh), Export_kWh = VALUES(Export_kWh), Import_kWh = VALUES(Import_kWh), Net_Export_kWh = VALUES(Net_Export_kWh),  netBillableKwh = VALUES(netBillableKwh), Export_kVAh = VALUES(Export_kVAh), Import_kVAh = VALUES(Import_kVAh), Export_kVArh_lag = VALUES(Export_kVArh_lag), Import_kVArh_lag = VALUES(Import_kVArh_lag), Export_kVArh_lead = VALUES(Export_kVArh_lead), Import_kVArh_lead = VALUES(Import_kVArh_lead), JMR_date = VALUES(JMR_date), LineLoss = VALUES(LineLoss), Line_Loss_percentage = VALUES(Line_Loss_percentage), RKVH_percentage = VALUES(RKVH_percentage);";
 
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
             }
-            if (!(string.IsNullOrEmpty(updateValues)))
-            {
-                val = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
-            }
+            //if (!(string.IsNullOrEmpty(updateValues)))
+            //{
+               // val = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+            //}
             return val;
         }
         internal async Task<int> InsertWindDailyLoadShedding(List<WindDailyLoadShedding> set)
@@ -3874,41 +3877,45 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             //pending : add activity log
             //prepared update query because existing queries cannot be deleted and orphan existing id-primaryKey entries
             //grabs db site_master table data into local object list
-            string fetchQry = "select monthly_jmr_solar_id, site_id, JMR_Year, month_no as JMR_Month_no from monthly_jmr_solar";
-            List<SolarMonthlyJMR> tableData = await Context.GetData<SolarMonthlyJMR>(fetchQry).ConfigureAwait(false);
+           // string fetchQry = "select monthly_jmr_solar_id, site_id, JMR_Year, month_no as JMR_Month_no from monthly_jmr_solar";
+            //List<SolarMonthlyJMR> tableData = await Context.GetData<SolarMonthlyJMR>(fetchQry).ConfigureAwait(false);
             int val = 0;
             //stores an existing record from the database which matches with a record in the client dataset
             SolarMonthlyJMR existingRecord = new SolarMonthlyJMR();
-            string updateQry = "INSERT INTO monthly_jmr_solar(monthly_jmr_solar_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Net_Billable_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, LineLoss, Line_Loss_percentage, RKVH_percentage) VALUES";
-            string qry = " insert into monthly_jmr_solar (FY, Site, site_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Net_Billable_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage) values";
+            //string updateQry = "INSERT INTO monthly_jmr_solar(monthly_jmr_solar_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Net_Billable_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, LineLoss, Line_Loss_percentage, RKVH_percentage,month_no) VALUES";
+            string delqry = "delete from monthly_jmr_solar where";
+           
+            string qry = " insert into monthly_jmr_solar (FY, Site, site_id, Controller_KWH_INV, Scheduled_Units_kWh, Export_kWh, Import_kWh, Net_Export_kWh, Net_Billable_kWh, Export_kVAh, Import_kVAh, Export_kVArh_lag, Import_kVArh_lag, Export_kVArh_lead, Import_kVArh_lead, JMR_date, JMR_Month, JMR_Year, LineLoss, Line_Loss_percentage, RKVH_percentage,month_no,remarks) values";
             string insertValues = "";
             string updateValues = "";
             foreach (var unit in set)
             {
                 //checks if db table contains site record that matches a record in client dataset
-                existingRecord = tableData.Find(tSite => tSite.site_id.Equals(unit.site_id) && tSite.JMR_Year.Equals(unit.JMR_Year) && tSite.JMR_Month_no.Equals(unit.JMR_Month_no));
-
-                if (existingRecord == null)
-                {
-                    insertValues += "('" + unit.FY + "','" + unit.Site + "','" + unit.site_id + "','" + unit.Controller_KWH_INV + "','" + unit.Scheduled_Units_kWh + "','" + unit.Export_kWh + "','" + unit.Import_kWh + "','" + unit.Net_Export_kWh + "','" + unit.Net_Billable_kWh + "','" + unit.Export_kVAh + "','" + unit.Import_kVAh + "','" + unit.Export_kVArh_lag + "','" + unit.Import_kVArh_lag + "','" + unit.Export_kVArh_lead + "','" + unit.Import_kVArh_lead + "','" + unit.JMR_date + "','" + unit.JMR_Month + "','" + unit.JMR_Year + "','" + unit.LineLoss + "','" + unit.Line_Loss_percentage + "','" + unit.RKVH_percentage + "'),";
-                }
-                else
-                {
-                    //if match is found
-                    updateValues += "(" + existingRecord.monthly_jmr_solar_id + ",'" + unit.Controller_KWH_INV + "','" + unit.Scheduled_Units_kWh + "','" + unit.Export_kWh + "','" + unit.Import_kWh + "','" + unit.Net_Export_kWh + "','" + unit.Export_kVAh + "','" + unit.Import_kVAh + "','" + unit.Export_kVArh_lag + "','" + unit.Import_kVArh_lag + "','" + unit.Export_kVArh_lead + "','" + unit.Import_kVArh_lead + "','" + unit.JMR_date + "','" + unit.LineLoss + "','" + unit.Line_Loss_percentage + "','" + unit.RKVH_percentage + "'),";
-                }
+                //existingRecord = tableData.Find(tSite => tSite.site_id.Equals(unit.site_id) && tSite.JMR_Year.Equals(unit.JMR_Year) && tSite.JMR_Month_no.Equals(unit.JMR_Month_no));
+                //string deleteRecods = "DELETE FROM `monthly_jmr_solar` WHERE `site_id`='" + unit.site_id + "' and JMR_Year = '"+ unit.JMR_Year + "' and month_no='"+unit+"'";
+                //if (existingRecord == null)
+                //{
+                    insertValues += "('" + unit.FY + "','" + unit.Site + "','" + unit.site_id + "','" + unit.Controller_KWH_INV + "','" + unit.Scheduled_Units_kWh + "','" + unit.Export_kWh + "','" + unit.Import_kWh + "','" + unit.Net_Export_kWh + "','" + unit.Net_Billable_kWh + "','" + unit.Export_kVAh + "','" + unit.Import_kVAh + "','" + unit.Export_kVArh_lag + "','" + unit.Import_kVArh_lag + "','" + unit.Export_kVArh_lead + "','" + unit.Import_kVArh_lead + "','" + unit.JMR_date + "','" + unit.JMR_Month + "','" + unit.JMR_Year + "','" + unit.LineLoss + "','" + unit.Line_Loss_percentage + "','" + unit.RKVH_percentage + "','"+unit.JMR_Month_no+"','"+unit.remarks+"'),";
+                    delqry += " `site_id`='" + unit.site_id + "' and JMR_Year = '" + unit.JMR_Year + "' and month_no='" + unit.JMR_Month_no + "' or";
+                //}
+                // else
+                //{
+                //if match is found
+                // updateValues += "(" + existingRecord.monthly_jmr_solar_id + ",'" + unit.Controller_KWH_INV + "','" + unit.Scheduled_Units_kWh + "','" + unit.Export_kWh + "','" + unit.Import_kWh + "','" + unit.Net_Export_kWh + "','" + unit.Export_kVAh + "','" + unit.Import_kVAh + "','" + unit.Export_kVArh_lag + "','" + unit.Import_kVArh_lag + "','" + unit.Export_kVArh_lead + "','" + unit.Import_kVArh_lead + "','" + unit.JMR_date + "','" + unit.LineLoss + "','" + unit.Line_Loss_percentage + "','" + unit.RKVH_percentage + "','"+unit.JMR_Month_no+"'),";
+                //}
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_jmr_solar_id = VALUES(monthly_jmr_solar_id), Controller_KWH_INV = VALUES(Controller_KWH_INV), Scheduled_Units_kWh = VALUES(Scheduled_Units_kWh), Export_kWh = VALUES(Export_kWh), Import_kWh = VALUES(Import_kWh), Net_Export_kWh = VALUES(Net_Export_kWh), Export_kVAh = VALUES(Export_kVAh), Import_kVAh = VALUES(Import_kVAh), Export_kVArh_lag = VALUES(Export_kVArh_lag), Import_kVArh_lag = VALUES(Import_kVArh_lag), Export_kVArh_lead = VALUES(Export_kVArh_lead), Import_kVArh_lead = VALUES(Import_kVArh_lead), JMR_date = VALUES(JMR_date), LineLoss = VALUES(LineLoss), Line_Loss_percentage = VALUES(Line_Loss_percentage), RKVH_percentage = VALUES(RKVH_percentage);";
+            await Context.ExecuteNonQry<int>(delqry.Substring(0, (delqry.Length - 2)) + ";").ConfigureAwait(false);
+            //updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_jmr_solar_id = VALUES(monthly_jmr_solar_id), Controller_KWH_INV = VALUES(Controller_KWH_INV), Scheduled_Units_kWh = VALUES(Scheduled_Units_kWh), Export_kWh = VALUES(Export_kWh), Import_kWh = VALUES(Import_kWh), Net_Export_kWh = VALUES(Net_Export_kWh), Export_kVAh = VALUES(Export_kVAh), Import_kVAh = VALUES(Import_kVAh), Export_kVArh_lag = VALUES(Export_kVArh_lag), Import_kVArh_lag = VALUES(Import_kVArh_lag), Export_kVArh_lead = VALUES(Export_kVArh_lead), Import_kVArh_lead = VALUES(Import_kVArh_lead), JMR_date = VALUES(JMR_date), LineLoss = VALUES(LineLoss), Line_Loss_percentage = VALUES(Line_Loss_percentage), RKVH_percentage = VALUES(RKVH_percentage),month_no = VALUES(month_no);";
 
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
             }
-            if (!(string.IsNullOrEmpty(updateValues)))
-            {
-                val = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
-            }
+            //if (!(string.IsNullOrEmpty(updateValues)))
+            //{
+                //val = await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
+           //}
             return val;
         }
         internal async Task<int> InsertSolarDailyLoadShedding(List<SolarDailyLoadShedding> set)
@@ -7713,8 +7720,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     return finalResult;
                 }
             }
-			
-			//DGR_v3 Email_report changes
+
+            //DGR_v3 Email_report changes
             try
             {
 
@@ -8013,7 +8020,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     return 0;
                 }
             }
-            //
+            //DGR_v3 Email Reminder
             MailSettings _settings = new MailSettings();
             var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
@@ -8208,86 +8215,86 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
             }
 
-            try
-            {
+            // try
+            // {
 
-                MailSettings _settings = new MailSettings();
-                var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
-                //_settings.Mail = "kasrsanket@gmail.com";
-                //_settings.DisplayName = "Sanket Kar";
-                _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
-                //_settings.Password = "lozirdytywjlvcxd";
-                _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
-                //_settings.Host = "smtp.gmail.com";
-                _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
-                //_settings.Port = 587;
-                _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
+            //     MailSettings _settings = new MailSettings();
+            //     var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            //     _settings.Mail = MyConfig.GetValue<string>("MailSettings:Mail");
+            //     //_settings.Mail = "kasrsanket@gmail.com";
+            //     //_settings.DisplayName = "Sanket Kar";
+            //     _settings.DisplayName = MyConfig.GetValue<string>("MailSettings:DisplayName");
+            //     //_settings.Password = "lozirdytywjlvcxd";
+            //     _settings.Password = MyConfig.GetValue<string>("MailSettings:Password");
+            //     //_settings.Host = "smtp.gmail.com";
+            //     _settings.Host = MyConfig.GetValue<string>("MailSettings:Host");
+            //     //_settings.Port = 587;
+            //     _settings.Port = MyConfig.GetValue<int>("MailSettings:Port");
 
-                string Msg = "Weekly PR Report Generated";
-                // private MailServiceBS mailService;
-                List<string> AddTo = new List<string>();
-                List<string> AddCc = new List<string>();
+            //     string Msg = "Weekly PR Report Generated";
+            //     // private MailServiceBS mailService;
+            //     List<string> AddTo = new List<string>();
+            //     List<string> AddCc = new List<string>();
 
-                //List<string> AddCc = new List<string>();
-                MailRequest request = new MailRequest();
+            //     //List<string> AddCc = new List<string>();
+            //     MailRequest request = new MailRequest();
 
-                string query1 = $"select site_id as id , site as name ,STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date, useremail from import_batches left join site_master_solar on\r\n site_master_solar.site_master_solar_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
+            //     string query1 = $"select site_id as id , site as name ,STR_TO_DATE(data_date, '%Y-%m-%d') AS data_date, useremail from import_batches left join site_master_solar on\r\n site_master_solar.site_master_solar_id = import_batches.site_id left join login on login.login_id = import_batches.imported_by where `import_batch_id` IN ({dataId})";
 
-                List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
+            //     List<SiteList> sitelist = await Context.GetData<SiteList>(query1).ConfigureAwait(false);
 
-                if (finalResult > 0)
-                {
-                    foreach (var sites in sitelist)
-                    {
-                        string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id}  AND login.active_user = 1;";
-                        try
-                        {
-                            AddTo.Add(sites.useremail);
-                            List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
-                            foreach (var item in data3)
-                            {
-                                AddCc.Add(item.useremail);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = e.ToString();
-                        }
+            //     if (finalResult > 0)
+            //     {
+            //         foreach (var sites in sitelist)
+            //         {
+            //             string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id}  AND login.active_user = 1;";
+            //             try
+            //             {
+            //                 AddTo.Add(sites.useremail);
+            //                 List<UserLogin> data3 = await Context.GetData<UserLogin>(qryAdmin).ConfigureAwait(false);
+            //                 foreach (var item in data3)
+            //                 {
+            //                     AddCc.Add(item.useremail);
+            //                 }
+            //             }
+            //             catch (Exception e)
+            //             {
+            //                 string msg = e.ToString();
+            //             }
 
-                        string dataDate = sites.data_date.ToString("dd-MM-yyyy");
+            //             string dataDate = sites.data_date.ToString("dd-MM-yyyy");
 
-                        string tb = "<p style='text-align: left;'>Dear User,<br>";
-                        //tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
-                        tb += $"<br>DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
-                        tb += "<br><br>";
-                        tb += "<p>Thanks and Regards,<br>";
-                        tb += "O&M - Team</p>";
-                        tb += "<br>";
-                        tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
-                        request.ToEmail = AddTo;
-                        request.CcEmail = AddCc;
-                        request.Subject = $"DGR Data Rejected {dataDate} - {sites.name}";
-                        request.Body = tb;
+            //             string tb = "<p style='text-align: left;'>Dear User,<br>";
+            //             //tb += $"DGR Data Rejected for {sites.data_date.ToString("dd-MMM-yyyy")} .<p>";
+            //             tb += $"<br>DGR Data Rejected by Admin for {sites.data_date.ToString("dd-MMM-yyyy")}.<p>";
+            //             tb += "<br><br>";
+            //             tb += "<p>Thanks and Regards,<br>";
+            //             tb += "O&M - Team</p>";
+            //             tb += "<br>";
+            //             tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+            //             request.ToEmail = AddTo;
+            //             request.CcEmail = AddCc;
+            //             request.Subject = $"DGR Data Rejected {dataDate} - {sites.name}";
+            //             request.Body = tb;
 
-                        try
-                        {
-                            var res2 = await MailService.SendEmailAsync(request, _settings, 1);
-                            //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = e.Message;
-                            PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
-                        }
-                    }
+            //             try
+            //             {
+            //                 var res2 = await MailService.SendEmailAsync(request, _settings, 1);
+            //                 //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
+            //             }
+            //             catch (Exception e)
+            //             {
+            //                 string msg = e.Message;
+            //                 PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+            //             }
+            //         }
 
-                }
-            }
-            catch
-            {
+            //     }
+            // }
+            // catch
+            // {
 
-            }
+            // }
             return finalResult;
            
         }
@@ -17761,7 +17768,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 LogError(0, 1, 7, functionName, msg, backend);
                 return 0;
             }
-            if (set.Count > 0 && SPV_siteHash.Count > 0)
+            if (set.Count > 0)
             {
                 string insertQry = "INSERT INTO OPComments (month, month_no, year, type, spv, site_id, BD_type, isDeleted, isMonthly, isSPV, comment, added_by, updated_by) VALUES ";
                 string insert_values = "";
@@ -17907,11 +17914,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string fetchQryMaster = "";
             if (siteType == 2)
             {
-                fetchQryMaster = $"SELECT site_master_id AS site_id, site FROM site_master ORDER BY site_id;"; //{filter}
+                fetchQryMaster = $"SELECT site_master_id AS site_id, site FROM site_master ORDER BY site;"; //{filter}
             }
             else
             {
-                fetchQryMaster = $"SELECT site_master_solar_id AS site_id, site FROM site_master_solar ORDER BY site_id;"; //{filter}
+                fetchQryMaster = $"SELECT site_master_solar_id AS site_id, site FROM site_master_solar ORDER BY site;"; //{filter}
             }
             try
             {
@@ -18133,7 +18140,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                  
                  */
                 //string fetchLossQry = "SELECT CASE WHEN all_bd = 'Load Shedding' THEN 'loadShedding' ELSE all_bd END as all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
-                string AllTMLDataQuery = $"SELECT site_id, wtg_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, AVG(CASE WHEN avg_wind_speed > 0 THEN avg_wind_speed ELSE 0 END) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, AVG(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OtherHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
+                string AllTMLDataQuery = $"SELECT site_id, wtg_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, AVG(CASE WHEN avg_wind_speed > 0 THEN avg_wind_speed ELSE 0 END) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, AVG(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OthersHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
 
                 try
                 {
@@ -18281,15 +18288,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     uni.jmr_kwh = (uni.controller_kwh / 1000000) + uni.lineloss_mu;
 
                     //Calculating the difference
-                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss + uni.lineloss_mu;
+                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss;
                     uni.difference_expected = uni.jmr_kwh - allSum;
                     if (uni.difference_expected != 0)
                     {
                         uni.adjusted_expected = uni.expected_power + uni.difference_expected;
+                        //uni.adjusted_expected = uni.adjusted_expected + uni.lineloss_mu;
                     }
                     else
                     {
-                        uni.adjusted_expected = uni.expected_power;
+                        uni.adjusted_expected = uni.expected_power + uni.lineloss_mu;
                     }
 
                     //insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
@@ -18605,7 +18613,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             try
             {
-                string fetchQry = $"SELECT SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
+                string fetchQry = $"SELECT SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(egbd_loss) AS lossEGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
 
                 _dailyBasisDataList = await Context.GetData<GetWindTMLGraphData>(fetchQry).ConfigureAwait(false);
                 finalRes = 2;
@@ -18627,202 +18635,6 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 string msg = "Exception while setting the flag of monthly or yearly, due to : " + e.Message;
             }
-            //if(finalRes == 3)
-            //{
-            //    try
-            //    {
-            //        //To fetch controller kwh from daily_gen_summary table and degrade it with lineloss.
-            //        //(SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg)
-            //        try
-            //        {
-            //            //fetch controllerkwh from daily_gen_summary.
-            //            string fetchController_kwhQry = "SELECT ";
-            //        }
-            //        catch(Exception e)
-            //        {
-
-            //        }
-            //        List<GetWindTMLGraphData> _tmlDataList = new List<GetWindTMLGraphData>();
-            //        double actual_active_power = 0;
-            //        double target_sum = 0;
-            //        double gen_actual_active_power = 0;
-            //        double lineloss_percentage = 0;
-            //        double lineloss_final = 0;
-            //        _tmlDataList.Clear();
-
-            //        //Actual from Generation table :- SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id = 224 AND date >= "2023-03-06" AND date <= "2023-03-06";
-            //        string fetchGenActualQry = "";
-            //        List<GetWindTMLGraphData> _tmlActualGenYearly = new List<GetWindTMLGraphData>();
-            //        if (isYearly == 1)
-            //        {
-            //            fetchGenActualQry = "SELECT Month(date) as month_no, SUM(kwh) as gen_actual_active_power, site_id FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' GROUP BY Month(date), site_id;";
-            //            try
-            //            {
-            //                _tmlActualGenYearly = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while Fetching Generation active power sum for yearly form daily_gen_summary, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //        }
-            //        else
-            //        {
-            //            fetchGenActualQry = "SELECT SUM(kwh) as gen_actual_active_power FROM `daily_gen_summary` WHERE site_id IN(" + site + ") AND date >= '" + fromDate + "' AND date <= '" + toDate + "' ;";
-
-            //            try
-            //            {
-            //                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchGenActualQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while Fetching Generation active power sum form daily_gen_summary, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //            if (_tmlDataList.Count > 0)
-            //            {
-            //                try
-            //                {
-            //                    foreach (var unit in _tmlDataList)
-            //                    {
-            //                        gen_actual_active_power = unit.gen_actual_active_power;
-            //                    }
-            //                }
-            //                catch (Exception e)
-            //                {
-            //                    string msg = "Exception while Extracting Generation active power sum from _tmlDataList, due to : " + e.ToString();
-            //                    //API_ErrorLog(msg);
-            //                    LogError(0, 2, 5, functionName, msg, backend);
-
-            //                }
-            //            }
-            //            _tmlDataList.Clear();
-            //        }
-
-            //        //Lineloss :- SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id = 224 AND month_no = 4 AND year = 2023;
-            //        //              line_loss_per * actual / 1000000.
-            //        string toMonth = Convert.ToDateTime(toDate).ToString("MM");
-            //        string fromMonth = Convert.ToDateTime(fromDate).ToString("MM");
-            //        string fromYear = Convert.ToDateTime(fromDate).ToString("yyyy");
-            //        string toYear = Convert.ToDateTime(toDate).ToString("yyyy");
-            //        string fetchLinelossPerQry = "";
-            //        List<GetWindTMLGraphData> _tmlLineLossForYearly = new List<GetWindTMLGraphData>();
-            //        if (isYearly == 1)
-            //        {
-            //            //fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
-            //            fetchLinelossPerQry = "SELECT month_no, line_loss as line_loss_per, site_id FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND year IN(" + fromYear + "," + toYear + ") GROUP BY month_no, site_id";
-
-            //            try
-            //            {
-            //                _tmlLineLossForYearly = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while fetching lineloss percentage for yearly from mothly_uploading_lineloss, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //        }
-            //        else
-            //        {
-            //            fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ") AND month_no >= " + fromMonth + " AND month_no <= " + toMonth + " AND year IN(" + fromYear + "," + toYear + ") ;";
-            //            // fetchLinelossPerQry = "SELECT line_loss as line_loss_per FROM `monthly_uploading_line_losses` WHERE site_id IN(" + site + ")  AND year IN(" + fromYear + "," + toYear + ") ;";
-
-            //            try
-            //            {
-            //                _tmlDataList = await Context.GetData<GetWindTMLGraphData>(fetchLinelossPerQry).ConfigureAwait(false);
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                string msg = "Exception while fetching lineloss percentage from mothly_uploading_lineloss, due to : " + e.ToString();
-            //                //API_ErrorLog(msg);
-            //                LogError(0, 2, 5, functionName, msg, backend);
-
-            //            }
-            //            if (_tmlDataList.Count > 0)
-            //            {
-            //                try
-            //                {
-            //                    foreach (var unit in _tmlDataList)
-            //                    {
-            //                        lineloss_percentage = unit.line_loss_per;
-            //                    }
-            //                }
-            //                catch (Exception e)
-            //                {
-            //                    string msg = "Exception while extracting lineloss percentage from _tmlDataList, due to : " + e.ToString();
-            //                    //API_ErrorLog(msg);
-            //                    LogError(0, 2, 5, functionName, msg, backend);
-
-            //                }
-            //            }
-            //            _tmlDataList.Clear();
-            //        }
-            //        double lineLossForYearly = 0;
-            //        double actPowerForYearly = 0;
-            //        if (isYearly == 1)
-            //        {
-            //            foreach (var _element in _tmlActualGenYearly)
-            //            {
-            //                foreach (var _innerElement in _tmlLineLossForYearly)
-            //                {
-            //                    if (_element.month_no == _innerElement.month_no && _element.site_id == _innerElement.site_id)
-            //                    {
-            //                        double lineloss = _innerElement.line_loss_per / 100;
-            //                        double temp = (lineloss * _element.gen_actual_active_power) * -1; //6;
-            //                        lineloss_final = temp / 1000000;
-            //                        lineLossForYearly += lineloss_final;
-
-            //                        double actGenPowertemp = (_element.gen_actual_active_power / 1000000) + lineloss_final;
-            //                        actPowerForYearly += actGenPowertemp;
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        else
-            //        {
-            //            //if (lineloss_percentage > 0)
-            //            //{
-            //            double lineloss = lineloss_percentage / 100;
-            //            double temp = (lineloss * gen_actual_active_power) * -1; //6;
-            //            lineloss_final = temp / 1000000;
-            //            _tmlDataList.Clear();
-            //        }
-
-            //        try
-            //        {
-            //            _tmlDataList.Clear();
-            //            if(_dailyBasisDataList.Count > 0)
-            //            {
-            //                if(isYearly == 1)
-            //                {
-            //                    _dailyBasisDataList[0].lineloss_final = lineLossForYearly;
-            //                    _dailyBasisDataList[0].actual_final = actPowerForYearly;
-            //                }
-            //                else
-            //                {
-            //                    _dailyBasisDataList[0].lineloss_final = lineloss_final;
-            //                    double temps = ((lineloss_percentage/100) * gen_actual_active_power) * -1; //6;
-            //                    double lineloss_final_new = temps / 1000000;
-            //                    _dailyBasisDataList[0].actual_final = (gen_actual_active_power / 1000000) + lineloss_final_new;
-            //                }
-            //            }
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            string msg = "Exception while inserting final Values into _tmlDataList, due to : " + e.ToString();
-            //        }
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        string msg = "Exception while degrading lineloss, due to : " + e.Message;
-            //    }
-            //}
             return _dailyBasisDataList;
         }
         internal async Task<List<SolarExpectedvsActual>> GetSolarExpectedReport(string site, string fromDate, string toDate, string prType)
@@ -19052,7 +18864,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             MailRequest request = new MailRequest();
 
             //DateTime dt = DateTime.Now;
-            DateTime dt  = DateTime.Today.AddDays(-1);
+            DateTime dt = DateTime.Today.AddDays(-1);
             string today = dt.ToString("yyyy-MM-dd");
             //string today = "2023-11-12";
 
@@ -19075,11 +18887,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 MailRequest Windrequest = new MailRequest();
                 List<string> AddToWindEach = new List<string>();
-                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 1 and identity = {site.id}  AND login.active_user = 1;";
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 1 and identity = {site.id}  AND login.active_user = 1 AND user_access.upload_access = 1;";
                 try
                 {
                     List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    if(data2.Count > 0)
+                    if (data2.Count > 0)
                     {
                         foreach (var item in data2)
                         {
@@ -19129,11 +18941,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 MailRequest SolarRequest = new MailRequest();
                 List<string> AddToSolar = new List<string>();
-                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id}  AND login.active_user = 1;";
+                string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id}  AND login.active_user = 1 AND user_access.upload_access = 1;";
                 try
                 {
                     List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
-                    if(data2.Count > 0)
+                    if (data2.Count > 0)
                     {
                         foreach (var item in data2)
                         {

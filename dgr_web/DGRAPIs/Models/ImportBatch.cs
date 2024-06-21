@@ -38,10 +38,4 @@ namespace DGRAPIs.Models
         public int is_approved { get; set; } // 0 waiting, 1 approved, 2 rejected
 
     }
-
-    public class site_id_date
-    {
-        public dynamic date { get; set; }
-        public int site_id { get; set; }
-    }
 }

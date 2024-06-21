@@ -64,7 +64,7 @@
                 <h3 class="card-title text-center">Solar Operational Performance </h3>
             </div>
             <div class="card-body">
-                <div class="row"  style="margin-bottom: -6px;">
+                <div class="row" style="margin-bottom: -6px;">
                     <div class="col-md-3" style="margin-left: 15px;">
                         <div class="input-group row">
                             <label class="col-sm-3.1 col-form-label">Date Range :&nbsp;&nbsp;</label>
@@ -76,7 +76,7 @@
                             <input type="text" class="form-control float-right col-sm-9" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-md-3" style="margin-left: 10px;" >
+                    <div class="col-md-3" style="margin-left: 10px;">
                         <div class="form-group">
                             <div class="row" id="type_select_div" style="position: relative; display: flex; justify-content: start; align-items: start;">
                                 <label class="col-sm-2 col-form-label text-right" style="padding-right: 0px;">Type : </label>
@@ -145,10 +145,10 @@
                             </div>-->
                             <div style="position: relative;">
                                 <div class="card-title text-center" id="monthTitle" style="display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 2; background-color: white; background-color: white; font-family: 'Open Sans', verdana, arial, sans-serif; font-size: 17px; fill: rgb(68, 68, 68); opacity: 1; font-weight: normal; white-space: pre;">Monthly</div>
-                                
+
                                 <div id="Waterfall" style="width: 100%; z-index: 1; overflow-y: auto;"></div>
                                 <div id="dataNotPresentDiv" style="display: none;justify-content: center; align-items: center; height:300px"></div>
-                                </div>
+                            </div>
                         </div>
                         <div class="col-md-5">
                             <div id="commentsSection" style="display: none; margin-top: 20px">
@@ -163,6 +163,7 @@
                                                 <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_Other" style="display: block; cursor: default;"></div>
+                                                <div id="DMC_PR" style="display: block; cursor: default;"></div>
                                             </div>
                                             <div class="scrollable-container" id="monthlyAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                                 <div class="addCommentMonthly" id="ACM" style="overflow: hidden;">
@@ -221,6 +222,7 @@
                                                             <option value="1">BD</option>
                                                             <option value="2">EGB</option>
                                                             <option value="3">Other</option>
+                                                            <option value="5">PR</option>
                                                         </select>
                                                     </div>
                                                     <div id="ECM_content">
@@ -243,6 +245,7 @@
                                                             <option value="1">BD</option>
                                                             <option value="2">EGB</option>
                                                             <option value="3">Other</option>
+                                                            <option value="5">PR</option>
                                                         </select>
                                                     </div>
                                                     <div id="DCM_content">
@@ -265,7 +268,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                 </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -288,6 +291,7 @@
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
+                                            <div id="DYC_PR" style="display: block; cursor: default;"></div>
                                         </div>
                                         <div class="scrollable-container" id="yearAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                             @*Scrollable division*@
@@ -349,6 +353,7 @@
                                                         <option value="1">BD</option>
                                                         <option value="2">EGB</option>
                                                         <option value="3">Other</option>
+                                                        <option value="5">PR</option>
                                                     </select>
                                                 </div>
                                                 <div id="ECY_content">
@@ -370,6 +375,7 @@
                                                         <option value="1">BD</option>
                                                         <option value="2">EGB</option>
                                                         <option value="3">Other</option>
+                                                        <option value="5">PR</option>
                                                     </select>
                                                 </div>
                                                 <div id="DCY_content">
@@ -393,22 +399,22 @@
                                     </div>
                                 </div>
                             </div>
-                         </div>
+                        </div>
                     </div>
                 </div>
                 <br>
                 <hr>
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
-         </div>
+        </div>
     </section>
 </div>
-      
-    <br>
-    <hr>
-    @*<div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>*@
-    <div id="loader" class="loader  center" style="display:none"></div>
-   
+
+<br>
+<hr>
+@*<div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>*@
+<div id="loader" class="loader  center" style="display:none"></div>
+
 </div>-->
 <!-- /.content-wrapper -->
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
@@ -559,7 +565,7 @@
         return `${formattedStartDate}-${formattedEndDate}`;
     }
     //For operational Performance BD array.
-    var bdArray = [{ "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }];
+    var bdArray = [{ "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }];
 
     window.onload = function () {
         var today = new Date();
@@ -644,7 +650,6 @@
     function getReport()
     {
         var data_Array = [];
-        document.getElementById("loader").style.display = 'flex';
         var dval = document.getElementById("daterange");
         nDval = dval.value;
         var daterange = getMonthRange(nDval);
@@ -681,14 +686,27 @@
             });
             site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
         }
-        else {
-            $('select#site').find('option').each(function () {
-                site_id += $(this).val() + ",";
-            });
-            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        }
+        //else {
+        //    $('select#site').find('option').each(function () {
+        //        site_id += $(this).val() + ",";
+        //    });
+        //    site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        //}
         console.log("SIte List", site_id);
 
+        var typeSelect = document.getElementById("TypeSelect").value;
+        if (typeSelect == "" || typeSelect == 0) {
+            alert("Please Select Type First.");
+            return false;
+        }
+        if (isSPV == 0 && (spv == "" || spv == 0)) {
+            alert("Please Select SPV.")
+            return false;
+        }
+        if (isSPV == 1 && (site_id == "")) {
+            alert("Please Select Site.");
+            return false;
+        }
         //if (spv == "") {
         //    isSPV = 1;
         //    //console.log("So you will be seeing Data site wise.");
@@ -696,6 +714,8 @@
         //    isSPV = 0;
         //    //console.log("So you will be seeing Data spv wise.");
         //}
+
+        document.getElementById("loader").style.display = 'flex';
         // Function call to get the comments data. Display Monthly Comments (DMC).
         DMC(site_id, isSPV, nDval, false);
         DYC(site_id, isSPV, nDval);
@@ -708,7 +728,7 @@
             success: function (result, status, xhr) {
                 //console.log(result);
                 document.getElementById("loader").style.display = 'none';
-                
+
                 if (result.length > 0) {
                     let total_target = 0;
                     let total_expected = 0;
@@ -747,7 +767,7 @@
                         pr_value = result[i].jmr_kwh - total_breakdown;
 
                         var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
-                        
+
                         cnt++;
                         total_target += result[i].target;
                         total_expected += (result[i].pexpected);
@@ -791,7 +811,7 @@
 
 
             }
-            
+
             getYearlyReport();
         }
     });
@@ -968,7 +988,23 @@
     {
         var data_Array1 = [];
         document.getElementById("loader").style.display = 'flex';
-        var daterange = $('#daterange').val();
+        //var daterange = $('#daterange').val();
+        //var arr1 = new Array();
+        //arr1 = daterange.split("-");
+        //var today = new Date(arr1[0]);
+
+        //fyear = getFinancialYear(today);
+        //fdate = getFinancialYearDateStartDate(fyear);
+        //var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        //var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+        //console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
+        //var fromToDates = getFinancialYearDates(toDate);
+        //console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
+
+        var dval = document.getElementById("daterange");
+        var nDval = dval.value;
+        //console.log(nDval);
+        var daterange = getMonthRange(nDval);
         var arr1 = new Array();
         arr1 = daterange.split("-");
         var today = new Date(arr1[0]);
@@ -977,10 +1013,9 @@
         fdate = getFinancialYearDateStartDate(fyear);
         var fromDate = fdate.startdate;//moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
-        console.log("Get Yearly Data :- from: " + fromDate + ", to date :" + toDate);
+
         var fromToDates = getFinancialYearDates(toDate);
         console.log("Returned result from getFinancialYearDates function FROM : " + fromToDates.fromDate + ", TO : " + fromToDates.toDate);
-
 
         let site_id = "";
         let spv_list = "";
@@ -1301,6 +1336,7 @@
                     var EGB = []; //bdType = 2
                     var BD = []; //bdType = 2
                     var Other = []; //bdType = 3
+                    var PR = []; //bdType = 5
 
                     for (var k = 0; k < result.length; k++) {
                         if (result[k].bd_type == 2) {
@@ -1309,6 +1345,8 @@
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
+                        } else if (result[k].bd_type == 5) {
+                            PR.push(result[k]);
                         }
                     }
                     //console.log("After 3 different arrays : ");
@@ -1318,6 +1356,7 @@
                     var BD_div = document.getElementById("DMC_BD");
                     var EGB_div = document.getElementById("DMC_EGB");
                     var Other_div = document.getElementById("DMC_Other");
+                    var PR_div = document.getElementById("DMC_PR");
                     if (afterUpdate) {
                         var element_egb = document.getElementById("EGB_CC");
                         if (element_egb) {
@@ -1330,6 +1369,10 @@
                         var element_other = document.getElementById("Other_CC");
                         if (element_other) {
                             element_other.parentNode.removeChild(element_other);
+                        }
+                        var element_pr = document.getElementById("PR_CC");
+                        if (element_pr) {
+                            element_pr.parentNode.removeChild(element_pr);
                         }
                     }
                     if (EGB.length > 0) {
@@ -1395,6 +1438,27 @@
                     } else {
                         Other_div.style.display = "none";
                     }
+                    if (PR.length > 0) {
+                        PR_div.style.display = "flex";
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "2px";
+                        commentDiv.id = "PR_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">PR</h4><ul>';
+                        for (var i = 0; i < PR.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + PR[i].site + ':</strong> ' + PR[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + PR[i].spv + ':</strong> ' + PR[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        PR_div.innerHTML = "";
+                        PR_div.appendChild(commentDiv);
+                    } else {
+                        PR_div.style.display = "none";
+                    }
                 }
             });
         }
@@ -1405,7 +1469,7 @@
     var ACM_info = [
         {
             "bdSetCount": 1,
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }],
         },
         {
             "mainDiv": "ACM",
@@ -1494,8 +1558,8 @@
             var idInput = thisEle.commentInput + "_" + thisEle.siteCount;
             //console.log("Created Site and input ids : " + idSite + " and " + idInput);
 
-            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACM_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select><input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
-
+            //var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACM_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row"><div class="col-sm-7"><div class="form-group"><div class="row" style="position: relative; width: 100%;"><label class="col-sm-2 col-form-label text-right">Site :</label><select class="form-control col-sm-6" value="" id="' + idSite + '" style="height: 40px;"></select><input id="' + idInput + '" type="text" style="width: 320px; height: 35px; position: absolute; top: 0; left: 220px;"/></div></div></div></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
+            var newBDContent = '<div class="d-flex justify-content-end" style="padding: 10px;"><select class="form-control col-sm-4" id="' + thisEle.bdSelectDD + '" onchange="ACM_bd_change(' + Number(BDCounter) + ')" value="" style="height: 40px; margin-left: 10px;"></select></div><div id="' + thisEle.siteMainDiv + '"><div class="row" style="display: flex; justify-content: center; align-items: center;"><div style="width: 30%;"><div class="row" style="position: relative; padding: 0px; width: 100%;"><label class="col-form-label text-right" style="width: 30%;">Site :</label><select value="" id="' + idSite + '" style="height: 35px; margin-top: 1px; margin-left: 2px; width: 65%"></select></div></div><input id="' + idInput + '" type="text" style="width: 65%; height: 35px;"/></div></div><div class="d-flex justify-content-end"><div id="ACM_addBD' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #31576D; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="monthAddBD()"><i class="fas fa-plus" style="font-size: 18px; color: #ffffff;"></i><span style="margin-left: 5px; color: #ffffff;">ADD BD</span></div><div id="ACM_addSite' + BDCounter + '" style="width: 120px; height: 34.76px; position: relative; background: #86C466; border-radius: 5px; display: flex; align-items: center; justify-content: center; opacity: 1; margin-left: 10px;" onmouseover="this.style.opacity=0.90" onmouseout="this.style.opacity=1" onclick="addSite(' + BDCounter + ')"><i class="fas fa - plus" style="font - size: 18px; color: #ffffff; "></i><span style="margin - left: 5px; color: #ffffff; ">ADD SITE</span></div></div>';
             var bdContainer = document.getElementById('ACM');
 
             // Insert the new content at the end of siteContainer
@@ -2248,7 +2312,7 @@
         mDelete.style.display = "none";
 
         // Function call to get the comments data. Display Monthly Comments (DMC).
-        DMC(site_id, spv, nDval);
+        //DMC(site_id, spv, nDval);
 
         if (isUpdateCancel == "Update") {
             if (functionality == "Edit") {
@@ -2326,6 +2390,7 @@
                     var BD = []; //bdType = 1
                     var EGB = []; //bdType = 2
                     var Other = []; //bdType = 3
+                    var PR = []; //bdType = 5
 
                     for (var k = 0; k < result.length; k++) {
                         if (result[k].bd_type == 2) {
@@ -2334,15 +2399,19 @@
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
+                        } else if (result[k].bd_type == 5) {
+                            PR.push(result[k]);
                         }
                     }
                     console.log("After 3 different arrays Yearly : ");
                     console.log(EGB);
                     console.log(BD);
                     console.log(Other);
+                    console.log(PR);
                     var EGBY_div = document.getElementById("DYC_EGB");
                     var BDY_div = document.getElementById("DYC_BD");
                     var OtherY_div = document.getElementById("DYC_Other");
+                    var PRY_div = document.getElementById("DYC_PR");
                     if (EGB.length > 0) {
                         EGBY_div.style.display = "flex";
                         var commentDiv = document.createElement("div");
@@ -2406,6 +2475,27 @@
                     } else {
                         OtherY_div.style.display = "none";
                     }
+                    if (PR.length > 0) {
+                        PRY_div.style.display = "flex";
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "2px";
+                        commentDiv.id = "PRY_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">PR</h4><ul>';
+                        for (var i = 0; i < PR.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + PR[i].site + ':</strong> ' + PR[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + PR[i].spv + ':</strong> ' + PR[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        PRY_div.innerHTML = "";
+                        PRY_div.appendChild(commentDiv);
+                    } else {
+                        PRY_div.style.display = "none";
+                    }
                 }
             });
 
@@ -2417,7 +2507,7 @@
     var ACY_info = [
         {
             "bdSetCount": 1,
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }],
         },
         {
             "mainDiv": "ACY",
@@ -2835,7 +2925,7 @@
         ACY_info = [
             {
                 "bdSetCount": 1,
-                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
+                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 5, "name": "PR" }],
             },
             {
                 "mainDiv": "ACY",

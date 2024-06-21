@@ -163,10 +163,11 @@
                                     <div class="card-body" style="padding: 0.3rem;">
                                         <!-- Monthly Section -->
                                         <div class="container" id="monthContainer" style="flex: 1; background-color: #f5f5f5; height: 42vh; position: relative; border: 1px solid #ccc; box-sizing: border-box;" onmouseover="monthover()" onmouseout="monthout()">
-                                            <div class="scrollable-container" id="monthlyComments"  style="display: block; height: 42vh; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
+                                            <div class="scrollable-container" id="monthlyComments" style="display: block; height: 42vh; margin: 2px; padding: 0px; overflow-y: auto; cursor:default;">
                                                 <div id="DMC_BD" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_EGB" style="display: block; cursor: default;"></div>
                                                 <div id="DMC_Other" style="display: block; cursor: default;"></div>
+                                                <div id="DMC_PCD" style="display: block; cursor: default;"></div>
                                             </div>
                                             <div class="scrollable-container" id="monthlyAdd"  style="display: none; height: 42vh; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                                 <div class="addCommentMonthly" id="ACM" style="overflow: hidden;">
@@ -224,6 +225,7 @@
                                                             <option value="1">BD</option>
                                                             <option value="2">EGB</option>
                                                             <option value="3">Other</option>
+                                                            <option value="4">PCD</option>
                                                         </select>
                                                     </div>
                                                     <div id="ECM_content"></div>
@@ -244,6 +246,7 @@
                                                             <option value="1">BD</option>
                                                             <option value="2">EGB</option>
                                                             <option value="3">Other</option>
+                                                            <option value="4">PCD</option>
                                                         </select>
                                                     </div>
                                                     <div id="DCM_content"></div>
@@ -287,6 +290,7 @@
                                             <div id="DYC_BD" style="display: block; cursor: default;"></div>
                                             <div id="DYC_EGB" style="display: block; cursor: default;"></div>
                                             <div id="DYC_Other" style="display: block; cursor: default;"></div>
+                                            <div id="DYC_PCD" style="display: block; cursor: default;"></div>
                                         </div>
                                         <div class="scrollable-container" id="yearAdd" style="display: none; height: 95%; margin: 2px; padding: 0px; overflow-y: auto; cursor: default; text-align: center; scrollbar-width: thin; scrollbar-color: #888 #f2f2f2;">
                                             <div class="addCommentYear" id="ACY" style="overflow: hidden;">
@@ -344,6 +348,7 @@
                                                         <option value="1">BD</option>
                                                         <option value="2">EGB</option>
                                                         <option value="3">Other</option>
+                                                        <option value="4">PCD</option>
                                                     </select>
                                                 </div>
                                                 <div id="ECY_content"></div>
@@ -364,6 +369,7 @@
                                                         <option value="1">BD</option>
                                                         <option value="2">EGB</option>
                                                         <option value="3">Other</option>
+                                                        <option value="4">PCD</option>
                                                     </select>
                                                 </div>
                                                 <div id="DCY_content"></div>
@@ -481,7 +487,7 @@
         return `${formattedStartDate}-${formattedEndDate}`;
     }
     //var bdArray = [{ "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }];
-    var bdArray = [{ "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }];
+    var bdArray = [{ "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 4, "name": "PCD" }];
 
     window.onload = function () {
     var state = "";
@@ -506,7 +512,7 @@
         //    return false;
         //}
         var typeSelect = document.getElementById("TypeSelect").value;
-        if (typeSelect === "" || typeSelect === 0) {
+        if (typeSelect == "" || typeSelect == 0) {
             alert("Please Select Type First.");
             return false;
         }
@@ -514,6 +520,20 @@
         $('select#spv option:selected').each(function () {
             spv += $(this).val() + ",";
         });
+        if (isSPV == 0 && (spv == "" || spv == 0)) {
+            alert("Please Select SPV.")
+            return false;
+        } else if (isSPV == 0) {
+            getSite(false);
+            $('select#site').find('option').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        if (isSPV == 1 && (site_id == "")) {
+            alert("Please Select Site.");
+            return false;
+        }
         document.getElementById("loader").style.display = 'flex';
         //console.log(site_id);
         var dval = document.getElementById("daterange");
@@ -657,18 +677,18 @@
 
             if (result.length > 0) {
             for (var i = 0; i < result.length; i++) {
-            expected_final = result[i].expected_final;
-            lineloss_final = result[i].lineloss_final;
-            target_final = result[i].target_final;
-            lossUSMH_final = result[i].lossUSMH_final;
-            lossSMH_final = result[i].lossSMH_final;
-            lossNC_final = result[i].lossNC_final;
-            lossIGBD_final = result[i].lossIGBD_final;
-            lossEGBD_final = result[i].lossEGBD_final;
-            lossLULL_final = result[i].lossLULL_final;
-            lossPCD_final = result[i].lossPCD_final;
-            actual_final = result[i].actual_final;
-            loadShedding = result[i].loadShedding;
+            expected_final += result[i].expected_final;
+            lineloss_final += result[i].lineloss_final;
+            target_final += result[i].target_final;
+            lossUSMH_final += result[i].lossUSMH_final;
+            lossSMH_final += result[i].lossSMH_final;
+            lossNC_final += result[i].lossNC_final;
+            lossIGBD_final += result[i].lossIGBD_final;
+            lossEGBD_final += result[i].lossEGBD_final;
+            lossLULL_final += result[i].lossLULL_final;
+            lossPCD_final += result[i].lossPCD_final;
+            actual_final += result[i].actual_final;
+            loadShedding += result[i].loadShedding;
             //isMonthlyDataPresent = Number(result[i].monthlyData);
 
                 document.getElementById("dataNotPresentDiv").style.display = "none";
@@ -740,18 +760,18 @@
             if (result.length > 0) {
             for (var i = 0; i < result.length; i++) {
 
-            expected_final = result[i].expected_final;
-            lineloss_final = result[i].lineloss_final;
-            target_final = result[i].target_final;
-            lossUSMH_final = result[i].lossUSMH_final;
-            lossSMH_final = result[i].lossSMH_final;
-            lossNC_final = result[i].lossNC_final;
-            lossIGBD_final = result[i].lossIGBD_final;
-            lossEGBD_final = result[i].lossEGBD_final;
-            lossLULL_final = result[i].lossLULL_final;
-            lossPCD_final = result[i].lossPCD_final;
-            actual_final = result[i].actual_final;
-            loadShedding = result[i].loadShedding;
+            expected_final += result[i].expected_final;
+            lineloss_final += result[i].lineloss_final;
+            target_final += result[i].target_final;
+            lossUSMH_final += result[i].lossUSMH_final;
+            lossSMH_final += result[i].lossSMH_final;
+            lossNC_final += result[i].lossNC_final;
+            lossIGBD_final += result[i].lossIGBD_final;
+            lossEGBD_final += result[i].lossEGBD_final;
+            lossLULL_final += result[i].lossLULL_final;
+            lossPCD_final += result[i].lossPCD_final;
+            actual_final += result[i].actual_final;
+            loadShedding += result[i].loadShedding;
 
             CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
 
@@ -769,7 +789,8 @@
 
             function CreateChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_lull, total_pcd, total_lineloss, total_actual, loadShedding) {
             Plotly.purge('Waterfall');
-            let total_opExpected = total_expected - total_lineloss;
+            //let total_opExpected = total_expected - total_lineloss;
+            let total_opExpected = total_expected;
             let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
             total_egbd = Number(total_egbd) + Number(loadShedding);
 
@@ -965,7 +986,8 @@
             let total_bd = Number(total_usmh) + Number(total_smh) + Number(total_igbd);
             total_bd = Number(total_bd).toFixed(4);
 
-            total_expected = Number(total_expected) - Number(total_lineloss);
+            //total_expected = Number(total_expected) - Number(total_lineloss);
+            total_expected = Number(total_expected);
             total_expected = Number(total_expected).toFixed(4);
 
             total_egbd = Number(total_egbd) + Number(loadShedding);
@@ -1176,6 +1198,7 @@
                     var EGB = []; //bdType = 2
                     var BD = []; //bdType = 1
                     var Other = []; //bdType = 3
+                    var PCD = []; //bdType = 4
 
                     for (var k = 0; k < result.length; k++) {
                         if (result[k].bd_type == 2) {
@@ -1184,6 +1207,8 @@
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
+                        } else if (result[k].bd_type == 4) {
+                            PCD.push(result[k]);
                         }
                     }
                     //console.log("After 3 different arrays : ");
@@ -1193,6 +1218,7 @@
                     var EGB_div = document.getElementById("DMC_EGB");
                     var BD_div = document.getElementById("DMC_BD");
                     var Other_div = document.getElementById("DMC_Other");
+                    var PCD_div = document.getElementById("DMC_PCD");
                     if (afterUpdate) {
                         var element_egb = document.getElementById("EGB_CC");
                         if (element_egb) {
@@ -1205,6 +1231,10 @@
                         var element_other = document.getElementById("Other_CC");
                         if (element_other) {
                             element_other.parentNode.removeChild(element_other);
+                        }
+                        var element_pcd = document.getElementById("PCD_CC");
+                        if (element_pcd) {
+                            element_pcd.parentNode.removeChild(element_pcd);
                         }
                     }
                     if (EGB.length > 0) {
@@ -1270,6 +1300,27 @@
                     } else {
                         Other_div.style.display = "none";
                     }
+                    if (PCD.length > 0) {
+                        PCD_div.style.display = "flex";
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "2px";
+                        commentDiv.id = "PCD_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">PCD</h4><ul>';
+                        for (var i = 0; i < PCD.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + PCD[i].site + ':</strong> ' + PCD[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + PCD[i].spv + ':</strong> ' + PCD[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        PCD_div.innerHTML = "";
+                        PCD_div.appendChild(commentDiv);
+                    } else {
+                        PCD_div.style.display = "none";
+                    }
                 }
             });
 
@@ -1282,7 +1333,7 @@
         {
             "bdSetCount": 1,
             //"bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }],
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 4, "name": "PCD" }],
         },
         {
             "mainDiv": "ACM",
@@ -1619,7 +1670,7 @@
                 var siteNumber = 0;
                 var eachData = {};
                 if (isSPV == 0) {
-                    var finalCommentData = document.getElementById((BDelement.siteSelectDD + "_" + j)).value;
+                    var finalCommentData = document.getElementById((BDelement.commentInput + "_" + j)).value;
                     finalCommentData = finalCommentData.replace(/;/g, "<br>");
                     finalCommentData = finalCommentData.replace(/["']/g, ' ');
                     var encodedCommentData = encodeURIComponent(finalCommentData);
@@ -1722,7 +1773,7 @@
         ACM_info = [
             {
                 "bdSetCount": 1,
-                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }, { "value": 4, "name": "PCD" }],
             },
             {
                 "mainDiv": "ACM",
@@ -2231,6 +2282,7 @@
                     var EGB = []; //bdType = 1
                     var BD = []; //bdType = 2
                     var Other = []; //bdType = 3
+                    var PCD = []; //bdType = 4
 
                     for (var k = 0; k < result.length; k++) {
                         if (result[k].bd_type == 2) {
@@ -2239,6 +2291,8 @@
                             BD.push(result[k]);
                         } else if (result[k].bd_type == 3) {
                             Other.push(result[k]);
+                        } else if (result[k].bd_type == 4) {
+                            PCD.push(result[k]);
                         }
                     }
                     console.log("After 3 different arrays Yearly : ");
@@ -2248,6 +2302,7 @@
                     var EGBY_div = document.getElementById("DYC_EGB");
                     var BDY_div = document.getElementById("DYC_BD");
                     var OtherY_div = document.getElementById("DYC_Other");
+                    var PCDY_div = document.getElementById("DYC_PCD");
                     if (EGB.length > 0) {
                         EGBY_div.style.display = "flex";
                         var commentDiv = document.createElement("div");
@@ -2311,6 +2366,27 @@
                     } else {
                         OtherY_div.style.display = "none";
                     }
+                    if (PCD.length > 0) {
+                        PCDY_div.style.display = "flex";
+                        var commentDiv = document.createElement("div");
+                        commentDiv.style.marginLeft = "2px";
+                        commentDiv.id = "PCDY_CC"; // CC: Comment Content.
+
+                        var commentContent = '<h4 style="color: #EE403D; font-size: 18px; font-family: Poppins; font-weight: 700;">PCD</h4><ul>';
+                        for (var i = 0; i < PCD.length; i++) {
+                            if (isSPV == 1) {
+                                commentContent += '<li><strong>' + PCD[i].site + ':</strong> ' + PCD[i].comment + '</li>';
+                            } else if (isSPV == 0) {
+                                commentContent += '<li><strong>' + PCD[i].spv + ':</strong> ' + PCD[i].comment + '</li>';
+                            }
+                        }
+                        commentContent += '</ul>';
+                        commentDiv.innerHTML = commentContent;
+                        PCDY_div.innerHTML = "";
+                        PCDY_div.appendChild(commentDiv);
+                    } else {
+                        PCDY_div.style.display = "none";
+                    }
                 }
             });
 
@@ -2323,7 +2399,7 @@
         {
             "bdSetCount": 1,
             //"bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
-            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }]
+            "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "BD" }, { "value": 2, "name": "EGB" }, { "value": 3, "name": "Other" }, { "value": 4, "name": "PCD" }]
         },
         {
             "mainDiv": "ACY",
@@ -2742,7 +2818,7 @@
         ACY_info = [
             {
                 "bdSetCount": 1,
-                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }],
+                "bdArray": [{ "value": 0, "name": "Select BD Type" }, { "value": 1, "name": "EGB" }, { "value": 2, "name": "BD" }, { "value": 3, "name": "Other" }, { "value": 4, "name": "PCD" }],
             },
             {
                 "mainDiv": "ACY",

@@ -53082,8 +53082,12 @@ a.text-muted:hover {
 .table th, .table td {
     vertical-align: middle !important;
 }
-.dataTables_filter {
+/*.dataTables_filter {
     margin-top: -2.6% !important;
+}*/
+div.dt-buttons {
+    position: initial;
+    margin-bottom: -3.2%;
 }
 
 table th {
@@ -53171,18 +53175,6 @@ table.dataTable thead tr > .dtfc-fixed-left {
 .fa-file-excel
 {
     font-size:20px;
-}
-.grp-btn {
-    background: #0069d9;
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    line-height: 11px;
-    text-align: center;
-    color: white;
-    -moz-box-sizing: border-box;
-    font-size: 8px;
 }
 /*
 .dataTables_scrollBody {

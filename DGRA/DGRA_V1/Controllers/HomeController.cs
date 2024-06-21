@@ -808,14 +808,14 @@ namespace DGRA_V1.Controllers
 
         //[HttpPost]
         [TypeFilter(typeof(SessionValidation))]
-        public async Task<IActionResult> SubmitAccess(int login_id,string site,string pages,string reports, string site_type,int importapproval)
+        public async Task<IActionResult> SubmitAccess(int login_id,string site,string pages,string reports, string site_type,int importapproval,int heatmap)
         {
             string line = "";
             try
             {
                 //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail="+ useremail + "&site="+ site + "&role="+ role + "&pages="+ pages + "&reports="+ reports + "&read="+ read + "&write="+ write + "";
                 // var url = "http://localhost:23835/api/Login/SubmitUserAccess?login_id=" + login_id+"&siteList="+ site +"&pageList="+ pages +"&reportList="+ reports;
-                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/SubmitUserAccess?login_id=" + login_id + "&siteList=" + site + "&pageList=" + pages + "&reportList=" + reports + "&site_type="+site_type+ "&importapproval=" + importapproval;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/SubmitUserAccess?login_id=" + login_id + "&siteList=" + site + "&pageList=" + pages + "&reportList=" + reports + "&site_type="+site_type+ "&importapproval=" + importapproval+"&heatmap="+ heatmap;
                 WebRequest request = WebRequest.Create(url);
                  using (WebResponse response = (HttpWebResponse)request.GetResponse())
                  {
