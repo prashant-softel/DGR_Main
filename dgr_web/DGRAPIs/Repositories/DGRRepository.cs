@@ -8112,7 +8112,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if(finalResult == 5)
             {
-                //function call for check and update Manual breakdowns.
+                //function call for check and update Manual breakdowns. & run the calculation daily expected vs actual function.
                 int updateres = await CheckAndUpdateManualBd(_dateSite, approvedBy, approvedByName, status);
                 if (updateres == 1)
                 {
@@ -8526,6 +8526,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             info = " SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
             LogInfo(0, 1, 5, functionName, info, backend);
+            //DGR_v3 function calling for calculating daily expected vs actual.
             if (finalResult != 0 || finalResult > 0)
             {
                 int returnRes = 0;
@@ -17464,7 +17465,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         //function for checking and updating manualbreakdowns.
         internal async Task<int> CheckAndUpdateManualBd(List<CheckUpdateManualBd> _dateSite, int approvedBy, string approvedByName, int status)
         {
-            int result = 0;
+            int result = 1;
             int finalResult = 0;
             foreach(var unit in _dateSite)
             {
@@ -17513,6 +17514,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         string msg = "Exception during UpdateManualBD function call, due to : " + e.ToString();
                         approval_ErrorLog(msg);
                         return 0;
+                    }
+                    //DGR_v3 Calculate the expected vs actual daily basis calculation.
+                    try
+                    {
+                        int expectedDailyBasisCal = await CalculateDailyExpected(Convert.ToString(unit.site_id), unit.date);
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Error while calculating and storing daily basis expected vs actual data, due to : " + e.ToString();
                     }
                 }
             }            
