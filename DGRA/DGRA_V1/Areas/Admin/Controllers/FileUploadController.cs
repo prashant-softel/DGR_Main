@@ -1181,6 +1181,7 @@ namespace DGRA_V1.Areas.admin.Controllers
                                                             var url1 = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SetSolarApprovalFlagForImportBatches?dataId=" + batchIdDGRAutomation + "&approvedBy=" + userId + "&approvedByName=" + userName + "&status=1";
                                                             using (var client1 = new HttpClient())
                                                             {
+                                                                client1.Timeout = Timeout.InfiniteTimeSpan; // disable the HttpClient timeout
                                                                 await Task.Delay(10000);
                                                                 var response1 = await client1.GetAsync(url1);
                                                                 if (response1.IsSuccessStatusCode)

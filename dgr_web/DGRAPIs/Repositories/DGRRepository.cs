@@ -7588,7 +7588,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if(finalResult == 5)
             {
-                //function call for check and update Manual breakdowns.
+                //function call for check and update Manual breakdowns. & run the calculation daily expected vs actual function.
                 int updateres = await CheckAndUpdateManualBd(_dateSite, approvedBy, approvedByName, status);
                 if (updateres == 1)
                 {
@@ -8002,6 +8002,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             info = " SetSolarApprovalFlagForImportBatches function : At the end of function finaResult : " + finalResult + " Code Line No. " + new StackTrace(true).GetFrame(0).GetFileLineNumber() + "";
             //API_InformationLog(info);
             LogInfo(0, 1, 5, functionName, info, backend);
+            //DGR_v3 function calling for calculating daily expected vs actual.
             if (finalResult != 0 || finalResult > 0)
             {
                 int returnRes = 0;
@@ -16940,7 +16941,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         //function for checking and updating manualbreakdowns.
         internal async Task<int> CheckAndUpdateManualBd(List<CheckUpdateManualBd> _dateSite, int approvedBy, string approvedByName, int status)
         {
-            int result = 0;
+            int result = 1;
             int finalResult = 0;
             foreach(var unit in _dateSite)
             {
@@ -16989,6 +16990,15 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         string msg = "Exception during UpdateManualBD function call, due to : " + e.ToString();
                         approval_ErrorLog(msg);
                         return 0;
+                    }
+                    //DGR_v3 Calculate the expected vs actual daily basis calculation.
+                    try
+                    {
+                        int expectedDailyBasisCal = await CalculateDailyExpected(Convert.ToString(unit.site_id), unit.date);
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Error while calculating and storing daily basis expected vs actual data, due to : " + e.ToString();
                     }
                 }
             }            
@@ -18288,7 +18298,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     uni.jmr_kwh = (uni.controller_kwh / 1000000) + uni.lineloss_mu;
 
                     //Calculating the difference
-                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss;
+                    allSum = uni.expected_power + uni.usmh_loss + uni.smh_loss + uni.igbd_loss + uni.egbd_loss + uni.others_loss + uni.pcd_loss + uni.loadshedding_loss + uni.healthcheck_loss;
                     uni.difference_expected = uni.jmr_kwh - allSum;
                     if (uni.difference_expected != 0)
                     {
@@ -18301,7 +18311,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
 
                     //insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
-                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {100 + ((uni.usmh_loss + uni.smh_loss) / uni.adjusted_expected)}, {100 + (uni.igbd_loss/uni.adjusted_expected)}, {100 + ((uni.egbd_loss + uni.loadshedding_loss) / uni.adjusted_expected)}, {100+(uni.egbd_loss / uni.adjusted_expected)}, {100 + (uni.loadshedding_loss / uni.adjusted_expected)}),";
+                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {100 + (((uni.usmh_loss + uni.smh_loss + uni.healthcheck_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.igbd_loss/uni.adjusted_expected)*100)}, {100 + (((uni.egbd_loss + uni.loadshedding_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.egbd_loss / uni.adjusted_expected)*100)}, {100 + ((uni.loadshedding_loss / uni.adjusted_expected)*100)}),";
                 }
                 finalinsertQuery = insertQry + insertValues;
                 finalinsertQuery = finalinsertQuery.Substring(0, (finalinsertQuery.Length - 1)) + ";";
@@ -18565,11 +18575,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                     foreach (var unit in AOPData)
                     {
-                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - ((unit.usmh + unit.smh) / unit.expected_power)}, {100 - (unit.igbd / unit.expected_power)}, {100 - ((unit.egbd + unit.loadShedding) / unit.expected_power)}, {100 - (unit.egbd / unit.expected_power)}, {100 - (unit.loadShedding / unit.expected_power)}, 0),";
+                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd / unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding) / unit.expected_power)*100)}, {100 - ((unit.egbd / unit.expected_power)*100)}, {100 - ((unit.loadShedding / unit.expected_power)*100)}, 0),";
                     }
                     foreach (var unit in TopLiningData)
                     {
-                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - ((unit.usmh + unit.smh) / unit.expected_power)}, {100 - (unit.igbd/unit.expected_power)}, {100 - ((unit.egbd + unit.loadShedding)/unit.expected_power)}, {100 - (unit.egbd /unit.expected_power)}, {100 - (unit.loadShedding/unit.expected_power)}, 1),";
+                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd/unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding)/unit.expected_power)*100)}, {100 - ((unit.egbd /unit.expected_power)*100)}, {100 - ((unit.loadShedding/unit.expected_power)*100)}, 1),";
                     }
                     string finalInsertQuery = insertStartingQuery + aopValues + topliningValues.Substring(0, (topliningValues.Length - 1)) + ";";
 
@@ -18613,7 +18623,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             try
             {
-                string fetchQry = $"SELECT SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, SUM(usmh_loss) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(egbd_loss) AS lossEGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
+                string fetchQry = $"SELECT SUM(adjusted_expected) AS expected_final, SUM(lineloss_mu) AS lineloss_final, SUM(target_kwh) AS target_final, (SUM(usmh_loss) + SUM(healthcheck_loss)) AS lossUSMH_final, SUM(smh_loss) AS lossSMH_final, SUM(others_loss) AS lossNC_final, SUM(igbd_loss) AS lossIGBD_final, SUM(egbd_loss) AS lossEGBD_final, SUM(lull_loss) AS lossLULL_final, SUM(pcd_loss) AS lossPCD_final, SUM(jmr_kwh) AS actual_final, SUM(loadshedding_loss) AS loadShedding FROM daily_expected_vs_actual WHERE {tmrFilter} GROUP BY site_id, data_date;";
 
                 _dailyBasisDataList = await Context.GetData<GetWindTMLGraphData>(fetchQry).ConfigureAwait(false);
                 finalRes = 2;

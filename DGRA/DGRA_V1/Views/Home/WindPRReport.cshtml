@@ -121,19 +121,19 @@
                 <div class="row" id="no_group" style="display:flex">
                     <div class="col-sm-4">
                         <div class="input-group ">
-                            <label class="col-sm-2 col-form-label text-left">Date : </label>
+                            <label class="col-sm-3.1 col-form-label text-left">Date Range :&nbsp;&nbsp;</label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right col-sm-8" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-9" id="daterange" name="daterange">
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3" style="margin-left: -13px;">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                <label class="col-sm-3 col-form-label text-right">SPV : </label>
                                 <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
                             </div>
                         </div>
@@ -141,15 +141,17 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-2 col-form-label text-right">Site : </label>
-                                <select class="form-control  col-sm-8" id="site" name="site[]" multiple></select>
+                                <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-9" id="site" name="site[]" multiple></select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-1 text-left">
-                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style="margin-left:-2rem; width: 5rem;">Search</button>
+                    <div class="col-sm-2 text-left">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetPRReport();" style=" width: 5rem; line-height: 1.3;">Search</button>
                     </div>
                     <div class="col-sm-1 text-center"></div>
+
+
                 </div>
                 <div class="row" id="no_group_tab" style="display:flex">
                     <div class="col-sm-5">
