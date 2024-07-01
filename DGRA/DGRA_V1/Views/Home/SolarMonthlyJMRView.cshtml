@@ -114,8 +114,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+
     var exceldata;
     window.onload = function () {
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
+
         var state = "";
         var spv = "";
    var options = "";
@@ -174,6 +185,51 @@
         });
     }
 
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=18',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=18&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
+
+
     function exportToExcel() {
 
         console.log(exceldata)
@@ -208,7 +264,6 @@
             row.push(result[i].import_kVArh_lead);
             row.push(result[i].net_Billable_kWh);
             row.push(formattedDate);
-            
             //row.push(result[i].jmR_Year);
             row.push(result[i].lineLoss);
             row.push(result[i].line_Loss_percentage);
@@ -272,29 +327,66 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline" style="width:180%">';
                 tbl += '<thead  class="tbl-head"><tr>';
-                tbl += '<th style="width: 4%;">FY</th>';
-                tbl += '<th>JMR Month</th>';
-                tbl += '<th style="width: 6%;">Site</th>';
-                //tbl += '<th>Plant Section</th>';
-                tbl += '<th>Controller <br>(kWh/INV)</th>';
-                tbl += '<th>Scheduled Units <br>(kWh)</th>';
-                tbl += '<th>Export <br>(kWh)</th>';
-                tbl += '<th>Import <br>(kWh)</th>';
-                tbl += '<th>Net Export <br>(kWh)</th>';
-                tbl += '<th>Net Billable <br>(kWh)</th>';
-                tbl += '<th>Export <br>(kVAh)</th>';
-                tbl += '<th>Import <br>(kVAh)</th>';
-                tbl += '<th>Export <br>(kVArh lag)</th>';
-                tbl += '<th>Import <br>(kVArh lag)</th>';
-                tbl += '<th>Export <br>(kVArh lead)</th>';
-                tbl += '<th>Import <br>(kVArh lead)</th>';
-                
-                tbl += '<th>JMR Date</th>';
-                /*tbl += '<th>JMR Year</th>'*/;
-                tbl += '<th>Line Loss</th>';
-                tbl += '<th>Line Loss <br>(%)</th>';
-                tbl += '<th>kVARh <br>(%)</th>';
-                tbl += '<th>Remarks</th>';
+                if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="width: 4%;">FY</th>';
+                }
+                if (userColumnId.includes(columnMap["JMR_Month"][0]) || columnMap["JMR_Month"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>JMR Month</th>';
+                }
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="width: 6%;">Site</th>';
+                }
+                if (userColumnId.includes(columnMap["Controller"][0]) || columnMap["Controller"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Controller <br>(kWh/INV)</th>';
+                }
+                if (userColumnId.includes(columnMap["Scheduled_Units_Kwh"][0]) || columnMap["Scheduled_Units_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Scheduled Units <br>(kWh)</th>';
+                }
+                if (userColumnId.includes(columnMap["Export_Kwh"][0]) || columnMap["Export_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Export <br>(kWh)</th>';
+                }
+                if (userColumnId.includes(columnMap["Import_Kwh"][0]) || columnMap["Import_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Import <br>(kWh)</th>';
+                }
+                if (userColumnId.includes(columnMap["Net_Export_Kwh"][0]) || columnMap["Net_Export_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Net Export <br>(kWh)</th>';
+                }
+                if (userColumnId.includes(columnMap["Net_Billable_Kwh"][0]) || columnMap["Net_Billable_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Net Billable <br>(kWh)</th>';
+                }
+                if (userColumnId.includes(columnMap["Export_Kvah"][0]) || columnMap["Export_Kvah"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Export <br>(kVAh)</th>';
+                }
+                if (userColumnId.includes(columnMap["Import_Kvah"][0]) || columnMap["Import_Kvah"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Import <br>(kVAh)</th>';
+                }
+                if (userColumnId.includes(columnMap["Export_Kvah_lag"][0]) || columnMap["Export_Kvah_lag"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Export <br>(kVArh lag)</th>';
+                }
+                if (userColumnId.includes(columnMap["Import_Kvah_lag"][0]) || columnMap["Import_Kvah_lag"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Import <br>(kVArh lag)</th>';
+                }
+                if (userColumnId.includes(columnMap["Export_Kvah_lead"][0]) || columnMap["Export_Kvah_lead"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Export <br>(kVArh lead)</th>';
+                }
+                if (userColumnId.includes(columnMap["Import_Kvah_lead"][0]) || columnMap["Import_Kvah_lead"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Import <br>(kVArh lead)</th>';
+                }
+                if (userColumnId.includes(columnMap["JMR_Date"][0]) || columnMap["JMR_Date"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>JMR Date</th>';
+                }
+                if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Line Loss</th>';
+                }
+                if (userColumnId.includes(columnMap["Lineloss_percentage"][0]) || columnMap["Lineloss_percentage"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Line Loss <br>(%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Kvarh"][0]) || columnMap["Kvarh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>kVARh <br>(%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Remarks"][0]) || columnMap["Remarks"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Remarks</th>';
+                }
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -304,30 +396,66 @@
                         var formattedDate = moment(result[i].jmR_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                        // var formattedDate = [tempDate.getDate(), tempDate.getMonth() + 1, tempDate.getFullYear()].join('-');
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + result[i].fy + '</td>';
-                        tbl += '<td class="text-left">' + result[i].jmR_Month + '</td>';
-                        tbl += '<td class="text-left">' + result[i].site + '</td>';
-                        //tbl += '<td class="text-left">' + result[i].plant_Section + '</td>';
-                        tbl += '<td class="text-right">' + result[i].controller_KWH_INV.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].scheduled_Units_kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].export_kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].import_kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].net_Export_kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].net_Billable_kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].export_kVAh.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].import_kVAh.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].export_kVArh_lag.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].import_kVArh_lag.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].export_kVArh_lead.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].import_kVArh_lead.toFixed(2) + '</td>';
-                        
-                        tbl += '<td class="text-left">' + formattedDate + '</td>';
-                       
-                        /*tbl += '<td class="text-left">' + result[i].jmR_Year + '</td>';*/
-                        tbl += '<td  class="text-right">' + result[i].lineLoss.toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].line_Loss_percentage + '</td>';
-                        tbl += '<td  class="text-right">' + result[i].rkvH_percentage + '</td>';
-                        tbl += '<td  class="text-left">' + result[i].remarks + '</td>';
+                        if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].fy + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["JMR_Month"][0]) || columnMap["JMR_Month"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].jmR_Month + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].site + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Controller"][0]) || columnMap["Controller"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].controller_KWH_INV.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Scheduled_Units_Kwh"][0]) || columnMap["Scheduled_Units_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].scheduled_Units_kWh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Export_Kwh"][0]) || columnMap["Export_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].export_kWh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Import_Kwh"][0]) || columnMap["Import_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].import_kWh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Net_Export_Kwh"][0]) || columnMap["Net_Export_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].net_Export_kWh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Net_Billable_Kwh"][0]) || columnMap["Net_Billable_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].net_Billable_kWh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Export_Kvah"][0]) || columnMap["Export_Kvah"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].export_kVAh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Import_Kvah"][0]) || columnMap["Import_Kvah"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].import_kVAh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Export_Kvah_lag"][0]) || columnMap["Export_Kvah_lag"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].export_kVArh_lag.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Import_Kvah_lag"][0]) || columnMap["Import_Kvah_lag"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].import_kVArh_lag.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Export_Kvah_lead"][0]) || columnMap["Export_Kvah_lead"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].export_kVArh_lead.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Import_Kvah_lead"][0]) || columnMap["Import_Kvah_lead"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].import_kVArh_lead.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["JMR_Date"][0]) || columnMap["JMR_Date"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + formattedDate + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].lineLoss.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Lineloss_percentage"][0]) || columnMap["Lineloss_percentage"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].line_Loss_percentage + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Kvarh"][0]) || columnMap["Kvarh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-right">' + result[i].rkvH_percentage + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Remarks"][0]) || columnMap["Remarks"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-left">' + result[i].remarks + '</td>';
+                        }
                         tbl += '</tr>';
                     }
                 }

@@ -127,8 +127,18 @@
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+
     var exceldata;
     window.onload = function () {
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
         var state = "";
         var spv = "";
         var options = "";
@@ -186,6 +196,50 @@
             }
         });
     }
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=22',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=22&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
+
 
     function exportToExcel() {
 
@@ -265,20 +319,36 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th>FY</th>';
-                tbl += '<th>Site</th>';
-                tbl += '<th>Month</th>';
-                tbl += '<th>Line Losses (%)</th>';
+                if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>FY</th>';
+                }
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Site</th>';
+                }
+                if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Month</th>';
+                }
+                if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Line Losses (%)</th>';
+                }           
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
                     exceldata = result;
                     for (var i = 0; i < result.length; i++) {
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + result[i].fy + '</td>';
-                        tbl += '<td class="text-left">' + result[i].sites + '</td>';
-                        tbl += '<td class="text-left">' + result[i].month + '</td>';
-                        tbl += '<td class="text-right" >' + result[i].lineLoss.toFixed(2) + '</td>';
+                        if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].fy + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].sites + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].month + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" >' + result[i].lineLoss.toFixed(2) + '</td>';
+                        }
                         tbl += '</tr>';
                     }
                 }

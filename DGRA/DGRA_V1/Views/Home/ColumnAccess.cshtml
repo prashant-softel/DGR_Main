@@ -267,6 +267,7 @@
                         document.getElementById("button_div").style.display = "flex";
                     } else {
                         document.getElementById("noGroups").style.display = "block";
+                        document.getElementById("button_div").style.display = "flex";
                     }
                 }
             });
@@ -317,6 +318,34 @@
     }
 
     function createFunc() {
+        var isTablePresent = document.getElementById("tableData_new").innerHTML == "" ? 1 : 0;
+        if (isTablePresent == 1) {
+            const tableContainer = document.getElementById('tableData_new');
+            tableContainer.innerHTML = "";
+            const table = document.createElement('table');
+            table.className = 'table table-bordered table-striped';
+            table.id = "example1";
+
+            // Create table header
+            const thead = document.createElement('thead');
+            thead.className = "tbl-head";
+            thead.innerHTML = `
+        <tr>
+            <th style="width: 250px">Group Name</th>
+            <th>Group Elements</th>
+            <th style="width: 250px">Action</th>
+        </tr>
+    `;
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+            const tr = document.createElement('tr');
+            tbody.appendChild(tr);
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+
+        }
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetCGColumns_CA", "Home")' + '?page_id=' + selectedPage,
