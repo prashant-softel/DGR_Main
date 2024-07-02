@@ -185,6 +185,13 @@
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+
     var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
@@ -208,6 +215,9 @@
 
 
     window.onload = function () {
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
         var state = "";
         var spv = "";
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -235,6 +245,50 @@
         GetSPV(false);
         getSite(false);
     }
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=31',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=31&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
+
     let site_id = "";
     function getReport() {
         var site = "";
@@ -486,27 +540,88 @@
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 160%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th  style="width: 5%;">Site</th>';
-                tbl += '<th style="width: 7%;">Date</th>';
-                tbl += '<th>WTG</th>';
-                tbl += '<th>TML Count</th>';
-                tbl += '<th>WindSpeed (m/s)</th>';
-                tbl += '<th>Target Energy (MU)</th>';
-                tbl += '<th>Actual<br> Energy (MU)</th>';
-                tbl += '<th>Expected<br> Energy (MU)</th>';
-                tbl += '<th>USMH_Loss<br> (MU)</th>';
-                tbl += '<th>SMH_Loss<br> (MU)</th>';
-                tbl += '<th>OH_Loss<br> (MU)</th>';
-                tbl += '<th>IGBD_Loss<br> (MU)</th>';
-                tbl += '<th>EGBD_Loss<br> (MU)</th>';
-                tbl += '<th>LS_Loss<br> (MU)</th>';
-                tbl += '<th>PCD<br> (MU)</th>';
-                tbl += '<th>Lineloss<br> (MU)</th>';
-                tbl += '<th>MA<br> (%)</th>';
-                tbl += '<th>IGA<br> (%)</th>';
-                tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
-                tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
-                tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th  style="width: 5%;">Site</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="width: 7%;">Date</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>WTG</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["TML_Count"][0]) || columnMap["TML_Count"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>TML Count</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["WindSpeed"][0]) || columnMap["WindSpeed"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>WindSpeed (m/s)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Target_Energy"][0]) || columnMap["Target_Energy"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Target Energy (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Actual_Energy"][0]) || columnMap["Actual_Energy"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Actual<br> Energy (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Expected_Energy"][0]) || columnMap["Expected_Energy"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Expected<br> Energy (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["USMH_Loss"][0]) || columnMap["USMH_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>USMH_Loss<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["SMH_Loss"][0]) || columnMap["SMH_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>SMH_Loss<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["OH_Loss"][0]) || columnMap["OH_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>OH_Loss<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["IGBDH_Loss"][0]) || columnMap["IGBDH_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>IGBD_Loss<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["EGBDH_Loss"][0]) || columnMap["EGBDH_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>EGBD_Loss<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["LS_Loss"][0]) || columnMap["LS_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>LS_Loss<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["PCD"][0]) || columnMap["PCD"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>PCD<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Lineloss<br> (MU)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["MA"][0]) || columnMap["MA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>MA<br> (%)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["IGA"][0]) || columnMap["IGA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>IGA<br> (%)</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["EGA_A"][0]) || columnMap["EGA_A"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>EGA_A<br>(%) <span class="information">i<span></th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["EGA_B"][0]) || columnMap["EGA_B"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';                    
+                }
+                if (userColumnId.includes(columnMap["EGA_C"][0]) || columnMap["EGA_C"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
+                }
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -520,27 +635,69 @@
                             status = "Available";
                         }
                         tbl += '<tr>';
-                       tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].data_date + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].wtg + '</td>';
-                        tbl += '<td  class="text-center">' + result[i].tml_count + '</td>';
-                        tbl += '<td class="text-center">' + result[i].actual_wind_speed + '</td>';
-                       tbl += '<td class="text-center">' + result[i].target_kwh.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].actual_active_power.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].adjusted_expected.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + (result[i].usmh_loss+result[i].initialization_loss).toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].smh_loss.toFixed(2) + '</td>';
-                        tbl += '<td class="text-center">' + result[i].others_loss.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].igbd_loss.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].egbd_loss.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].loadshedding_loss.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].pcd_loss.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].lineloss_mu.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].ma.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].iga.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].ega_a.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].ega_b.toFixed(2) + '</td>';
-                       tbl += '<td class="text-center">' + result[i].ega_c.toFixed(2) + '</td>';
+                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-center">' + result[i].site + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-center">' + result[i].data_date + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-center">' + result[i].wtg + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["TML_Count"][0]) || columnMap["TML_Count"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td  class="text-center">' + result[i].tml_count + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["WindSpeed"][0]) || columnMap["WindSpeed"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].actual_wind_speed + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Target_Energy"][0]) || columnMap["Target_Energy"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].target_kwh.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Actual_Energy"][0]) || columnMap["Actual_Energy"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].actual_active_power.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Expected_Energy"][0]) || columnMap["Expected_Energy"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].adjusted_expected.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["USMH_Loss"][0]) || columnMap["USMH_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + (result[i].usmh_loss + result[i].initialization_loss).toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["SMH_Loss"][0]) || columnMap["SMH_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].smh_loss.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["OH_Loss"][0]) || columnMap["OH_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].others_loss.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["IGBDH_Loss"][0]) || columnMap["IGBDH_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].igbd_loss.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["EGBDH_Loss"][0]) || columnMap["EGBDH_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].egbd_loss.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["LS_Loss"][0]) || columnMap["LS_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].loadshedding_loss.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["PCD"][0]) || columnMap["PCD"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].pcd_loss.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].lineloss_mu.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["MA"][0]) || columnMap["MA"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].ma.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["IGA"][0]) || columnMap["IGA"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].iga.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["EGA_A"][0]) || columnMap["EGA_A"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].ega_a.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["EGA_B"][0]) || columnMap["EGA_B"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].ega_b.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["EGA_C"][0]) || columnMap["EGA_C"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-center">' + result[i].ega_c.toFixed(2) + '</td>';
+                        }                        
                         tbl += '</tr>';
                     }
                 }

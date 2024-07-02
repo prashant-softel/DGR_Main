@@ -95,12 +95,62 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
     var exceldata;
     window.onload = function () {
-
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
         getLocationData();
     }
-
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=8',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=8&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
     function exportToExcel() {
 
         result = exceldata;
@@ -148,10 +198,18 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th>Site</th>';
-                tbl += '<th>WTG</th>';
-                tbl += '<th>Feeder</th>';
-                tbl += '<th>Max_kWh/Day</th>';
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Site</th>';
+                }
+                if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>WTG</th>';
+                }
+                if (userColumnId.includes(columnMap["Feeder"][0]) || columnMap["Feeder"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Feeder</th>';
+                }
+                if (userColumnId.includes(columnMap["Max_Kwh_Per_Day"][0]) || columnMap["Max_Kwh_Per_Day"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Max_kWh/Day</th>';
+                }                
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                     exceldata = result;
@@ -159,10 +217,18 @@
 
 
                         tbl += '<tr>';
-                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
-                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].wtg + '</td>';
-                        tbl += '<td class="text-right">' + result[i].feeder.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].max_kwh_day.toFixed(2) + '</td>';
+                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].wtg + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Feeder"][0]) || columnMap["Feeder"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].feeder.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Max_Kwh_Per_Day"][0]) || columnMap["Max_Kwh_Per_Day"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].max_kwh_day.toFixed(2) + '</td>';
+                        }                        
                         tbl += '</tr>';
                     }
                 }
