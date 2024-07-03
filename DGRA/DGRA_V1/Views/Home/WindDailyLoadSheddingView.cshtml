@@ -115,6 +115,13 @@
 
 
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+
     var exceldata;
     $(document).ready(function () {
         $('#daterange').daterangepicker(
@@ -126,6 +133,9 @@
             });
     });
     window.onload = function () {
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
         var state = "";
         var spv = "";
         var site_ids = "@Html.Raw(windSiteList.TrimEnd(','))";
@@ -150,10 +160,53 @@
 
         });
     }
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=3',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=3&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
 
 
     function exportToExcel() {
-       
+
         console.log(exceldata)
         result = exceldata;
 
@@ -197,7 +250,7 @@
         }
 
         saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Wind Daily Load Shedding View.xlsx");
-     
+
     }
 
     function getReport() {
@@ -232,7 +285,30 @@
             success: function (result, status, xhr) {
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped">';
-                tbl += '<thead class="tbl-head"><tr><th>Site</th><th style="width:100px">Date</th><th>Start Time</th><th>End Time</th><th>Total Time</th><th>Permissible Load (MW)</th><th>Generation loss in kWh due to Load shedding</th></tr></thead><tbody>';
+                tbl += '<thead class="tbl-head"><tr>';
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Site</th>';
+                }
+                if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="width:100px">Date</th>';
+                }
+                if (userColumnId.includes(columnMap["Start_Time"][0]) || columnMap["Start_Time"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Start Time</th>';
+                }
+                if (userColumnId.includes(columnMap["End_Time"][0]) || columnMap["End_Time"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>End Time</th>';
+                }
+                if (userColumnId.includes(columnMap["Total_Time"][0]) || columnMap["Total_Time"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Total Time</th>';
+                }
+                if (userColumnId.includes(columnMap["Permissible_Load"][0]) || columnMap["Permissible_Load"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Permissible Load (MW)</th>';
+                }
+                if (userColumnId.includes(columnMap["Gen_Loss_due_to_LS"][0]) || columnMap["Gen_Loss_due_to_LS"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Generation loss in kWh due to Load shedding</th>';
+                }
+                
+                tbl += '</tr></thead><tbody>';
 
                 if (result.length > 0) {
                     exceldata = result;
@@ -242,17 +318,28 @@
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
 
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + result[i].site + '</td>';
-                        tbl += '<td class="text-left">' + formattedDate + '</td>';
-                        //tbl += '<td class="text-right">' + result[i].start_Time['totalHours'].toFixed(2) + '</td>';
-                        //tbl += '<td class="text-right">' + result[i].end_Time['totalHours'].toFixed(2) + '</td>';
-                        //tbl += '<td class="text-right">' + result[i].total_Time['totalHours'].toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes'] + '</td>';
-                        tbl += '<td class="text-right">' + result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes'] +'</td>';
-                        tbl += '<td class="text-right">' + result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes'] +'</td>';
-
-                        tbl += '<td class="text-right">' + permissible + '</td>';
-                        tbl += '<td class="text-right">' + result[i].gen_loss_kWh.toFixed(2) + '</td>';
+                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].site + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + formattedDate + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Start_Time"][0]) || columnMap["Start_Time"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes'] + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["End_Time"][0]) || columnMap["End_Time"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes'] + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Total_Time"][0]) || columnMap["Total_Time"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes'] + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Permissible_Load"][0]) || columnMap["Permissible_Load"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + permissible + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Gen_Loss_due_to_LS"][0]) || columnMap["Gen_Loss_due_to_LS"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].gen_loss_kWh.toFixed(2) + '</td>';
+                        }
+                        
                         tbl += '</tr>';
                     }
                 }
