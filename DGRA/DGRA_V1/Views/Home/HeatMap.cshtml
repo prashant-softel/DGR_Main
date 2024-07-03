@@ -188,7 +188,6 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <section class="content-header">
-      
     </section>
     <section class="content">
         <div class="card">
@@ -265,15 +264,15 @@
                     <div class="row" style="float: right;">
                         <div class="boxinfo infotool">
                             i
-                            <span class="infotext">
-                                <ul style=" padding-left: 0px;">
+                            <div class="infotext">
+                                <ul style="padding-left: 0px;">
                                     <li style="display: flex;"><span class="box black"> </span>&nbsp;&nbsp;&nbsp;&nbsp;All data missing </li>
                                     <li style="display: flex;"><span class="box gray"> </span>&nbsp;&nbsp;&nbsp;&nbsp;Awaiting for approval</li>
                                     <li style="display: flex;"><span class="box orange"> </span>&nbsp;&nbsp;&nbsp;&nbsp;Partial data uploaded</li>
                                     <li style="display: flex;"><span class="box green"> </span>&nbsp;&nbsp;&nbsp;&nbsp;Complete data uploaded</li>
                                 </ul>
 
-                            </span>
+                            </div>
 
                         </div>
 
@@ -285,13 +284,9 @@
 
                 </div>
 
-                <div class="col-sm-12">
-                    <div id="HeatMapTest" style="width: 100%;"></div>
+               
 
-                </div>
-
-                <div id="LogData"></div>
-
+              
                 <div id="loader" class="loader  center" style="display:none"></div>
             </div>
         </div>
@@ -299,10 +294,7 @@
     </section>
 
 </div>
-<style>
-  
-   
-    </style>
+
 <!-- /.content-wrapper -->
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -729,7 +721,7 @@
                     ],
                     
                 });
-               
+                $(".dt-buttons").css("margin-bottom", "0%");
             }
         });
 
