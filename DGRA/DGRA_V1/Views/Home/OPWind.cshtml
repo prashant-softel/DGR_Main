@@ -432,6 +432,9 @@
         var spvDivEle = document.getElementById("spv_select_div");
         var siteDivEle = document.getElementById("site_select_div");
         var typeSelect = document.getElementById("TypeSelect").value;
+        $('#spv').val([]);
+        getSite(false);
+        GetSPV(false);
         if (typeSelect === "1") {
             console.log("SPV wise Type selected");
             isSPV = 0;
@@ -516,7 +519,7 @@
             alert("Please Select Type First.");
             return false;
         }
-
+        spv = "";
         $('select#spv option:selected').each(function () {
             spv += $(this).val() + ",";
         });

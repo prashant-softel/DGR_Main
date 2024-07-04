@@ -1639,11 +1639,12 @@ LEFT JOIN
      ON 
      	det.site_id = sm.site_master_id  
      WHERE 
-     	det.data_date >= '{fromDate}' AND det.data_date <= '{toDate}' AND det.site_id IN({site}) GROUP BY {groupBy}
+     	det.data_date >= '{fromDate}' AND det.data_date <= '{toDate}' AND det.site_id IN({site})
     ) as tml
 ON tml.data_date = gen.date AND {join} AND tml.site_id = gen.site_id; ";
+            //GROUP BY {groupBy}
 
-            List <WindDailyGenReports> _windDailyGenReports = new List<WindDailyGenReports>();
+            List<WindDailyGenReports> _windDailyGenReports = new List<WindDailyGenReports>();
              _windDailyGenReports = await Context.GetData<WindDailyGenReports>(qry).ConfigureAwait(false);
             return _windDailyGenReports;
         }
