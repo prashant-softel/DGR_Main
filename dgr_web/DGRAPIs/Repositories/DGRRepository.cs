@@ -19743,7 +19743,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         internal async Task<List<ColumnData>> GetCGColumns_CA(int page_id)
         {
-            string functionName = "GetCreateGroupColumns_CA";
+            string functionName = "GetCGColumns_CA";
             List<ColumnData> data = new List<ColumnData>();
             try
             {

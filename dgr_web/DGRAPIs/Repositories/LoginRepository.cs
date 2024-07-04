@@ -696,12 +696,14 @@ namespace DGRAPIs.Repositories
 
             int flag = 0;
             string insertQry = "INSERT INTO user_page_group_ca (user_id, page_id, page_groups_id) VALUES ";
-            foreach(var data in GroupData)
+            foreach (var data in GroupData)
             {
                 insertQry += $"({login_id}, {data.page_id}, {data.page_groups_id}),";
             }
 
-            insertQry = insertQry.Substring(0, (insertQry.Length - 1)) + ";";
+            insertQry = insertQry.Substring(0, insertQry.Length - 1); // Remove the trailing comma
+
+            insertQry += " ON DUPLICATE KEY UPDATE page_groups_id = VALUES(page_groups_id);";
 
             try
             {

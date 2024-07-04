@@ -501,10 +501,7 @@
             site_id += $(this).val() + ",";
         });
         site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        //if (site_id == "" || site_id == null) {
-        //    alert("Please select site ");
-        //    return false;
-        //}
+
         var typeSelect = document.getElementById("TypeSelect").value;
         if (typeSelect === "" || typeSelect === 0) {
             alert("Please Select Type First.");
@@ -525,22 +522,12 @@
         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
 
-        //if (spv == "") {
-        //    isSPV = 1;
-        //    //console.log("So you will be seeing Data site wise.");
-        //} else {
-        //    isSPV = 0;
-        //    //console.log("So you will be seeing Data spv wise.");
-        //}
-
         // Function call to get the comments data. Display Monthly Comments (DMC).
         DMC(site_id, isSPV, nDval, false);
         DYC(site_id, isSPV, nDval);
 
         //Function call to get the chart data monthly.
-        getChartData(site_id, fromDate, toDate); //Haresh Uncomment this afterwadrs for getting charts again.
-        //document.getElementById("commentsSection").style.display = "flex"; //Haresh comment this afterwards.
-        //ocument.getElementById("loader").style.display = 'none'; //Haresh comment this afterwards.
+        getChartData(site_id, fromDate, toDate);
     }
 
     function GetSPV(fliterVal) {
