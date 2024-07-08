@@ -432,6 +432,9 @@
         var spvDivEle = document.getElementById("spv_select_div");
         var siteDivEle = document.getElementById("site_select_div");
         var typeSelect = document.getElementById("TypeSelect").value;
+        $('#spv').val([]);
+        getSite(false);
+        GetSPV(false);
         if (typeSelect === "1") {
             console.log("SPV wise Type selected");
             isSPV = 0;
@@ -516,7 +519,7 @@
             alert("Please Select Type First.");
             return false;
         }
-
+        spv = "";
         $('select#spv option:selected').each(function () {
             spv += $(this).val() + ",";
         });
@@ -693,7 +696,8 @@
 
                 document.getElementById("dataNotPresentDiv").style.display = "none";
                 document.getElementById("Waterfall").style.display = "flex";
-                CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                CreateChart(target_final, expected_final, lossUSMH_final, lossSMH_final, lossNC_final, lossIGBD_final, lossEGBD_final, lossLULL_final, lossPCD_final, lineloss_final, actual_final, loadShedding);
+                //CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
             
             }
             }
@@ -774,6 +778,7 @@
             loadShedding += result[i].loadShedding;
 
             CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+
 
             }
             }
@@ -896,13 +901,13 @@
             Number(total_actual)
             ],
             hovertemplate: [
-            '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-            '<b>Expected</b><br>Value: ' + total_opExpected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-            '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
-            '<b>EGBD</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-            '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
-            '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-            '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                '<b>Target</b><br>Value: ' + total_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
+                '<b>Expected</b><br>Value: ' + total_opExpected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                '<b>BD</b><br>Value: ' + total_bd.toFixed(4) + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                '<b>EGBD</b><br>Value: ' + total_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                '<b>PCD</b><br>Value: ' + total_pcd.toFixed(4) + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                '<b>Other</b><br>Value: ' + total_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                '<b>Actual</b><br>Value: ' + total_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )'
             ],
 
             //'<b>%{x}</b><br>' +
@@ -1059,13 +1064,13 @@
             Number(total_actual)
             ],
             hovertemplate: [
-            '<b>Target</b><br>Value: ' + total_target + '<br> (' + tar_percentage.toFixed(2) + '% )',
-            '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
-            '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
-            '<b>EGB</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-            '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
-            '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
-            '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
+                '<b>Target</b><br>Value: ' + total_target+ '<br> (' + tar_percentage.toFixed(2) + '% )',
+                '<b>Expected</b><br>Value: ' + total_expected + '<br> (' + exp_percentage.toFixed(2) + '% )',
+                '<b>BD</b><br>Value: ' + total_bd + '<br> (' + bd_percentage.toFixed(2) + '% )',
+                '<b>EGB</b><br>Value: ' + total_egbd + '<br> (' + egbd_percentage.toFixed(2) + '% )',
+                '<b>PCD</b><br>Value: ' + total_pcd + '<br> (' + pcd_percentage.toFixed(2) + '% )',
+                '<b>Other</b><br>Value: ' + total_oh + '<br> (' + oh_percentage.toFixed(2) + '% )',
+                '<b>Actual</b><br>Value: ' + total_actual + '<br> (' + actul_percentage.toFixed(2) + '% )'
             ],
             //hovertemplate: '<b>%{x}</b><br>' +
             //    /*'Column: %{x}<br>' +*/
@@ -2037,6 +2042,7 @@
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
+                
                 DCM_data = [];
                 DCM_data = [...result];
                 console.log("Display Delete Result : ");

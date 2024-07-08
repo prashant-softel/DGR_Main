@@ -510,6 +510,9 @@
         var spvDivEle = document.getElementById("spv_select_div");
         var siteDivEle = document.getElementById("site_select_div");
         var typeSelect = document.getElementById("TypeSelect").value;
+        $('#spv').val([]);
+        GetSite();
+        GetSPV();
         if (typeSelect === "1") {
             console.log("SPV wise Type selected");
             isSPV = 0;

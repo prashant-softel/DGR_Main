@@ -272,40 +272,64 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th>FY</th>';
-                tbl += '<th>Month</th>';
+                tbl += '<th style="white-space: nowrap;">FY</th>';
+                tbl += '<th style="white-space: nowrap;">Month</th>';
                 tbl += '<th style="width: 12%;">Site</th>';
-                tbl += '<th>GHI (kWh/m<sup>2</sup>)</th>';
-                tbl += '<th>POA (kWh/m<sup>2</sup>)</th>';
-                tbl += '<th>kWh (in MU)</th>';
-                tbl += '<th>MA (%)</th>';
-                tbl += '<th>IGA (%)</th>';
-                tbl += '<th>EGA (%)</th>';
-                tbl += '<th>PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">GHI (kWh/m<sup>2</sup>)</th>';
+                tbl += '<th style="white-space: nowrap;">POA (kWh/m<sup>2</sup>)</th>';
+                tbl += '<th style="white-space: nowrap;">kWh (in MU)</th>';
+                tbl += '<th style="white-space: nowrap;">MA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">IGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">EGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">PR (%)</th>';
                 tbl += '<th>PLF (%)</th>';
                 tbl += '<th>P50 </th>';
                 tbl += '<th>P75 </th>';
                 tbl += '<th>P90 </th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_kWh (in MU)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining _MA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_IGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_EGA (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Toplining_PLF (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Plant_kWh (in MU)</th>';
+                tbl += '<th style="white-space: nowrap;">Plant_PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Plant_PLF (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Inv_kWh (in MU)</th>';
+                tbl += '<th style="white-space: nowrap;">Inv_PR (%)</th>';
+                tbl += '<th style="white-space: nowrap;">Inv_PLF(%)</th>';
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
                     exceldata = result;
                     for (var i = 0; i < result.length; i++) {
                         tbl += '<tr>';
-                        tbl += '<td class="text-left">' + result[i].fy + '</td>';
-                        tbl += '<td class="text-left">' + result[i].month + '</td>';
-                        tbl += '<td class="text-left">' + result[i].sites + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ghi.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].kWh.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ma.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].pr.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].p50 || 0).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].p75 || 0).toFixed(2) + '</td>';
-                        tbl += '<td class="text-right">' + (result[i].p90 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].fy + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].month + '</td>';
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].sites + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].ghi.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].poa.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].kWh.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].ma.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].iga.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].ega.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].pr.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + result[i].plf.toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + (result[i].p50 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + (result[i].p75 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right style="text-wrap: nowrap;">' + (result[i].p90 || 0).toFixed(2) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_kWh && result[i].toplining_kWh != null ? result[i].toplining_kWh.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_MA && result[i].toplining_MA != null ? result[i].toplining_MA.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_IGA && result[i].toplining_IGA != null ? result[i].toplining_IGA.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_EGA && result[i].toplining_EGA != null ? result[i].toplining_EGA.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_PR && result[i].toplining_PR != null ? result[i].toplining_PR.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_PLF && result[i].toplining_PLF != null ? result[i].toplining_PLF.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plant_kWh && result[i].plant_kWh != null ? result[i].plant_kWh.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plant_PR && result[i].plant_PR != null ? result[i].plant_PR.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plant_PLF && result[i].plant_PLF != null ? result[i].plant_PLF.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].inv_kWh && result[i].inv_kWh != null ? result[i].inv_kWh.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].inv_PR && result[i].inv_PR != null ? result[i].inv_PR.toFixed(2) : 0) + '</td>';
+                        tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].inv_PLF && result[i].inv_PLF != null ? result[i].inv_PLF.toFixed(2) : 0) + '</td>';
                         //tbl += '<td class="text-right">' + result[i].p50.toFixed(2) + '</td>';
                         //tbl += '<td class="text-right">' + result[i].p75.toFixed(2)+ '</td>';
                         //tbl += '<td class="text-right">' + result[i].p90.toFixed(2)+ '</td>';
@@ -321,17 +345,20 @@
                     dom: 'Bfrtip',
                     fixedHeader: true,
                     responsive: true,
-                    //scrollX: true,
+                    scrollX: true,
                     lengthChange: false,
-                    autoWidth: false,
+                    autoWidth: true,
                     paging: true,
                     lengthChange: false,
                     searching: true,
                     ordering: true,
                     info: true,
-                    autoWidth: false,
-                    responsive: false,
+                    autoWidth: true,
+                    //responsive: true,
                     pageLength: 50,
+                    fixedColumns: {
+                        left: 3
+                    },
                     buttons: [
                         {
                             extend: 'excel',

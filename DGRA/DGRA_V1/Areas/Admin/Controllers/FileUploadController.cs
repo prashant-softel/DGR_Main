@@ -3157,11 +3157,49 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["PLF (%)"]), "PLF (%)");
                         errorFlag.Add((addUnit.PLF > 100 || addUnit.PLF < 0) ? true : false);
 
-                        addUnit.P50 = Convert.ToDouble((dr[11] is DBNull) || string.IsNullOrEmpty((string)dr[11]) ? 0 : dr[11]);
+                        addUnit.Toplining_kWh = Convert.ToDouble((dr["Toplining kWh (in MU)"] is DBNull) || string.IsNullOrEmpty((string)dr["Toplining kWh (in MU)"]) ? 0 : dr["Toplining kWh (in MU)"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.Toplining_kWh, "Toplining kWh (in MU)", rowNumber));
+
+                        addUnit.Toplining_MA = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining MA (%)"]), "Toplining MA (%)");
+                        errorFlag.Add((addUnit.Toplining_MA > 100 || addUnit.Toplining_MA < 0) ? true : false);
+
+                        addUnit.Toplining_IGA = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining IGA (%)"]), "Toplining IGA (%)");
+                        errorFlag.Add((addUnit.Toplining_IGA > 100 || addUnit.Toplining_IGA < 0) ? true : false);
+
+                        addUnit.Toplining_EGA = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining EGA (%)"]), "Toplining EGA (%)");
+                        errorFlag.Add((addUnit.Toplining_EGA > 100 || addUnit.Toplining_EGA < 0) ? true : false);
+
+                        addUnit.Toplining_PR = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining PR (%)"]), "Toplining PR (%)");
+                        errorFlag.Add((addUnit.Toplining_PR > 100 || addUnit.Toplining_PR < 0) ? true : false);
+
+                        addUnit.Toplining_PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining PLF (%)"]), "Toplining PLF (%)");
+                        errorFlag.Add((addUnit.Toplining_PLF > 100 || addUnit.Toplining_PLF < 0) ? true : false);
+
+                        addUnit.Plant_kWh = Convert.ToDouble((dr["Plant kWh (in MU)"] is DBNull) || string.IsNullOrEmpty((string)dr["Plant kWh (in MU)"]) ? 0 : dr["Plant kWh (in MU)"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.Plant_kWh, "Plant kWh (in MU)", rowNumber));
+
+                        addUnit.Plant_PR = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Plant PR (%)"]), "Plant PR (%)");
+                        errorFlag.Add((addUnit.Plant_PR > 100 || addUnit.Plant_PR < 0) ? true : false);
+
+                        addUnit.Plant_PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Plant PLF (%)"]), "Plant PLF (%)");
+                        errorFlag.Add((addUnit.Plant_PLF > 100 || addUnit.Plant_PLF < 0) ? true : false);
+
+                        addUnit.Inv_kWh = Convert.ToDouble((dr["Inv kWh (in MU)"] is DBNull) || string.IsNullOrEmpty((string)dr["Inv kWh (in MU)"]) ? 0 : dr["Inv kWh (in MU)"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.Inv_kWh, "Inv kWh (in MU)", rowNumber));
+
+                        addUnit.Inv_PR = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Inv PR (%)"]), "Inv PR (%)");
+                        errorFlag.Add((addUnit.Inv_PR > 100 || addUnit.Inv_PR < 0) ? true : false);
+
+                        addUnit.Inv_PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Inv PLF (%)"]), "Inv PLF (%)");
+                        errorFlag.Add((addUnit.Inv_PLF > 100 || addUnit.Inv_PLF < 0) ? true : false);
+
+                        addUnit.P50 = Convert.ToDouble((dr["P50"] is DBNull) || string.IsNullOrEmpty((string)dr["P50"]) ? 0 : dr["P50"]);
                         errorFlag.Add(negativeNullValidation(addUnit.P50, "P50", rowNumber));
-                        addUnit.P75 = Convert.ToDouble((dr[12] is DBNull) || string.IsNullOrEmpty((string)dr[12]) ? 0 : dr[12]);
+
+                        addUnit.P75 = Convert.ToDouble((dr["P75"] is DBNull) || string.IsNullOrEmpty((string)dr["P75"]) ? 0 : dr["P75"]);
                         errorFlag.Add(negativeNullValidation(addUnit.P75, "P75", rowNumber));
-                        addUnit.P90 = Convert.ToDouble((dr[13] is DBNull) || string.IsNullOrEmpty((string)dr[13]) ? 0 : dr[13]);
+
+                        addUnit.P90 = Convert.ToDouble((dr["P90"] is DBNull) || string.IsNullOrEmpty((string)dr["P90"]) ? 0 : dr["P90"]);
                         errorFlag.Add(negativeNullValidation(addUnit.P90, "P90", rowNumber));
 
                         errorFlag.Add(uniqueRecordCheckSolarPerMonthYear_KPI(addUnit, addSet, rowNumber));
