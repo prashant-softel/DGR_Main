@@ -5468,7 +5468,8 @@ namespace DGRA_V1.Areas.admin.Controllers
         public bool countryValidation(string countryValue, string columnName, long rowNo)
         {
             bool retVal = false;
-            if (!(countryValue == "India") || countryValue == "Nil")
+            //if (!(countryValue == "India") || countryValue == "Nil")
+            if (countryValue == "Nil")
             {
                 m_ErrorLog.SetError(",File Row<" + rowNo + "> column <" + columnName + ">: Invalid Country name<" + countryValue + ">,");
                 retVal = true;
