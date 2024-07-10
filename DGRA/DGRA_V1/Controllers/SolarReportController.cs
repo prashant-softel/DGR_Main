@@ -942,5 +942,30 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
+		public async Task<IActionResult> GetPageColumns(int page_id)
+        {
+
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetPageColumns?page_id=" + page_id;
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                        //  breakdown.list = JsonConvert.DeserializeObject<List<WindBreakdownReports>>(line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
     }
 }
