@@ -38,6 +38,11 @@ namespace DGRAPIs.BS
         Task<List<CustomGroup>> GetCustomGroup(int login_id, int site_type,string groupPage);
         Task<int> SubmitGroupBySite(int login_id, string reportgroup, string site_type);
         Task<List<CustomGroupAccess>> GetCustomGroupAccess(int login_id, int site_type);
+		//COLUMN ACCESS CODE START
+
+        Task<int> AssignGroup(int login_id, string group_data);
+
+        //COLUMN ACCESS CODE END
     }
     public class LoginBS : iLoginBS
     {
@@ -420,5 +425,25 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+		
+		//COLUMN ACCESS CODE START
+
+        public async Task<int> AssignGroup(int login_id, string group_data)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.AssignGroup(login_id, group_data);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //COLUMN ACCESS CODE END
     }
 }

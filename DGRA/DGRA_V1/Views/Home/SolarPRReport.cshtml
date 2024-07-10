@@ -204,7 +204,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 <script type="text/javascript">
-     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var isAdmin = 0;
+    if (userRole == "Admin") {
+        isAdmin = 1;
+    }
     var exceldata1;
     var exceldata2;
     var CustomGroupOfSite = false;
@@ -250,13 +255,60 @@
                 }
             });
     });
+    const columnMap = {};
+    const userColumnId = [];
 
     window.onload = function () {
+    	console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
         getCutomeGroup();
         GetSPV();
         
         
     }
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=26',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=26&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
     function GetCustomGroupAccess()
     {
         console.log("call function");
@@ -632,21 +684,159 @@
             datatype: "JSON",
             success: function (result, status, xhr) {
                 console.log(result);
+                //var tbl = '<div class="text-center"><h5>' + reporthead + '</h5></div>';
+                var genNosSubCols = 0;
+                var ghiSubCols = 0;
+                var poaSubCols = 0;
+                var ghiVsPoaGainSubCols = 0;
+                var plfSubCols = 0;
+                var prSubCols = 0;
+                var maSubCols = 0;
+                var igaSubCols = 0;
+                var egaSubCols = 0;
+
+                if (userColumnId.includes(columnMap["GenNos_Tar"][0]) || isAdmin == 1) {
+                    genNosSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GenNos_Exp"][0]) || isAdmin == 1) {
+                    genNosSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GenNos_ActJMR"][0]) || isAdmin == 1) {
+                    genNosSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GenNos_TVar"][0]) || isAdmin == 1) {
+                    genNosSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GenNos_Evar"][0]) || isAdmin == 1) {
+                    genNosSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["GHI_Tar"][0]) || isAdmin == 1) {
+                    ghiSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GHI_Act"][0]) || isAdmin == 1) {
+                    ghiSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GHI_Var"][0]) || isAdmin == 1) {
+                    ghiSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["POA_Tar"][0]) || isAdmin == 1) {
+                    poaSubCols++;
+                }
+                if (userColumnId.includes(columnMap["POA_Act"][0]) || isAdmin == 1) {
+                    poaSubCols++;
+                }
+                if (userColumnId.includes(columnMap["POA_Var"][0]) || isAdmin == 1) {
+                    poaSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["GHI_Vs_POA_Gain_Tar"][0]) || isAdmin == 1) {
+                    ghiVsPoaGainSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GHI_Vs_POA_Gain_Act"][0]) || isAdmin == 1) {
+                    ghiVsPoaGainSubCols++;
+                }
+                if (userColumnId.includes(columnMap["GHI_Vs_POA_Gain_Var"][0]) || isAdmin == 1) {
+                    ghiVsPoaGainSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["PLF_Tar"][0]) || isAdmin == 1) {
+                    plfSubCols++;
+                }
+                if (userColumnId.includes(columnMap["PLF_Act"][0]) || isAdmin == 1) {
+                    plfSubCols++;
+                }
+                if (userColumnId.includes(columnMap["PLF_Var"][0]) || isAdmin == 1) {
+                    plfSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["PR_Tar"][0]) || isAdmin == 1) {
+                    prSubCols++;
+                }
+                if (userColumnId.includes(columnMap["PR_Act"][0]) || isAdmin == 1) {
+                    prSubCols++;
+                }
+                if (userColumnId.includes(columnMap["PR_Var"][0]) || isAdmin == 1) {
+                    prSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["MA_Actual_Tar"][0]) || isAdmin == 1) {
+                    maSubCols++;
+                }
+                if (userColumnId.includes(columnMap["MA_Actual_Act"][0]) || isAdmin == 1) {
+                    maSubCols++;
+                }
+                if (userColumnId.includes(columnMap["MA_Actual_Var"][0]) || isAdmin == 1) {
+                    maSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["IGA_Tar"][0]) || isAdmin == 1) {
+                    igaSubCols++;
+                }
+                if (userColumnId.includes(columnMap["IGA_Act"][0]) || isAdmin == 1) {
+                    igaSubCols++;
+                }
+                if (userColumnId.includes(columnMap["IGA_Var"][0]) || isAdmin == 1) {
+                    igaSubCols++;
+                }
+
+                if (userColumnId.includes(columnMap["EGA_Tar"][0]) || isAdmin == 1) {
+                    egaSubCols++;
+                }
+                if (userColumnId.includes(columnMap["EGA_Act"][0]) || isAdmin == 1) {
+                    egaSubCols++;
+                }
+                if (userColumnId.includes(columnMap["EGA_Var"][0]) || isAdmin == 1) {
+                    egaSubCols++;
+                }
+
+
                 var tbl = '<table id="example1"  class="table table-bordered table-striped" style="width:150%">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th rowspan="2">SPV</th><th rowspan="2">Capacity <br> (MW)</th>';
-                tbl += '<th colspan="5" class="text-center"> Energy (in MU)</th >';
-                tbl += '<th>(±)Revenue</th><th colspan="3" class="text-center">GHI (kWh/m<sup>2</sup>)</th>';
-                tbl += '<th colspan="3" class="text-center">POA (kWh/m<sup>2</sup>)</th>';
-                tbl += '<th colspan="3" class="text-center">GHI Vs POA Gain (%)</th>';
-                tbl += '<th colspan="3" class="text-center">PLF (%)</th>';
-                tbl += '<th colspan="3" class="text-center">PR (%)</th>';
-
-                //tbl += '<th colspan="3" class="text-center">Temp Corr. PR (%)</th>';
-
-                tbl += '<th colspan="3" class="text-center">MA (%)</th>';
-                tbl += '<th colspan="3" class="text-center">IGA (%)</th>';
-                tbl += '<th colspan="3" class="text-center">EGA (%)</th></tr > ';
+                if (userColumnId.includes(columnMap["SPV"][0]) || columnMap["SPV"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th rowspan="2">SPV</th>'
+                }
+                if (userColumnId.includes(columnMap["Capacity"][0]) || columnMap["Capacity"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th rowspan="2">Capacity <br> (MW)</th>';
+                }
+                if (genNosSubCols > 0) {
+                    tbl += '<th colspan="' + genNosSubCols + '" class="text-center"> Energy (in MU)</th >';
+                }
+                if (userColumnId.includes(columnMap["Revenue"][0]) || columnMap["Revenue"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>(±)Revenue</th>';
+                }
+                if (ghiSubCols > 0) {
+                    tbl += '<th colspan="' + ghiSubCols + '" class="text-center">GHI (kWh/m<sup>2</sup>)</th>';
+                }
+                if (poaSubCols > 0) {
+                    tbl += '<th colspan="' + poaSubCols + '" class="text-center">POA (kWh/m<sup>2</sup>)</th>';
+                }
+                if (ghiVsPoaGainSubCols > 0) {
+                    tbl += '<th colspan="' + ghiVsPoaGainSubCols + '" class="text-center">GHI Vs POA Gain (%)</th>';
+                }
+                if (plfSubCols > 0) {
+                    tbl += '<th colspan="' + plfSubCols + '" class="text-center">PLF (%)</th>';
+                }
+                if (prSubCols > 0 ) {
+                    tbl += '<th colspan="' + prSubCols + '" class="text-center">PR (%)</th>';
+                }
+                if (maSubCols > 0) {
+                    tbl += '<th colspan="' + maSubCols + '" class="text-center">MA (%)</th>';
+                }
+                if (igaSubCols > 0) {
+                    tbl += '<th colspan="' + igaSubCols + '" class="text-center">IGA (%)</th>';
+                }
+                if (egaSubCols > 0) {
+                    tbl += '<th colspan="' + egaSubCols + '" class="text-center">EGA (%)</th></tr > ';
+                }
+                if (igaSubCols > 0 ) {
+                    tbl += '<th colspan="' + igaSubCols + '" class="text-center">IGA (%)</th>';
+                }
+                if (egaSubCols > 0) {
+                    tbl += '<th colspan="' + egaSubCols + '" class="text-center">EGA (%)</th>';
+                }
+                tbl += '</tr >';
                 tbl += '<tr>';
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Exp</th>';

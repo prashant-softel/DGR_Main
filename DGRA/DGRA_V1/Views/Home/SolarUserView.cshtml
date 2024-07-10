@@ -287,10 +287,10 @@
                     var tblheatmap = '<table class="table table-bordered table-striped heatmap-page">';
                     var tbl1 = '<table class="table table-bordered table-striped views-page">';
                     tbl1 += '<tr><th><input type="checkbox" disabled="disabled" class="checkAllP" id="checkAllP" onclick="selectAllP()" style="margin-left:10px"></th>';
-                    tbl1 += '<th>Pages</th></tr>';
+                    tbl1 += '<th>Pages</th><th>Column Group</th></tr>';
                     var tbl2 = '<table class="table table-bordered table-striped reports-page">';
                     tbl2 += '<tr><th><input type="checkbox" disabled="disabled" class="checkAllR" id="checkAllR" onclick="selectAllR()" style="margin-left:10px"></th>';
-                    tbl2 += '<th>Reports</th></tr>';
+                    tbl2 += '<th>Reports</th><th>Column Group</th></tr>';
 
                     for (var i = 0; i < result.length; i++) {
                         if (result[i].page_type == 4) {
@@ -306,11 +306,35 @@
                         if (result[i].page_type == 1) {
                             tbl1 += '<tr><td><input type="checkbox"  disabled="disabled" class="form-check-input view-pages" id="pages" name="chkP" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></td>';
                             tbl1 += '<td>' + result[i].display_name + '</td>';
+                            if (result[i].isGroupAvailable == 1) {
+                                tbl1 += '<td style="padding: 5px !important;">';
+                                tbl1 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
+                                tbl1 += '<option value="0">Select Group</option>';
+                                result[i].pageGroupData.forEach(function (group) {
+                                    tbl1 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
+                                });
+                                tbl1 += '</select>';
+                                tbl1 += '</td>';
+                            } else {
+                                tbl1 += '<td> No Groups Created </td>';
+                            }
                             tbl1 += '</tr > ';
                         }
                         if (result[i].page_type == 2) {
                             tbl2 += '<tr><td><input type="checkbox"  disabled="disabled" class="form-check-input report-pages" id="pages" name="chkR" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></td>';
                             tbl2 += '<td>' + result[i].display_name + '</td>';
+                            if (result[i].isGroupAvailable == 1) {
+                                tbl2 += '<td style="padding: 5px !important;">';
+                                tbl2 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
+                                tbl2 += '<option value="0">Select Group</option>';
+                                result[i].pageGroupData.forEach(function (group) {
+                                    tbl2 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
+                                });
+                                tbl2 += '</select>';
+                                tbl2 += '</td>';
+                            } else {
+                                tbl2 += '<td> No Groups Created </td>';
+                            }
                             tbl2 += '</tr > ';
                         }
 
@@ -532,6 +556,37 @@
                             $(".checkAllR").attr('checked', false);
                         }
                     });
+                    //$("input[type='checkbox'].view-pages").change(function () {
+                    //    var a = $("input[type='checkbox'].view-pages");
+                    //    console.log(a.length);
+                    //    if (a.length == a.filter(":checked").length) {
+                    //        $(".checkAllP").attr('checked', true);
+                    //    }
+                    //    else
+                    //    {
+                    //        $(".checkAllP").attr('checked', false);
+
+                    //    }
+                    //});
+                    //$("input[type='checkbox'].report-pages").change(function () {
+                    //    var a = $("input[type='checkbox'].report-pages");
+                    //    console.log(a.length);
+                    //    if (a.length == a.filter(":checked").length) {
+                    //        $(".checkAllR").attr('checked', true);
+                    //    }
+                    //    else
+                    //    {
+                    //        $(".checkAllR").attr('checked', false);
+                    //    }
+                    //});
+
+                    //$("input.view-pages").attr("disabled", true);
+                    //$("input.report-pages").attr("disabled", true);
+
+                    //$('.site').prop('disabled', false);
+                    //$("input.upload_access").attr("disabled", true);
+
+
                 }
             }
         });
@@ -580,6 +635,7 @@
         $("input.checkAllR").attr("disabled", false);
         $("input.delete_btn").attr("disabled", false);
         $('.site').prop('disabled', false);
+        $('.column-group').prop('disabled', false);
         $("input.upload_access").attr("disabled", false);
         document.getElementById("add_site_btn").disabled = false
         //document.getElementById("delete_btn").disabled = false;
@@ -598,6 +654,7 @@
         $("input.checkAllP").attr("disabled", true);
         $("input.checkAllR").attr("disabled", true);
         $('.site').prop('disabled', true);
+        $('.column-group').prop('disabled', true);
         $("input.upload_access").attr("disabled", true);
         $("input.delete_btn").attr("disabled", true);
         document.getElementById("add_site_btn").disabled = true;
@@ -617,7 +674,34 @@
         row += '<td><input  type="checkbox" class="form-check-input upload_access" id="upload_access1" name="upload_access" value="1" style="margin-left: 25px; margin-top: -6px;"></td>';
         row += '<td><input  type="button" class="btn btn-block btn-danger delete_btn" id="delete_btn" name="button1" value="Delete" style="width: 50%; margin-left: 25px;"></td></tr >';
         $(table).find('tbody').append(row);
+
+        //$('.site').prop('disabled', false);
+        //$("input.upload_access").attr("disabled", false);
+        //document.getElementById("add_site_btn").disabled = false
+        //document.getElementById("delete_btn").disabled = false;
         rcont++;
+        // var rowCount = table.rows.length;
+        //var row = table.insertRow(row);
+        //Column 1
+        /* debugger;
+         var cell1 = row.insertCell(0);
+         var element1 = document.createElement("input");
+         element1.type = "button";
+         var btnName = "button" + (rowCount + 1);
+         element1.name = btnName;
+         element1.setAttribute('value', 'Delete'); // or element1.value = "button";
+         element1.onclick = function () {
+             removeRow(btnName);
+         }
+         cell1.appendChild(element1);
+         //Column 2
+         var cell2 = row.insertCell(1);
+         cell2.innerHTML = rowCount + 1;
+         //Column 3
+         var cell3 = row.insertCell(2);
+         var element3 = document.createElement("input");
+         element3.type = "text";
+         cell3.appendChild(element3);*/
     }
 
     $('table').on('click', '.delete_btn', function () {
@@ -656,10 +740,18 @@
         let import_approval = 0;
         let heatmap = 0;
 	 let selected_report_page = [];
+	let groupData = [];
         $('.view-pages').each(function () {
         var page_id = $(this).attr('data-pageid');
         var isSet = $(this).is(":checked");
             page_arr[page_id] = isSet;
+            if (isSet) {
+                if (document.getElementById("ColumnDd_" + page_id)) {
+                    var GroupId = document.getElementById("ColumnDd_" + page_id).value;
+                    console.log("Group_id is :" + GroupId);
+                    groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
+                }
+            }
         });
 
         $('.report-pages').each(function () {
@@ -667,6 +759,11 @@
             var isSet = $(this).is(":checked");
             report_arr[page_id] = isSet;
 	     if (isSet == true) {
+	     	if (document.getElementById("ColumnDd_" + page_id)) {
+                    var GroupId = document.getElementById("ColumnDd_" + page_id).value;
+                    console.log("Group_id is :" + GroupId);
+                    groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
+                }
                 selected_report_page.push(page_id);
             }
         });
@@ -728,6 +825,15 @@
          $.ajax({
             type: "POST",
              url: '@Url.Action("GetEmailAccess", "Home")' + '?login_id=' + id + '&site=2&access=2&notifications=' + JSON.stringify(email_arr),
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+             success: function (result, status, xhr) {
+
+             }
+         });
+	 $.ajax({
+            type: "POST",
+            url: '@Url.Action("AssignGroup", "Home")' + '?login_id=' + id + '&group_data=' + JSON.stringify(groupData),
             contentType: "application/json; charset=utf-8",
             datatype: "html",
              success: function (result, status, xhr) {

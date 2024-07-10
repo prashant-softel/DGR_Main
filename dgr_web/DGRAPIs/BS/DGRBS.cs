@@ -224,6 +224,18 @@ namespace DGRAPIs.BS
         Task<List<WindDailyGenReportsGroup>> GetCustomeWindDaily(string fromDate, string toDate, string site_list);
         Task<List<WindDailyGenReportsGroup>> GetCustomeWindMonthly(string fy, string month, string site_list);
         Task<List<WindDailyGenReportsGroup>> GetCustomeWindYearly(string fromDate, string toDate, string site_list);
+		
+		//COLUMN ACCESS START
+        Task<List<PageData>> GetPageList(int type, int pageType);
+        Task<List<groupsData>> GetGroupList_CA(int page_id);
+        Task<List<ColumnData>> GetCGColumns_CA(int page_id);
+        Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name);
+        Task<List<pageColumns>> GetPageColumns(int page_id);
+        Task<List<pageColumns>> GetUserGroupColumns(int page_id, int userId);
+        Task<int> UpdateGroup_CA(int[] set, int page_id, int page_groups_id);
+        Task<int> ActiDeactiGroup_CA(int page_groups_id, int status);
+
+        //COLUMN ACCESS END
     }
     public class DGRBS : IDGRBS
     {
@@ -3116,5 +3128,130 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+		
+		//COLUMN ACCESS START
+
+        public async Task<List<PageData>> GetPageList(int type, int pageType)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetPageList(type, pageType);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<groupsData>> GetGroupList_CA(int page_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetGroupList_CA(page_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<ColumnData>> GetCGColumns_CA(int page_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetCGColumns_CA(page_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.CreateGroup_CA(set, page_id, group_name);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<pageColumns>> GetPageColumns(int page_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetPageColumns(page_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<pageColumns>> GetUserGroupColumns(int page_id, int userId)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetUserGroupColumns(page_id, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> UpdateGroup_CA(int[] set, int page_id, int page_groups_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.UpdateGroup_CA(set, page_id, page_groups_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<int> ActiDeactiGroup_CA(int page_groups_id, int status)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.ActiDeactiGroup_CA(page_groups_id, status);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        //COLUMN ACCESS END
     }
 }

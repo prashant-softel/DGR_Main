@@ -20501,5 +20501,307 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             return result;
 
         }
+		
+		//COLUMN ACCESS CODE STARTS
+
+        //GetPageList
+        internal async Task<List<PageData>> GetPageList(int type, int pageType)
+        {
+            string functionName = "GetPageList";
+            int result = 0;
+
+            List<PageData> Data = new List<PageData>();
+
+            //get data from hfe_pages table as per filter.
+            string fetchQry = "";
+
+            fetchQry = $"SELECT Id AS page_id, Display_name AS page_name FROM hfe_pages WHERE Page_type = {pageType} AND Site_type = {type} AND visible = 1;";
+
+            try
+            {
+                Data = await Context.GetData<PageData>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from hfe_pages table due to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+
+            return Data;
+        }
+        internal async Task<List<groupsData>> GetGroupList_CA(int page_id)
+        {
+            string functionName = "GetPageList";
+            int result = 0;
+
+            List<groupsData> Data = new List<groupsData>();
+
+            //get data from hfe_pages table as per filter.
+            string fetchQry = "";
+
+            fetchQry = $"SELECT page_groups_id, page_group_name, is_active FROM page_groups WHERE page_id = {page_id};";
+
+            try
+            {
+                Data = await Context.GetData<groupsData>(fetchQry).ConfigureAwait(false);
+                result = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching data from hfe_pages table due to, " + e.ToString();
+                LogError(0, 1, 7, functionName, msg, backend);
+            }
+            if(result == 1)
+            {
+                if (Data.Count > 0)
+                {
+                    foreach (var unit in Data)
+                    {
+                        int[] columnIdArray = new int[0];
+                        try
+                        {
+                            string fetchPageColumns = $"SELECT t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                            unit.column_data = await Context.GetData<ColumnData>(fetchPageColumns).ConfigureAwait(false);
+                            result = 2;
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while fetching page elements, due to : " + e.ToString();
+                        }
+
+                        if(result == 2)
+                        {
+                            string fetch = $"SELECT pge_id, column_id FROM page_group_elements WHERE page_groups_id = {unit.page_groups_id}";
+                            List<int> columnIdInGroup = new List<int>();
+                            List<ColumnData> columnData = new List<ColumnData>();
+                            try
+                            {
+                                columnData = await Context.GetData<ColumnData>(fetch).ConfigureAwait(false);
+                                if(columnData.Count > 0)
+                                {
+                                    foreach(var ele in columnData)
+                                    {
+                                        columnIdInGroup.Add(ele.column_id);
+                                    }
+                                    columnIdArray = columnIdInGroup.ToArray();
+                                    result = 3;
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                string msg = "Exception while fetching column data due to : " + e.ToString();
+                            }
+                        }
+                        if(result == 3)
+                        {
+                            if(unit.column_data.Count > 0)
+                            {
+                                foreach (var ele in unit.column_data)
+                                {
+                                    if (columnIdArray.Contains(ele.column_id))
+                                    {
+                                        ele.selected = 1;
+                                    }
+                                    else
+                                    {
+                                        ele.selected = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return Data;
+        }
+        internal async Task<List<ColumnData>> GetCGColumns_CA(int page_id)
+        {
+            string functionName = "GetCGColumns_CA";
+            List<ColumnData> data = new List<ColumnData>();
+            try
+            {
+                string fetchQry = $"SELECT t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                data = await Context.GetData<ColumnData>(fetchQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching columns for creating group";
+            }
+            return data;
+        }
+        internal async Task<int> CreateGroup_CA(List<CreateGroupData> set, int page_id, string group_name)
+        {
+            int finalRes = 0;
+            int insertedDataId = 0;
+            string createGroupQry = $"INSERT INTO page_groups (page_group_name, page_id) VALUES ('{group_name}', {page_id});";
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(createGroupQry).ConfigureAwait(false);
+                finalRes = 1;
+
+            }catch(Exception e)
+            {
+                string msg = "Error inserting names in the page_groups table.";
+                return finalRes;
+            }
+            if(finalRes == 1)
+            {
+                string fetchId = $"SELECT page_groups_id FROM page_groups WHERE page_group_name = '{group_name}' AND page_id = {page_id}";
+                List<GroupData> idData = new List<GroupData>();
+
+                try
+                {
+                    idData = await Context.GetData<GroupData>(fetchId).ConfigureAwait(false);
+                    if (idData.Count > 0)
+                    {
+                        insertedDataId = idData[0].page_groups_id;
+                        finalRes = 2;
+                    }
+                }
+                catch(Exception e)
+                {
+                    string msg = "Exception while fetching the recently inserted record, due to : " + e.ToString();
+                    return finalRes;
+                }
+                if(finalRes == 2)
+                {
+                    string contentQry = "INSERT INTO page_group_elements (page_groups_id, column_id) VALUES";
+                    foreach(var unit in set)
+                    {
+                        contentQry += $" ({insertedDataId}, {unit.column_id}),";
+                    }
+                    contentQry = contentQry.Substring(0, (contentQry.Length - 1));
+
+                    try
+                    {
+                        int res = await Context.ExecuteNonQry<int>(contentQry).ConfigureAwait(false);
+                        if (res > 0)
+                        {
+                            finalRes = 1;
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        string msg = "Exception while inserting column elements in column_elements table, due to : " + e.ToString();
+                        return finalRes;
+                    }
+                }
+            }
+
+            return finalRes;
+        }
+        internal async Task<List<pageColumns>> GetPageColumns(int page_id)
+        {
+            List<pageColumns> finalData = new List<pageColumns>();
+
+            try
+            {
+                string fetchQry = $"SELECT t1.page_id, t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                finalData = await Context.GetData<pageColumns>(fetchQry).ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                string msg = "Exception while fetching page columns, due to : " + e.ToString();
+            }
+
+            return finalData;
+        }
+        internal async Task<List<pageColumns>> GetUserGroupColumns(int page_id, int userId)
+        {
+            List<pageColumns> finalData = new List<pageColumns>();
+            int finalRes = 0;
+            int GroupId = 0;
+            try
+            {
+                string fetchGroupId = $"SELECT * FROM user_page_group_ca WHERE page_id = {page_id} AND user_id = {userId};";
+                List<user_page_group_ca> dataGroupId = new List<user_page_group_ca>();
+
+                dataGroupId = await Context.GetData<user_page_group_ca>(fetchGroupId).ConfigureAwait(false);
+                if(dataGroupId.Count > 0)
+                {
+                    GroupId = dataGroupId[0].page_groups_id;
+                }
+                finalRes = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching the user assigned group id, due to : " + e.ToString();
+            }
+            if (finalRes == 1 && GroupId != 0)
+            {
+                try
+                {
+                    string fetchQry = $"SELECT t1.page_groups_id, t1.column_id, t2.column_name FROM `page_group_elements` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_groups_id = {GroupId};";
+                    finalData = await Context.GetData<pageColumns>(fetchQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching page columns, due to : " + e.ToString();
+                }
+            }
+
+            return finalData;
+        }
+        internal async Task<int> UpdateGroup_CA(int[] set, int page_id, int page_groups_id)
+        {
+            int finalRes = 0;
+            string deleteGroupEleQry = $"DELETE FROM page_group_elements WHERE page_groups_id = {page_groups_id};";
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(deleteGroupEleQry).ConfigureAwait(false);
+                finalRes = 1;
+
+            }
+            catch (Exception e)
+            {
+                string msg = "Error deleting page_groups elements from table.";
+                return finalRes;
+            }
+            if (finalRes == 1)
+            {
+                string contentQry = "INSERT INTO page_group_elements (page_groups_id, column_id) VALUES";
+                foreach (int ele in set)
+                {
+                    contentQry += $" ({page_groups_id}, {ele}),";
+                }
+                contentQry = contentQry.Substring(0, (contentQry.Length - 1));
+
+                try
+                {
+                    int res = await Context.ExecuteNonQry<int>(contentQry).ConfigureAwait(false);
+                    if (res > 0)
+                    {
+                        finalRes = 1;
+                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while inserting column elements in column_elements table, due to : " + e.ToString();
+                    return finalRes;
+                }
+            }
+
+            return finalRes;
+        }
+        internal async Task<int> ActiDeactiGroup_CA(int page_groups_id, int status)
+        {
+            int finalRes = 0;
+            string updateGroupQry = $"UPDATE page_groups SET is_active = {status} WHERE page_groups_id = {page_groups_id};";
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(updateGroupQry).ConfigureAwait(false);
+                finalRes = 1;
+            }
+            catch (Exception e)
+            {
+                string msg = "Error deleting page_groups elements from table.";
+                return finalRes;
+            }
+
+            return finalRes;
+        }
+
+        //COLUMN ACCESS CODE ENDS
     }
 }

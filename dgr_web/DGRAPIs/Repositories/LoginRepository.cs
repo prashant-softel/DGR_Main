@@ -698,6 +698,61 @@ namespace DGRAPIs.Repositories
             _groupaccess = await Context.GetData<CustomGroupAccess>(qry).ConfigureAwait(false);
             return _groupaccess;
         }
+		//COLUMN ACCESS code START
+
+        internal async Task<List<HFEPage>> GetPageGroupData(List<HFEPage> set)
+        {
+            try
+            {
+                foreach (var unit in set)
+                {
+                    string fetchQry = $"SELECT page_groups_id, page_group_name FROM page_groups WHERE page_id IN({unit.Id})";
+                    List<page_group_elements> listData = await Context.GetData<page_group_elements>(fetchQry).ConfigureAwait(false);
+                    unit.pageGroupData = listData;
+                    if(listData.Count > 0)
+                    {
+                        unit.isGroupAvailable = 1;
+                    }
+                }
+            }catch(Exception e)
+            {
+                string msg = "Exception while fetching groups data, due to : " + e.ToString();
+            }
+            return set;
+        }
+
+        internal async Task<int> AssignGroup(int login_id, string group_data)
+        {
+            var serializer = new JavaScriptSerializer();
+            var GroupData = serializer.Deserialize<List<user_page_group_ca>>(group_data);
+
+            int flag = 0;
+            string insertQry = "INSERT INTO user_page_group_ca (user_id, page_id, page_groups_id) VALUES ";
+            foreach (var data in GroupData)
+            {
+                insertQry += $"({login_id}, {data.page_id}, {data.page_groups_id}),";
+            }
+
+            insertQry = insertQry.Substring(0, insertQry.Length - 1); // Remove the trailing comma
+
+            insertQry += " ON DUPLICATE KEY UPDATE page_groups_id = VALUES(page_groups_id);";
+
+            try
+            {
+                int res = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);
+                if(res > 0)
+                {
+                    return 1;
+                }
+            }catch(Exception e)
+            {
+                string msg = "Exception while inserting user page group, due to : " + e.ToString();
+            }
+            return 0;
+
+        }
+
+        //COLUMN ACCESS code END
     }
 
 }
