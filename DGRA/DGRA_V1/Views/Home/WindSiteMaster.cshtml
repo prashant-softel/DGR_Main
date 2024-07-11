@@ -83,12 +83,65 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+
     var exceldata;
     window.onload = function () {
 
-
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
         getSiteData();
     }
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=7',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=7&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
+
 
     function exportToExcel() {
 
@@ -115,7 +168,7 @@
             row.push(result[i].gbi);
             row.push(result[i].total_tarrif);
             row.push(result[i].ll_compensation);
-        
+
             rows.push(row);
         }
 
@@ -152,44 +205,96 @@
             console.log(result);
             var tbl = '<table id="example1"  class="table table-bordered table-striped dataTable dtr-inline">';
             tbl += '<thead class="tbl-head"><tr>';
-            tbl += '<th>Country</th>';
-            tbl += '<th>Site</th>';
-            tbl += '<th>SPV</th>';
-            tbl += '<th>State</th>';
-            tbl += '<th>Model</th>';
-            tbl += '<th>DOC</th>';
-            tbl += '<th>Capacity<br>(MW)</th>';
-            tbl += '<th>WTG</th>';
-            tbl += '<th>Total_MW</th>';
-            tbl += '<th>Tariff</th>';
-            tbl += '<th>GBI</th>';
-            tbl += '<th>Total_Tariff</th>';
-            tbl += '<th>LL_Compensation<br>(%)</th>';
-            if (userRole == "Admin") {
+            if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Country</th>';
+            }
+            if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Site</th>';
+            }
+            if (userColumnId.includes(columnMap["SPV"][0]) || columnMap["SPV"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>SPV</th>';
+            }
+            if (userColumnId.includes(columnMap["State"][0]) || columnMap["State"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>State</th>';
+            }
+            if (userColumnId.includes(columnMap["Model"][0]) || columnMap["Model"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Model</th>';
+            }
+            if (userColumnId.includes(columnMap["DOC"][0]) || columnMap["DOC"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>DOC</th>';
+            }
+            if (userColumnId.includes(columnMap["Capacity"][0]) || columnMap["Capacity"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Capacity<br>(MW)</th>';
+            }
+            if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>WTG</th>';
+            }
+            if (userColumnId.includes(columnMap["Total_MW"][0]) || columnMap["Total_MW"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Total_MW</th>';
+            }
+            if (userColumnId.includes(columnMap["Tarrif"][0]) || columnMap["Tarrif"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Tariff</th>';
+            }
+            if (userColumnId.includes(columnMap["GBI"][0]) || columnMap["GBI"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>GBI</th>';
+            }
+            if (userColumnId.includes(columnMap["Total_tarrif"][0]) || columnMap["Total_tarrif"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Total_Tariff</th>';
+            }
+            if (userColumnId.includes(columnMap["LL_compensation"][0]) || columnMap["LL_compensation"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>LL_Compensation<br>(%)</th>';
+            }
+            if (userColumnId.includes(columnMap["Action"][0]) || columnMap["Action"][1] == 1 || isAdmin == 1) {
                 tbl += '<th style="width:10%">Action</th>';
             }
-
             tbl += '</tr></thead>';
+
             if (result.length > 0) {
                     exceldata = result;
                 for (var i = 0; i < result.length; i++) {
                     var formattedDate = moment(result[i].doc, 'YYYY/MM/DD').format('DD-MM-YYYY');
 
                     tbl += '<tr>';
-                    tbl += '<td class="text-left">' + result[i].country + '</td>';
-                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
-                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
-                    tbl += '<td class="text-left">' + result[i].state + '</td>';
-                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].model + '</td>';
-                    tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
-                    tbl += '<td class="text-right">' + result[i].capacity_mw.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">' + result[i].wtg + '</td>';
-                    tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">' + result[i].tarrif.toFixed(2) + '</td>';
-                    tbl += '<td class="text-right">' + result[i].gbi.toFixed(2)+'</td>';
-                    tbl += '<td class="text-right">' + result[i].total_tarrif.toFixed(2)+'</td>';
-                    tbl += '<td class="text-right">' + result[i].ll_compensation.toFixed(2) + '</td>';
-                    if (userRole == "Admin") {
+                    if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-left">' + result[i].country + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["SPV"][0]) || columnMap["SPV"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["State"][0]) || columnMap["State"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-left">' + result[i].state + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Model"][0]) || columnMap["Model"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].model + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["DOC"][0]) || columnMap["DOC"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Capacity"][0]) || columnMap["Capacity"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].capacity_mw.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].wtg + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Total_MW"][0]) || columnMap["Total_MW"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].total_mw.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Tarrif"][0]) || columnMap["Tarrif"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].tarrif.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["GBI"][0]) || columnMap["GBI"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].gbi.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Total_tarrif"][0]) || columnMap["Total_tarrif"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].total_tarrif.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["LL_compensation"][0]) || columnMap["LL_compensation"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].ll_compensation.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Action"][0]) || columnMap["Action"][1] == 1 || isAdmin == 1) {
                         tbl += '<td class="text-center"><a href="#"  class="btn btn-block btn-danger" onclick="DeleteWindSite(' + result[i].site_master_id + ')"  style="padding: 0.15rem 0.75rem;width: 70%;display: inline;" >Delete</a></td>';
                     }
                     tbl += '</tr>';

@@ -348,6 +348,13 @@
     var exceldata;
      var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     var solarUserAccess = "@Html.Raw(solarSiteList.TrimEnd(','))";
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+
     $(document).ready(function () {
         $('#daterange').daterangepicker(
             {
@@ -358,6 +365,9 @@
             });
     });
     window.onload = function () {
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
         var selcountry = $('select#country option:selected').val();
         $.ajax({
@@ -382,6 +392,50 @@
         });
         GetSPV();
     }
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=25',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=25&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
+
     /*function GetCountry(val) {
         $.ajax({
             type: "GET",
@@ -532,7 +586,7 @@
     }
 
     function exportToExcel() {
-  
+
     result = exceldata;
     var columns = [
             "Date", "Country", "State", "SPV", "Site", "BD_Type", "ICR", "INV", "SMB", "Strings",
@@ -579,7 +633,7 @@
     }
 
         saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar Breakdown Reports.xlsx");
- 
+
 }
 
 
@@ -641,21 +695,62 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline" style="width: 140%;">';
                 tbl += '<thead  class="tbl-head"><tr>';
-                tbl += '<th>Date</th>';
-                tbl += '<th>Country</th>';
-                tbl += '<th>State</th>';
-                tbl += '<th>SPV</th>';
-                tbl += '<th>Site</th>';
-                tbl += '<th>BD_Type</th>';
-                tbl += '<th>ICR</th>';
-                tbl += '<th>INV</th>';
-                tbl += '<th>SMB</th>';
-                tbl += '<th>Strings</th>';
-                tbl += '<th>Start_From</th>';
-                tbl += '<th>Stop_To</th>';
-                tbl += '<th>Total_Stop</th>';
-                tbl += '<th>Reason of Breakdown</th>';
-                tbl += '<th>Action Taken</th>';
+                if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Date</th>';
+                }
+                if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Country</th>';
+                }
+                if (userColumnId.includes(columnMap["State"][0]) || columnMap["State"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>State</th>';
+                }
+                if (userColumnId.includes(columnMap["SPV"][0]) || columnMap["SPV"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>SPV</th>';
+                }
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Site</th>';
+                }
+                if (userColumnId.includes(columnMap["Bd_Type"][0]) || columnMap["Bd_Type"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>BD_Type</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["ICR"][0]) || columnMap["ICR"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>ICR</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["INV"][0]) || columnMap["INV"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>INV</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["SMB"][0]) || columnMap["SMB"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>SMB</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["String/Central_Inv"][0]) || columnMap["String/Central_Inv"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Strings</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Start_From"][0]) || columnMap["Start_From"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Start_From</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Stop_To"][0]) || columnMap["Stop_To"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Stop_To</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Total_Stop"][0]) || columnMap["Total_Stop"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Total_Stop</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Reason_of_Breakdown"][0]) || columnMap["Reason_of_Breakdown"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Reason of Breakdown</th>';
+                    
+                }
+                if (userColumnId.includes(columnMap["Action_Taken"][0]) || columnMap["Action_Taken"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Action Taken</th>';
+                }
+                
+                
                 tbl += '</tr></thead>';
                 console.log(result.length);
                 if (result.length > 0) {
@@ -668,21 +763,75 @@
                         var stop_time = toHoursAndMinutes(result[i].to_bd.totalSeconds);
                         var total_time = toHoursAndMinutes(result[i].total_stop.totalSeconds);
                         tbl += '<tr>';
-                        tbl += '<td style="text-wrap: nowrap;">' + formattedDate + '</td>';
-                        tbl += '<td>' + result[i].country + '</td>';
-                        tbl += '<td>' + result[i].state + '</td>';
-                        tbl += '<td style="text-wrap: nowrap;">' + result[i].spv + '</td>';
-                        tbl += '<td>' + result[i].site + '</td>';
-                        tbl += '<td style="text-wrap: nowrap;">' + result[i].bd_type + '</td>';
-                        tbl += '<td style="text-wrap: nowrap;">' + result[i].icr + '</td>';
-                        tbl += '<td style="text-wrap: nowrap;">' + result[i].inv + '</td>';
-                        tbl += '<td>' + result[i].smb + '</td>';
-                        tbl += '<td>' + result[i].strings + '</td>';
-                        tbl += '<td>' + start_time+ '</td>';
-                        tbl += '<td>' + stop_time+ '</td>';
-                        tbl += '<td>' + total_time+ '</td>';
-                        tbl += '<td>' + result[i].bd_remarks + '</td>';
-                        tbl += '<td>' + result[i].action_taken + '</td>';
+                        if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td style="text-wrap: nowrap;">' + formattedDate + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + result[i].country + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["State"][0]) || columnMap["State"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + result[i].state + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["SPV"][0]) || columnMap["SPV"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + result[i].site + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Bd_Type"][0]) || columnMap["Bd_Type"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td style="text-wrap: nowrap;">' + result[i].bd_type + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["ICR"][0]) || columnMap["ICR"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td style="text-wrap: nowrap;">' + result[i].icr + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["INV"][0]) || columnMap["INV"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td style="text-wrap: nowrap;">' + result[i].inv + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["SMB"][0]) || columnMap["SMB"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + result[i].smb + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["String/Central_Inv"][0]) || columnMap["String/Central_Inv"][1] == 1 || isAdmin == 1) 
+                            tbl += '<td>' + result[i].strings + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["Start_From"][0]) || columnMap["Start_From"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + start_time + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["Stop_To"][0]) || columnMap["Stop_To"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + stop_time + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["Total_Stop"][0]) || columnMap["Total_Stop"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + total_time + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["Reason_of_Breakdown"][0]) || columnMap["Reason_of_Breakdown"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + result[i].bd_remarks + '</td>';
+
+                        }
+                        if (userColumnId.includes(columnMap["Action_Taken"][0]) || columnMap["Action_Taken"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td>' + result[i].action_taken + '</td>';
+                        }
+                        //tbl += '<td style="text-wrap: nowrap;">' + formattedDate + '</td>';
+                        //tbl += '<td>' + result[i].country + '</td>';
+                        //tbl += '<td>' + result[i].state + '</td>';
+                        //tbl += '<td style="text-wrap: nowrap;">' + result[i].spv + '</td>';
+                        //tbl += '<td>' + result[i].site + '</td>';
+                        //tbl += '<td style="text-wrap: nowrap;">' + result[i].bd_type + '</td>';
+                        //tbl += '<td style="text-wrap: nowrap;">' + result[i].icr + '</td>';
+                        //tbl += '<td style="text-wrap: nowrap;">' + result[i].inv + '</td>';
+                        //tbl += '<td>' + result[i].smb + '</td>';
+                        //tbl += '<td>' + result[i].strings + '</td>';
+                        //tbl += '<td>' + start_time+ '</td>';
+                        //tbl += '<td>' + stop_time+ '</td>';
+                        //tbl += '<td>' + total_time+ '</td>';
+                        //tbl += '<td>' + result[i].bd_remarks + '</td>';
+                        //tbl += '<td>' + result[i].action_taken + '</td>';
                         tbl += '</tr>';
                     }
                 }

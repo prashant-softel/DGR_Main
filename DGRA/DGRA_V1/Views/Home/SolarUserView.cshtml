@@ -739,8 +739,8 @@
         let report_arr = {};
         let import_approval = 0;
         let heatmap = 0;
-	 let selected_report_page = [];
-	let groupData = [];
+	    let selected_report_page = [];
+	    let groupData = [];
         $('.view-pages').each(function () {
         var page_id = $(this).attr('data-pageid');
         var isSet = $(this).is(":checked");
@@ -758,8 +758,8 @@
             var page_id = $(this).attr('data-pageid');
             var isSet = $(this).is(":checked");
             report_arr[page_id] = isSet;
-	     if (isSet == true) {
-	     	if (document.getElementById("ColumnDd_" + page_id)) {
+            if (isSet) {
+                if (document.getElementById("ColumnDd_" + page_id)) {
                     var GroupId = document.getElementById("ColumnDd_" + page_id).value;
                     console.log("Group_id is :" + GroupId);
                     groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
@@ -818,7 +818,9 @@
                     alert("Success");
                     location.href = '@Url.Action("SiteUserMaster", "Home")';
                 }
-
+                alert("Success");
+               // location.href = "/Home/WindSiteUserMaster";
+                //location.href = '@Url.Action("SiteUserMaster", "Home")';
             }
         });
 
@@ -831,13 +833,13 @@
 
              }
          });
-	 $.ajax({
+
+        $.ajax({
             type: "POST",
             url: '@Url.Action("AssignGroup", "Home")' + '?login_id=' + id + '&group_data=' + JSON.stringify(groupData),
             contentType: "application/json; charset=utf-8",
             datatype: "html",
              success: function (result, status, xhr) {
-
              }
          });
     }

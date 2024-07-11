@@ -3000,6 +3000,7 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         // Operation performance ppt creation for spv 
         [Route("GetGroupBySPVSite")]
         [HttpGet]
@@ -3197,8 +3198,8 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
-		
-		//DGR_v3 COLUMN ACCESS CODE START
+
+        //DGR_v3 COLUMN ACCESS CODE START
 
         [Route("GetPageList")]
         [HttpGet]

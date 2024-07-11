@@ -444,6 +444,24 @@ namespace DGRAPIs.BS
             }
         }
 
+        //COLUMN ACCESS CODE START
+
+        public async Task<int> AssignGroup(int login_id, string group_data)
+        {
+            try
+            {
+                using (var repos = new LoginRepository(getDB))
+                {
+                    return await repos.AssignGroup(login_id, group_data);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         //COLUMN ACCESS CODE END
     }
 }

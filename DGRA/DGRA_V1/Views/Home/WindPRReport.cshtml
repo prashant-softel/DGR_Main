@@ -359,6 +359,51 @@
     }
 
 
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=11',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=11&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
+
+
     var today = new Date();
     fyear = getFinancialYear(today);
     var Fy = fyear;
@@ -851,7 +896,7 @@
 
                 if (result.length > 0) {
                     exceldata1 = result;
-                   
+
                     console.log("Datatable");
                     let total_capacity = 0;
                     let total_capTarMu = 0;
@@ -1408,7 +1453,7 @@
                                 }
                             }
                         },
-                       
+
                         {
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
@@ -1490,7 +1535,7 @@
                                     }
                                 }
                         },
-                          
+
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');

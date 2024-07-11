@@ -224,8 +224,8 @@ namespace DGRAPIs.BS
         Task<List<WindDailyGenReportsGroup>> GetCustomeWindDaily(string fromDate, string toDate, string site_list);
         Task<List<WindDailyGenReportsGroup>> GetCustomeWindMonthly(string fy, string month, string site_list);
         Task<List<WindDailyGenReportsGroup>> GetCustomeWindYearly(string fromDate, string toDate, string site_list);
-		
-		//COLUMN ACCESS START
+
+        //COLUMN ACCESS START
         Task<List<PageData>> GetPageList(int type, int pageType);
         Task<List<groupsData>> GetGroupList_CA(int page_id);
         Task<List<ColumnData>> GetCGColumns_CA(int page_id);
@@ -2933,6 +2933,7 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
+        
         public async Task<List<CustomeGroup>> GetCustomGroup(int siteType)
         {
             try
@@ -3128,8 +3129,8 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
-		
-		//COLUMN ACCESS START
+
+        //COLUMN ACCESS START
 
         public async Task<List<PageData>> GetPageList(int type, int pageType)
         {

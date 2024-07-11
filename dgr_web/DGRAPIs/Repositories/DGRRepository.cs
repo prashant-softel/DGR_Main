@@ -18998,6 +18998,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return 1;
         }
+
         public async Task<List<SPVGroup>> getGroupBySPV(int siteType)
         {
             //sitetype 1-solar ,2-wind 

@@ -1168,7 +1168,8 @@ namespace DGRA_V1.Controllers
             return View();
         }
 		//DGR_v3 Column Access Code START
-		public async Task<IActionResult> GetPageList_CA(int type, int pageType)
+
+        public async Task<IActionResult> GetPageList_CA(int type, int pageType)
         {
             string line = "";
             try

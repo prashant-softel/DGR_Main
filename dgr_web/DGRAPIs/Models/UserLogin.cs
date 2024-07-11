@@ -47,6 +47,8 @@ namespace DGRAPIs.Models
         public int Page_type { get; set; }
         public int Order_no { get; set; }
         public int Visible { get; set; }
+        public int isGroupAvailable { get; set; }
+        public List<page_group_elements> pageGroupData { get; set; }
 
     }
     public class HFEPage1

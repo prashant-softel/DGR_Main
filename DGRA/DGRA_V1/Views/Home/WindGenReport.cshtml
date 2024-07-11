@@ -2230,25 +2230,25 @@
                             tbl += '<td class="text-right">' + total_hourse.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["USMH_Loss"][0]) || columnMap["USMH_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((parseFloat(result[i].usmh_loss) * -1) * 1000000).toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["SMH_Loss"][0]) || columnMap["SMH_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((parseFloat(result[i].smh_loss) * -1) * 1000000).toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Others_Loss"][0]) || columnMap["Others_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + (Math.abs(parseFloat(result[i].others_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((parseFloat(result[i].others_loss) * -1) * 1000000).toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["IGBDH_Loss"][0]) || columnMap["IGBDH_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + (Math.abs(parseFloat(result[i].igbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((parseFloat(result[i].igbdh_loss) * -1) * 1000000).toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["EGBDH_Loss"][0]) || columnMap["EGBDH_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + (Math.abs(parseFloat(result[i].egbdh_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((parseFloat(result[i].egbdh_loss) * -1) * 1000000).toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["LS_Loss"][0]) || columnMap["LS_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + (Math.abs(parseFloat(result[i].loadShedding_loss)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((parseFloat(result[i].loadShedding_loss) * -1) * 1000000).toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + (Math.abs(parseFloat(total_losses)) * 1000000).toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + ((parseFloat(total_losses)*-1) * 1000000).toFixed(2) + '</td>';
                         }
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + year + '</td>';
                         //tbl += '<td class="text-left">' + result[i].month + '</td>';
@@ -2284,13 +2284,13 @@
                         //tbl += '<td  class="text-right">' + result[i].load_Shedding_loss.toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + result[i].total_loss.toFixed(2) + '</td>';
 
-                        tbl += '<td  class="text-right">' + ((parseFloat(result[i].usmh_loss) * -1) * 1000000).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + ((parseFloat(result[i].smh_loss) * -1) * 1000000).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + ((parseFloat(result[i].others_loss) * -1) * 1000000).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + ((parseFloat(result[i].igbdh_loss) * -1) * 1000000).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + ((parseFloat(result[i].egbdh_loss) * -1) * 1000000).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + ((parseFloat(result[i].loadShedding_loss) * -1) * 1000000).toFixed(2) + '</td>';
-                        tbl += '<td  class="text-right">' + ((parseFloat(total_losses)*-1) * 1000000).toFixed(2) + '</td>';
+                        // tbl += '<td  class="text-right">' + ((parseFloat(result[i].usmh_loss) * -1) * 1000000).toFixed(2) + '</td>';
+                        // tbl += '<td  class="text-right">' + ((parseFloat(result[i].smh_loss) * -1) * 1000000).toFixed(2) + '</td>';
+                        // tbl += '<td  class="text-right">' + ((parseFloat(result[i].others_loss) * -1) * 1000000).toFixed(2) + '</td>';
+                        // tbl += '<td  class="text-right">' + ((parseFloat(result[i].igbdh_loss) * -1) * 1000000).toFixed(2) + '</td>';
+                        // tbl += '<td  class="text-right">' + ((parseFloat(result[i].egbdh_loss) * -1) * 1000000).toFixed(2) + '</td>';
+                        // tbl += '<td  class="text-right">' + ((parseFloat(result[i].loadShedding_loss) * -1) * 1000000).toFixed(2) + '</td>';
+                        // tbl += '<td  class="text-right">' + ((parseFloat(total_losses)*-1) * 1000000).toFixed(2) + '</td>';
 
                         //tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].usmh_loss)) * 1000000).toFixed(2) + '</td>';
                         //tbl += '<td  class="text-right">' + (Math.abs(parseFloat(result[i].smh_loss)) * 1000000).toFixed(2) + '</td>';
@@ -3892,7 +3892,7 @@
             //total_losses = (parseFloat(result[i].usmh_loss) * -1) + (parseFloat(result[i].smh_loss) * -1) + (parseFloat(result[i].others_loss) * -1) + (parseFloat(result[i].igbdh_loss) * -1) + (parseFloat(result[i].egbdh_loss) * -1) + (parseFloat(result[i].loadShedding_loss) * -1);
             total_losses = (parseFloat(result[i].usmh_loss)) + (parseFloat(result[i].smh_loss)) + (parseFloat(result[i].others_loss)) + (parseFloat(result[i].igbdh_loss)) + (parseFloat(result[i].egbdh_loss)) + (parseFloat(result[i].loadShedding_loss));
             total_hourse = result[i].unschedule_hrs + result[i].schedule_hrs + result[i].others + result[i].igbdh + result[i].egbdh + result[i].load_shedding;
-              
+
             row.push(year);
             row.push(result[i].month);
             row.push(result[i].country);

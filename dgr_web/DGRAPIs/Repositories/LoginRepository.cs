@@ -423,9 +423,9 @@ namespace DGRAPIs.Repositories
             // return _Userinfo.FirstOrDefault();
             List<HFEPage> _pagelist = new List<HFEPage>();
             _pagelist = await Context.GetData<HFEPage>(qry).ConfigureAwait(false);
+
+            _pagelist = await GetPageGroupData(_pagelist);
             return _pagelist;
-
-
         }
         public async Task<List<HFEPage>> GetEmailList(int login_id, int site_type)
         {
@@ -686,7 +686,6 @@ namespace DGRAPIs.Repositories
                 {
                     string msg = e.Message;
                 }
-
             
             return 0;
         }
@@ -698,6 +697,7 @@ namespace DGRAPIs.Repositories
             _groupaccess = await Context.GetData<CustomGroupAccess>(qry).ConfigureAwait(false);
             return _groupaccess;
         }
+
 		//COLUMN ACCESS code START
 
         internal async Task<List<HFEPage>> GetPageGroupData(List<HFEPage> set)

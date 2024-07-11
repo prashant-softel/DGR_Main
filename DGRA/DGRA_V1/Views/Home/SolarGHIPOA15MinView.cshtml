@@ -143,6 +143,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
     var exceldata;
     $(document).ready(function () {
        // dummychart();
@@ -172,6 +178,10 @@
     let date_arr_arr = [];
 
     window.onload = function () {
+        console.log("User Id from session" + userIdFromSession);
+        getPageColumns();
+        getUserGroupColumns();
+
         var state = "";
         var spv = "";
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
@@ -196,6 +206,49 @@
             }
 
         });
+    }
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=21',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=21&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
     }
 
     function exportToExcel() {
@@ -224,7 +277,7 @@
             var formattedDate = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm:ss');
             var formattedDate1 = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('DD-MM-YYYY HH:mm');
             var formattedtime = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('HH:mm');
-           
+
             row.push(formattedDate);
             row.push(result[i].site);
             row.push(result[i].ghi_1);
@@ -242,7 +295,7 @@
             row.push(result[i].mod_temp);
             row.push(weather);
             rows.push(row);
-             
+
   }
 
         var data = [columns].concat(rows);
@@ -294,22 +347,54 @@
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th style="width: 12%;">Date Time</th>';
-                tbl += '<th>Site</th>';
-                tbl += '<th>GHI 1</th>';
-                tbl += '<th>GHI 2</th>';
-                tbl += '<th>POA 1</th>';
-                tbl += '<th>POA 2</th>';
-                tbl += '<th>POA 3</th>';
-                tbl += '<th>POA 4</th>';
-                tbl += '<th>POA 5</th>';
-                tbl += '<th>POA 6</th>';
-                tbl += '<th>POA 7</th>';
-                tbl += '<th>AVG GHI</th>';
-                tbl += '<th>AVG POA</th>';
-                tbl += '<th>Amb Temp </th>';
-                tbl += '<th>Mod Temp</th>';
-                tbl += '<th>Weather Type</th>';
+                if (userColumnId.includes(columnMap["Date_Time"][0]) || columnMap["Date_Time"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="width: 12%;">Date Time</th>';
+                }
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Site</th>';
+                }
+                if (userColumnId.includes(columnMap["GHI_1"][0]) || columnMap["GHI_1"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>GHI 1</th>';
+                }
+                if (userColumnId.includes(columnMap["GHI_2"][0]) || columnMap["GHI_2"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>GHI 2</th>';
+                }
+                if (userColumnId.includes(columnMap["POA_1"][0]) || columnMap["POA_1"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>POA 1</th>';
+                }
+                if (userColumnId.includes(columnMap["POA_2"][0]) || columnMap["POA_2"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>POA 2</th>';
+                }
+                if (userColumnId.includes(columnMap["POA_3"][0]) || columnMap["POA_3"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>POA 3</th>';
+                }
+                if (userColumnId.includes(columnMap["POA_4"][0]) || columnMap["POA_4"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>POA 4</th>';
+                }
+                if (userColumnId.includes(columnMap["POA_5"][0]) || columnMap["POA_5"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>POA 5</th>';
+                }
+                if (userColumnId.includes(columnMap["POA_6"][0]) || columnMap["POA_6"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>POA 6</th>';
+                }
+                if (userColumnId.includes(columnMap["POA_7"][0]) || columnMap["POA_7"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>POA 7</th>';
+                }
+                if (userColumnId.includes(columnMap["AVG_GHI"][0]) || columnMap["AVG_GHI"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>AVG GHI</th>';
+                }
+                if (userColumnId.includes(columnMap["AVG_POA"][0]) || columnMap["AVG_POA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>AVG POA</th>';
+                }
+                if (userColumnId.includes(columnMap["Amb_Temp"][0]) || columnMap["Amb_Temp"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Amb Temp </th>';
+                }
+                if (userColumnId.includes(columnMap["Mod_Temp"][0]) || columnMap["Mod_Temp"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Mod Temp</th>';
+                }
+                if (userColumnId.includes(columnMap["Weather_Type"][0]) || columnMap["Weather_Type"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Weather Type</th>';
+                }
                 tbl += '</tr></thead>';
                 let time_arr_arr = [];
                 ghi_arr1 = [];
@@ -352,22 +437,54 @@
                         // console.log(formattedtime);
                         if (formattedtime >= "04:59" && formattedtime <= "19:00") {
                             tbl += '<tr>';
-                            tbl += '<td  class="text-left">' + formattedDate + '</td>';
-                            tbl += '<td  class="text-left">' + result[i].site + '</td>';
-                            tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
-                            tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
-                            tbl += '<td class="text-left" >' + weather + '</td>';
+                            if (userColumnId.includes(columnMap["Date_Time"][0]) || columnMap["Date_Time"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td  class="text-left">' + formattedDate + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td  class="text-left">' + result[i].site + '</td
+                            }
+                            if (userColumnId.includes(columnMap["GHI_1"][0]) || columnMap["GHI_1"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["GHI_2"][0]) || columnMap["GHI_2"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["POA_1"][0]) || columnMap["POA_1"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["POA_2"][0]) || columnMap["POA_2"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["POA_3"][0]) || columnMap["POA_3"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["POA_4"][0]) || columnMap["POA_4"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["POA_5"][0]) || columnMap["POA_5"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["POA_6"][0]) || columnMap["POA_6"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["POA_7"][0]) || columnMap["POA_7"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["AVG_GHI"][0]) || columnMap["AVG_GHI"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["AVG_POA"][0]) || columnMap["AVG_POA"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Amb_Temp"][0]) || columnMap["Amb_Temp"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Mod_Temp"][0]) || columnMap["Mod_Temp"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Weather_Type"][0]) || columnMap["Weather_Type"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left" >' + weather + '</td>';
+                            }
                             tbl += '</tr>';
 
                             date_arr_arr.push(formattedDate1);
@@ -516,10 +633,10 @@
     }
 
     function FifteenMinChart(time_arr_arr, ghi_arr1, ghi_arr2, poa_arr1, poa_arr2, poa_arr3, poa_arr4, poa_arr5, poa_arr6, poa_arr7, amp_temp_arr, mod_arr_arr, ghiZeroArr1, ghiZeroArr2, poaZeroArr1, poaZeroArr2, poaZeroArr3, poaZeroArr4, poaZeroArr5, poaZeroArr6, poaZeroArr7, ampTempZeroArr, modZeroArr) {
-       
+
         let dataset_arr = [];
         let yaxisdata = [];
-        
+
         if (ghi_arr1.length > 0 && ghi_arr1.length != ghiZeroArr1.length) {
 
             dataset_arr.push({ yAxisID: 'A', label: "GHI 1", data: ghi_arr1, pointRadius: 0.8, borderColor: "#77CAE7", fill: false, borderWidth: 1 });
@@ -561,9 +678,9 @@
         if (window.myCharts != undefined) {
             window.myCharts.destroy();
         }
-           
+
         window.myCharts =  new Chart(document.getElementById("line_chart"), {
-            
+
             type: 'line',
             data: {
                 labels: time_arr_arr,
@@ -595,7 +712,7 @@
         dataset_arr = [];
         time_arr_arr = [];
     }
-    
+
 
 
 </script>
