@@ -191,6 +191,8 @@
     if (userRoles == "Admin") {
         isAdmin = 1;
     }
+    const columnMap = {};
+    const userColumnId = [];
 
     var exceldata;
     var userRole = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";

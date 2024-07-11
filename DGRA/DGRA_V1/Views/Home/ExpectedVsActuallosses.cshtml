@@ -219,13 +219,6 @@
 <script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
 <style>
-    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
-    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
-    var isAdmin = 0;
-    if (userRoles == "Admin") {
-        isAdmin = 1;
-    }
-
     .tooltip {
         position: relative;
         display: inline-block;
@@ -263,6 +256,14 @@
 </style>
 
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+    const columnMap = {};
+    const userColumnId = [];
     $(document).ready(function () {
         $('#daterange').daterangepicker(
         {
@@ -272,8 +273,7 @@
             }
         });
     });
-    const columnMap = {};
-    const userColumnId = [];
+    
     window.onload = function () {
         console.log("User Id from session" + userIdFromSession);
         getPageColumns();
@@ -511,7 +511,7 @@
                 }
                 if (userColumnId.includes(columnMap["EGA_C"][0]) || columnMap["EGA_C"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
-                }                           
+                }
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
                     let total_target = 0;
