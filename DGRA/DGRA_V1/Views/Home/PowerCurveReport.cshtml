@@ -194,6 +194,8 @@
     }
     let pc_data = [];
     let tml_data = [];
+
+
     function getTmlData(site_id, fromDate, toDate, wtgs) {
         console.log(wtgs);
         $.ajax({
@@ -227,56 +229,14 @@
                     for (var i = 0; i < result.length; i++) {
                         //pc_data.clear();
                         pc_data.push({ x: result[i].wind_speed, y: result[i].active_power });
-                        //tbl += '<tr>';
-                        //tbl += '<td  class="text-center">' + result[i].date + '</td>';
-                        //tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        //tbl += '<td  class="text-center">' + result[i].avg_wind_speed + '</td>';
-                        //tbl += '<td  class="text-center">' + result[i].avg_active_power + '</td>';
-                        //tbl += '</tr>';
+                        
                     }
                 }
                 else {
 
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
-                //tbl += '</table>';
-                //// $("#PowerCurveView").html(tbl);
-                //$("#TMLView").html("").html(tbl);
-                //$('#example2').DataTable({
-                //    dom: 'Bfrtip',
-                //    responsive: false,
-                //    lengthChange: false,
-                //    autoWidth: true,
-                //    paging: true,
-                //    lengthChange: false,
-                //    searching: true,
-                //    ordering: true,
-                //    info: true,
-                //    autoWidth: true,
-                //    responsive: false,
-                //    pageLength: 50,
-                //    buttons: [
-                //        {
-                //            extend: 'excel',
-                //            title: 'TML Data',
-                //            exportOptions: {
-                //                columns: ':visible'
-                //            }
-                //        },
-                //        {
-                //            extend: 'csv',
-                //            title: 'TML Data',
-                //            exportOptions: {
-                //                columns: ':visible'
-                //            }
-                //        },
-                //        'colvis'
-                //    ]
-                //});
-                //$(".dt-buttons").addClass('btn-group flex-wrap');
-                //$(".dt-buttons > button").addClass('btn btn-secondary');
-                //$(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-                //$('#example2').wrap("<div class='scrolledTable'></div>");
+               
             }
         });
     }
@@ -319,65 +279,19 @@
                 console.log("GetWindTmlData fetched successfully.");
                 document.getElementById("loader").style.display = 'none';
 
-                //var tbl = '<table id="example1" class="table table-bordered table-striped" style="">';
-                //tbl += '<thead class="tbl-head"><tr>';
-                //tbl += '<th  style="width: 10%;">Site</th>';
-                //tbl += '<th>Wind Speed</th>';
-                //tbl += '<th>Active Power</th>';
-                //tbl += '</tr></thead>';
+                
 
                 if (result.length > 0) {
                     for (var i = 0; i < result.length; i++) {
                         pc_data.push({ x: result[i].wind_speed, y: result[i].active_power });
-                        //tbl += '<tr>';
-                        //tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                        //tbl += '<td  class="text-center">' + result[i].wind_speed + '</td>';
-                        //tbl += '<td  class="text-center">' + result[i].active_power + '</td>';
-                        //tbl += '</tr>';
+                        
                     }
                 }
                 else {
 
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
-               // tbl += '</table>';
-               //// $("#PowerCurveView").html(tbl);
-               // $("#PowerCurveView").html("").html(tbl);
-               // $('#example1').DataTable({
-               //     dom: 'Bfrtip',
-               //     responsive: false,
-               //     lengthChange: false,
-               //     autoWidth: true,
-               //     paging: true,
-               //     lengthChange: false,
-               //     searching: true,
-               //     ordering: true,
-               //     info: true,
-               //     autoWidth: true,
-               //     responsive: false,
-               //     pageLength: 50,
-               //     buttons: [
-               //         {
-               //             extend: 'excel',
-               //             title: 'Wind Power Curve',
-               //             exportOptions: {
-               //                 columns: ':visible'
-               //             }
-               //         },
-               //         {
-               //             extend: 'csv',
-               //             title: 'Wind Power Curve',
-               //             exportOptions: {
-               //                 columns: ':visible'
-               //             }
-               //         },
-               //         'colvis'
-               //     ]
-               // });
-               // $(".dt-buttons").addClass('btn-group flex-wrap');
-               // $(".dt-buttons > button").addClass('btn btn-secondary');
-               // $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-               // $('#example1').wrap("<div class='scrolledTable'></div>");
+               
 
                 createChart();
             }
@@ -407,21 +321,30 @@
             options: {
                 //responsive: true,
                 //maintainAspectRatio: false,
-                legend: {
-                    position: 'bottom',
-                    display: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        display: true,
+                    }
                 },
                 scales: {
                     //y: {
                     //    suggestedMin: 0
                     //}
-                    y: {
-                        //ticks: {
-                        //    beginAtZero: true
-                        //}
+
+                    x: {
                         ticks: {
-                            suggestedMin: 0,
-                            min: 0
+                            min: 0,         // Start at 1
+                            //max: 10,        // End at 10
+                            stepSize: 2     // Increment by 1
+                        }
+                    },
+
+                    y: {
+                        min: 0,
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 100
                         }
                     }
                 }
@@ -469,92 +392,7 @@
     }
 
     var data = [];
-    @*function getChartData(site_id, fromDate, toDate) {
-        var expected_final = 0.0;
-        var lineloss_final = 0.0;
-        var target_final = 0.0;
-        var lossUSMH_final = 0.0;
-        var lossSMH_final = 0.0;
-        var lossNC_final = 0.0;
-        var lossIGBD_final = 0.0;
-        var lossEGBD_final = 0.0;
-        var lossLULL_final = 0.0;
-        var lossPCD_final = 0.0;
-        var actual_final = 0.0;
-        console.log("Inside getChartData function.");
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site='+ site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
-            contentType: "application/json; charset=utf-8",
-            datatype: "JSON",
-
-            success: function (result, status, xhr) {
-                console.log(result);
-                document.getElementById("loader").style.display = 'none';
-
-                if (result.length > 0) {
-                    for (var i = 0; i < result.length; i++) {
-                        console.log("Expected : ", result[i].expected_final);
-                        console.log("LineLoss : ", result[i].lineloss_final);
-                        console.log("Target : ",result[i].target_final);
-                        console.log("USHM : ",result[i].lossUSMH_final);
-                        console.log("SMH : ",result[i].lossSMH_final);
-                        console.log("NC : ",result[i].lossNC_final);
-                        console.log("IGBD : ",result[i].lossIGBD_final);
-                        console.log("EGBD : ",result[i].lossLULL_final);
-                        console.log("LULL : ",result[i].lossPCD_final);
-                        console.log("Actual : ",result[i].actual_final);
-
-                        expected_final = result[i].expected_final;
-                        lineloss_final = result[i].lineloss_final;
-                        target_final = result[i].target_final /1000000;
-                        lossUSMH_final = result[i].lossUSMH_final;
-                        lossSMH_final = result[i].lossSMH_final;
-                        lossNC_final = result[i].lossNC_final;
-                        lossIGBD_final = result[i].lossIGBD_final;
-                        lossEGBD_final = result[i].lossEGBD_final;
-                        lossLULL_final = result[i].lossLULL_final;
-                        lossPCD_final = result[i].lossPCD_final;
-                        actual_final = result[i].actual_final;
-
-                        console.log("-------------------------------------------");
-                        console.log("Expected : ", expected_final);
-                        console.log("LineLoss : ", lineloss_final);
-                        console.log("Target : ", target_final);
-                        console.log("USHM : ", lossUSMH_final);
-                        console.log("SMH : ", lossSMH_final);
-                        console.log("NC : ", lossNC_final);
-                        console.log("IGBD : ", lossIGBD_final);
-                        console.log("EGBD : ", lossEGBD_final);
-                        console.log("LULL : ", lossLULL_final);
-                        console.log("PCD : ", lossPCD_final);
-                        console.log("Actual : ", actual_final);
-                        data = [
-                            { x: 'Target', value: target_final.toFixed(1) },
-                            { x: 'Expected', value: expected_final.toFixed(1) },
-                            { x: 'USMH', value: lossUSMH_final.toFixed(1) },
-                            { x: 'SMH', value: lossSMH_final.toFixed(1) },
-                            { x: 'Other', value: lossNC_final.toFixed(1) },
-                            { x: 'IGBD', value: lossIGBD_final.toFixed(1) },
-                            { x: 'EGBD', value: lossEGBD_final.toFixed(1) },
-                            { x: 'LULL', value: lossLULL_final.toFixed(1) },
-                            { x: 'PCD', value: lossPCD_final.toFixed(1) },
-                            { x: 'LineLoss', value: lineloss_final.toFixed(1) },
-                            { x: 'Actual', value: actual_final.toFixed(1) },
-                        ];
-                    }
-                }
-                else {
-
-                    // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
-                }
-            }
-        });
-
-
-        console.log("target : ", target_final, " Expected : ", expected_final, " USMH : ", lossUSMH_final, " SMH : ", lossSMH_final, " Other ", lossNC_final, " IGBD : " + lossIGBD_final, " EGBD : ", lossEGBD_final, " LULL : ", lossLULL_final, " PCD : ", lossPCD_final, "Lineloss : ", lineloss_final, " Actual : ", actual_final);
-        monthlychart(data);
-    }*@
+    
 
     function monthlychart(data) {
         console.log("Inside Monthly chart function and data received is : " + data + " hello : " + data[0]);
@@ -608,48 +446,7 @@
         });
     }
 
-    /*
-    function monthlychart(data) {
-        console.log("Inside Monthly chart function and data received is : ", data);
-        var dataRef = [
-            { x: "Starting Value", value: 100 },
-            { x: "Positive 1", value: 50 },
-            { x: "Positive 2", value: 20 },
-            { x: "Negative 1", value: -30 },
-            { x: "Negative 2", value: -40 },
-            { x: "Ending Value", value: 100 }
-        ];
-        let chartStatus = Chart.getChart("Waterfall"); // <canvas> id
-
-        if (chartStatus != undefined) {
-            chartStatus.destroy();
-        }
-
-        anychart.onDocumentReady(function () {
-            // create a waterfall chart with the data
-            var chart = anychart.waterfall(dataRef);
-
-            // set chart title, legend, and tooltip
-            chart.title('TML Data');
-            chart.legend(false);
-            chart.tooltip(false);
-            var series = chart.waterfall(dataRef);
-            // set fill and stroke colors for rising and falling columns
-            series.normal().fill('#77CAE7');
-            series.normal().hatchFill('forward-diagonal', '#77CAE7');
-            series.fallingFill('#EE403D');
-            series.fallingStroke('#EE403D');
-            series.risingFill('#77CAE7');
-            series.risingStroke('#77CAE7');
-
-            // set the chart container
-            chart.container('Waterfall');
-
-            // draw the chart
-            chart.draw();
-        });
-    }
-    */
+    
 
     function clearRecords() {
         console.log("Inside clear onclick function.");

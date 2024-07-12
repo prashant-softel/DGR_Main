@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Web;
+
 namespace DGRA_V1.Controllers
 {
 
@@ -942,5 +944,65 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
         }
+        public async Task<IActionResult> SaveFormula(int id, int site_id, string formulas, int login_id, string fieldType, string oldFormulas)
+        {
+
+            string line = "";
+            try
+            {
+                string encodedFormulas = HttpUtility.UrlEncode(formulas);
+                string oldencodedFormulas = HttpUtility.UrlEncode(oldFormulas);
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SaveFormula?id=" + id + "&site_id=" + site_id + "&formulas=" + encodedFormulas + "&login_id=" + login_id + "&fieldType=" + fieldType + "&oldFormulas=" + oldencodedFormulas;
+
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+
+        public async Task<IActionResult> GetCalculatedValue(int id, double U, double S, double IG, double EG, double OTHER, double LS, string updateFormulaValue)
+        {
+
+            string line = "";
+            try
+            {
+                string encodedFormula = HttpUtility.UrlEncode(updateFormulaValue);
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetCalculatedValue?id=" + id + "&U=" + U + "&S=" + S + "&IG=" + IG + "&EG=" + EG + "&OTHER=" + OTHER + "&LS=" + LS + "&updateFormulaValue=" + encodedFormula;
+
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+
+
     }
 }

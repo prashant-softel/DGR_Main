@@ -1,0 +1,714 @@
+﻿@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor;
+@model DGRA_V1.Models.CountryList
+@{
+    ViewData["Title"] = "Formula Master";
+}
+@{
+    string windUserSiteList = "";
+    string solarUserSiteList = "";
+    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+}
+@{
+    bool windAccess = false;
+    bool solarAccess = false;
+}
+@for (int i = 0; i < @usermodel.access_list.Count; i++)
+{
+    if (@usermodel.access_list[i].page_type == 5 && @usermodel.access_list[i].site_type == 1)
+    {
+        windUserSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+    if (@usermodel.access_list[i].page_type == 5 && @usermodel.access_list[i].site_type == 2)
+    {
+        solarUserSiteList += @usermodel.access_list[i].identity.ToString() + ",";
+    }
+}
+@if (@HttpContextAccessor.HttpContext.Session.GetString("role") != "Admin")
+{
+    var usermodel_1 = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
+    for (int i = 0; i < @usermodel_1.access_list.Count; i++)
+    {
+        Console.WriteLine(usermodel_1.access_list);
+        if (@usermodel.access_list[i].page_type == 5 && @usermodel_1.access_list[i].site_type == 2)
+        {
+            windAccess = true;
+        }
+        if (@usermodel.access_list[i].page_type == 5 && @usermodel_1.access_list[i].site_type == 1)
+        {
+            solarAccess = true;
+        }
+    }
+}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/Content/theme/plugins/daterangepicker/daterangepicker.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Content/theme/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link href="~/Content/theme/dist/css/adminlte.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.css" />
+<link href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+<style>
+    .tab-btn {
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+</style>
+<div class="content-wrapper">
+    <section class="content-header">
+    </section>
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title text-center">Formula Builder</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-4 col-form-label text-right">Site Type : </label>
+                                <select class="form-control  col-sm-8" id="site_type" name="site_type" value="" onchange="getSiteList()">
+                                    <option value="0">Select Site Type </option>
+                                    @if (windAccess == true)
+                                    {
+                                        <option value="2">Solar</option>
+                                    }
+                                    @if (solarAccess == true)
+                                    {
+                                        <option value="1">Wind</option>
+                                    }
+                                    @if (@HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
+                                    {
+                                        <option value="2">Solar</option>
+                                        <option value="1">Wind</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" id="multple_site" style="display:none;">
+                            <div class="row">
+                                <label class="col-sm-4 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site" name="site[]">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="normal_site" style="display:block;">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                <select class="form-control  col-sm-8" id="site_n" name="site_n">
+                                    <option value="">Please Select Site</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2" style="margin-left:0rem;">
+                        <div class="col-md-4"><button type="button" class="btn btn-block btn-primary" onclick="GetFormula()" style="float:left; width:5rem ">Search</button></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="col-md-12" style="padding-right: 0px; padding-left: 0px;">
+                    <div id="validator" class="card-header">
+                        <h3 class="card-title text-center">Formula Validation</h3>
+                    </div>
+                    <!--<h4 style="font-size: 20px;"> Test Values: </h4>-->
+                    <div class="row" style="margin-top: 8px;">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-4 col-form-label text-right">USMH : </label>
+                                            <input type="text" class="form-control  col-sm-8" id="u_id" name="u_name" placeholder="Enter Value " onKeyPress="return blockNonNumbers(this, event, true, false);">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-4 col-form-label text-right">SMH : </label>
+                                            <input type="text" class="form-control  col-sm-8" id="s_id" name="s_name" placeholder="Enter Value " onKeyPress="return blockNonNumbers(this, event, true, false);">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-4 col-form-label text-right">IG : </label>
+                                            <input type="text" class="form-control  col-sm-8" id="ig_id" name="ig_name" placeholder="Enter Value " onKeyPress="return blockNonNumbers(this, event, true, false);">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-4 col-form-label text-right">EG : </label>
+                                            <input type="text" class="form-control  col-sm-8" id="eg_id" name="eg_name" placeholder="Enter Value " onKeyPress="return blockNonNumbers(this, event, true, false);">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-4 col-form-label text-right">OH : </label>
+                                            <input type="text" class="form-control  col-sm-8" id="oh_id" name="oh_name" placeholder="Enter Value " onKeyPress="return blockNonNumbers(this, event, true, false);">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-4 col-form-label text-right">LS : </label>
+                                            <input type="text" class="form-control  col-sm-8" id="ls_id" name="ls_name" placeholder="Enter Value " onKeyPress="return blockNonNumbers(this, event, true, false);">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--<div class="col-sm-2"><b>USMH :</b><input id="u_id" name="u_name" type="text" pattern="[0-9]*" title="Please enter only numeric values" style="margin-top: 6px; width: 50px; border-radius: 5px; padding: 1px; height: 25px; " value="100" /></div>
+                                <div class="col-sm-2">
+                                    <b>SMH :</b><input id="s_id" name="s_name" type="text" pattern="[0-9]*" title="Please enter only numeric values"
+                                                       style="margin-top: 6px; width: 50px; border-radius: 5px; padding: 1px; height: 25px;" value="50" />
+                                </div>
+                                <div class="col-sm-2"><b>IG :</b><input id="ig_id" name="ig_name" type="text" pattern="[0-9]*" title="Please enter only numeric values" style="margin-top: 6px; width: 50px; border-radius: 5px; padding: 1px; height: 25px; " value="40" /></div>
+                                <div class="col-sm-2"><b>EG :</b><input id="eg_id" name="eg_name" type="text" pattern="[0-9]*" title="Please enter only numeric values" style="margin-top: 6px; width: 50px; border-radius: 5px; padding: 1px; height: 25px; " value="30" /></div>
+                                <div class="col-sm-2"><b>OTHER :</b><input id="oh_id" name="oh_name" type="text" pattern="[0-9]*" title="Please enter only numeric values" style="margin-top: 6px; width: 50px; border-radius: 5px; padding: 1px; height: 25px; " value="70" /></div>
+                                <div class="col-sm-2"><b>LS :</b><input id="ls_id" name="ls_name" type="text" pattern="[0-9]*" title="Please enter only numeric values" style="margin-top: 6px; width: 50px; border-radius: 5px; padding: 1px; height: 25px; " value="90" /></div>-->
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div id="locationData"  class="locationData"></div>
+                <div id="historyHeader" class="card-header" style="display: none;">
+                    <h3 class="card-title text-center">History Log</h3>
+                </div>
+                <div id="logData" style="overflow-x: auto;" class="logData"></div>
+            </div>
+        </div>
+    </section>
+</div>
+<script src="~/Content/theme/plugins/jquery/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="~/Content/theme/plugins/moment/moment.min.js"></script>
+<script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js" defer></script>
+<script src="~/Content/theme/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="~/Content/theme/plugins/summernote/summernote-bs4.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/theme/plugins/datatables/jquery.dataTables.js" defer></script>
+<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js" defer></script>
+<script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.html5.min.js" defer></script>
+<script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
+<script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+<script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
+<script type="text/javascript">
+  
+  
+
+    window.onload = function () {
+        //GetFormula();
+    }
+
+    function getSiteList()
+    {
+        var site_type = $('select#site_type option:selected').val();
+        if (site_type == 2)
+        {
+            GetSolarSite();
+            document.getElementById("normal_site").style.display = 'none';
+            document.getElementById("multple_site").style.display = 'block';
+        }
+        else if (site_type == 1)
+        {
+            document.getElementById("normal_site").style.display = 'none';
+            document.getElementById("multple_site").style.display = 'block';
+            GetWindSite();
+        }
+    }
+    function GetWindSite()
+    {
+        var state = "";
+        var spv = "";
+        var site_ids = "@Html.Raw(windUserSiteList.TrimEnd(','))";
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSiteList", "WindReport")' + '?sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                var options = "";
+                for (var k = 0; k < result.length; k++) {
+                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
+                }
+                $("#site").multipleSelect('destroy');
+                $("#site").html(options);
+                $('select#site').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Wind Site(s)",
+                    filter:true
+                });
+            }
+        });
+    }
+    function GetSolarSite()
+    {
+        var site_ids = "@Html.Raw(solarUserSiteList.TrimEnd(','))";
+        var solar_total_mw = 0;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSolarSiteList", "Dashboard")' + '?sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (result, status, xhr) {
+            var options = "";
+            for (var i = 0; i < result.length; i++) {
+                solar_total_mw += result[i].ac_capacity;
+                options += '<option value="' + result[i].site_master_solar_id + '" selected>' + result[i].site + '</option>';
+            }
+            // Hide the select element
+            $("#site").hide();
+            // Destroy any previous instance of multipleSelect
+            $("#site").multipleSelect('destroy');
+            // Initialize multipleSelect with all options selected
+            $("#site").multipleSelect({
+                "minimumCountSelected": 2,
+                "placeholder": "All Selected",
+                "filter": true,
+                "selectAll": true,
+                "multiple": true
+            });
+            //Manually set all options as selected
+            var selectedValues = result.map(function (item) {
+                return item.site_master_solar_id.toString(); // Ensure values are strings
+            });
+            $("#site").multipleSelect("setSelects", selectedValues);
+        },
+        error: function (xhr, status, error) {
+            //console.error("Error fetching solar sites:", error);
+        }
+        });
+    }
+    function showInputBox(btn) {
+        var inputBox    = document.getElementById('inputBox');
+        var saveButton  = document.querySelector('.btn-primary');
+        inputBox.style.display   = 'block';
+        saveButton.style.display = 'block';
+        btn.style.display        = 'none';
+    }
+    function ChangePass(id,site_id,tdID) {
+        var btnId   = "cng_btn_"+tdID;
+        var chgBtn  = document.getElementById(btnId);
+        chgBtn.style.display = "none";
+        var ele              = "hide_" + tdID;
+        var a                = document.getElementById(ele);
+        if (a.style.display == "none") {
+            a.style.display = "flex";
+        } else {
+            a.style.display = "none";
+        }
+    }
+    function ChangeExit(id, site_id, tdID) {
+        var temp  = "changefamula_" + tdID;
+        var temp1 = "hide_" + tdID;
+        var temp2 = "validation_" + tdID;
+        var temp3 = "cng_btn_" + tdID;
+        var a = document.getElementById(temp1);
+        var b = document.getElementById(temp2);
+        var c = document.getElementById(temp);
+        var d = document.getElementById(temp3);
+        c.value = "";
+        b.style.display = "none";
+        a.style.display = "none";
+        d.style.display = "block";
+    }
+    //To validate the formula
+    @*function validate(id,site_id,tdID) {
+        // Extract input values
+        var U       = parseFloat(document.getElementById('u_id').value);
+        var S       = parseFloat(document.getElementById('s_id').value);
+        var IG      = parseFloat(document.getElementById('ig_id').value);
+        var EG      = parseFloat(document.getElementById('eg_id').value);
+        var OTHER   = parseFloat(document.getElementById('oh_id').value);
+        var LS = parseFloat(document.getElementById('ls_id').value);
+        
+        if (U == "") {
+            alert("USMH can not be blank.Please enter the value");
+        }
+        if (S == "") {
+            alert("SMH can not be blank.Please enter the value");
+        }
+        if (IG == "") {
+            alert("IG can not be blank.Please enter the value");
+        }
+        if (EG == "") {
+            alert("EG can not be blank.Please enter the value");
+        }
+        if (OTHER == "") {
+            alert("OTHER can not be blank.Please enter the value");
+        }
+        if (LS == "") {
+            alert("LS can not be blank.Please enter the value");
+        }
+        //constructs the formula to be validated by concatenating the id parameter with the string "formula_"
+        var formulaId = "oldfarmula_" + tdID;
+        //retrieves the inner HTML content of this element,representing the formula to be validated.
+        var formulaToValidate = document.getElementById(formulaId).innerHTML;
+        //variable holds the URL-encoded version of the formula, which will be sent in the AJAX request.
+        var updateFormulaValue = encodeURIComponent(formulaToValidate);
+        //The function sends an AJAX POST request to the server
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCalculatedValue", "SolarReport")' + '?id=' + id + '&site_id=' + site_id + '&U=' + U + "&S=" + S + "&IG=" + IG + "&EG=" + EG + "&OTHER=" + OTHER + "&LS=" + LS +     "&updateFormulaValue=" + updateFormulaValue,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(result, status, xhr) {
+            console.log(result);
+            // Check if the result is a valid number
+            if (!isNaN(result) && isFinite(result) && (result !== Infinity && result !== -Infinity)) {
+                // Update the result on the UI if save is successful
+                document.getElementById("result_" + id + "_" + site_id + "_" + tdID).textContent = result;
+            } else {
+                // Display error message if the result is not a valid number
+                alert("Failed to validate formula : " + formulaToValidate);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", error);
+            alert("An error occurred while validating formula.");
+        }
+    });
+    }*@
+    //To validate the formula
+    function validate(id,site_id,tdID) {
+        // Extract input values
+      
+        if (document.getElementById('u_id').value == "") {
+            alert("USMH can not be blank.Please enter the value");
+            return false;
+        }
+        if (document.getElementById('s_id').value == "") {
+            alert("SMH can not be blank.Please enter the value");
+            return false;
+        }
+        if (document.getElementById('ig_id').value =="") {
+            alert("IG can not be blank.Please enter the value");
+            return false;
+        }
+        if (document.getElementById('eg_id').value=="") {
+            alert("EG can not be blank.Please enter the value");
+            return false;
+        }
+        if (document.getElementById('oh_id').value=="") {
+            alert("OTHER can not be blank.Please enter the value");
+            return false;
+        }
+        if (document.getElementById('ls_id').value == "") {
+            alert("LS can not be blank.Please enter the value");
+            return false;
+        }
+        var U = parseFloat(document.getElementById('u_id').value);
+        var S = parseFloat(document.getElementById('s_id').value);
+        var IG = parseFloat(document.getElementById('ig_id').value);
+        var EG = parseFloat(document.getElementById('eg_id').value);
+        var OTHER = parseFloat(document.getElementById('oh_id').value);
+        var LS = parseFloat(document.getElementById('ls_id').value);
+        //constructs the formula to be validated by concatenating the id parameter with the string "formula_"
+        var formulaId = "oldfarmula_" + tdID;
+        //retrieves the inner HTML content of this element,representing the formula to be validated.
+        var formulaToValidate = document.getElementById(formulaId).innerHTML;
+        //variable holds the URL-encoded version of the formula, which will be sent in the AJAX request.
+        var updateFormulaValue = encodeURIComponent(formulaToValidate);
+        //The function sends an AJAX POST request to the server
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCalculatedValue", "SolarReport")' + '?id=' + id + '&site_id=' + site_id + '&U=' + U + "&S=" + S + "&IG=" + IG + "&EG=" + EG + "&OTHER=" + OTHER + "&LS=" + LS +     "&updateFormulaValue=" + updateFormulaValue,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(result, status, xhr) {
+                //console.log(result);
+                // Check if the result is a valid number
+                if (!isNaN(result) && isFinite(result) && (result !== Infinity && result !== -Infinity)) {
+                    // Update the result on the UI if save is successful
+                    document.getElementById("result_" + id + "_" + site_id + "_" + tdID).textContent = result;
+                } else {
+                    // Display error message if the result is not a valid number
+                    alert("Failed to validate formula : " + formulaToValidate);
+                }
+            },
+            error: function(xhr, status, error) {
+                //console.error("AJAX Error:", error);
+                alert("Failed to validate formula : " + formulaToValidate);
+            }
+        });
+    }
+    //To save Formula
+    function SaveFormula(id, site_id, tdID) {
+        var login_id      = @HttpContextAccessor.HttpContext.Session.GetString("userid"); // login_id: Retrieves the user ID from the session
+        var tempVal       = "validation_" + tdID;
+        var btnId         = "cng_btn_" + tdID;
+        var date          = new Date(); // Creates a new Date object to get the current date and time.
+        var formattedDate = date.toISOString().split('T')[0]; // Extracts the date portion (without time) in ISO 8601 format (e.g., "YYYY-MM-DD").
+        var a1            = document.getElementById(tempVal);
+        var chgBtn        = document.getElementById(btnId);
+        var ele           = "hide_" + tdID;
+        var a             = document.getElementById(ele);
+        var ftype         = document.getElementById("typeId_" + tdID).innerHTML;
+        var oldFormulas   = document.getElementById("oldfarmula_" + tdID).innerHTML;
+        var updateFormulaId = "changefamula_" + tdID;
+        var updateFormulaValue = document.getElementById(updateFormulaId).value;
+        var encodedFormula = encodeURIComponent(updateFormulaValue); // Encodes the formula value using encodeURIComponent to ensure proper URL encoding.
+        //console.log(encodedFormula);
+        //Regular expression to validate the formula
+        var validFormulaRegex = /^[a-zA-Z0-9+\-*/().\s]*$/;
+        //Function to check if parentheses are balanced
+        function areParenthesesBalanced(str) {
+            var stack = [];
+            for (var i = 0; i < str.length; i++) {
+                var char = str[i];
+                if (char === '(') {
+                    stack.push(char);
+                } else if (char === ')') {
+                    if (stack.length === 0) {
+                        return false; // Unmatched closing parenthesis
+                    }
+                    stack.pop();
+                }
+            }
+            return stack.length === 0; // Stack should be empty if parentheses are balanced
+        }
+    // Function to check if formula is complete and does not end with an operator
+    function isFormulaComplete(str) {
+        //Trim any trailing whitespace
+        str = str.trim();
+        //Regular expression to match a trailing operator
+        var incompleteFormulaRegex = /[+\-*/.]$/;
+        return !incompleteFormulaRegex.test(str);
+    }
+
+    if (updateFormulaValue == "") {
+        a1.style.display = "block";
+        // Show validation message
+    } else if (!validFormulaRegex.test(updateFormulaValue)) {
+        alert("Invalid formula: Only alphanumeric characters and basic operators (+, -, *, /, ., ()) are allowed.");
+    } else if (!areParenthesesBalanced(updateFormulaValue)) {
+        alert("Invalid formula: Parentheses are not balanced.");
+    } else if (!isFormulaComplete(updateFormulaValue)) {
+        alert("Invalid formula: Formula ends with an incomplete operator.");
+    } else {
+        a.style.display = "none";
+        // Send AJAX request to save the formula
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SaveFormula", "SolarReport")' + '?id=' + id + '&site_id=' + site_id + '&formulas=' + encodedFormula + '&login_id=' + login_id + '&fieldType=' + ftype + "&oldFormulas=" + encodeURIComponent(oldFormulas),
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                //console.log(result);
+                if (!isNaN(result) && isFinite(result)) {
+                    // Check if the result is a valid number
+                    // Update the formula on the UI if save is successful
+                    document.getElementById("oldfarmula_" + tdID).innerHTML = updateFormulaValue;
+                } else {
+                    // Display error message if the result is not a valid number
+                    alert("Failed to update formula: Invalid result");
+                }
+                GetFormulaLog(site_id);
+            },
+            });
+            // Hide elements after processing
+            a.style.display = "none";
+            chgBtn.style.display = "block";
+        }
+    }
+
+    function GetFormula() {
+        var typevalue = $('select#site_type option:selected').val();
+        var site_type = "";
+        let site = "";
+        if (typevalue == 1)
+        {
+            site_type = "Wind";
+            $('select#site option:selected').each(function () {
+                site += $(this).val() + ",";
+            });
+            site = site != "" ? site.slice(0, -1) : site;
+            if (site == "" || site == null) {
+                alert("Please select site ");
+                return false;
+            }
+        }
+        else
+        {
+            site_type = "Solar";
+        }
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFromula", "Home")' + '?site_id=' + site + '&site_type=' + site_type,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                //console.log(result);
+                //console.log(result.MA_Actual);
+                var tbl = '<table id="example1" class="table table-bordered table-striped">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>Name</th>';
+                tbl += '<th>Formulas</th>';
+                tbl += '<th>Action</th>';
+                tbl += '<th>Validate</th>';
+                tbl += '<th>Results</th>';
+                tbl += '</tr></thead>';
+                var siteId = result[0].site_id;
+                //MA_Actual
+                tbl += '<tr>';
+                tbl += '<td id="typeId_1" value="MA_Actual">MA Actual </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_1" value="'+result[0].mA_Actual+'">' + result[0].mA_Actual + '</td>';
+                tbl += '<td class="text-center"><div style="display: flex; justify-content: center; align-items: center;"><button id="cng_btn_' + 1 + '"    class="btn btn-dark btn-sm" onclick="ChangePass(' + result[0].id + ', ' + siteId + ',' + 1 + ')" style="background-color: #31576d; padding: 0.15rem 0.25rem;min-width: 50px;    width:50%; display: inline;" >Edit</button><div id="hide_1" style="display: none; flex-direction: column; justify-content: center;    align-items: center;"><input id="changefamula_1" type="text" value="' + result[0].mA_Actual + '"  placeholder="Enter New Formula"    style="margin-top: 10px"/><div id="validation_1" style="display: none">Please Enter formula.</div><div style="width:auto;  display:   flex; gap: 5px; flex-direction: row; justify-content: between; align-items: center;"><button onclick="SaveFormula(' + result[0].id + ', ' + siteId + ',' + 1 + ')"  class="btn   btn-success btn-sm" style="margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Save</button>  <button onclick = "ChangeExit(' + result[0].id + ', ' + siteId + ',' + 1 + ')"   class="btn btn-danger btn-sm" style = "margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Cancel</button></div></div></div></td>';
+                tbl += '<td class="text-center"><button onclick="validate(' + result[0].id + ', ' + siteId + ',' + 1 + ')" class="btn btn-success btn-sm">Validate</button></td>';
+                tbl += '<td class="text-left" value="Results" id="result_' + result[0].id + '_' + siteId + '_' + 1 + '"></td>';
+                tbl += '</tr>';
+                //MA_Contractual
+                tbl += '<tr>';
+                tbl += '<td id="typeId_2" value="MA_Contractual">MA Contractual </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_2" value="' + result[0].mA_Contractual + '">' + result[0].mA_Contractual + '</td>';
+                tbl += '<td class="text-center"><div style="display: flex; justify-content: center; align-items: center;"><button id="cng_btn_' + 2 + '"    class="btn btn-dark btn-sm" onclick="ChangePass(' + result[0].id + ', ' + siteId + ',' + 2 + ')" style="background-color: #31576d; padding: 0.15rem 0.25rem;min-width: 50px;    width:50%; display: inline;" >Edit</button><div id="hide_2" style="display: none; flex-direction: column; justify-content: center;    align-items: center;"><input id="changefamula_2" type="text" value="' + result[0].mA_Contractual + '"  placeholder="Enter New Formula"    style="margin-top: 10px"/><div id="validation_2" style="display: none">Please Enter formula.</div><div style="width:auto;  display:   flex; gap: 5px; flex-direction: row; justify-content: between; align-items: center;"><button onclick="SaveFormula(' + result[0].id + ', ' + siteId + ',' + 2 + ')"  class="btn   btn-success btn-sm" style="margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Save</button>  <button onclick = "ChangeExit(' + result[0].id + ', ' + siteId + ',' + 2 + ')"   class="btn btn-danger btn-sm" style = "margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Cancel</button></div></div></div></td>';
+                tbl += '<td class="text-center"><button onclick="validate(' + result[0].id + ', ' + siteId + ',' + 2 + ')" class="btn btn-success btn-sm">Validate</button></td>';
+                tbl += '<td class="text-left" value="Results" id="result_' + result[0].id + '_' + siteId + '_' + 2 + '"></td>';
+                tbl += '</tr>';
+                //IGA
+                tbl += '<tr>';
+                tbl += '<td id="typeId_3" value="IGA">IGA </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_3" value="' + result[0].iga + '">' + result[0].iga + '</td>';
+                tbl += '<td class="text-center"><div style="display: flex; justify-content: center; align-items: center;"><button id="cng_btn_' + 3 + '"     class="btn btn-dark btn-sm" onclick="ChangePass(' + result[0].id + ', ' + siteId + ',' + 3 + ')" style="background-color: #31576d; padding: 0.15rem 0.25rem;min-width: 50px;    width:50%; display: inline;" >Edit</button><div id="hide_3" style="display: none; flex-direction: column; justify-content: center;    align-items: center;"><input id="changefamula_3" type="text" value="' + result[0].iga + '"  placeholder="Enter New Formula"    style="margin-top: 10px"/><div id="validation_3" style="display: none">Please Enter formula.</div><div style="width:auto;  display:   flex; gap: 5px; flex-direction: row; justify-content: between; align-items: center;"><button onclick="SaveFormula(' + result[0].id + ', ' + siteId + ',' + 3 + ')"  class="btn   btn-success btn-sm" style="margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Save</button>  <button onclick = "ChangeExit(' + result[0].id + ', ' + siteId + ',' + 3 + ')"   class="btn btn-danger btn-sm" style = "margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Cancel</button></div></div></div></td>';
+                tbl += '<td class="text-center"><button onclick="validate(' + result[0].id + ', ' + siteId + ',' + 3 + ')" class="btn btn-success btn-sm">Validate</button></td>';
+                tbl += '<td class="text-left" value="Results" id="result_' + result[0].id + '_' + siteId + '_' + 3 + '"></td>';
+                tbl += '</tr>';
+                //EGA
+                tbl += '<tr>';
+                tbl += '<td id="typeId_4" value="EGA">EGA </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_4" value="' + result[0].ega + '">' + result[0].ega + '</td>';
+                tbl += '<td class="text-center"><div style="display: flex; justify-content: center; align-items: center;"><button id="cng_btn_' + 4 + '"    class="btn btn-dark btn-sm" onclick="ChangePass(' + result[0].id + ', ' + siteId + ',' + 4 + ')" style="background-color: #31576d; padding: 0.15rem 0.25rem;min-width: 50px;    width:50%; display: inline;" >Edit</button><div id="hide_4" style="display: none; flex-direction: column; justify-content: center;    align-items: center;"><input id="changefamula_4" type="text" value="' + result[0].ega + '"  placeholder="Enter New Formula"    style="margin-top: 10px"/><div id="validation_4" style="display: none">Please Enter formula.</div><div style="width:auto;  display:   flex; gap: 5px; flex-direction: row; justify-content: between; align-items: center;"><button onclick="SaveFormula(' + result[0].id + ', ' + siteId + ',' + 4 + ')"  class="btn   btn-success btn-sm" style="margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Save</button>  <button onclick = "ChangeExit(' + result[0].id + ', ' + siteId + ',' + 4 + ')"   class="btn btn-danger btn-sm" style = "margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Cancel</button></div></div></div></td>';
+                tbl += '<td class="text-center"><button onclick="validate(' + result[0].id + ', ' + siteId + ',' + 4 + ')" class="btn btn-success btn-sm">Validate</button></td>';
+                tbl += '<td class="text-left" value="Results" id="result_' + result[0].id + '_' + siteId + '_' + 4 + '"></td>';
+                tbl += '</tr>';
+                tbl += '</table>';
+                $("#locationData").html("").html(tbl);
+                $.fn.DataTable.ext.pager.numbers_length = 6;
+                $('#example1').DataTable({
+                    dom: 'Bfrtip',
+                    fixedHeader: true,
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    paging: true,
+                    lengthChange: false,
+                    searching: false,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    responsive: false,
+                    pageLength: 50,
+                    buttons: [],
+                });
+                $(".dt-buttons").css("margin-bottom", "0%");
+                $('#example1').removeClass('dataTable');
+                GetFormulaLog(site);
+            }
+
+        });
+    }
+
+    function GetFormulaLog(site) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFormulaLog", "Home")' + '?site_id=' + site,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json", // Fixed the dataType spelling
+            success: function (result, status, xhr) {
+                //console.log(result);
+                var tbl = '<table id="example2" class="table table-bordered table-striped">';
+                tbl += '<thead class="tbl-head"><tr>';
+                tbl += '<th>Name</th>';
+                tbl += '<th>Formulas</th>';
+                tbl += '<th>Change By Name</th>';
+                tbl += '<th>Change By Date</th>';
+                tbl += '</tr></thead>';
+                tbl += '<tbody>'; // Add this line to open tbody
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        var formattedDate = moment(result[i].change_by_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+                        tbl += '<tr>';
+                        tbl += '<td class="text-left">' + result[i].formula_name + '</td>';
+                        tbl += '<td class="text-left">' + result[i].formulas + '</td>';
+                        tbl += '<td class="text-left">' + result[i].username + '</td>';
+                        tbl += '<td class="text-left">' + formattedDate + '</td>';
+                        tbl += '</tr>';
+                    }
+                } else {
+                    tbl += '<tr><td colspan="4">No data available</td></tr>'; // Fix colspan to match number of columns
+                }
+                tbl += '</tbody>'; // Add this line to close tbody
+                tbl += '</table>';
+                $("#logData").html(tbl);
+                $("#historyHeader").show();
+                // Initialize DataTable
+                $('#example2').DataTable({
+                    dom: 'Bfrtip',
+                    fixedHeader: true,
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    paging: true,
+                    searching: false,
+                    ordering: true,
+                    info: true,
+                    pageLength: 50,
+                    buttons: []
+                });
+                $(".dt-buttons").css("margin-bottom", "0%");
+            },
+            error: function (xhr, status, error) {
+            //console.error('Error fetching data:', error);
+        }
+    });
+    }
+    function blockNonNumbers(obj, e, allowDecimal, allowNegative) {
+        var key;
+        var isCtrl = false;
+        var keychar;
+        var reg;
+
+        if (window.event) {
+            key = e.keyCode;
+            isCtrl = window.event.ctrlKey
+        }
+        else if (e.which) {
+            key = e.which;
+            isCtrl = e.ctrlKey;
+        }
+
+        if (isNaN(key)) return true;
+
+        keychar = String.fromCharCode(key);
+
+        // check for backspace or delete, or if Ctrl was pressed
+        if (key == 8 || isCtrl) {
+            return true;
+        }
+
+        reg = /\d/;
+        var isFirstN = allowNegative ? keychar == '-' && obj.value.indexOf('-') == -1 : false;
+        var isFirstD = allowDecimal ? keychar == '.' && obj.value.indexOf('.') == -1 : false;
+
+        return isFirstN || isFirstD || reg.test(keychar);
+    }
+</script>

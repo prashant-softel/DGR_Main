@@ -25,6 +25,9 @@ using Org.BouncyCastle.Asn1.Pkcs;
 using System.Text;
 using MimeKit;
 using Microsoft.AspNetCore.Http;
+using System.Linq.Expressions;
+using org.mariuszgromada.math.mxparser;
+using Expression = org.mariuszgromada.math.mxparser.Expression;
 
 namespace DGRAPIs.Repositories
 {
@@ -9342,7 +9345,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 Get_Time = Final_OthersHour_Time * 24;
                 Final_OthersHour = Get_Time.TotalDays;
 
-
+                /** Old Functionality  
                 //API_InformationLog("CalculateAndUpdateKPIs: MA_Actual_Formula <" + MA_Actual_Formula + ">");
                 double dMA_ACT = Math.Round(GetCalculatedValue(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, Final_LoadShedding, MA_Actual_Formula), 6);
                 //API_InformationLog("CalculateAndUpdateKPIs: MA_Contractual_Formula <" + MA_Contractual_Formula + ">");
@@ -9353,6 +9356,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 double dEGA = Math.Round(GetCalculatedValue(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, Final_LoadShedding, EGA_Formula), 6);
                 double dEGA_B = Math.Round(GetCalculatedValue(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, 0, EGA_Formula), 6);
                 double dEGA_C = Math.Round(GetCalculatedValue(Final_USMH, Final_SMH, Final_IGBD, 0 , Final_OthersHour, Final_LoadShedding, EGA_Formula), 6);
+                */
+                // New Functinality 
+                //API_InformationLog("CalculateAndUpdateKPIs: MA_Actual_Formula <" + MA_Actual_Formula + ">");
+                double dMA_ACT = Math.Round(GetCalculatedValue1(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, Final_LoadShedding, MA_Actual_Formula), 6);
+                //API_InformationLog("CalculateAndUpdateKPIs: MA_Contractual_Formula <" + MA_Contractual_Formula + ">");
+                double dMA_CON = Math.Round(GetCalculatedValue1(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, Final_LoadShedding, MA_Contractual_Formula), 6);
+                //API_InformationLog("CalculateAndUpdateKPIs: IGA_Formula <" + IGA_Formula + ">");
+                double dIGA = Math.Round(GetCalculatedValue1(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, Final_LoadShedding, IGA_Formula), 6);
+                //API_InformationLog("CalculateAndUpdateKPIs: EGA_Formula <" + EGA_Formula + ">");
+                double dEGA = Math.Round(GetCalculatedValue1(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, Final_LoadShedding, EGA_Formula), 6);
+                double dEGA_B = Math.Round(GetCalculatedValue1(Final_USMH, Final_SMH, Final_IGBD, Final_EGBD, Final_OthersHour, 0, EGA_Formula), 6);
+                double dEGA_C = Math.Round(GetCalculatedValue1(Final_USMH, Final_SMH, Final_IGBD, 0, Final_OthersHour, Final_LoadShedding, EGA_Formula), 6);
+
 
                 string info1 = "Other_hours :" + Final_OthersHour + "";
                 //LogInfo(0, 2, 6, functionName, info1, backend);
@@ -9379,7 +9395,25 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             return response;
         }
-
+        // Formula parsor 
+        private double GetSafeCalculatedValue(double U, double S, double IG, double EG, double OH, double LS, string formula)
+        {
+            try
+            {
+                return GetCalculatedValue(U, S, IG, EG, OH, LS, formula);
+            }
+            catch (DivideByZeroException)
+            {
+                return 0; // or another default value
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                string strEx = ex.ToString();
+                // LogException("GetSafeCalculatedValue", strEx);
+                return double.NaN;
+            }
+        }
         /// <summary>
         /// This function caluldates the value as per the formula type 
         /// </summary>
@@ -10627,7 +10661,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                                 Final_OthersHour_Time += SolarDevice.OthersHour;
                                 Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity * prTarget / 100;
-
+                                /** Old Formula 
                                 //double stringMA += (12 - SolarDevice.USMH.TotalSeconds/3600 - SolarDevice.SMH.TotalSeconds/3600) / 12;
                                 InvLevelMA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
                                 //InvLevelMACont += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Contractual_Formula), 6);
@@ -10636,6 +10670,16 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 InvLevelEGA_B += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0, EGA_Formula), 6);
                                 InvLevelEGA_C += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
                                 //PENDING:
+                                */
+                                /* New Formula */
+                                //double stringMA += (12 - SolarDevice.USMH.TotalSeconds/3600 - SolarDevice.SMH.TotalSeconds/3600) / 12;
+                                InvLevelMA += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
+                                //InvLevelMACont += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Contractual_Formula), 6);
+                                InvLevelIGA += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, IGA_Formula), 6);
+                                InvLevelEGA += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+                                InvLevelEGA_B += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0, EGA_Formula), 6);
+                                InvLevelEGA_C += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+
 
                                 FinalCapacity += SolarDevice.capacity;
                             }
@@ -10746,7 +10790,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                         Final_OthersHour_Time += SolarDevice.OthersHour;
                         Final_OthersHour_Loss += SolarDevice.OthersHour_lostPOA * SolarDevice.capacity * prTarget / 100;
-
+                        /* Old Formula 
                         //double stringMA += (12 - SolarDevice.USMH.TotalSeconds/3600 - SolarDevice.SMH.TotalSeconds/3600) / 12;
                         InvLevelMA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
                         InvLevelIGA += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, IGA_Formula), 6);
@@ -10754,6 +10798,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         InvLevelEGA_B += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0, EGA_Formula), 6);
                         InvLevelEGA_C += Math.Round(GetSolarCalculatedValue(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
                         //PENDING:
+                        */
+                        /* New Formula*/
+                        InvLevelMA += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, MA_Actual_Formula), 6);
+                        InvLevelIGA += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, IGA_Formula), 6);
+                        InvLevelEGA += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+                        InvLevelEGA_B += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, SolarDevice.EGBD.TotalSeconds / 3600, SolarDevice.OthersHour.TotalSeconds / 3600, 0, EGA_Formula), 6);
+                        InvLevelEGA_C += Math.Round(GetCalculatedValue1(SolarDevice.USMH.TotalSeconds / 3600, SolarDevice.SMH.TotalSeconds / 3600, SolarDevice.IGBD.TotalSeconds / 3600, 0, SolarDevice.OthersHour.TotalSeconds / 3600, SolarDevice.LS.TotalSeconds / 3600, EGA_Formula), 6);
+
                         double Final_POA = SolarDevice.lostPOA;
                         // Consolidate lostPOA and consolidate Capacity
                         //Expected kwh = capacity X POA(fullday)
@@ -20501,5 +20553,98 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             return result;
 
         }
+
+        internal double GetCalculatedValue1(double U, double S, double IG, double EG, double OTHER, double LS, string updateFormulaValue)
+        {
+            double returnValue = 0;
+            string functionName = "GetCalculatedValue";
+            try
+            {
+                //This is an internal class used to parse and evaluate mathematical expressions.
+                MathParser parser = new MathParser();
+                parser.SetExpression(updateFormulaValue);//This method sets the mathematical expression to be evaluated.
+                parser.SetValue("USMH", U);//This method sets the value of a variable in the expression.
+                parser.SetValue("SMH", S);
+                parser.SetValue("IG", IG);
+                parser.SetValue("EG", EG);
+                parser.SetValue("OTHER", OTHER);
+                parser.SetValue("LS", LS);
+                double result = parser.GetValueAsDouble();// This method evaluates the mathematical expression and returns the result as a double.
+                //restrict value 6 digit after decimal point
+                returnValue = Math.Round(result, 6);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+                //LogError(0, 0, 0, functionName, msg, backend);
+                throw new InvalidOperationException("GetCalculatedValue: Error occurred while processing", ex);
+            }
+            return returnValue * 100;
+        }
+        internal class MathParser
+        {
+            private Expression expression;
+            public MathParser()
+            {
+            }
+            internal double GetValueAsDouble()
+            {
+                return expression.calculate();
+            }
+            internal void SetExpression(string expressionString)
+            {
+                expression = new Expression(expressionString);
+            }
+            internal void SetValue(string variable, double value)
+            {
+                Argument argument = new Argument(variable + " = " + value);
+                expression.addArguments(argument);
+            }
+        }
+        internal async Task<List<GetFormulas1>> GetFormula(int site_id, string site_type)
+        {
+            string query;
+            string filter = "";
+            //Check the site type and set the query accordingly
+            if (site_type == "Solar")
+            {
+                filter += "site_type = '" + site_type + "'";
+            }
+            else
+            {
+                filter += "site_id = " + site_id + " AND site_type = '" + site_type + "'";
+            }
+            query = "SELECT id, site_id, MA_Actual, MA_Contractual, EGA, IGA FROM wind_site_formulas WHERE " + filter;
+            //Retrieve the data from the database
+            List<GetFormulas1> GetFormula = await getDB.GetData<GetFormulas1>(query).ConfigureAwait(false);
+            return GetFormula;
+        }
+        internal async Task<List<GetFormulaLog>> GetFormulaLog(int site_id)
+        {
+            string query;
+            query = "SELECT fl.site_id,fl.formula_name,fl.formula AS formulas,l.username,fl.Changed_by_date AS change_by_date FROM formula_log as fl join login as l on l.login_id=fl.change_by_id WHERE fl.site_id = " + site_id + "";
+            // Retrieve the data from the database
+            List<GetFormulaLog> GetFormulaLog = await getDB.GetData<GetFormulaLog>(query).ConfigureAwait(false);
+            return GetFormulaLog;
+        }
+        internal async Task<int> SaveFormula(int id, int site_id, string formulas, int login_id, string fieldType, string oldFormulas)
+        {
+            int result = 0;
+            try
+            {
+                string inserqry = "insert into formula_log (site_id,formula_id, formula_name, formula, change_by_id) values ('" + site_id + "','" + id + "','" + fieldType + "','" + oldFormulas + "','" + login_id + "')";
+                await getDB.ExecuteNonQry<int>(inserqry).ConfigureAwait(false);
+                String query1 = "update wind_site_formulas set " + fieldType + "='" + formulas + "' where id= " + id + " and site_id=" + site_id + ";";
+                await getDB.ExecuteNonQry<int>(query1).ConfigureAwait(false);
+                result = 1;
+            }
+            catch
+            {
+                result = 0;
+            }
+            return result;
+        }
+
+
     }
 }
