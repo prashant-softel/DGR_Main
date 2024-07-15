@@ -797,9 +797,8 @@
                             tbl += '<td>' + result[i].smb + '</td>';
 
                         }
-                        if (userColumnId.includes(columnMap["String/Central_Inv"][0]) || columnMap["String/Central_Inv"][1] == 1 || isAdmin == 1) 
+                        if (userColumnId.includes(columnMap["String/Central_Inv"][0]) || columnMap["String/Central_Inv"][1] == 1 || isAdmin == 1){
                             tbl += '<td>' + result[i].strings + '</td>';
-
                         }
                         if (userColumnId.includes(columnMap["Start_From"][0]) || columnMap["Start_From"][1] == 1 || isAdmin == 1) {
                             tbl += '<td>' + start_time + '</td>';
@@ -837,8 +836,7 @@
                         //tbl += '<td>' + result[i].action_taken + '</td>';
                         tbl += '</tr>';
                     }
-                }
-                else {
+                }else {
                     console.log("Data not available");
                     //tbl += '<tr><th colspan="12" style="text-align:center">Data Not Available <th></tr>';
                 }

@@ -257,13 +257,13 @@
                 }
             });
     });
-    const columnMap = {};
-    const userColumnId = [];
 
     window.onload = function () {
     	console.log("User Id from session" + userIdFromSession);
         getPageColumns();
-        getUserGroupColumns();
+        if (isAdmin == 0) {
+            getUserGroupColumns();
+        }
         getCutomeGroup();
         GetSPV();
         
@@ -284,7 +284,6 @@
                     columnMap[item.column_name] = [item.column_id, item.required];
                 });
                 console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
             }
             else {
             }
@@ -293,88 +292,88 @@
     }
     function getUserGroupColumns() {
         $.ajax({
-        type: "GET",
+            type: "GET",
             // url: "/WindReport/GetSiteMaster",
             url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=26&userId=' + userIdFromSession,
-        contentType: "application/json; charset=utf-8",
-        //data: '{"countryname":"' + selcountry + '"}',
-        datatype: "html",
-        success: function (result, status, xhr) {
-            if (result.length > 0) {
-                console.log(result);
-                result.forEach(item => {
-                    userColumnId.push(item.column_id);
-                });
-                console.log(userColumnId);
-            }
-            else {
-            }
-        }
-    });
-    function GetCustomGroupAccess()
-    {
-        console.log("call function");
-        var login_id = @HttpContextAccessor.HttpContext.Session.GetString("userid");
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("GetCustomGroupAccess", "Home")' + '?login_id=' + login_id + '&site_type=2',
             contentType: "application/json; charset=utf-8",
+            //data: '{"countryname":"' + selcountry + '"}',
             datatype: "html",
             success: function (result, status, xhr) {
                 if (result.length > 0) {
-                    CustomGroupOfSite = true;
-                    document.getElementById("customDiv").style.display = "block";
+                    console.log(result);
+                    result.forEach(item => {
+                        userColumnId.push(item.column_id);
+                    });
+                    console.log(userColumnId);
                 }
                 else {
-                    CustomGroupOfSite = false;
-                    document.getElementById("customDiv").style.display = "none";
                 }
             }
         });
     }
-    function getPageColumns() {
-        $.ajax({
-        type: "GET",
-       // url: "/WindReport/GetSiteMaster",
-          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=26',
-        contentType: "application/json; charset=utf-8",
-        //data: '{"countryname":"' + selcountry + '"}',
-        datatype: "html",
-        success: function (result, status, xhr) {
-            if (result.length > 0) {
-                console.log(result);
-                result.forEach(item => {
-                    columnMap[item.column_name] = [item.column_id, item.required];
-                });
-                console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
-            }
-            else {
-            }
+        function GetCustomGroupAccess() {
+            console.log("call function");
+            var login_id = @HttpContextAccessor.HttpContext.Session.GetString("userid");
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCustomGroupAccess", "Home")' + '?login_id=' + login_id + '&site_type=2',
+                contentType: "application/json; charset=utf-8",
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    if (result.length > 0) {
+                        CustomGroupOfSite = true;
+                        document.getElementById("customDiv").style.display = "block";
+                    }
+                    else {
+                        CustomGroupOfSite = false;
+                        document.getElementById("customDiv").style.display = "none";
+                    }
+                }
+            });
         }
-    });
-    }
-    function getUserGroupColumns() {
-        $.ajax({
-        type: "GET",
-            // url: "/WindReport/GetSiteMaster",
-            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=26&userId=' + userIdFromSession,
-        contentType: "application/json; charset=utf-8",
-        //data: '{"countryname":"' + selcountry + '"}',
-        datatype: "html",
-        success: function (result, status, xhr) {
-            if (result.length > 0) {
-                console.log(result);
-                result.forEach(item => {
-                    userColumnId.push(item.column_id);
-                });
-                console.log(userColumnId);
-            }
-            else {
-            }
+        function getPageColumns() {
+            $.ajax({
+                type: "GET",
+                // url: "/WindReport/GetSiteMaster",
+                url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=26',
+                contentType: "application/json; charset=utf-8",
+                //data: '{"countryname":"' + selcountry + '"}',
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    if (result.length > 0) {
+                        console.log(result);
+                        result.forEach(item => {
+                            columnMap[item.column_name] = [item.column_id, item.required];
+                        });
+                        console.log(columnMap);
+                        console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+                    }
+                    else {
+                    }
+                }
+            });
         }
-    });
-    }
+        function getUserGroupColumns() {
+            $.ajax({
+                type: "GET",
+                // url: "/WindReport/GetSiteMaster",
+                url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=26&userId=' + userIdFromSession,
+                contentType: "application/json; charset=utf-8",
+                //data: '{"countryname":"' + selcountry + '"}',
+                datatype: "html",
+                success: function (result, status, xhr) {
+                    if (result.length > 0) {
+                        console.log(result);
+                        result.forEach(item => {
+                            userColumnId.push(item.column_id);
+                        });
+                        console.log(userColumnId);
+                    }
+                    else {
+                    }
+                }
+            });
+        }
     var today = new Date();
     fyear = getFinancialYear(today);
     var Fy = fyear;
@@ -874,12 +873,6 @@
                 }
                 if (egaSubCols > 0) {
                     tbl += '<th colspan="' + egaSubCols + '" class="text-center">EGA (%)</th></tr > ';
-                }
-                if (igaSubCols > 0 ) {
-                    tbl += '<th colspan="' + igaSubCols + '" class="text-center">IGA (%)</th>';
-                }
-                if (egaSubCols > 0) {
-                    tbl += '<th colspan="' + egaSubCols + '" class="text-center">EGA (%)</th>';
                 }
                 tbl += '</tr >';
                 tbl += '<tr>';
@@ -2324,12 +2317,6 @@
                 }
                 if (maSubCols > 0) {
                     tbl += '<th colspan="' + maSubCols + '" class="text-center">MA (%)</th>';
-                }
-                if (igaSubCols > 0) {
-                    tbl += '<th colspan="' + igaSubCols + '" class="text-center">IGA (%)</th>';
-                }
-                if (egaSubCols > 0) {
-                    tbl += '<th colspan="' + egaSubCols + '" class="text-center">EGA (%)</th></tr > ';
                 }
                 if (igaSubCols > 0) {
                     tbl += '<th colspan="' + igaSubCols + '" class="text-center">IGA (%)</th>';

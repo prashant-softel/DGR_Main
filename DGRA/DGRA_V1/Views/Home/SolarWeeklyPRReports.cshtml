@@ -3194,12 +3194,6 @@
                 if (egaSubCols > 0) {
                     tbl += '<th colspan="' + egaSubCols + '" class="text-center">EGA (%)</th></tr > ';
                 }
-                if (igaSubCols > 0) {
-                    tbl += '<th colspan="' + igaSubCols + '" class="text-center">IGA (%)</th>';
-                }
-                if (egaSubCols > 0) {
-                    tbl += '<th colspan="' + egaSubCols + '" class="text-center">EGA (%)</th></tr > ';
-                }
                 tbl += '<tr>';
                 if (userColumnId.includes(columnMap["GenNos_Tar"][0]) || columnMap["GenNos_Tar"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Tar</th>';

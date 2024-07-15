@@ -273,7 +273,9 @@
         window.onload = function () {
             console.log("User Id from session" + userIdFromSession);
             getPageColumns();
-            getUserGroupColumns();
+            if (isAdmin == 0) {
+                getUserGroupColumns();
+            }
         var today = new Date();
         fyear = getFinancialYear(today);
 
@@ -307,7 +309,6 @@
                     columnMap[item.column_name] = [item.column_id, item.required];
                 });
                 console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
             }
             else {
             }
