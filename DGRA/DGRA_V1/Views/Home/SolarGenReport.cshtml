@@ -2564,7 +2564,7 @@
                             tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Expected_Kwh"][0]) || columnMap["Expected_Kwh"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + Expected_value + '</td>';
+                            tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["INV_Kwh"][0]) || columnMap["INV_Kwh"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
@@ -2600,7 +2600,7 @@
                             tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].gen_hrs.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
@@ -2645,7 +2645,7 @@
                             tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].total_losses.toFixed() + '</td>';
                         }
                         //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + year + '</td>';
                         //tbl += '<td class="text-left">' + result[i].month + '</td>';
@@ -3077,7 +3077,7 @@
                             tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Expected_Kwh"][0]) || columnMap["Expected_Kwh"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + Expected_value + '</td>';
+                            tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["INV_Kwh"][0]) || columnMap["INV_Kwh"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
@@ -3587,7 +3587,7 @@
                             tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Expected_Kwh"][0]) || columnMap["Expected_Kwh"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + Expected_value + '</td>';
+                            tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["INV_Kwh"][0]) || columnMap["INV_Kwh"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
@@ -3623,7 +3623,7 @@
                             tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].gen_hrs.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
@@ -3668,7 +3668,7 @@
                             tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
                         }
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear  + '</td>';
                         //tbl += '<td class="text-left">' + result[i].country + '</td>';
@@ -4078,7 +4078,7 @@
                             tbl += '<td class="text-right">' + result[i].poa.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Expected_Kwh"][0]) || columnMap["Expected_Kwh"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + Expected_value + '</td>';
+                            tbl += '<td class="text-right">' + result[i].expected_kwh.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["INV_Kwh"][0]) || columnMap["INV_Kwh"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].inv_kwh.toFixed(2) + '</td>';
@@ -4159,7 +4159,7 @@
                             tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].total_losses.toFixed() + '</td>';
                         }
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
                         //tbl += '<td class="text-left">' + result[i].country + '</td>';

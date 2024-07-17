@@ -278,10 +278,10 @@
                     var tblheatmap = '<table class="table table-bordered table-striped heatmap-page">';
                     var tbl1 = '<table class="table table-bordered table-striped views-page">';
                     tbl1 += '<th><input type="checkbox" disabled="disabled" class="checkAllP" id="checkAllP" onclick="selectAllP()" style="margin-left:10px"></th>';
-                    tbl1 += '<th>Pages</th></tr>';
+                    tbl1 += '<th>Pages</th><th>Column Group</th></tr>';
                     var tbl2 = '<table class="table table-bordered table-striped reports-page">';
                     tbl2 += '<th><input type="checkbox" disabled="disabled" class="checkAllR" id="checkAllR" onclick="selectAllR()" style="margin-left:10px"></th>';
-                    tbl2 += '<th>Reports</th></tr>';
+                    tbl2 += '<th>Reports</th><th>Column Group</th></tr>';
 
 
                     for (var i = 0; i < result.length; i++) {
@@ -298,11 +298,35 @@
                         if (result[i].page_type == 1) {
                             tbl1 += '<tr><td><input type="checkbox"  disabled="disabled" class="form-check-input view-pages" id="pages" name="chkP" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></td>';
                             tbl1 += '<td>' + result[i].display_name + '</td>';
+                            if (result[i].isGroupAvailable == 1) {
+                                tbl1 += '<td style="padding: 5px !important;">';
+                                tbl1 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
+                                tbl1 += '<option value="0">Select Group</option>';
+                                result[i].pageGroupData.forEach(function (group) {
+                                    tbl1 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
+                                });
+                                tbl1 += '</select>';
+                                tbl1 += '</td>';
+                            } else {
+                                tbl1 += '<td> No Groups Created </td>';
+                            }
                             tbl1 += '</tr > ';
                         }
                         if (result[i].page_type == 2) {
                             tbl2 += '<tr><td><input type="checkbox"  disabled="disabled" class="form-check-input report-pages" id="pages" name="chkR" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></td>';
                             tbl2 += '<td>' + result[i].display_name + '</td>';
+                            if (result[i].isGroupAvailable == 1) {
+                                tbl2 += '<td style="padding: 5px !important;">';
+                                tbl2 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
+                                tbl2 += '<option value="0">Select Group</option>';
+                                result[i].pageGroupData.forEach(function (group) {
+                                    tbl2 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
+                                });
+                                tbl2 += '</select>';
+                                tbl2 += '</td>';
+                            } else {
+                                tbl2 += '<td> No Groups Created </td>';
+                            }
                             tbl2 += '</tr > ';
                         }
 
