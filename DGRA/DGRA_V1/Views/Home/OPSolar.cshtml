@@ -92,7 +92,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-sm-3 col-form-label text-right">SPV : </label>
-                                <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="getSite(true)" multiple></select>
+                                <select class="form-control  col-sm-9" id="spv" name="spv[]" value="" onchange="spvChange()" multiple></select>
                             </div>
                         </div>
                     </div>
@@ -415,7 +415,6 @@
 @*<div id="exp_vs_actual" style="overflow-x: auto;" class="exp_vs_actual"></div>*@
 <div id="loader" class="loader  center" style="display:none"></div>
 
-</div>-->
 <!-- /.content-wrapper -->
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -438,54 +437,11 @@
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
-<!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script src="~/Content/theme/dist/js/comman.js"></script>
-<!--<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>-->
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>-->
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
-<!--<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-core.min.js"></script>
-<script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-waterfall.min.js"></script>-->
-<!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
 <script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
 @*------------------------------------------------------------------------------------------------------------------------------------------------*@
-<style>
-    /*.tooltip {
-        position: relative;
-        display: inline-block;
-    }
 
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 120px;
-            background-color: black;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 0;
-            position: absolute;
-            z-index: 1;
-            bottom: 150%;
-            left: 50%;
-            margin-left: -60px;
-        }
-
-            .tooltip .tooltiptext::after {
-                content: "";
-                position: absolute;
-                top: 100%;
-                left: 50%;
-                margin-left: -5px;
-                border-width: 5px;
-                border-style: solid;
-                border-color: black transparent transparent transparent;
-            }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-        }*/
-</style>
 
 <script type="text/javascript">
     //Get month complete in words from month number.
@@ -506,13 +462,17 @@
     //For Comments variables :
     var isSPV = 0; //0 = SPV, 1= Site.
     var siteType = 2; //site_type = 1 Solar, 2 : Wind
+    function spvChange() {
+        console.log("SPV changed.");
+        GetSite(true);
+    }
     function TypeChnage() {
         var spvDivEle = document.getElementById("spv_select_div");
         var siteDivEle = document.getElementById("site_select_div");
         var typeSelect = document.getElementById("TypeSelect").value;
         $('#spv').val([]);
-        GetSite();
-        GetSPV();
+        GetSite(false);
+        GetSPV(false);
         if (typeSelect === "1") {
             console.log("SPV wise Type selected");
             isSPV = 0;
@@ -530,7 +490,7 @@
     let site_id = "";
     let spv = "";
     var nDval = "";
-
+    let spv_list = "";
     $(document).ready(function () {
         $('#daterange').daterangepicker(
         {
@@ -574,8 +534,14 @@
         var today = new Date();
         fyear = getFinancialYear(today);
         fdate = getFinancialYearDateStartDate(fyear);
-        GetSPV();
+        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        GetSPV(false);
+        GetSite(false);
     }
+    //let site_id = "";
+    //let spv = "";
+    //var nDval = "";
+
     function handleMouseHover() {
         //console.log("mose over");
         var container = $('<div class="export-container">hiii</div>');
@@ -588,13 +554,16 @@
         //document.getElementById("info").style.display = 'none';
     }
 
-    function GetSPV() {
+    function GetSPV(fliterVal) {
         let state = "";
         $('select#state option:selected').each(function () {
             state += "'" + $(this).val() + "',";
         });
         state = state != "" ? state.slice(0, -1) : state;
-        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        let site_ids = "";
+        if (fliterVal == false) {
+            site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        }
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetSPVList", "SolarReport")' + '?state=' + state + '&sitelist=' + site_ids,
@@ -614,19 +583,27 @@
                 });
             }
         });
-        GetSite();
+        GetSite(false);
     }
 
-    function GetSite() {
+    function GetSite(fliterVal) {
         let state = "";
-        var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+        var site_ids = "";
+        if (fliterVal == false) {
+            site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+            }
         $('select#state option:selected').each(function () {
             state += $(this).val() + ",";
         });
+
         let spv = "";
-        $('select#spv option:selected').each(function () {
-            spv += $(this).val() + ",";
-        });
+            $('select#spv option:selected').each(function () {
+                spv += $(this).val() + ",";
+            });
+            spv = spv != "" ? spv.slice(0, -1) : spv;
+        if (state != "" || spv != "") {
+            site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
+            }
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetSiteList", "SolarReport")' + '?state=' + state + '&spv=' + spv + '&sitelist=' + site_ids,
@@ -662,7 +639,7 @@
         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
 
         site_id = "";
-        let spv_list = "";
+        spv_list = "";
         let prType = "";
         if ($("#customRadio1").prop("checked")) {
             prType = "AOP";
@@ -671,11 +648,58 @@
             // do something
             prType = "toplining";
         }
-        spv = $('select#spv option:selected').each(function () {
+
+       /* spv = $('select#spv option:selected').each(function () {
             spv_list += $(this).val() + ",";
         });
         spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
-        spv = spv_list;
+        spv = spv_list;*/
+
+       /* var cnt = 0;
+        $('#site option').each(function () {
+            if ($(this).is(':selected')) {
+                cnt++;
+            }
+
+        });
+        if (cnt > 0) {
+            var site = $('select#site option:selected').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }*/
+       /* var site = "";
+        site_id = "";
+        site = $('select#site option:selected').each(function () {
+            site_id += $(this).val() + ",";
+        });
+        site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+
+        var typeSelect = document.getElementById("TypeSelect").value;
+        if (typeSelect == "" || typeSelect == 0) {
+            alert("Please Select Type First.");
+            return false;
+        }
+        if (isSPV == 0 && (spv == "" || spv == 0)) {
+            GetSite(false);
+            $('select#site').find('option').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
+        if (isSPV == 1 && (site_id == "")) {
+            alert("Please Select Site.");
+            return false;
+        }*/
+
+        ////////////
+         $('select#spv option:selected').each(function () {
+            spv_list += $(this).val() + ",";
+        });
+        spv_list = spv_list != "" ? spv_list.slice(0, -1) : spv_list;
+        spv = $('select#spv option:selected').each(function () {
+            spv += $(this).val() + ",";
+        });
         var cnt = 0;
         $('#site option').each(function () {
             if ($(this).is(':selected')) {
@@ -689,35 +713,14 @@
             });
             site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
         }
-        //else {
-        //    $('select#site').find('option').each(function () {
-        //        site_id += $(this).val() + ",";
-        //    });
-        //    site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
-        //}
+        else {
+            $('select#site').find('option').each(function () {
+                site_id += $(this).val() + ",";
+            });
+            site_id = site_id != "" ? site_id.slice(0, -1) : site_id;
+        }
         console.log("SIte List", site_id);
-
-        var typeSelect = document.getElementById("TypeSelect").value;
-        if (typeSelect == "" || typeSelect == 0) {
-            alert("Please Select Type First.");
-            return false;
-        }
-        if (isSPV == 0 && (spv == "" || spv == 0)) {
-            alert("Please Select SPV.")
-            return false;
-        }
-        if (isSPV == 1 && (site_id == "")) {
-            alert("Please Select Site.");
-            return false;
-        }
-        //if (spv == "") {
-        //    isSPV = 1;
-        //    //console.log("So you will be seeing Data site wise.");
-        //} else {
-        //    isSPV = 0;
-        //    //console.log("So you will be seeing Data spv wise.");
-        //}
-
+        console.log("SIte List", site_id);
         document.getElementById("loader").style.display = 'flex';
         // Function call to get the comments data. Display Monthly Comments (DMC).
         DMC(site_id, isSPV, nDval, false);
@@ -1311,7 +1314,7 @@
         mEdit.style.display = "none";
         mDelete.style.display = "none";
 
-        console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv + " month value= " + nDval);
+        console.log("Inside Display monthly comments function. Received data is: site_id = " + site_id + " spv= " + spv_list + " month value= " + nDval);
         //if (spv == "") {
         //    isSPV = 1;
         //    //console.log("So you will be seeing Data site wise.");
@@ -1330,7 +1333,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=0' + '&spv=' + spv,
+                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=0' + '&spv=' + spv_list,
                 datatype: "html",
                 success: function (result, status, xhr) {
                     //console.log("Display Result : ");
@@ -1956,7 +1959,7 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv_list + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -2145,7 +2148,7 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv_list + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=0',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -2384,7 +2387,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no = ' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=1' + '&spv=' + spv ,
+                url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no = ' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&bdType=0' + '&isDisplay=0' + '&isMonthly=1' + '&spv=' + spv_list ,
                 datatype: "html",
                 success: function (result, status, xhr) {
                     console.log("Display Result Yearly  : ");
@@ -2996,7 +2999,7 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1'  + '&isMonthly=1',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv_list + '&bdType=' + BD_value + '&isDisplay=1'  + '&isMonthly=1',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
@@ -3186,7 +3189,7 @@
         //isDisplay: 0 = display, 1: Edit
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=1',
+            url: '@Url.Action("GetOPComments", "WindReport")' + '?month_no=' + monthNo + '&year=' + year + '&siteType=' + 1 + '&site_id=' + site_id + '&isSPV=' + isSPV + '&spv=' + spv_list + '&bdType=' + BD_value + '&isDisplay=1' + '&isMonthly=1',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
