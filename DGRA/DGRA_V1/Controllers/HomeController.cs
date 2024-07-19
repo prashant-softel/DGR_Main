@@ -1140,9 +1140,21 @@ namespace DGRA_V1.Controllers
             TempData["notification"] = "";
             return View();
         }
-		
-		//DGR version 3.
-		
+        [TypeFilter(typeof(SessionValidation))]
+        public IActionResult FormulaCalculate()
+        {
+
+            return View();
+        }
+
+        public IActionResult FormulaCalculator()
+        {
+            TempData["notification"] = "";
+            return View();
+        }
+
+        //DGR version 3.
+
 
 		[TypeFilter(typeof(SessionValidation))]
         public ActionResult OPWind()
@@ -1440,6 +1452,91 @@ namespace DGRA_V1.Controllers
             }
             return Content(line, "application/json");
 
+        }
+        [TypeFilter(typeof(SessionValidation))]
+        public async Task<IActionResult> SaveFormula(int id, string formulas)
+        {
+            string line = "";
+            
+
+            try
+            {
+                
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/SaveFormula?id=" + id + "&formulas=" + formulas + "";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
+
+        public IActionResult GetFromula(int site_id, string site_type)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetFormula?site_id=" + site_id + "&site_type=" + site_type + "";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+           
+                string message = ex.Message;
+            }
+
+
+            return Content(line, "application/json");
+        }
+
+        public IActionResult GetFormulaLog(int site_id)
+        {
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetFormulaLog?site_id=" + site_id +"";
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                string message = ex.Message;
+            }
+
+
+            return Content(line, "application/json");
         }
     }
 }

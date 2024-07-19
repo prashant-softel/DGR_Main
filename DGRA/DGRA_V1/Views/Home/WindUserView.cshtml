@@ -611,18 +611,19 @@
             SubmitDetials();
         }
         document.getElementById("Edit").innerHTML = "Update";
-        $("input.import-pages").attr("disabled", false);
-        $("input.heatmap-pages").attr("disabled", false);
         $("input.view-pages").attr("disabled", false);
+        $("input.heatmap-pages").attr("disabled", false);
+        $("input.import-pages").attr("disabled", false);
         $("input.report-pages").attr("disabled", false);
         $("input.notification").attr("disabled", false);
         $("input.custom-pages").attr("disabled", false);
         $("input.checkAllP").attr("disabled", false);
         $("input.checkAllR").attr("disabled", false);
-        $('.site').prop('disabled', false);
-        $("input.upload_access").attr("disabled", false);
         $("input.delete_btn").attr("disabled", false);
-        document.getElementById("add_site_btn").disabled = false;
+        $('.site').prop('disabled', false);
+        $('.column-group').prop('disabled', false);
+        $("input.upload_access").attr("disabled", false);
+        document.getElementById("add_site_btn").disabled = false
        // document.getElementById("delete_btn").disabled = false;
 
     }
@@ -647,15 +648,21 @@
 
     }
     function addRow(tableID) {
-        var cnt = rcont; //document.getElementById("rowcnt").value;
+        var cnt = rcont;
 
         var table = document.getElementById(tableID);
         var site_options = $('.site').first().html();
         // console.log(site_options);
-        var row = '<tr class="site-row"><td><select  class="form-control  col-sm-8 site" id="site" name="site" value="" >' + site_options + '</select></td>';
-        row += '<td><input  type="checkbox" onclick="CheckEmpty()" class="form-check-input upload_access" id="upload_access1" name="upload_access" value="1" style="margin-left: 25px; margin-top: -6px; "></td>';
+
+        var row = '<tr class="site-row"><td><select  class="form-control   col-sm-8 site" id="site" name="site" value="">' + site_options + '</select></td>';
+        row += '<td><input  type="checkbox" class="form-check-input upload_access" id="upload_access1" name="upload_access" value="1" style="margin-left: 25px; margin-top: -6px;"></td>';
         row += '<td><input  type="button" class="btn btn-block btn-danger delete_btn" id="delete_btn" name="button1" value="Delete" style="width: 50%; margin-left: 25px;"></td></tr >';
         $(table).find('tbody').append(row);
+
+        //$('.site').prop('disabled', false);
+        //$("input.upload_access").attr("disabled", false);
+        //document.getElementById("add_site_btn").disabled = false
+        //document.getElementById("delete_btn").disabled = false;
         rcont++;
         // var rowCount = table.rows.length;
         //var row = table.insertRow(row);
@@ -704,14 +711,13 @@
         }
     }
     function SubmitDetials() {
-        console.log("Test");
 
-            let site_arr = {};
-            $('.site-row').each(function () {
+        let site_arr = {};
+           
+        $('.site-row').each(function () {
             var sid = $(this).find('.site').val();
             var access = $(this).find('.upload_access').is(":checked");
-                site_arr[sid] = access;
-
+            site_arr[sid] = access;
         });
         //console.log(site_arr);
         let email_arr = [];
@@ -719,19 +725,31 @@
         let report_arr = {};
         let import_approval = 0;
         let heatmap = 0;
-	 let selected_report_page = [];
+	    let selected_report_page = [];
+	    let groupData = [];
         $('.view-pages').each(function () {
         var page_id = $(this).attr('data-pageid');
         var isSet = $(this).is(":checked");
             page_arr[page_id] = isSet;
-
+            if (isSet) {
+                if (document.getElementById("ColumnDd_" + page_id)) {
+                    var GroupId = document.getElementById("ColumnDd_" + page_id).value;
+                    console.log("Group_id is :" + GroupId);
+                    groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
+                }
+            }
         });
 
         $('.report-pages').each(function () {
             var page_id = $(this).attr('data-pageid');
             var isSet = $(this).is(":checked");
             report_arr[page_id] = isSet;
-	     if (isSet == true) {
+            if (isSet) {
+                if (document.getElementById("ColumnDd_" + page_id)) {
+                    var GroupId = document.getElementById("ColumnDd_" + page_id).value;
+                    console.log("Group_id is :" + GroupId);
+                    groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
+                }
                 selected_report_page.push(page_id);
             }
         });
@@ -770,11 +788,11 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + ' &importapproval=' + import_approval + '&heatmap=' + heatmap,
+            url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + '&site_type=2 &importapproval=' + import_approval + '&heatmap=' + heatmap,
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (result, status, xhr) {
-                 if (getVal == true) {
+                if (getVal == true) {
                     var group_page_list = "";
                     for (var n = 0; n < group_page.length; n++) {
                         group_page_list += group_page[n] + ",";
@@ -786,6 +804,9 @@
                     alert("Success");
                     location.href = '@Url.Action("SiteUserMaster", "Home")';
                 }
+                alert("Success");
+               // location.href = "/Home/WindSiteUserMaster";
+                //location.href = '@Url.Action("SiteUserMaster", "Home")';
             }
         });
 
@@ -796,6 +817,15 @@
             datatype: "html",
              success: function (result, status, xhr) {
 
+             }
+         });
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AssignGroup", "Home")' + '?login_id=' + id + '&group_data=' + JSON.stringify(groupData),
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+             success: function (result, status, xhr) {
              }
          });
     }

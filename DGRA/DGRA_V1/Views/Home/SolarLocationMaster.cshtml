@@ -133,9 +133,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script type="text/javascript">
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
+    var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+    var isAdmin = 0;
+    if (userRoles == "Admin") {
+        isAdmin = 1;
+    }
+    const columnMap = {};
+    const userColumnId = [];
     var exceldata;
     window.onload = function () {
-     var state = "";
+        getPageColumns();
+        getUserGroupColumns();
+        var state = "";
         var spv = "";
         var site_ids = "@Html.Raw(solarSiteList.TrimEnd(','))";
         $.ajax({
@@ -162,6 +172,50 @@
        // getLocationData();
     }
 
+    function getPageColumns() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=23',
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    columnMap[item.column_name] = [item.column_id, item.required];
+                });
+                console.log(columnMap);
+                //console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+            }
+            else {
+            }
+        }
+    });
+    }
+    function getUserGroupColumns() {
+        $.ajax({
+        type: "GET",
+            // url: "/WindReport/GetSiteMaster",
+            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=23&userId=' + userIdFromSession,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    userColumnId.push(item.column_id);
+                });
+                console.log(userColumnId);
+            }
+            else {
+            }
+        }
+    });
+    }
+
     function exportToExcel() {
 
         result = exceldata;
@@ -182,7 +236,7 @@
             row.push(result[i].country);
              row.push(result[i].site);
             row.push(result[i].eg);
-            row.push(result[i].ig); 
+            row.push(result[i].ig);
             row.push(result[i].icr_inv);
             row.push(result[i].icr);
             row.push(result[i].inv);
@@ -238,7 +292,7 @@
             datatype: "html",
             success: function (result, status, xhr) {
                 console.log(result);
-                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 140%;">';
+                @*var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 140%;">';
                 tbl += '<thead class="tbl-head"><tr>';
                 tbl += '<th>Country</td>';
                 tbl += '<th>Site</td>';
@@ -259,7 +313,71 @@
                 tbl += '<th>Module_Mod_No.</td>';
                 tbl += '<th>Module_Type</td>';
                 tbl += '<th>String/Central_Inv</td>';
+                tbl += '</tr></thead>';*@
+
+                var tbl = '<table id="example1" class="table table-bordered table-striped" style="width:180%">';
+                tbl += '<thead class="tbl-head"><tr>';
+                if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="width: 5%;">Country</th>';
+                }
+                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Site</th>';
+                }
+                if (userColumnId.includes(columnMap["EG"][0]) || columnMap["EG"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="width: 6%;">EG</th>';
+                }
+                if (userColumnId.includes(columnMap["IG"][0]) || columnMap["IG"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>IG</th>';
+                }
+                if (userColumnId.includes(columnMap["ICR/INV"][0]) || columnMap["ICR/INV"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>ICR/INV</th>';
+                }
+                if (userColumnId.includes(columnMap["ICR"][0]) || columnMap["ICR"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>ICR</th>';
+                }
+                if (userColumnId.includes(columnMap["INV"][0]) || columnMap["INV"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>INV</th>';
+                }
+                if (userColumnId.includes(columnMap["SMB"][0]) || columnMap["SMB"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>SMB</th>';
+                }
+                if (userColumnId.includes(columnMap["String"][0]) || columnMap["String"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>String</th>';
+                }
+                if (userColumnId.includes(columnMap["Str_Conf"][0]) || columnMap["Str_Conf"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>String Configuration</th>';
+                }
+                if (userColumnId.includes(columnMap["Total_Str_Cur"][0]) || columnMap["Total_Str_Cur"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Total_Str_Cur.<br>(amp)</th>';
+                }
+                if (userColumnId.includes(columnMap["Total_Str_vol"][0]) || columnMap["Total_Str_vol"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Total_Str_vol.</th>';
+                }
+                if (userColumnId.includes(columnMap["Modules"][0]) || columnMap["Modules"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Modules</th>';
+                }
+                if (userColumnId.includes(columnMap["Wp"][0]) || columnMap["Wp"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Wp</th>';
+                }
+                if (userColumnId.includes(columnMap["Capacity"][0]) || columnMap["Capacity"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Capacity<br>(kWp)</th>';
+                }
+                if (userColumnId.includes(columnMap["Module_make"][0]) || columnMap["Module_make"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Module Make</th>';
+                }
+                if (userColumnId.includes(columnMap["Module_Mod_No"][0]) || columnMap["Module_Mod_No"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Module_Mod_No.</th>';
+                }
+                if (userColumnId.includes(columnMap["Module_Type"][0]) || columnMap["Module_Type"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Module_Type</th>';
+                }
+                if (userColumnId.includes(columnMap["String/Central_Inv"][0]) || columnMap["String/Central_Inv"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>String/Central_Inv</th>';
+                }
+                
+
                 tbl += '</tr></thead>';
+
                 if (result.length > 0) {
                     exceldata = result;
                     for (var i = 0; i < result.length; i++) {
@@ -270,7 +388,7 @@
                         if (result[i].string_inv_central_inv == 2) {
                             inverterStatus = "Central Inverter";
                         }
-                        tbl += '<tr>';
+                        @*tbl += '<tr>';
                         tbl += '<td class="text-left">' + result[i].country + '</td>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].site + '</td>';
                         tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + result[i].eg + '</td>';
@@ -290,6 +408,67 @@
                         tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + result[i].module_model_no + '</td>';
                         tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + result[i].module_type + '</td>';
                         tbl += '<td  class="text-left"  style="text-wrap: nowrap;">' + inverterStatus+ '</td>';
+                        tbl += '</tr>';*@
+
+
+                        tbl += '<tr>';
+                        if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + result[i].country + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["EG"][0]) || columnMap["EG"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].eg + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["IG"][0]) || columnMap["IG"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].ig + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["ICR/INV"][0]) || columnMap["ICR/INV"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].icr_inv + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["ICR"][0]) || columnMap["ICR"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].icr + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["INV"][0]) || columnMap["INV"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].inv + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["SMB"][0]) || columnMap["SMB"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].smb + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["String"][0]) || columnMap["String"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].strings + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Str_Conf"][0]) || columnMap["Str_Conf"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].string_configuration + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Total_Str_Cur"][0]) || columnMap["Total_Str_Cur"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].total_string_current.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Total_Str_vol"][0]) || columnMap["Total_Str_vol"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].total_string_voltage.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Modules"][0]) || columnMap["Modules"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].modules_quantity + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Wp"][0]) || columnMap["Wp"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].wp.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Capacity"][0]) || columnMap["Capacity"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].capacity.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Module_make"][0]) || columnMap["Module_make"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].module_make + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Module_Mod_No"][0]) || columnMap["Module_Mod_No"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].module_model_no + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Module_Type"][0]) || columnMap["Module_Type"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].module_type + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["String/Central_Inv"][0]) || columnMap["String/Central_Inv"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left">' + inverterStatus + '</td>';
+                        }
                         tbl += '</tr>';
                     }
                 }
@@ -299,6 +478,7 @@
                 }
                 tbl += '</table>';
                 $("#locationData").html(tbl);
+                //$.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
                     fixedHeader: true,

@@ -3365,6 +3365,62 @@ namespace DGRAPIs.Controllers
             }
         }
         //COLUMN ACCESS CODE END
+        [Route("GetFormula")]
+        [HttpGet]
+        public async Task<IActionResult> GetFormula(int site_id, string site_type)
+        {
+            try
+            {
+                var data = await _dgrBs.GetFormula(site_id, site_type);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("SaveFormula")]
+        [HttpGet]
+        public async Task<IActionResult> SaveFormula(int id, int site_id, string formulas, int login_id, string fieldType, string oldFormulas)
+        {
+            try
+            {
+                var data = await _dgrBs.SaveFormula(id, site_id, formulas, login_id, fieldType, oldFormulas);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetCalculatedValue")]
+        [HttpGet]
+        public async Task<IActionResult> GetCalculatedValue(double U, double S, double IG, double EG, double OTHER, double LS, string updateFormulaValue)
+        {
+            try
+            {
+                var data = await _dgrBs.GetCalculatedValue(U, S, IG, EG, OTHER, LS, updateFormulaValue);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Route("GetFormulaLog")]
+        [HttpGet]
+        public async Task<IActionResult> GetFormulaLog(int site_id)
+        {
+            try
+            {
+                var data = await _dgrBs.GetFormulaLog(site_id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
     }
 }
