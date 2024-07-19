@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {}
+    "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {}
   },
   "projects": {
-    "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {
+    "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+        "projectUniqueName": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
         "projectName": "DGRAPIs",
-        "projectPath": "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
-        "packagesPath": "C:\\Users\\sujit\\.nuget\\packages\\",
-        "outputPath": "G:\\solarproject\\08012023\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
+        "projectPath": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+        "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
+        "outputPath": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\sujit\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -95,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.412\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "c:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     }

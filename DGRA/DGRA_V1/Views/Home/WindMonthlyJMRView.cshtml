@@ -146,7 +146,7 @@
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script type="text/javascript">
-    ("userid"))";
+    var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
     var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
     var isAdmin = 0;
     if (userRoles == "Admin") {
@@ -230,7 +230,7 @@
                     columnMap[item.column_name] = [item.column_id, item.required];
                 });
                 console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+                //console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
             }
             else {
             }
@@ -439,7 +439,7 @@
                 if (userColumnId.includes(columnMap["Remarks"][0]) || columnMap["Remarks"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Remarks</th>';
                 }
-                
+
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -539,7 +539,7 @@
                     fixedHeader: true,
                     responsive: true,
                     scrollX: true,
-                   lengthChange: false,
+                    lengthChange: false,
                     autoWidth: true,
                     paging: true,
                     lengthChange: false,

@@ -348,7 +348,7 @@
                 if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Site</th>';
                 }
-                if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Month</th>';
                 }
                 if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
@@ -367,7 +367,7 @@
                         if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].site + '</td>';
                         }
-                        if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
+                        if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].month + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {

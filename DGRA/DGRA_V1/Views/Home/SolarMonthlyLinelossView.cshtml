@@ -204,7 +204,7 @@
         $.ajax({
         type: "GET",
        // url: "/WindReport/GetSiteMaster",
-          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=22',
+          url: '@Url.Action("GetPageColumns", "Home")' + '?page_id=17',
         contentType: "application/json; charset=utf-8",
         //data: '{"countryname":"' + selcountry + '"}',
         datatype: "html",
@@ -215,7 +215,7 @@
                     columnMap[item.column_name] = [item.column_id, item.required];
                 });
                 console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+                //console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
             }
             else {
             }
@@ -223,26 +223,35 @@
     });
     }
     function getUserGroupColumns() {
-        $.ajax({
+    console.log("User ID:", userIdFromSession);
+
+    $.ajax({
         type: "GET",
-            // url: "/WindReport/GetSiteMaster",
-            url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=22&userId=' + userIdFromSession,
+        url: '@Url.Action("GetUserGroupColumns", "Home")' + '?page_id=17&userId=' + userIdFromSession,
         contentType: "application/json; charset=utf-8",
-        //data: '{"countryname":"' + selcountry + '"}',
         datatype: "html",
         success: function (result, status, xhr) {
-            if (result.length > 0) {
-                console.log(result);
+            console.log("Response:", result);
+
+            if (Array.isArray(result) && result.length > 0) {
                 result.forEach(item => {
-                    userColumnId.push(item.column_id);
+                    if (item && item.column_id !== undefined) {
+                        userColumnId.push(item.column_id);
+                    } else {
+                        console.warn("Invalid item in result:", item);
+                    }
                 });
-                console.log(userColumnId);
+                console.log("User Column IDs:", userColumnId);
+            } else {
+                console.log("No columns found or invalid result structure.");
             }
-            else {
-            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error:", status, error);
         }
     });
-    }
+}
+
 
 
     function exportToExcel() {
@@ -334,7 +343,7 @@
                 }
                 if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Line Losses (%)</th>';
-                }           
+                }
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
