@@ -1,28 +1,7 @@
 ﻿@{
     Layout = null;
 }
-@using Newtonsoft.Json;
-@using Microsoft.AspNetCore.Http;
-@inject IHttpContextAccessor HttpContextAccessor
-@model DGRA_V1.Models.DailyGenSummary
-@{
-    ViewData["Title"] = "OPWind";
-}
-@{
-    // Get the current year and month
-    var currentYearMonth = DateTime.Now.ToString("yyyy-MM");
-}
-@{
-    string windSiteList = "";
-    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
-}
-@for (int i = 0; i < @usermodel.access_list.Count; i++)
-{
-    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 1)
-    {
-        windSiteList += @usermodel.access_list[i].identity.ToString() + ",";
-    }
-}
+
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 <link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
@@ -296,8 +275,8 @@
                     all_sites += result[j].site_master_id + ',';
                 }
                 all_sites = all_sites.replace(/,\s*$/, "");
-                getAllSiteReport(all_sites, spvcall);
-                getAllYearlyReport(all_sites, spvcall);
+                getAllSiteReport(all_sites, all_spvs, spvcall);
+                getAllYearlyReport(all_sites, all_spvs, spvcall);
                 callReports(result,spvcall);
             }
         });
@@ -313,7 +292,11 @@
             datatype: "html",
             success: function (result, status, xhr) {
                 //console.log(result);
-              callReports(result, spvcall);
+                for (var j = 0; j < result.length; j++) {
+                    all_spvs += result[j].spv + ',';
+                }
+                all_spvs = spv.replace(/,\s*$/, "");
+                callReports(result, spvcall);
             }
         });
 
@@ -428,7 +411,8 @@
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -756,7 +740,8 @@
                         }
                     }
                     else {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -985,6 +970,7 @@
                 }
                 var sitewisePerformance = document.getElementById('divPerformanceBySite');
                 //Use html2canvas to convert the table to an image
+               
                 html2canvas(sitewisePerformance).then(function (canvas) {
                     //Get the image data as a URL
                     var imageData = canvas.toDataURL();
@@ -992,14 +978,18 @@
                     var img = document.getElementById('imgPerformanceBysite');
                     if (isSPV == 1) {
                         imgOperationBySite.push(imageData);
+                        console.log("sitecount ->" + siteCount + " impge count -->" + imgOperationBySite.length);
                        // console.log(imgOperationBySite);
                         if (siteCount == imgOperationBySite.length) {
                             //console.log("inside call portpolio");
                             isDoneSite = 1;
                             monthlyportfolio(isSPV);
                             yearlyportfolio(isSPV);
-
-                            GetSPV();
+                            setTimeout(function () {
+                                //console.log(ChartImages);
+                                GetSPV();
+                            }, 11000);
+                            
                         }
                     }
                     else {
@@ -1016,25 +1006,26 @@
                         }
                     }
                 });
+                
             }
         });
     }
     //All Site Data
-     async function getAllSiteReport(site_ids, spvcall)
+    async function getAllSiteReport(site_ids, spv, spvcall)
     {
         let spv_list = "";
         var site_id = "";
         var site_name = "";
-        if (spvcall == 1) {
+        /*if (spvcall == 1) {
             isSPV    = 0;
             site_id  = site_ids;
-            spv_list = "";
+            spv_list = spv;
         }
-        else {
+        else {*/
             isSPV    = 1;
             site_id  = site_ids;
-            spv_list = "";
-        }
+            spv_list = spv;
+        //}
          var fromDate = monthdate.startdate;//"2023-11-01";
          var toDate   = monthdate.enddate; //"2023-11-30";
         //let prType = "AOP";
@@ -1086,14 +1077,15 @@
                             document.getElementById("AllWaterfall").style.display = "flex";
                             AllSiteCreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4), site_name);
 
-                            AllmonthlyComment(site_id, isSPV, spv_list);
+                            //AllmonthlyComment(site_id, isSPV, spv_list);
                             resolve("Success for " + site_name);
 
                         }
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -1350,20 +1342,20 @@
             }
        });
     }
-    async function getAllYearlyReport(site_ids, spvcall) {
+    async function getAllYearlyReport(site_ids, spv, spvcall) {
         let spv_list = "";
         var site_id = "";
         var site_name = "";
-        if (spvcall == 1) {
+        /*if (spvcall == 1) {
             isSPV = 0;
             site_id = site_ids;
-            spv_list = "";
+            spv_list = spv;
         }
-        else {
+        else {*/
             isSPV = 1;
             site_id = site_ids;
-            spv_list = "";
-        }
+            spv_list = spv;
+        //}
         var fromToDates = fdate//getFinancialYearDates(toDate);
         var fromDate    = fdate.startdate;//"2023-11-01"; 
         var toDate      = fdate.enddate; //"2023-11-30";
@@ -1406,12 +1398,13 @@
                             AllCreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
                             //Portpolio calculation
 
-                            AllyearlyComment(site_id, isSPV, spv_list);
+                            //AllyearlyComment(site_id, isSPV, spv_list);
                             resolve("Success for " + site_name);
                         }
                     }
                     else {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                 },
                 error: function (xhr, status, error) {

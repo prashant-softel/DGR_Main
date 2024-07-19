@@ -8533,7 +8533,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 chkfilter = 1;
 
             }
-            string query = "SELECT * FROM `site_master_solar` " + filter + "ORDER BY `site`";
+            string query = "SELECT * FROM `site_master_solar` " + filter + "ORDER BY `site` LIMIT 3";
             List<SolarSiteMaster> _sitelist = new List<SolarSiteMaster>();
             _sitelist = await Context.GetData<SolarSiteMaster>(query).ConfigureAwait(false);
             return _sitelist;
@@ -18190,6 +18190,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             double lineloss_percentage = 0;
             double allSum = 0;
             int wtgNumber = 0;
+            double target_wind = 0;
             try
             {
                 if (!string.IsNullOrEmpty(site))
@@ -18250,7 +18251,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
                 //Fetch target sum from daily target kpi.
-                string fetchTargetQry = "SELECT SUM(kwh) as target_sum FROM `daily_target_kpi` WHERE site_id =" + site + " AND date = '" + data_date + "';";
+                string fetchTargetQry = "SELECT SUM(kwh) as target_sum,AVG(wind_speed) as target_wind FROM `daily_target_kpi` WHERE site_id =" + site + " AND date = '" + data_date + "';";
                 try
                 {
                     //API_ErrorLog("INFO******* fetch target query : " + fetchTargetQry);
@@ -18271,9 +18272,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         foreach (var unit in _tmlDataList)
                         {
                             target_sum = unit.target_sum;
+                            target_wind = unit.target_wind;
                         }
                         target_sum /= wtgNumber;
                         returnRes = 4;
+                        //target_wind = target_wind;
                     }
                     catch (Exception e)
                     {
@@ -18331,7 +18334,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                 //After fetching all the required data from various tables finally calculating the data.
-                string insertQry = "INSERT INTO daily_expected_vs_actual (site_id, data_date, wtg_id, wtg, tml_count, actual_wind_speed, actual_active_power, recon_wind_speed, expected_power, usmh_loss, smh_loss, others_loss, igbd_loss, egbd_loss, loadshedding_loss, pcd_loss, lull_loss, nc_loss, healthcheck_loss, setup_loss, initialization_loss, startup_loss, controller_kwh, lineloss_mu, jmr_kwh, target_kwh, adjusted_expected, difference_expected, ma, iga, ega_a, ega_b, ega_c) VALUES";
+                string insertQry = "INSERT INTO daily_expected_vs_actual (site_id, data_date, wtg_id, wtg, tml_count, actual_wind_speed, actual_active_power, recon_wind_speed, expected_power, usmh_loss, smh_loss, others_loss, igbd_loss, egbd_loss, loadshedding_loss, pcd_loss, lull_loss, nc_loss, healthcheck_loss, setup_loss, initialization_loss, startup_loss, controller_kwh, lineloss_mu, jmr_kwh, target_kwh, adjusted_expected, difference_expected, ma, iga, ega_a, ega_b, ega_c,tar_wind,act_wind) VALUES";
                 string insertValues = "";
                 string finalinsertQuery = "";
                 foreach (var uni in _tmlAllData)
@@ -18363,7 +18366,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
 
                     //insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
-                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {100 + (((uni.usmh_loss + uni.smh_loss + uni.healthcheck_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.igbd_loss/uni.adjusted_expected)*100)}, {100 + (((uni.egbd_loss + uni.loadshedding_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.egbd_loss / uni.adjusted_expected)*100)}, {100 + ((uni.loadshedding_loss / uni.adjusted_expected)*100)}),";
+                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {100 + (((uni.usmh_loss + uni.smh_loss + uni.healthcheck_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.igbd_loss/uni.adjusted_expected)*100)}, {100 + (((uni.egbd_loss + uni.loadshedding_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.egbd_loss / uni.adjusted_expected)*100)}, {100 + ((uni.loadshedding_loss / uni.adjusted_expected)*100)},{target_wind},{uni.actual_wind_speed}),";
                 }
                 finalinsertQuery = insertQry + insertValues;
                 finalinsertQuery = finalinsertQuery.Substring(0, (finalinsertQuery.Length - 1)) + ";";
@@ -18410,13 +18413,37 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             bool AOPDataAdded = false;
             bool TopliningDataAdded = false;
             string insertDates = "";
+            bool GetFrom15Min = false;
+            bool CombineReport = false;
+            string todate1 = "";
+            string fromdate1 = "";
+            if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01"))
+            {
+                if (Convert.ToDateTime(Convert.ToDateTime(fromDate).ToString("yyyy-MM-dd")) < Convert.ToDateTime("2023-10-01") && Convert.ToDateTime(Convert.ToDateTime(toDate).ToString("yyyy-MM-dd")) > Convert.ToDateTime("2023-10-01"))
+                {
+                    todate1 = "2023-09-30";
+                    fromdate1 = "2023-10-01";
+                    CombineReport = true;
+                }
+
+                GetFrom15Min = true;
+            }
 
             string filter = "";
+            string filter1 = "";
+            string filter2 = "";
+            string filter3 = "";
             int chkfilter = 0;
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
                 chkfilter = 1;
                 filter += " where t1.date>='" + fromDate + "' and t1.date<='" + toDate + "' ";
+                if (CombineReport)
+                {
+                    filter1 += "t1.date BETWEEN '" + fromDate + "' and '" + todate1 + "'";
+                    filter2 += "t1.date BETWEEN '" + fromdate1 + "' and '" + toDate + "'";
+                    filter3 += "t1.date BETWEEN '" + fromDate + "' and '" + toDate + "'";
+                }
             }
             if (!string.IsNullOrEmpty(site))
             {
@@ -18425,18 +18452,54 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     filter += " and ";
                 }
-                filter += " t1.site_id in (" + site + ") ";
+                if (CombineReport)
+                {
+                    filter3 += " and t1.site_id in (" + site + ") ";
+                }
+                else
+                {
+                    filter += " t1.site_id in (" + site + ") ";
+                }
             }
 
             string aopQuery = "";
             string topliningQuery = "";
-            //AOP query..
+            
             //aopQuery = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega_a, avg(t1.ega_b) as ega_b, avg(t1.ega_c) as ega_c,sum(usmh) as usmh,sum(smh) as smh,sum(oh) as oh,sum(igbdh) as igbdh,sum(egbdh) as egbdh,sum(load_shedding) as load_shedding,sum(total_losses) as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
 
-            aopQuery = $"SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh) AS usmh, SUM(smh) AS smh, SUM(oh) AS others, SUM(igbdh) AS igbd, SUM(egbdh) AS egbd, SUM(load_shedding) AS loadShedding, SUM(total_losses) AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date { filter } GROUP BY t1.site, t1.date;";
+            //aopQuery = $"SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh) AS usmh, SUM(smh) AS smh, SUM(oh) AS others, SUM(igbdh) AS igbd, SUM(egbdh) AS egbd, SUM(load_shedding) AS loadShedding, SUM(total_losses) AS total_losses,t2.gen_nos AS target, sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR ,(SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date { filter } GROUP BY t1.site, t1.date;";
             
             // toplining query...
-            topliningQuery = "SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma, AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh)/t2.pr*t2.toplining_PR AS usmh, SUM(smh)/t2.pr*t2.toplining_PR AS smh, SUM(oh)/t2.pr*t2.toplining_PR AS others, SUM(igbdh)/t2.pr*t2.toplining_PR AS igbd, SUM(egbdh)/t2.pr*t2.toplining_PR AS egbd, SUM(load_shedding)/t2.pr*t2.toplining_PR AS loadShedding, SUM(total_losses)/t2.pr*t2.toplining_PR AS total_losses,t2.gen_nos AS target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date " + filter + " GROUP BY t1.site, t1.date ";
+           // topliningQuery = "SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma, AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh)/t2.pr*t2.toplining_PR AS usmh, SUM(smh)/t2.pr*t2.toplining_PR AS smh, SUM(oh)/t2.pr*t2.toplining_PR AS others, SUM(igbdh)/t2.pr*t2.toplining_PR AS igbd, SUM(egbdh)/t2.pr*t2.toplining_PR AS egbd, SUM(load_shedding)/t2.pr*t2.toplining_PR AS loadShedding, SUM(total_losses)/t2.pr*t2.toplining_PR AS total_losses,t2.gen_nos AS target,sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date " + filter + " GROUP BY t1.site, t1.date ";
+            if (GetFrom15Min)
+            {
+                if (CombineReport)
+                {
+                    aopQuery = $"SELECT t2.pr,t2.toplining_PR,t1.site,t1.site_id,t1.date AS data_date,SUM(t1.inv_kwh_afterloss) AS inv_kwh, SUM(t1.ghi) AS ghi,SUM(t1.poa) AS poa,AVG(t1.ma) AS ma,AVG(t1.iga) AS iga,AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(t1.usmh) AS usmh,SUM(t1.smh) AS smh,SUM(t1.oh) AS others,SUM(t1.igbdh) AS igbd,SUM(t1.egbdh) AS egbd, SUM(t1.load_shedding) AS loadShedding,SUM(t1.total_losses) AS total_losses,t2.gen_nos AS target,sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR, CASE WHEN  {filter1} THEN(SELECT SUM(P_exp_degraded) / 4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) WHEN  {filter2} THEN(SELECT SUM(P_exp_degraded) / 60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) ELSE NULL END AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t2.date=t1.date  WHERE  {filter3} GROUP BY t1.site_id, t1.date";
+
+                    topliningQuery = $"SELECT  t2.pr,t2.toplining_PR,t1.site,t1.site_id,t1.date AS data_date,SUM(t1.inv_kwh_afterloss) AS inv_kwh,SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR AS others,sum(igbdh)/t2.pr*t2.toplining_PR as igbd,sum(egbdh)/t2.pr*t2.toplining_PR as egbd, sum(load_shedding)/t2.pr*t2.toplining_PR as loadShedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target,sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR, CASE WHEN  {filter1} THEN(SELECT SUM(P_exp_degraded) / 4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) WHEN  {filter2} THEN(SELECT SUM(P_exp_degraded) / 60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) ELSE NULL END AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date WHERE  {filter3} GROUP BY t1.site_id, t1.date";
+
+                }
+                else
+                {
+                    aopQuery = $"select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c,sum(usmh) as usmh,sum(smh) as smh,sum(oh) AS others,sum(igbdh) as igbd,sum(egbdh) as egbd,sum(load_shedding) as loadShedding,sum(total_losses) as total_losses,t2.gen_nos as target,sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date {filter} group by t1.site, t1.date ";
+
+                    topliningQuery = $"select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR AS others,sum(igbdh)/t2.pr*t2.toplining_PR as igbd,sum(egbdh)/t2.pr*t2.toplining_PR as egbd,sum(load_shedding)/t2.pr*t2.toplining_PR as loadShedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target,sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR, (SELECT SUM(P_exp_degraded)/4 FROM `uploading_pyranometer_15_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date {filter} group by t1.site, t1.date ";
+
+                }
+            }
+            else
+            {
+                //AOP query..
+                aopQuery = $"SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma,AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh) AS usmh, SUM(smh) AS smh, SUM(oh) AS others, SUM(igbdh) AS igbd, SUM(egbdh) AS egbd, SUM(load_shedding) AS loadShedding, SUM(total_losses) AS total_losses,t2.gen_nos AS target,sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power FROM daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date { filter } GROUP BY t1.site, t1.date;";
+
+                // toplining query...
+                topliningQuery = "SELECT t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date AS data_date, SUM(t1.inv_kwh) AS inv_kwh, SUM(t1.ghi) AS ghi, SUM(t1.poa) AS poa, AVG(t1.ma) AS ma, AVG(t1.iga) AS iga, AVG(t1.ega) AS ega_a, AVG(t1.ega_b) AS ega_b, AVG(t1.ega_c) AS ega_c, SUM(usmh)/t2.pr*t2.toplining_PR AS usmh, SUM(smh)/t2.pr*t2.toplining_PR AS smh, SUM(oh)/t2.pr*t2.toplining_PR AS others, SUM(igbdh)/t2.pr*t2.toplining_PR AS igbd, SUM(egbdh)/t2.pr*t2.toplining_PR AS egbd, SUM(load_shedding)/t2.pr*t2.toplining_PR AS loadShedding, SUM(total_losses)/t2.pr*t2.toplining_PR AS total_losses,t2.gen_nos AS target,sum(t1.poa)/count(t1.poa) as actIR, sum(t2.poa)/count(t2.poa) as tarIR, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS expected_power from daily_gen_summary_solar t1 LEFT JOIN daily_target_kpi_solar t2 ON t1.site_id = t2.site_id AND t1.date = t2.date " + filter + " GROUP BY t1.site, t1.date ";
+
+                //topliningQuery = "select t2.pr, t2.toplining_PR, t1.site, t1.site_id, t1.date, sum(inv_kwh_afterloss) as inv_kwh, sum(t1.ghi) as ghi, sum(t1.poa) as poa, avg(t1.ma)as ma,avg(t1.iga) as iga, avg(t1.ega) as ega,sum(usmh)/t2.pr*t2.toplining_PR as usmh,sum(smh)/t2.pr*t2.toplining_PR as smh,sum(oh)/t2.pr*t2.toplining_PR as oh,sum(igbdh)/t2.pr*t2.toplining_PR as igbdh,sum(egbdh)/t2.pr*t2.toplining_PR as egbdh,sum(load_shedding)/t2.pr*t2.toplining_PR as load_shedding,sum(total_losses)/t2.pr*t2.toplining_PR as total_losses,t2.gen_nos as target, (SELECT SUM(P_exp_degraded)/60 FROM `uploading_pyranometer_1_min_solar` WHERE site_id = t1.site_id AND import_batch_id = t1.import_batch_id) AS Pexpected from daily_gen_summary_solar t1 left join daily_target_kpi_solar t2 on t1.site_id = t2.site_id and t1.date = t2.date " + filter + " group by t1.site, t1.date ";
+            }
+
+
 
             List<ExpectedVsActualSolarDaily> AOPData = new List<ExpectedVsActualSolarDaily>();
             List<ExpectedVsActualSolarDaily> TopLiningData = new List<ExpectedVsActualSolarDaily>();
@@ -18621,17 +18684,17 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 if(returnRes == 9)
                 {
-                    string insertStartingQuery = "INSERT INTO daily_expected_vs_actual_solar (site_id, data_date, target, expected_power, usmh, smh, others, igbd, egbd, loadShedding, pr, inv_kwh, lineloss, jmr_kwh, ma, iga, ega_a, ega_b, ega_c, aop_top) VALUES ";
+                    string insertStartingQuery = "INSERT INTO daily_expected_vs_actual_solar (site_id, data_date, target, expected_power, usmh, smh, others, igbd, egbd, loadShedding, pr, inv_kwh, lineloss, jmr_kwh, ma, iga, ega_a, ega_b, ega_c, aop_top,ir_act,ir_tar) VALUES ";
                     string aopValues = "";
                     string topliningValues = "";
 
                     foreach (var unit in AOPData)
                     {
-                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd / unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding) / unit.expected_power)*100)}, {100 - ((unit.egbd / unit.expected_power)*100)}, {100 - ((unit.loadShedding / unit.expected_power)*100)}, 0),";
+                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd / unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding) / unit.expected_power)*100)}, {100 - ((unit.egbd / unit.expected_power)*100)}, {100 - ((unit.loadShedding / unit.expected_power)*100)}, 0,{unit.actIR},{unit.tarIR}),";
                     }
                     foreach (var unit in TopLiningData)
                     {
-                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd/unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding)/unit.expected_power)*100)}, {100 - ((unit.egbd /unit.expected_power)*100)}, {100 - ((unit.loadShedding/unit.expected_power)*100)}, 1),";
+                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd/unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding)/unit.expected_power)*100)}, {100 - ((unit.egbd /unit.expected_power)*100)}, {100 - ((unit.loadShedding/unit.expected_power)*100)}, 1,{unit.actIR},{unit.tarIR}),";
                     }
                     string finalInsertQuery = insertStartingQuery + aopValues + topliningValues.Substring(0, (topliningValues.Length - 1)) + ";";
 

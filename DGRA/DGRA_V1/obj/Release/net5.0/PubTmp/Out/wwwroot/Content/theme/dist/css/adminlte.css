@@ -53082,8 +53082,12 @@ a.text-muted:hover {
 .table th, .table td {
     vertical-align: middle !important;
 }
-.dataTables_filter {
+/*.dataTables_filter {
     margin-top: -2.6% !important;
+}*/
+div.dt-buttons {
+    position: initial;
+    margin-bottom: -3.2%;
 }
 
 table th {
@@ -53146,6 +53150,53 @@ table.dataTable > thead .sorting, table.dataTable > thead .sorting_asc, table.da
     border-radius: 50%;
     font-size:11px;
 }
+/* -------------- Expected chrt remove trace buttons----------*/
+.groups {
+    display:none !important
+}
+/*for fixed datatabel header */
+
+.dtfh-floatingparent, .dtfh-floatingparenthead {
+    top: -8px !important;
+}
+table.dataTable > thead .sorting:before {
+    content:unset;
+}
+table.dataTable > thead .sorting:after {
+    content: unset;
+}
+
+table.dataTable thead tr > .dtfc-fixed-left {
+    background-color: #31576D !important;
+    position: sticky !important;
+    z-index: 1;
+}
+/*Excel Icon Size */
+.fa-file-excel
+{
+    font-size:20px;
+}
+.grp-btn {
+    background: #0069d9;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    line-height: 11px;
+    text-align: center;
+    color: white;
+    -moz-box-sizing: border-box;
+    font-size: 8px;
+}
+/*
+.dataTables_scrollBody {
+    margin-top: -8px;
+}
+
+.scrolledTable > table > thead > tr {
+    visibility: collapse;
+    height: 0px !important;
+}*/
 /*table.dataTable > thead .sorting:before, table.dataTable > thead .sorting_asc:before, table.dataTable > thead .sorting_desc:before, table.dataTable > thead .sorting_asc_disabled:before, table.dataTable > thead .sorting_desc_disabled:before {
         right: 1em !important;
         content: none !important;

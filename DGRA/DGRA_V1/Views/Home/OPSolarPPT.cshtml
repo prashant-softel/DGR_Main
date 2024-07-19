@@ -2,24 +2,6 @@
     Layout = null;
 }
 
-@using Newtonsoft.Json;
-@using Microsoft.AspNetCore.Http;
-@inject IHttpContextAccessor HttpContextAccessor
-@model DGRA_V1.Models.DailyGenSummary
-@{
-    ViewData["Title"] = "SolarOperationalPerformance";
-}
-@{
-    string solarSiteList = "";
-    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
-}
-@for (int i = 0; i < @usermodel.access_list.Count; i++)
-{
-    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 2)
-    {
-        solarSiteList += @usermodel.access_list[i].identity.ToString() + ",";
-    }
-}
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 <link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
@@ -289,22 +271,7 @@
         //monthlyportfolio(0);
         ///sitewiseportfolio();
     }
-    function GetSPV() {
-        let state = "";
-        var site_ids = "";
-        let spvcall=1;
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("GetGroupSPVList", "SolarReport")' + '?siteType=1',
-            contentType: "application/json; charset=utf-8",
-            datatype: "html",
-            success: function (result, status, xhr) {
-                //console.log(result);
-               callReports(result, spvcall);
-            }
-        });
 
-    }
     function GetSite() {
         let state    = "";
         var site_ids = "";
@@ -321,11 +288,27 @@
                 }
                 all_sites = all_sites.replace(/,\s*$/, "");
                 //console.log(all_sites);
-                getAllSiteReport(all_sites, spvcall);
-                getAllYearlyReport(all_sites, spvcall);
+                //getAllSiteReport(all_sites, spvcall);
+                //getAllYearlyReport(all_sites, spvcall);
                 callReports(result,spvcall);
             }
         });
+    }
+    function GetSPV() {
+        let state = "";
+        var site_ids = "";
+        let spvcall=1;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetGroupSPVList", "SolarReport")' + '?siteType=1',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                //console.log(result);
+               callReports(result, spvcall);
+            }
+        });
+
     }
 
     async function callReports(sitedata, spvcall) {
@@ -461,7 +444,8 @@
                         division.style.display = "flex";
                         document.getElementById("Waterfall").style.display = "flex";
                         document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                     idcnt++;
                 },
@@ -758,7 +742,7 @@
         }
         var fromToDates = fdate//getFinancialYearDates(toDate);
         var fromDate    = fdate.startdate;//"2023-11-01";
-        var toDate      = fdate.enddate; //"2023-11-30"; 
+        var toDate      = fdate.enddate; //"2023-11-30";
         let prType      = "AOP";
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -835,7 +819,8 @@
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -997,6 +982,7 @@
     }
     //Yearly Comment
     function yearlyComment(site_id, isSPV, spv) {
+        console.log("Yearly Comment");
         var yDisplay = document.getElementById("yearComments");
         yDisplay.style.display = "block";
         var temDate = monthdate.startdate.split("-");
@@ -1099,9 +1085,11 @@
                     var imageData = canvas.toDataURL();
                     //Set the image source to the data URL
                     var img = document.getElementById('imgPerformanceBysite');
+                    console.log("isSPV ::", isSPV);
                     if(isSPV ==1)
                     {
                         imgOperationBySite.push(imageData);
+
                         //console.log(imgOperationBySite);
                         if (siteCount == imgOperationBySite.length) {
                             console.log("inside call portpolio");
@@ -1121,13 +1109,13 @@
                             isDoneSite = 1;
                             monthlyportfolio(isSPV);
                             yearlyportfolio(isSPV);
-                            
+
                         }
                     }
 
                     //img.src = imageData;
-
-                  //  console.log("sitecount ->" + siteCount + " impge count -->" + imgOperationBySite.length);
+                    console.log(imgOperationBySite);
+                  console.log("sitecount ->" + siteCount + " impge count -->" + imgOperationBySite.length);
 
                 });
 
@@ -1235,7 +1223,8 @@
                         division.style.display = "flex";
                         document.getElementById("AllWaterfall").style.display = "flex";
                        // document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                     idcnt++;
                 },
@@ -1520,7 +1509,7 @@
         }
         var fromToDates = fdate//getFinancialYearDates(toDate);
         var fromDate    = fdate.startdate;//"2023-11-01";
-        var toDate      = fdate.enddate;//"2023-11-30"; 
+        var toDate      = fdate.enddate;//"2023-11-30";
         let prType      = "AOP";
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -1590,7 +1579,8 @@
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
 
                 },
@@ -1917,7 +1907,7 @@
 
         // Create HTML table string Monthly AOP Bases Site Wise
 
-      
+
 
         /*--------Monthly Expected Based,------*/
         /*var data_exp = [
@@ -2019,7 +2009,7 @@
             { site: 'PD Kote', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' }
         ];*/
 
-       
+
         /*--------Yearly Expected Based sample,------*/
        /* var data_exp = [
             { site: 'Hiriyur', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
@@ -2061,7 +2051,7 @@
             captureDivContent(document.getElementById('yearlyportfoliobysite'), isSPV);
         }
 
-        
+
         if (isDoneSite ==1 && isDoneSPV ==1)
         {
             setTimeout(function () {
