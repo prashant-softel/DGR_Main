@@ -3346,6 +3346,25 @@ namespace DGRAPIs.Controllers
                 }
             }
         }
+        [Route("GetUserAssignedGroups")]
+        [HttpGet]
+        public async Task<IActionResult> GetUserAssignedGroups(int user_id)
+        {
+            {
+                try
+                {
+                    var data = await _dgrBs.GetUserAssignedGroups(user_id);
+                    return Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        //COLUMN ACCESS CODE END
         [Route("GetFormula")]
         [HttpGet]
         public async Task<IActionResult> GetFormula(int site_id, string site_type)
@@ -3402,7 +3421,6 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //COLUMN ACCESS CODE END
         #endregion
     }
 }

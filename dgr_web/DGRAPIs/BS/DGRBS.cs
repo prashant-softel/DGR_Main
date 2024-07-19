@@ -234,13 +234,13 @@ namespace DGRAPIs.BS
         Task<List<pageColumns>> GetUserGroupColumns(int page_id, int userId);
         Task<int> UpdateGroup_CA(int[] set, int page_id, int page_groups_id);
         Task<int> ActiDeactiGroup_CA(int page_groups_id, int status);
-
+        Task<List<pageColumns>> GetUserAssignedGroups(int user_id);
+        //COLUMN ACCESS END
+      
         Task<List<GetFormulas1>> GetFormula(int site_id, string site_type);
         Task<List<GetFormulaLog>> GetFormulaLog(int site_id);
         Task<int> SaveFormula(int id, int site_id, string formulas, int login_id, string fieldType, string oldFormulas);
         Task<double> GetCalculatedValue(double U, double S, double IG, double EG, double OTHER, double LS, string updateFormulaValue);
-
-        //COLUMN ACCESS END
     }
     public class DGRBS : IDGRBS
     {
@@ -3257,7 +3257,24 @@ namespace DGRAPIs.BS
             }
 
         }
-
+        //GetUserAssignedGroups
+        public async Task<List<pageColumns>> GetUserAssignedGroups(int user_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetUserAssignedGroups(user_id);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //COLUMN ACCESS END
+        
+        
         public async Task<List<GetFormulas1>> GetFormula(int site_id, string site_type)
         {
             try
@@ -3322,7 +3339,5 @@ namespace DGRAPIs.BS
                 throw;
             }
         }
-
-        //COLUMN ACCESS END
     }
 }

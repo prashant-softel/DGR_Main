@@ -1364,6 +1364,32 @@ namespace DGRA_V1.Controllers
             return Content(line, "application/json");
 
         }
+        public async Task<IActionResult> GetUserAssignedGroups(int user_id)
+        {
+            string line = "";
+            try
+            {
+                //var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/WindUserRegistration?fname=" + fname + "&useremail="+ useremail + "&site="+ site + "&role="+ role + "&pages="+ pages + "&reports="+ reports + "&read="+ read + "&write="+ write + "";
+                // var url = "http://localhost:23835/api/Login/SubmitUserAccess?login_id=" + login_id+"&siteList="+ site +"&pageList="+ pages +"&reportList="+ reports;
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetUserAssignedGroups?user_id=" + user_id;
+                WebRequest request = WebRequest.Create(url);
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "";
+            }
+            return Content(line, "application/json");
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateGroup_CA([FromBody] int[] groupData, int page_id, int page_groups_id)
