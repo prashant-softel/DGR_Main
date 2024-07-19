@@ -235,6 +235,11 @@ namespace DGRAPIs.BS
         Task<int> UpdateGroup_CA(int[] set, int page_id, int page_groups_id);
         Task<int> ActiDeactiGroup_CA(int page_groups_id, int status);
 
+        Task<List<GetFormulas1>> GetFormula(int site_id, string site_type);
+        Task<List<GetFormulaLog>> GetFormulaLog(int site_id);
+        Task<int> SaveFormula(int id, int site_id, string formulas, int login_id, string fieldType, string oldFormulas);
+        Task<double> GetCalculatedValue(double U, double S, double IG, double EG, double OTHER, double LS, string updateFormulaValue);
+
         //COLUMN ACCESS END
     }
     public class DGRBS : IDGRBS
@@ -3251,6 +3256,71 @@ namespace DGRAPIs.BS
                 throw;
             }
 
+        }
+
+        public async Task<List<GetFormulas1>> GetFormula(int site_id, string site_type)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetFormula(site_id, site_type);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
+        }
+
+        public async Task<int> SaveFormula(int id, int site_id, string formulas, int login_id, string fieldType, string oldFormulas)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.SaveFormula(id, site_id, formulas, login_id, fieldType, oldFormulas);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
+        }
+
+        public async Task<double> GetCalculatedValue(double U, double S, double IG, double EG, double OTHER, double LS, string updateFormulaValue)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return repos.GetCalculatedValue1(U, S, IG, EG, OTHER, LS, updateFormulaValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<GetFormulaLog>> GetFormulaLog(int site_id)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetFormulaLog(site_id);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         //COLUMN ACCESS END

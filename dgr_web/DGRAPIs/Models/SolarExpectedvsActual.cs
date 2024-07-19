@@ -75,5 +75,8 @@ namespace DGRAPIs.Models
         public double ega_b { get; set; }
         public double ega_c { get; set; }
         public int aop_top { get; set; }
+        public double actIR { get; set; }
+        public double tarIR { get; set; }
+
     }
 }

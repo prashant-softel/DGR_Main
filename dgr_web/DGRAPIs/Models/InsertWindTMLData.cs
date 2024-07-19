@@ -140,6 +140,7 @@ namespace DGRAPIs.Models
         public double lossUSMH_final { get; set; }
         public double loadShedding { get; set; }
         public int monthlyData { get; set; }
+        public double target_wind { get; set; }
     }
 	public class ExpectedVsActualDaily
     {
