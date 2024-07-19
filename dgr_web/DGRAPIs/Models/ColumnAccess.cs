@@ -65,6 +65,7 @@ namespace DGRAPIs.Models
         public int column_id { get; set; }
         public string column_name { get; set; }
         public int required { get; set; }
+        public int page_groups_id { get; set; }
     }
 
     public class groupsData

@@ -20803,6 +20803,23 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             return finalRes;
         }
 
+        internal async Task<List<pageColumns>> GetUserAssignedGroups(int user_id)
+        {
+            List<pageColumns> finalData = new List<pageColumns>();
+
+            try
+            {
+                string fetchQry = $"SELECT page_id, page_groups_id FROM `user_page_group_ca` WHERE user_id = {user_id};";
+                finalData = await Context.GetData<pageColumns>(fetchQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while fetching page columns, due to : " + e.ToString();
+            }
+
+            return finalData;
+        }
+
         //COLUMN ACCESS CODE ENDS
     }
 }

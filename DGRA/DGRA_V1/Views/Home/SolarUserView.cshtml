@@ -184,6 +184,7 @@
     id = 0;
     var rcont = 1;
     const group_page = ['24', '26'];
+    let UserAccessGroupList = {};
     window.onload = function () {
 
         function GetURLParameter(sParam) {
@@ -204,8 +205,29 @@
         GetDetails(id);
 
         getSite();
+        getUserAssignedGroups();
     }
-
+    function getUserAssignedGroups() {
+        $.ajax({
+        type: "GET",
+       // url: "/WindReport/GetSiteMaster",
+          url: '@Url.Action("GetUserAssignedGroups", "Home")' + '?user_id=' + id,
+        contentType: "application/json; charset=utf-8",
+        //data: '{"countryname":"' + selcountry + '"}',
+        datatype: "html",
+        success: function (result, status, xhr) {
+            if (result.length > 0) {
+                console.log(result);
+                result.forEach(item => {
+                    UserAccessGroupList[item.page_id] = item.page_groups_id;
+                });
+                console.log(UserAccessGroupList);
+            }
+            else {
+            }
+        }
+    });
+    }
     function GetDetails(loginid) {
         $.ajax({
             type: "GET",
@@ -308,10 +330,15 @@
                             tbl1 += '<td>' + result[i].display_name + '</td>';
                             if (result[i].isGroupAvailable == 1) {
                                 tbl1 += '<td style="padding: 5px !important;">';
-                                tbl1 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
+                                tbl1 += '<select class="column-group col-sm-12 report-select" disabled="true" id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
                                 tbl1 += '<option value="0">Select Group</option>';
                                 result[i].pageGroupData.forEach(function (group) {
+                                    var groupNo = UserAccessGroupList[result[i].id] || 0;
+                                if (groupNo > 0 && groupNo == group.page_groups_id) {
+                                    tbl1 += '<option value="' + group.page_groups_id + '" selected>' + group.page_group_name + '</option>';
+                                } else {
                                     tbl1 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
+                                }
                                 });
                                 tbl1 += '</select>';
                                 tbl1 += '</td>';
@@ -328,7 +355,12 @@
                                 tbl2 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
                                 tbl2 += '<option value="0">Select Group</option>';
                                 result[i].pageGroupData.forEach(function (group) {
-                                    tbl2 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
+                                    var groupNo = UserAccessGroupList[result[i].id] || 0;
+                                    if (groupNo > 0 && groupNo == group.page_groups_id) {
+                                        tbl2 += '<option value="' + group.page_groups_id + '" selected>' + group.page_group_name + '</option>';
+                                    }else {
+                                        tbl2 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
+                                    }
                                 });
                                 tbl2 += '</select>';
                                 tbl2 += '</td>';
@@ -440,7 +472,7 @@
 
                     }
                 }
-                    
+
 
             }
          });
@@ -727,7 +759,7 @@
     function SubmitDetials() {
 
         let site_arr = {};
-           
+
         $('.site-row').each(function () {
             var sid = $(this).find('.site').val();
             var access = $(this).find('.upload_access').is(":checked");
