@@ -407,21 +407,30 @@
             options: {
                 //responsive: true,
                 //maintainAspectRatio: false,
-                legend: {
-                    position: 'bottom',
-                    display: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        display: true,
+                    }
                 },
                 scales: {
                     //y: {
                     //    suggestedMin: 0
                     //}
-                    y: {
-                        //ticks: {
-                        //    beginAtZero: true
-                        //}
+
+                    x: {
                         ticks: {
-                            suggestedMin: 0,
-                            min: 0
+                            min: 1,         // Start at 1
+                            max: 10,        // End at 10
+                            stepSize: 1     // Increment by 1
+                        }
+                    },
+
+                    y: {
+                        min: 0,
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 100
                         }
                     }
                 }
