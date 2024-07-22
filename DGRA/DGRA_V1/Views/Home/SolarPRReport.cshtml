@@ -346,7 +346,7 @@
                             columnMap[item.column_name] = [item.column_id, item.required];
                         });
                         console.log(columnMap);
-                        console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+                        //console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
                     }
                     else {
                     }
@@ -1431,7 +1431,7 @@
                 }
                 tbl += '</table>';
                 $("#pr_reports").html(tbl);
-                $.fn.DataTable.ext.pager.numbers_length = 6;
+                //$.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
                     fixedHeader: true,
