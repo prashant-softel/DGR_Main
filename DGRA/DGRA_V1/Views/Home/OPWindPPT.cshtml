@@ -1,28 +1,7 @@
 ﻿@{
     Layout = null;
 }
-@using Newtonsoft.Json;
-@using Microsoft.AspNetCore.Http;
-@inject IHttpContextAccessor HttpContextAccessor
-@model DGRA_V1.Models.DailyGenSummary
-@{
-    ViewData["Title"] = "OPWind";
-}
-@{
-    // Get the current year and month
-    var currentYearMonth = DateTime.Now.ToString("yyyy-MM");
-}
-@{
-    string windSiteList = "";
-    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
-}
-@for (int i = 0; i < @usermodel.access_list.Count; i++)
-{
-    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 1)
-    {
-        windSiteList += @usermodel.access_list[i].identity.ToString() + ",";
-    }
-}
+
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 <link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
@@ -421,15 +400,19 @@
                             MonthlyAOP_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "AOP": target_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": monthlyaop_achive.toFixed(1) + '%' });
                             MonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": expected_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": monthlyexp_achive.toFixed(1) + '%' });
 
-                           monthlyComment(site_id, isSPV, spv_list);
+                           //monthlyComment(site_id, isSPV, spv_list);
                             resolve("Success for " + site_name);
 
                         }
+                       
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
+                    monthlyComment(site_id, isSPV, spv_list);
+                    document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
                 },
                 error: function (xhr, status, error) {
                     //Handle error case
@@ -751,13 +734,16 @@
                             YearlyAOP_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "AOP": target_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyaop_achive.toFixed(1) + '%' });
                             YearlyMonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": expected_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyexp_achive.toFixed(1) + '%' });
 
-                            yearlyComment(site_id, isSPV, spv_list);
+                            //yearlyComment(site_id, isSPV, spv_list);
                             resolve("Success for " + site_name);
                         }
+                       
                     }
                     else {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                       // reject("No data for " + site_name);
                     }
+                    yearlyComment(site_id, isSPV, spv_list);
                 },
                 error: function (xhr, status, error) {
                     //Handle error case
@@ -1086,15 +1072,17 @@
                             document.getElementById("AllWaterfall").style.display = "flex";
                             AllSiteCreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4), site_name);
 
-                            AllmonthlyComment(site_id, isSPV, spv_list);
+                            //AllmonthlyComment(site_id, isSPV, spv_list);
                             resolve("Success for " + site_name);
 
                         }
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
+                    AllmonthlyComment(site_id, isSPV, spv_list);
                 },
                 error: function (xhr, status, error) {
                     //Handle error case
@@ -1406,13 +1394,15 @@
                             AllCreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
                             //Portpolio calculation
 
-                            AllyearlyComment(site_id, isSPV, spv_list);
+                            //AllyearlyComment(site_id, isSPV, spv_list);
                             resolve("Success for " + site_name);
                         }
                     }
                     else {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                       // reject("No data for " + site_name);
                     }
+                    AllyearlyComment(site_id, isSPV, spv_list);
                 },
                 error: function (xhr, status, error) {
                     //Handle error case

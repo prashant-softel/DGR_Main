@@ -2,24 +2,6 @@
     Layout = null;
 }
 
-@using Newtonsoft.Json;
-@using Microsoft.AspNetCore.Http;
-@inject IHttpContextAccessor HttpContextAccessor
-@model DGRA_V1.Models.DailyGenSummary
-@{
-    ViewData["Title"] = "SolarOperationalPerformance";
-}
-@{
-    string solarSiteList = "";
-    var usermodel = JsonConvert.DeserializeObject<UserAccess>(@HttpContextAccessor.HttpContext.Session.GetString("UserAccess"));
-}
-@for (int i = 0; i < @usermodel.access_list.Count; i++)
-{
-    if (@usermodel.access_list[i].page_type == 3 && @usermodel.access_list[i].site_type == 2)
-    {
-        solarSiteList += @usermodel.access_list[i].identity.ToString() + ",";
-    }
-}
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 <link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
@@ -321,7 +303,7 @@
                 }
                 all_sites = all_sites.replace(/,\s*$/, "");
                 //console.log(all_sites);
-                getAllSiteReport(all_sites, spvcall);
+               getAllSiteReport(all_sites, spvcall);
                 getAllYearlyReport(all_sites, spvcall);
                 callReports(result,spvcall);
             }
@@ -342,7 +324,7 @@
         for (let i = 0; i < sitedata.length; i++) {
             const res = await getReport(sitedata[i], spvcall); // Await each API call to ensure they execute sequentially
             const resYearly = await getYearlyReport(sitedata[i], spvcall); // Await each API call to ensure they execute sequentially
-            console.log('--->', res);
+            console.log('mothly--->', res);
            console.log('Yealy--->', resYearly);
         }
     }
@@ -451,7 +433,8 @@
 
                         MonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": total_expected.toFixed(1), "actual": total_actual.toFixed(1), "archive": monthlyexp_achive.toFixed(1)+'%'});
                        //montly comment function
-                        monthlyComment(site_id, isSPV, spv_list);
+
+                       //monthlyComment(site_id, isSPV, spv_list);
                        resolve("Success for " + site_name);
                     }
                     else
@@ -460,9 +443,12 @@
                         //division.innerHTML = "No Data Present for Days Between " + fromDate + " & " + toDate + " For Selected Sites.";
                         division.style.display = "flex";
                         document.getElementById("Waterfall").style.display = "flex";
-                        document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
-                        reject("No data for " + site_name);
+                        //document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
+                        //reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
                     }
+                    document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
+                    monthlyComment(site_id, isSPV, spv_list);
                     idcnt++;
                 },
                 error: function (xhr, status, error) {
@@ -830,13 +816,15 @@
                         YearlyMonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": total_expected.toFixed(1), "actual": total_actual.toFixed(1), "archive": yearlyexp_achive.toFixed(1)+'%' });
 
                         // montly comment function
-                        yearlyComment(site_id, isSPV, spv_list);
+                        //yearlyComment(site_id, isSPV, spv_list);
                         resolve("Success for " + site_name);
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
+                    yearlyComment(site_id, isSPV, spv_list);
                 },
                 error: function (xhr, status, error) {
                     //Handle error case
@@ -1127,7 +1115,7 @@
 
                     //img.src = imageData;
 
-                  //  console.log("sitecount ->" + siteCount + " impge count -->" + imgOperationBySite.length);
+                    console.log("sitecount ->" + siteCount + " impge count -->" + imgOperationBySite.length);
 
                 });
 
@@ -1235,7 +1223,8 @@
                         division.style.display = "flex";
                         document.getElementById("AllWaterfall").style.display = "flex";
                        // document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
                     idcnt++;
                 },
@@ -1590,7 +1579,8 @@
                     }
                     else
                     {
-                        reject("No data for " + site_name);
+                        resolve("No data for " + site_name);
+                        //reject("No data for " + site_name);
                     }
 
                 },

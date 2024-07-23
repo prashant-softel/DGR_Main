@@ -227,7 +227,94 @@ namespace DGRAPIs.Helper
                             }
                         }
                     }
-        //DGR_v3 Email_report changes
+
+                    //Monthly report mail operation Performance 
+                    //string weeklyTime = MyConfig.GetValue<string>("Timer:WeeklyReportTime");
+                    string MonthlyTimeWind = MyConfig.GetValue<string>("Timer:MonthlyReportTime");
+                    string MonthlyTimeSolar = MyConfig.GetValue<string>("Timer:MonthlyReportTimeSolar");
+                    
+
+                    msg = "From Scheduler Service : Monthly Wind Scheduled Mail Sending Time : " + MonthlyTimeWind;
+                    PPT_InformationLog(msg);
+                    msg = "From Scheduler Service : Monthly Solar Scheduled Mail Sending Time : " + MonthlyTimeSolar;
+                    PPT_InformationLog(msg);
+
+                    if (DateTime.Now.ToString("HH:mm") == MonthlyTimeWind)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
+                    {
+                        PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : Inside if where Monthly =" + MonthlyTimeWind);
+                        PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : Started sending Email for Wind Monthly Mail Send ");
+
+                        EmailMonthlyFunction();
+
+                        async Task<int> EmailMonthlyFunction()
+                        {
+                            PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : Email Monthly Wind Function Called from scheduler");
+                            string hostName = MyConfig.GetValue<string>("Timer:hostName");
+
+                            bool WindMailSuccess = false;
+                            try
+                            {
+                                string apiUrlWind = hostName + "/api/DGR/MonthlyMailSend";
+                                PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : API URL " + apiUrlWind);
+                                CallAPI(apiUrlWind);
+                                WindMailSuccess = true;
+                                PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : Inside try Wind Monthly Mail Send Flag : " + WindMailSuccess);
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.Message;
+                                PPT_ErrorLog("From Scheduler Service : For Wind Monthly Mail Send : Inside catch Wind Monthly mail failed" + msg + " Flag : " + WindMailSuccess);
+                            }
+                            if (WindMailSuccess)
+                            {
+                                PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : Mail Sent" + msg);
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
+                    }
+                    //Solar Monthly Mail Send Function 
+                    if (DateTime.Now.ToString("HH:mm") == MonthlyTimeSolar)// && DateTime.Now.ToString("ddd") == WeeklyReportDayOfWeek)
+                    {
+                        PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Inside if where Monthly time = " + MonthlyTimeSolar);
+                        PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Started sending Email for Solar Monthly Mail Send ");
+
+                        EmailSolarMonthlyFunction();
+
+                        async Task<int> EmailSolarMonthlyFunction()
+                        {
+                            PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Email Monthly Mail Send Solar Function Called from scheduler");
+                            string hostName = MyConfig.GetValue<string>("Timer:hostName");
+
+                            bool SolarMailSuccess = false;
+                            try
+                            {
+                                string apiUrlSolar = hostName + "/api/DGR/SolarReviewMail";
+                                PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Email Monthly mail send solar API URL " + apiUrlSolar);
+                                CallAPI(apiUrlSolar);
+                                SolarMailSuccess = true;
+                                PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Inside try Solar Monthly mail send Flag : " + SolarMailSuccess);
+                            }
+                            catch (Exception e)
+                            {
+                                string msg = e.Message;
+                                PPT_ErrorLog("From Scheduler Service : For Solar Monthly Mail Send : Inside catch Solar Monthly mail failed" + msg);
+                            }
+                            if (SolarMailSuccess)
+                            {
+                                PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Solar Mail Sent" + msg + " Flag : " + SolarMailSuccess);
+                                return 1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
+                    }
+                    //Tanvi's Changes
                     string firstDgrReminderTime = MyConfig.GetValue<string>("Timer:firstDgrReminderTime");
                     string secondDgrReminderTime = MyConfig.GetValue<string>("Timer:secondDgrReminderTime");
 
