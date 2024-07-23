@@ -20933,7 +20933,15 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                 parser.SetValue("LS", LS);
                 double result = parser.GetValueAsDouble();// This method evaluates the mathematical expression and returns the result as a double.
                 //restrict value 6 digit after decimal point
-                returnValue = Math.Round(result, 6);
+                if (double.IsNaN(result))
+                {
+                    returnValue = 1;
+                }
+                else
+                {
+                    returnValue = Math.Round(result, 6);
+                }
+               
             }
             catch (Exception ex)
             {

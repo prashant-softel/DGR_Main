@@ -444,14 +444,20 @@
                 if (!isNaN(result) && isFinite(result) && (result !== Infinity && result !== -Infinity)) {
                     // Update the result on the UI if save is successful
                     document.getElementById("result_" + id + "_" + site_id + "_" + tdID).textContent = result;
-                } else {
+                }
+                else if(result == -Infinity)
+                {
+                    alert("If numirator and dinuminator both are 0 then availability value  = 100");
+                    document.getElementById("result_" + id + "_" + site_id + "_" + tdID).textContent = result;
+                }
+                else {
                     // Display error message if the result is not a valid number
-                    alert("Failed to validate formula : " + formulaToValidate);
+                    alert("Syntax and Synthesis Error in formula : " + formulaToValidate);
                 }
             },
             error: function(xhr, status, error) {
                 //console.error("AJAX Error:", error);
-                alert("Failed to validate formula : " + formulaToValidate);
+                alert("Syntax and Synthesis Error in formula : " + formulaToValidate);
             }
         });
     }
@@ -574,14 +580,14 @@
                 var siteId = result[0].site_id;
                 //MA_Actual
                 tbl += '<tr>';
-                tbl += '<td id="typeId_1" value="MA_Actual">MA Actual </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_1" value="'+result[0].mA_Actual+'">' + result[0].mA_Actual + '</td>';
+                tbl += '<td id="typeId_1" value="MA_Actual">MA_Actual </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_1" value="'+result[0].mA_Actual+'">' + result[0].mA_Actual + '</td>';
                 tbl += '<td class="text-center"><div style="display: flex; justify-content: center; align-items: center;"><button id="cng_btn_' + 1 + '"    class="btn btn-dark btn-sm" onclick="ChangePass(' + result[0].id + ', ' + siteId + ',' + 1 + ')" style="background-color: #31576d; padding: 0.15rem 0.25rem;min-width: 50px;    width:50%; display: inline;" >Edit</button><div id="hide_1" style="display: none; flex-direction: column; justify-content: center;    align-items: center;"><input id="changefamula_1" type="text" value="' + result[0].mA_Actual + '"  placeholder="Enter New Formula"    style="margin-top: 10px"/><div id="validation_1" style="display: none">Please Enter formula.</div><div style="width:auto;  display:   flex; gap: 5px; flex-direction: row; justify-content: between; align-items: center;"><button onclick="SaveFormula(' + result[0].id + ', ' + siteId + ',' + 1 + ')"  class="btn   btn-success btn-sm" style="margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Save</button>  <button onclick = "ChangeExit(' + result[0].id + ', ' + siteId + ',' + 1 + ')"   class="btn btn-danger btn-sm" style = "margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Cancel</button></div></div></div></td>';
                 tbl += '<td class="text-center"><button onclick="validate(' + result[0].id + ', ' + siteId + ',' + 1 + ')" class="btn btn-success btn-sm">Validate</button></td>';
                 tbl += '<td class="text-left" value="Results" id="result_' + result[0].id + '_' + siteId + '_' + 1 + '"></td>';
                 tbl += '</tr>';
                 //MA_Contractual
                 tbl += '<tr>';
-                tbl += '<td id="typeId_2" value="MA_Contractual">MA Contractual </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_2" value="' + result[0].mA_Contractual + '">' + result[0].mA_Contractual + '</td>';
+                tbl += '<td id="typeId_2" value="MA_Contractual">MA_Contractual </td><td class="text-left" style="text-wrap: nowrap;" id="oldfarmula_2" value="' + result[0].mA_Contractual + '">' + result[0].mA_Contractual + '</td>';
                 tbl += '<td class="text-center"><div style="display: flex; justify-content: center; align-items: center;"><button id="cng_btn_' + 2 + '"    class="btn btn-dark btn-sm" onclick="ChangePass(' + result[0].id + ', ' + siteId + ',' + 2 + ')" style="background-color: #31576d; padding: 0.15rem 0.25rem;min-width: 50px;    width:50%; display: inline;" >Edit</button><div id="hide_2" style="display: none; flex-direction: column; justify-content: center;    align-items: center;"><input id="changefamula_2" type="text" value="' + result[0].mA_Contractual + '"  placeholder="Enter New Formula"    style="margin-top: 10px"/><div id="validation_2" style="display: none">Please Enter formula.</div><div style="width:auto;  display:   flex; gap: 5px; flex-direction: row; justify-content: between; align-items: center;"><button onclick="SaveFormula(' + result[0].id + ', ' + siteId + ',' + 2 + ')"  class="btn   btn-success btn-sm" style="margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Save</button>  <button onclick = "ChangeExit(' + result[0].id + ', ' + siteId + ',' + 2 + ')"   class="btn btn-danger btn-sm" style = "margin-top: 10px; padding: 0.15rem 0.75rem;width: 60%;">Cancel</button></div></div></div></td>';
                 tbl += '<td class="text-center"><button onclick="validate(' + result[0].id + ', ' + siteId + ',' + 2 + ')" class="btn btn-success btn-sm">Validate</button></td>';
                 tbl += '<td class="text-left" value="Results" id="result_' + result[0].id + '_' + siteId + '_' + 2 + '"></td>';
