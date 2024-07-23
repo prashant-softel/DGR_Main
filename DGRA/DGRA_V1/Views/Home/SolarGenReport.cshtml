@@ -25,10 +25,8 @@
 
 }
 
-<link rel="stylesheet" href="/path/to/cdn/bootstrap.min.css">
-<script src="/path/to/cdn/jquery.min.js"></script>
-<script src="/path/to/cdn/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+@*<link rel="stylesheet" href="/path/to/cdn/bootstrap.min.css">
+*@<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 <!-- Font Awesome -->
 <link rel="stylesheet" href="~/Content/theme/plugins/fontawesome-free/css/all.min.css">
 <!-- daterange picker -->
@@ -82,423 +80,423 @@
                                     <div style="float: right;width: 65%;" id="customDiv">
                                         <div style="float: right;">
                                             <input type="checkbox" class="form-check-input group_by_site" id="group_by_site" name="group_by_site" value="1" style="width: 17px; height: 16px;" onclick="grouping_site()"> <b>&nbsp;&nbsp;&nbsp;Custom Grouping of Site </b>
-                                        </div> 
+                                        </div>
                                     </div>
 
                                 </ul>
                                 <div>
-                                
-                                
-                            </div>
-
-                            <div class="card-body">
-                                <div class="tab-content" id="custom-tabs-three-tabContent">
-                                    <div class="tab-pane fade show active" id="custom-tabs-three-daily" role="tabpanel" aria-labelledby="custom-tabs-three-daily-tab">
-                                        <div class="row" id="daily_sec">
-                                            <div class="col-sm-4">
-                                                <div class="input-group " style="margin-left: -14%; width: 118%;">
-                                                    <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">
-                                                            <i class="far fa-calendar-alt"></i>
-                                                        </span>
-                                                    </div>
-                                                    <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Country : </label>
-                                                        <select class="form-control  col-sm-8" id="country" name="country" value="">
-
-                                                            <option value="india" selected>India</option>
 
 
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">State : </label>
-                                                        <select class="form-control  col-sm-8" id="state" name="state[]" value="" onchange="GetSPV();" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                </div>
 
-                                        </div>
-                                        <div class="row" id="daily_sec1">
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-2 col-form-label text-right">SPV : </label>
-                                                        <select class="form-control  col-sm-8" id="spv" name="spv[]" value="" onchange="GetSite()" multiple></select>
+                                <div class="card-body">
+                                    <div class="tab-content" id="custom-tabs-three-tabContent">
+                                        <div class="tab-pane fade show active" id="custom-tabs-three-daily" role="tabpanel" aria-labelledby="custom-tabs-three-daily-tab">
+                                            <div class="row" id="daily_sec">
+                                                <div class="col-sm-4">
+                                                    <div class="input-group " style="margin-left: -14%; width: 118%;">
+                                                        <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">
+                                                                <i class="far fa-calendar-alt"></i>
+                                                            </span>
+                                                        </div>
+                                                        <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-4">
+                                                <div class="col-sm-4">
 
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                                        <select class="form-control  col-sm-8" id="site" name="site[]" value="" onchange="GetInverter(true)" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Inverter : </label>
-                                                        <select class="form-control  col-sm-8" id="inv" name="inv[]" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row" id="daily_sec2">
-                                            <div class="col-sm-5 text-left">
-                                                <div class="table-responsive pad">
-                                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                        <label class="btn bg-olive">
-                                                            <input type="radio" name="daily" value="WTG" id="daily_b1" autocomplete="off" checked> Inverter Wise Report
-                                                        </label>
-                                                        <label class="btn bg-olive">
-                                                            <input type="radio" name="daily" value="Site" id="daily_b2" autocomplete="off"> Site Wise Report
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="col-sm-2 text-center">
-                                                <button type="button" class="btn btn-block btn-primary" onclick="GetDailyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
-                                            </div>
-                                            <div class="col-sm-5 text-center"></div>
-                                        </div>
-                                        <!--daily Group site -->
-                                        <div class="row" id="daily_group" style="display:none">
-                                            <div class="col-sm-4">
-                                                <div class="input-group " style="margin-left: -14%; width: 118%;">
-                                                    <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">
-                                                            <i class="far fa-calendar-alt"></i>
-                                                        </span>
-                                                    </div>
-                                                    <input type="text" class="form-control float-right col-sm-6" id="custom_daterange" name="custom_daterange">
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
-                                                        <select class="form-control  col-sm-8" id="cust_daily_group" name="cust_daily_group[]" value="" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-2 text-center">
-                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomDailyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                        <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
-                                        <div id="reportsDailyGroup" style="overflow-x: auto;" class="reportsDailyGroup"></div>
-                                        <div id="loaderD" class="loader  center" style="display:none"></div>
-
-
-                                    </div>
-                                    <div class="tab-pane fade" id="custom-tabs-three-monthly" role="tabpanel" aria-labelledby="custom-tabs-three-monthly-tab">
-                                        <div class="row" id="monthly_sec">
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">FY : </label>
-                                                        <select class="form-control  col-sm-8" id="fyM" name="fyM" value="">
-                                                            <option value="">Select Financial Year</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Month : </label>
-                                                        <select class="form-control  col-sm-8" id="monthM" name="monthM[]" value="" multiple>
-                                                            <option value="04">April</option>
-                                                            <option value="05">May</option>
-                                                            <option value="06">June</option>
-                                                            <option value="07">July</option>
-                                                            <option value="08">August</option>
-                                                            <option value="09">September</option>
-                                                            <option value="10">October</option>
-                                                            <option value="11">November</option>
-                                                            <option value="12">December</option>
-                                                            <option value="01">January</option>
-                                                            <option value="02">February</option>
-                                                            <option value="03">March</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Country : </label>
-                                                        <select class="form-control  col-sm-8" id="countryM" name="countryM" value="">
-                                                            <option value="india" selected>India</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="row" id="monthly_sec1">
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">State : </label>
-                                                        <select class="form-control  col-sm-8" id="stateM" name="stateM[]" value="" onchange="GetSPVM();" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">SPV : </label>
-                                                        <select class="form-control  col-sm-8" id="spvM" name="spvM[]" value="" onchange="GetSiteM()" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                                        <select class="form-control  col-sm-8" id="siteM" name="siteM[]" value="" onchange="GetInverterM(true)" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row" id="monthly_sec2">
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Inverter : </label>
-                                                        <select class="form-control  col-sm-8" id="invM" name="invM[]" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-1"></div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-block btn-primary" onclick="GetMonthlyGenReport();" style=" margin-right: 4rem; width: 5rem;">Search</button>
-                                            </div>
-                                            <div class="col-sm-5"></div>
-                                        </div>
-                                        <div class="row" id="monthly_sec3">
-                                            <div class="col-sm-5">
-                                                <div class="table-responsive pad">
-                                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                        <label class="btn bg-olive">
-                                                            <input type="radio" name="monthly" value="WTG" id="monthly_b1" autocomplete="off" checked> Inverter Wise Report
-                                                        </label>
-                                                        <label class="btn bg-olive">
-                                                            <input type="radio" name="monthly" value="Site" id="monthly_b2" autocomplete="off"> Site Wise Report
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-7"></div>
-                                        </div>
-                                        <!-- Monthly Group by Site -->
-                                        <div class="row" id="monthly_group" style="display:none">
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">FY : </label>
-                                                        <select class="form-control  col-sm-8" id="fyM_group" name="fyM_group" value="">
-                                                            <option value="">Select Financial Year</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Month : </label>
-                                                        <select class="form-control  col-sm-8" id="monthM_group" name="monthM_group[]" value="" multiple>
-                                                            <option value="04">April</option>
-                                                            <option value="05">May</option>
-                                                            <option value="06">June</option>
-                                                            <option value="07">July</option>
-                                                            <option value="08">August</option>
-                                                            <option value="09">September</option>
-                                                            <option value="10">October</option>
-                                                            <option value="11">November</option>
-                                                            <option value="12">December</option>
-                                                            <option value="01">January</option>
-                                                            <option value="02">February</option>
-                                                            <option value="03">March</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
                                                     <div class="form-group">
                                                         <div class="row">
-                                                            <label class="col-sm-3 col-form-label text-right">Custom Group : </label>
-                                                            <select class="form-control  col-sm-8" id="custM_group" name="custM_group[]" value="" multiple></select>
+                                                            <label class="col-sm-3 col-form-label text-right">Country : </label>
+                                                            <select class="form-control  col-sm-8" id="country" name="country" value="">
+
+                                                                <option value="india" selected>India</option>
+
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">State : </label>
+                                                            <select class="form-control  col-sm-8" id="state" name="state[]" value="" onchange="GetSPV();" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="row" id="daily_sec1">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                                            <select class="form-control  col-sm-8" id="spv" name="spv[]" value="" onchange="GetSite()" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                                            <select class="form-control  col-sm-8" id="site" name="site[]" value="" onchange="GetInverter(true)" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Inverter : </label>
+                                                            <select class="form-control  col-sm-8" id="inv" name="inv[]" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="daily_sec2">
+                                                <div class="col-sm-5 text-left">
+                                                    <div class="table-responsive pad">
+                                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                            <label class="btn bg-olive">
+                                                                <input type="radio" name="daily" value="WTG" id="daily_b1" autocomplete="off" checked> Inverter Wise Report
+                                                            </label>
+                                                            <label class="btn bg-olive">
+                                                                <input type="radio" name="daily" value="Site" id="daily_b2" autocomplete="off"> Site Wise Report
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-sm-2 text-center">
+                                                    <button type="button" class="btn btn-block btn-primary" onclick="GetDailyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                                </div>
+                                                <div class="col-sm-5 text-center"></div>
+                                            </div>
+                                            <!--daily Group site -->
+                                            <div class="row" id="daily_group" style="display:none">
+                                                <div class="col-sm-4">
+                                                    <div class="input-group " style="margin-left: -14%; width: 118%;">
+                                                        <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">
+                                                                <i class="far fa-calendar-alt"></i>
+                                                            </span>
+                                                        </div>
+                                                        <input type="text" class="form-control float-right col-sm-6" id="custom_daterange" name="custom_daterange">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
+                                                            <select class="form-control  col-sm-8" id="cust_daily_group" name="cust_daily_group[]" value="" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 text-center">
+                                                    <button type="button" class="btn btn-block btn-primary" onclick="GetCustomDailyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
+                                            <div id="reportsDailyGroup" style="overflow-x: auto;" class="reportsDailyGroup"></div>
+                                            <div id="loaderD" class="loader  center" style="display:none"></div>
+
+
+                                        </div>
+                                        <div class="tab-pane fade" id="custom-tabs-three-monthly" role="tabpanel" aria-labelledby="custom-tabs-three-monthly-tab">
+                                            <div class="row" id="monthly_sec">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">FY : </label>
+                                                            <select class="form-control  col-sm-8" id="fyM" name="fyM" value="">
+                                                                <option value="">Select Financial Year</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Month : </label>
+                                                            <select class="form-control  col-sm-8" id="monthM" name="monthM[]" value="" multiple>
+                                                                <option value="04">April</option>
+                                                                <option value="05">May</option>
+                                                                <option value="06">June</option>
+                                                                <option value="07">July</option>
+                                                                <option value="08">August</option>
+                                                                <option value="09">September</option>
+                                                                <option value="10">October</option>
+                                                                <option value="11">November</option>
+                                                                <option value="12">December</option>
+                                                                <option value="01">January</option>
+                                                                <option value="02">February</option>
+                                                                <option value="03">March</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Country : </label>
+                                                            <select class="form-control  col-sm-8" id="countryM" name="countryM" value="">
+                                                                <option value="india" selected>India</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="row" id="monthly_sec1">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">State : </label>
+                                                            <select class="form-control  col-sm-8" id="stateM" name="stateM[]" value="" onchange="GetSPVM();" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">SPV : </label>
+                                                            <select class="form-control  col-sm-8" id="spvM" name="spvM[]" value="" onchange="GetSiteM()" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                                            <select class="form-control  col-sm-8" id="siteM" name="siteM[]" value="" onchange="GetInverterM(true)" multiple></select>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                        </div>
-                                        <div class="row" id="monthly_group1" style="display:none">
-                                            <div class="col-sm-5"></div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomMonthGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                            <div class="row" id="monthly_sec2">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Inverter : </label>
+                                                            <select class="form-control  col-sm-8" id="invM" name="invM[]" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-1"></div>
+                                                <div class="col-sm-2">
+                                                    <button type="button" class="btn btn-block btn-primary" onclick="GetMonthlyGenReport();" style=" margin-right: 4rem; width: 5rem;">Search</button>
+                                                </div>
+                                                <div class="col-sm-5"></div>
                                             </div>
-                                            <div class="col-sm-5"></div>
+                                            <div class="row" id="monthly_sec3">
+                                                <div class="col-sm-5">
+                                                    <div class="table-responsive pad">
+                                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                            <label class="btn bg-olive">
+                                                                <input type="radio" name="monthly" value="WTG" id="monthly_b1" autocomplete="off" checked> Inverter Wise Report
+                                                            </label>
+                                                            <label class="btn bg-olive">
+                                                                <input type="radio" name="monthly" value="Site" id="monthly_b2" autocomplete="off"> Site Wise Report
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-7"></div>
+                                            </div>
+                                            <!-- Monthly Group by Site -->
+                                            <div class="row" id="monthly_group" style="display:none">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">FY : </label>
+                                                            <select class="form-control  col-sm-8" id="fyM_group" name="fyM_group" value="">
+                                                                <option value="">Select Financial Year</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Month : </label>
+                                                            <select class="form-control  col-sm-8" id="monthM_group" name="monthM_group[]" value="" multiple>
+                                                                <option value="04">April</option>
+                                                                <option value="05">May</option>
+                                                                <option value="06">June</option>
+                                                                <option value="07">July</option>
+                                                                <option value="08">August</option>
+                                                                <option value="09">September</option>
+                                                                <option value="10">October</option>
+                                                                <option value="11">November</option>
+                                                                <option value="12">December</option>
+                                                                <option value="01">January</option>
+                                                                <option value="02">February</option>
+                                                                <option value="03">March</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <label class="col-sm-3 col-form-label text-right">Custom Group : </label>
+                                                                <select class="form-control  col-sm-8" id="custM_group" name="custM_group[]" value="" multiple></select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="row" id="monthly_group1" style="display:none">
+                                                <div class="col-sm-5"></div>
+                                                <div class="col-sm-2">
+                                                    <button type="button" class="btn btn-block btn-primary" onclick="GetCustomMonthGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                                </div>
+                                                <div class="col-sm-5"></div>
+                                            </div>
+                                            <hr>
+                                            <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
+                                            <div id="reportsMonthlyGroup" style="overflow-x: auto;" class="reportsMonthlyGroup"></div>
+                                            <div id="loaderM" class="loader  center" style="display:none"></div>
                                         </div>
-                                        <hr>
-                                        <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
-                                        <div id="reportsMonthlyGroup" style="overflow-x: auto;" class="reportsMonthlyGroup"></div>
-                                        <div id="loaderM" class="loader  center" style="display:none"></div>
+                                        <div class="tab-pane fade" id="custom-tabs-three-yearly" role="tabpanel" aria-labelledby="custom-tabs-three-yearly-tab">
+                                            <div class="row" id="yearly_sec">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-2 col-form-label text-right">FY : </label>
+                                                            <select class="form-control  col-sm-8" id="fyY" name="fyY" value="">
+                                                                <option value="">Select Financial Year</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Country : </label>
+                                                            <select class="form-control  col-sm-8" id="countryY" name="countryY" value="">
+                                                                <option value="india" selected>India</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">State : </label>
+                                                            <select class="form-control  col-sm-8" id="stateY" name="stateY[]" value="" onchange="GetSPVY();" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="row" id="yearly_sec1">
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-2 col-form-label text-right">SPV : </label>
+                                                            <select class="form-control  col-sm-8" id="spvY" name="spvY[]" value="" onchange="GetSiteY()" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Site : </label>
+                                                            <select class="form-control  col-sm-8" id="siteY" name="siteY[]" value="" onchange="GetInverterY(true)" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-3 col-form-label text-right">Inverter : </label>
+                                                            <select class="form-control  col-sm-8" id="invY" name="invY[]" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row" id="yearly_sec2">
+                                                <div class="col-sm-5 text-left">
+                                                    <div class="table-responsive pad">
+                                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                            <label class="btn bg-olive">
+                                                                <input type="radio" name="yearly" value="WTG" id="yearly_b1" autocomplete="off" checked> Inverter Wise Report
+                                                            </label>
+                                                            <label class="btn bg-olive">
+                                                                <input type="radio" name="yearly" value="Site" id="yearly_b2" autocomplete="off"> Site Wise Report
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 text-center">
+                                                    <button type="button" class="btn btn-block btn-primary" onclick="GetYearlyGenReport();" style="margin-left: 4rem; width: 5rem;">Search</button>
+                                                </div>
+                                                <div class="col-sm-5 text-center"></div>
+                                            </div>
+                                            <!-- Yearly Group -->
+                                            <div class="row" id="yearly_group" style="display:none">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-2 col-form-label text-right">FY : </label>
+                                                            <select class="form-control  col-sm-8" id="fyY_group" name="fyY_group" value="">
+                                                                <option value="">Select Financial Year</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
+                                                            <select class="form-control  col-sm-8" id="customY_group" name="customY_group[]" value="" onchange="" multiple></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 text-center">
+                                                    <button type="button" class="btn btn-block btn-primary" onclick="GetCustomYearlyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
+                                                </div>
+
+                                            </div>
+                                            <hr>
+                                            <div id="reportsYearly" style="overflow-x: auto;" class="reportsYearly"></div>
+                                            <div id="reportsYearlyGroup" style="overflow-x: auto;" class="reportsYearlyGroup"></div>
+                                            <div id="loaderY" class="loader  center" style="display:none"></div>
+                                        </div>
+
                                     </div>
-                                    <div class="tab-pane fade" id="custom-tabs-three-yearly" role="tabpanel" aria-labelledby="custom-tabs-three-yearly-tab">
-                                        <div class="row" id="yearly_sec">
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-2 col-form-label text-right">FY : </label>
-                                                        <select class="form-control  col-sm-8" id="fyY" name="fyY" value="">
-                                                            <option value="">Select Financial Year</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Country : </label>
-                                                        <select class="form-control  col-sm-8" id="countryY" name="countryY" value="">
-                                                            <option value="india" selected>India</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">State : </label>
-                                                        <select class="form-control  col-sm-8" id="stateY" name="stateY[]" value="" onchange="GetSPVY();" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="row" id="yearly_sec1">
-                                            <div class="col-sm-4">
-
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-2 col-form-label text-right">SPV : </label>
-                                                        <select class="form-control  col-sm-8" id="spvY" name="spvY[]" value="" onchange="GetSiteY()" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                                        <select class="form-control  col-sm-8" id="siteY" name="siteY[]" value="" onchange="GetInverterY(true)" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-3 col-form-label text-right">Inverter : </label>
-                                                        <select class="form-control  col-sm-8" id="invY" name="invY[]" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row" id="yearly_sec2">
-                                            <div class="col-sm-5 text-left">
-                                                <div class="table-responsive pad">
-                                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                        <label class="btn bg-olive">
-                                                            <input type="radio" name="yearly" value="WTG" id="yearly_b1" autocomplete="off" checked> Inverter Wise Report
-                                                        </label>
-                                                        <label class="btn bg-olive">
-                                                            <input type="radio" name="yearly" value="Site" id="yearly_b2" autocomplete="off"> Site Wise Report
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-2 text-center">
-                                                <button type="button" class="btn btn-block btn-primary" onclick="GetYearlyGenReport();" style="margin-left: 4rem; width: 5rem;">Search</button>
-                                            </div>
-                                            <div class="col-sm-5 text-center"></div>
-                                        </div>
-                                        <!-- Yearly Group -->
-                                        <div class="row" id="yearly_group" style="display:none">
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-2 col-form-label text-right">FY : </label>
-                                                        <select class="form-control  col-sm-8" id="fyY_group" name="fyY_group" value="">
-                                                            <option value="">Select Financial Year</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <label class="col-sm-4 col-form-label text-right">Custom Group : </label>
-                                                        <select class="form-control  col-sm-8" id="customY_group" name="customY_group[]" value="" onchange="" multiple></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-2 text-center">
-                                                <button type="button" class="btn btn-block btn-primary" onclick="GetCustomYearlyGenReport();" style=" margin-left: 4rem; width: 5rem;">Search</button>
-                                            </div>
-
-                                        </div>
-                                        <hr>
-                                        <div id="reportsYearly" style="overflow-x: auto;" class="reportsYearly"></div>
-                                        <div id="reportsYearlyGroup" style="overflow-x: auto;" class="reportsYearlyGroup"></div>
-                                        <div id="loaderY" class="loader  center" style="display:none"></div>
-                                    </div>
-
-                                    </div>
+                                </div>
+                                <!-- /.card -->
                             </div>
-                            <!-- /.card -->
                         </div>
+
+                        <!-- <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
+                                            <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
+                                            <div id="reportsYearly" style="overflow-x: auto; " class="reportsYearly"></div>
+                        -->
+
                     </div>
 
-                    <!-- <div id="reportsDaily" style="overflow-x: auto;" class="reportsDaily"></div>
-                                        <div id="reportsMonthly" style="overflow-x: auto;" class="reportsMonthly"></div>
-                                        <div id="reportsYearly" style="overflow-x: auto; " class="reportsYearly"></div>
-                    -->
+                    <!--<div class="card-footer">
+                        Footer
+                    </div>-->
 
                 </div>
-
-                <!--<div class="card-footer">
-                    Footer
-                </div>-->
-
-            </div>
 
 
     </section>
@@ -506,6 +504,9 @@
 </div>
 <script src="~/Content/theme/plugins/jquery/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+@*<script src="/path/to/cdn/jquery.min.js"></script>
+<script src="/path/to/cdn/bootstrap.min.js"></script>*@
 
 <script src="~/Content/theme/plugins/multiple-select/dist/multiple-select.min.js" defer></script>
 <!--Date Range -->
@@ -538,7 +539,7 @@
     if (userRoles == "Admin") {
         isAdmin = 1;
     }
-
+    var fixedColumnsLeft = (isAdmin === 1) ? 6 : 3;
     const columnMap = {};
     const userColumnId = [];
 
@@ -1419,9 +1420,9 @@
                 }
                 if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Total_Loss</th>';
-                }                
+                }
                 //tbl += '<th>MA_CON<br>(%)</th>';
-                
+
                 tbl += '</tr></thead>';
                 $("#reportsDaily").html(tbl);
 
@@ -1557,7 +1558,7 @@
                         if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
                         }
-                        
+
                         tbl += '</tr>';
                        // const row = document.createElement("tr");
 
@@ -1756,9 +1757,9 @@
                         ordering: true,
                         info: true,
                         autoWidth: true,
-                       @* fixedColumns: {
-                            left: 8
-                        },*@
+                        fixedColumns: {
+                            left: fixedColumnsLeft
+                        },
                         pageLength: 50,
                         "order": [[4, "asc"]],
                         buttons: [
@@ -2196,7 +2197,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 7
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[1, "asc"]],
@@ -2732,7 +2733,7 @@
                     autoWidth: true,
                     pageLength: 50,
                     fixedColumns: {
-                        left: 9
+                        left: fixedColumnsLeft
                     },
                     "order": [[5, "asc"]],
                     buttons: [
@@ -3237,7 +3238,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 8
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[5, "asc"]],
@@ -3747,7 +3748,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 8
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],
@@ -4277,7 +4278,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 7
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],

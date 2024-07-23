@@ -139,6 +139,7 @@
     if (userRoles == "Admin") {
         isAdmin = 1;
     }
+    var fixedColumnsLeft = (isAdmin === 1) ? 9 : 3;
     const columnMap = {};
     const userColumnId = [];
     var exceldata;
@@ -492,9 +493,9 @@
                     ordering: true,
                     info: true,
                     autoWidth: true,
-                    @*fixedColumns: {
-                        left: 9
-                    },*@
+                    fixedColumns: {
+                        left: fixedColumnsLeft
+                    },
                     pageLength: 50,
                     buttons: [
                         {

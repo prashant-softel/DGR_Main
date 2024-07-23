@@ -510,10 +510,12 @@
 <script type="text/javascript">
     var userIdFromSession = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("userid"))";
     var userRoles = "@Html.Raw(@HttpContextAccessor.HttpContext.Session.GetString("role"))";
+ 
     var isAdmin = 0;
     if (userRoles == "Admin") {
         isAdmin = 1;
     }
+    var fixedColumnsLeft = (isAdmin === 1) ? 6 : 3;
     const columnMap = {};
     const userColumnId = [];
     var exceldata1;
@@ -1466,7 +1468,7 @@
 
                 }
                 tbl += '</table>';
-                $("#reportsDaily").html(tbl);
+                $("#reportsDaily").html("").html(tbl);
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example1').DataTable({
                     dom: 'Bfrtip',
@@ -1475,13 +1477,13 @@
                     responsive: true,
                     scrollX: true,
                     lengthChange: false,
-                    autoWidth: true,
+                    autoWidth: false,
                     paging: true,
                     searching: true,
                     ordering: true,
                     info: true,
                     fixedColumns: {
-                        left: 6
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],
@@ -1899,7 +1901,7 @@
                     ordering: true,
                     info: true,
                     fixedColumns: {
-                        left: 6
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],
@@ -2323,7 +2325,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 7
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[5, "asc"]],
@@ -2752,7 +2754,7 @@
                     autoWidth: true,
                     pageLength: 50,
                     fixedColumns: {
-                        left: 7
+                        left: fixedColumnsLeft
                     },
                     "order": [[5, "asc"]],
                     buttons: [
@@ -3186,7 +3188,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 6
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],
@@ -3605,7 +3607,7 @@
                     info: true,
                     autoWidth: true,
                     fixedColumns: {
-                        left: 6
+                        left: fixedColumnsLeft
                     },
                     pageLength: 50,
                     "order": [[4, "asc"]],
