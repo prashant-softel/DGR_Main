@@ -147,6 +147,7 @@
 
                 <div class="col-sm-12">
                     <div id="Waterfall" style="overflow-x: auto; width: 100%; height: 400px; align-items: center; justify-content: center; display: flex; color:blue"></div>
+                   <span id="msg" style="display:none"></span>
                     <!--<canvas id="Waterfall" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%; width: 640px; margin-top: -1rem "></canvas>-->
                 </div>
                 <br>
@@ -514,7 +515,9 @@
 
                 //Call function draw the chart
                     monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
-
+                   
+                    //division.style.display = "flex";
+                    //document.getElementById("Waterfall").style.display = "flex";
             }
                 else {
                     var division = document.getElementById("Waterfall");
@@ -586,7 +589,8 @@
     }
     function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
         console.log("Inside monthly Chart Function : values, Target : " + total_target + " Expected : " + total_expected + " USMH : " + total_usmh + " SMH : " + total_smh + " Others : " + total_oh + " IGBD : " + total_igbd + " EGBD : " + total_egbd + " Curtaiment : " + total_curtaiment + " PR : " + total_pr + " Actual : " + total_actual);
-
+        var division = document.getElementById("Waterfall");
+        division.innerHTML = "";
         let t_target = Number(total_target).toFixed(2);
         let t_expected = Number(total_expected).toFixed(2);
         let t_usmh = Number(total_usmh * -1).toFixed(2);
@@ -1031,7 +1035,7 @@ function getYearlyReport()
     }
     function getTableData() {
         document.getElementById("viewTableBtn").style.display = 'none';
-        document.getElementById("exp_vs_actual").style.display = 'flex';
+        document.getElementById("exp_vs_actual").style.display = 'block';
         document.getElementById("CloseViewTableBtn").style.display = 'flex';
     }
     function closeTableData() {
