@@ -93,7 +93,7 @@
                         <div id="AllWaterfallyearly" style="min-height: 380px; height: 380px; max-height: 380px; max-width: 100%;"></div>
                     </div>
                     <div class="col-md-4">
-                        <div id="AllyearComments">
+                        <div id="AllyearComments" style="height: 384px;overflow: hidden;">
                             <div id="AllDYC_EGB" style="display: block; cursor: default;"></div>
                             <div id="AllDYC_BD" style="display: block; cursor: default;"></div>
                             <div id="AllDYC_Other" style="display: block; cursor: default;"></div>
@@ -404,15 +404,15 @@
                             var formattedDate   = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                             cnt++;
                             total_target        += result[i].target;
-                            total_expected      += (result[i].pexpected / 1000000);
-                            total_usmh          += (result[i].usmh / 1000000);
-                            total_smh           += (result[i].smh / 1000000);
-                            total_oh            += (result[i].oh / 1000000);
-                            total_actual        += (result[i].inv_kwh/1000000);
-                            total_pr            += pr_value / 1000000;
-                            total_igbd          += (result[i].igbdh / 1000000);
-                            total_egbd          += (result[i].egbdh / 1000000);
-                            total_curtaiment    += (result[i].load_shedding / 1000000);
+                            total_expected      += (result[i].pexpected);
+                            total_usmh          += (result[i].usmh);
+                            total_smh           += (result[i].smh);
+                            total_oh            += (result[i].oh);
+                            total_actual        += (result[i].inv_kwh);
+                            total_pr            += pr_value;
+                            total_igbd          += (result[i].igbdh);
+                            total_egbd          += (result[i].egbdh);
+                            total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
                         usmh_cal        = (total_usmh / total_expected) * 100;
@@ -787,15 +787,15 @@
                             pr_value            = result[i].inv_kwh - total_breakdown;
                             cnt++;
                             total_target        += result[i].target;
-                            total_expected      += (result[i].pexpected/1000000);
-                            total_usmh          += (result[i].usmh/1000000);
-                            total_smh           += (result[i].smh/1000000);
-                            total_oh            += (result[i].oh/1000000);
-                            total_actual        += (result[i].inv_kwh / 1000000);
-                            total_pr            += (pr_value/1000000);
-                            total_igbd          += (result[i].igbdh/1000000);
-                            total_egbd          += (result[i].egbdh/1000000);
-                            total_curtaiment    += (result[i].load_shedding/1000000);
+                            total_expected      += (result[i].pexpected);
+                            total_usmh          += (result[i].usmh);
+                            total_smh           += (result[i].smh);
+                            total_oh            += (result[i].oh);
+                            total_actual        += (result[i].inv_kwh);
+                            total_pr            += (pr_value);
+                            total_igbd          += (result[i].igbdh);
+                            total_egbd          += (result[i].egbdh);
+                            total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
                         usmh_cal        = (total_usmh / total_expected) * 100;
@@ -1193,15 +1193,15 @@
                             var formattedDate   = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                             cnt++;
                             total_target        += result[i].target;
-                            total_expected      += (result[i].pexpected / 1000000);
-                            total_usmh          += (result[i].usmh / 1000000);
-                            total_smh           += (result[i].smh / 1000000);
-                            total_oh            += (result[i].oh / 1000000);
-                            total_actual        += (result[i].inv_kwh/1000000);
-                            total_pr            += pr_value / 1000000;
-                            total_igbd          += (result[i].igbdh / 1000000);
-                            total_egbd          += (result[i].egbdh / 1000000);
-                            total_curtaiment    += (result[i].load_shedding / 1000000);
+                            total_expected      += (result[i].pexpected);
+                            total_usmh          += (result[i].usmh);
+                            total_smh           += (result[i].smh);
+                            total_oh            += (result[i].oh);
+                            total_actual        += (result[i].inv_kwh);
+                            total_pr            += pr_value;
+                            total_igbd          += (result[i].igbdh);
+                            total_egbd          += (result[i].egbdh);
+                            total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
                         usmh_cal        = (total_usmh / total_expected) * 100;
@@ -1552,15 +1552,15 @@
                             pr_value            = result[i].inv_kwh - total_breakdown;
                             cnt++;
                             total_target        += result[i].target;
-                            total_expected      += (result[i].pexpected/1000000);
-                            total_usmh          += (result[i].usmh/1000000);
-                            total_smh           += (result[i].smh/1000000);
-                            total_oh            += (result[i].oh/1000000);
-                            total_actual        += (result[i].inv_kwh / 1000000);
-                            total_pr            += (pr_value/1000000);
-                            total_igbd          += (result[i].igbdh/1000000);
-                            total_egbd          += (result[i].egbdh/1000000);
-                            total_curtaiment    += (result[i].load_shedding/1000000);
+                            total_expected      += (result[i].pexpected);
+                            total_usmh          += (result[i].usmh);
+                            total_smh           += (result[i].smh);
+                            total_oh            += (result[i].oh);
+                            total_actual        += (result[i].inv_kwh);
+                            total_pr            += (pr_value);
+                            total_igbd          += (result[i].igbdh);
+                            total_egbd          += (result[i].egbdh);
+                            total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
                         usmh_cal        = (total_usmh / total_expected) * 100;
@@ -2065,7 +2065,7 @@
         let tbl = '<table class="table table-bordered table-striped" style="height: 200px;">';
         tbl += '<thead class="tbl-head">';
         tbl += '<tr>';
-        tbl += '<th colspan="2" rowspan="2">APO</th>';
+        tbl += '<th colspan="2" rowspan="2">AOP</th>';
         for (let i = 0; i < 10; i++) {
             if (data[i]) {
                 tbl += '<th>' + data[i].site + '</th>';
@@ -2087,7 +2087,7 @@
         tbl += '<tbody>';
         tbl += '<tr>';
         tbl += '<td rowspan="3" style="font-weight: 600;">Generation</td>';
-        tbl += '<td style="font-weight: 600;">APO</td>';
+        tbl += '<td style="font-weight: 600;">AOP</td>';
         for (let i = 0; i < 10; i++) {
             if (data[i]) {
                 tbl += '<td style="font-weight: 600;">' + data[i].AOP + '</td>';
@@ -2107,17 +2107,17 @@
         }
         tbl += '</tr>';
         tbl += '<tr>';
-        tbl += '<td style="font-weight: 600;">Archived</td>';
+        tbl += '<td style="font-weight: 600;">Achieved</td>';
         for (let i = 0; i < 10; i++) {
             if (data[i]) {
-                let background = "background:#FFAC1C;font-weight: 600;";
+                let background = 'background:#FFAC1C;';
                 if (data[i].archive >= '97%') {
-                    background = "background:#008000;font-weight: 600;";
+                    background = 'background:#008000;';
                 }
                 if (data[i].archive < '90%') {
-                    background = "background:#ff0000;font-weight: 600;";
+                    background = 'background:#ff0000;';
                 }
-                tbl += '<td style=' + background + '>' + data[i].archive + '</td>';
+                tbl += '<td style="' + background + 'font-weight: 600;color:#ffffff;">' + data[i].archive + '</td>';
             } else {
                 //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
             }
@@ -2131,7 +2131,8 @@
         let tbl = '<table class="table table-bordered table-striped" style="height: 200px;">';
         tbl += '<thead class="tbl-head">';
         tbl += '<tr>';
-        tbl += '<th colspan="2" rowspan="2">Expected<sup>1<sup></th>';
+        //tbl += '<th colspan="2" rowspan="2">Expected<sup>1<sup></th>';
+        tbl += '<th colspan="2" rowspan="2">Expected</th>';
         for (let i = 0; i < 10; i++) {
             if (data[i]) {
                 tbl += '<th>' + data[i].site + '</th>';
@@ -2173,17 +2174,17 @@
         }
         tbl += '</tr>';
         tbl += '<tr>';
-        tbl += '<td style="font-weight: 600;">Archived</td>';
+        tbl += '<td style="font-weight: 600;">Achieved</td>';
         for (let i = 0; i < 10; i++) {
             if (data[i]) {
-                let background = "background:#FFAC1C;font-weight: 600;";
+                let background = 'background:#FFAC1C;';
                 if (data[i].archive >= '97%') {
-                    background = "background:#008000;font-weight: 600;";
+                    background = 'background:#008000;';
                 }
                 if (data[i].archive < '90%') {
-                    background = "background:#ff0000;font-weight: 600;";
+                    background = 'background:#ff0000;';
                 }
-                tbl += '<td style=' + background + '>' + data[i].archive + '</td>';
+                tbl += '<td style="' + background + 'font-weight: 600;color:#ffffff;">' + data[i].archive + '</td>';
             } else {
                 //tbl += '<td></td>'; // Add blank field if data entry doesn't exist
             }

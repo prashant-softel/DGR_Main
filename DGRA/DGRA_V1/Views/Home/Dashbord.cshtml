@@ -1423,8 +1423,10 @@
                             {
                                 if (dateConString === moment(result[j].date, 'YYYY-MM-DD').toString())
                                 {
-                                    tar_wind = result[j].tarwind / total_mw;
-                                    act_wind = result[j].wind / total_mw;
+                                    //tar_wind = result[j].tarwind / total_mw;
+                                    //act_wind = result[j].wind / total_mw;
+                                    tar_wind = result[j].tarwind / result[j].total_mw;
+                                    act_wind = result[j].wind / result[j].total_mw;
                                     wcd_datelebels.push(formattedDate);
                                     wcd_taget_wind.push(tar_wind.toFixed(1));
                                     wcd_actual_wind.push(act_wind.toFixed(1));
@@ -1454,8 +1456,10 @@
                     {
                         for (var w = 0; w < result.length; w++)
                         {
-                            tar_wind = result[w].tarwind / total_mw;
-                            act_wind = result[w].wind / total_mw;
+                            //tar_wind = result[w].tarwind / total_mw;
+                           // act_wind = result[w].wind / total_mw;
+                            tar_wind = result[w].tarwind / result[w].total_mw;
+                            act_wind = result[w].wind / result[w].total_mw;
                             var formattedDate = moment(result[w].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                             wcd_datelebels.push(formattedDate);
                             wcd_taget_wind.push(tar_wind.toFixed(1));
@@ -1781,7 +1785,7 @@
                             var dateConString = moment(result[s].date, 'YYYY-MM-DD').toString();
                             scd_actual_kwh.push((result[s].jmrkwh).toFixed(1));
                             scd_target_kwh.push((result[s].tarkwh).toFixed(1));
-                            scd_exp_kwh.push((result[j].expected_power).toFixed(1));
+                            scd_exp_kwh.push((result[s].expected_power).toFixed(1));
                             //scd_actual_kwh.push((result[s].jmrkwh / 1000).toFixed(1));
                             //scd_target_kwh.push((result[s].tarkwh / 1000000).toFixed(1));
                             scd_target_ir.push(ir_tar.toFixed(1));
