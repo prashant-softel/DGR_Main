@@ -262,9 +262,7 @@
         fyear = getFinancialYear(today);
         fdate = getFinancialYearDateStartDate(fyear);
         monthdate = GetMonthDate(today);
-        //console.log(fyear);
-        //console.log(fdate);
-        //console.log(monthdate);
+       
         //GetSPV();
         GetSite();
         //yearlyportfolio(0);
@@ -1861,9 +1859,13 @@
         }
         var head = '';
         if (isSPV == 1) {
+            console.log("By Site");
+            console.log(MonthlyAOP_vs_Actual);
             head += '<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Solar portfolio performance by Site</span><br>';
         }
         else {
+            console.log("By SPV");
+            console.log(MonthlyAOP_vs_Actual);
             head = '<span style="font-size: 25px; font-weight: bold; color: #31576D; "> Solar portfolio performance by SPV</span><br>';
         }
 
@@ -1871,83 +1873,19 @@
         head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
         document.getElementById("portpolioHeadMonthly").innerHTML = head;
 
-        //console.log("Monthly AOP Data");
-        //console.log(MonthlyAOP_vs_Actual);
-        //console.log("Monthly Expected Data ");
-        //console.log(MonthlyExpetex_vs_Actual);
-
-       /*------------------------------------------*/
-       /* var data = [
-            { site: 'Hiriyur', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Alote', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Aurad', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gangavathi', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Bellary', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Barod', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Kollegal', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Nagari', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Chamrajnagar', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kurdi Cross', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Chittapur', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Siddipet', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Badla_R1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gundlupet', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'CNHalli', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Madhugiri', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Shahapur', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Maragutti', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Manvi', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Ichhawar', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gurramkonda', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bhadla_R3', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Bhadla_R2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Koratagere', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'PD Kote', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' }
-        ];*/
-
-        // Create HTML table string Monthly AOP Bases Site Wise
-
-      
-
-        /*--------Monthly Expected Based,------*/
-        /*var data_exp = [
-            { site: 'Hiriyur', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Alote', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Aurad', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gangavathi', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Bellary', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Barod', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Kollegal', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Nagari', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Chamrajnagar', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kurdi Cross', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Chittapur', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Siddipet', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Badla_R1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gundlupet', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'CNHalli', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Madhugiri', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Shahapur', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Maragutti', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Manvi', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Ichhawar', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gurramkonda', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bhadla_R3', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Bhadla_R2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Koratagere', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'PD Kote', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' }
-        ];*/
+        
         $("#monthlyportpolio_aop").html("");
         $("#monthlyportpolio_exp").html("");
+
         for (let i = 0; i < MonthlyAOP_vs_Actual.length; i += 10) {
             let chunk = MonthlyAOP_vs_Actual.slice(i, i + 10);
             let chunk1 = MonthlyExpetex_vs_Actual.slice(i, i + 10);
             $("#monthlyportpolio_aop").html("").html(generateTableWithAOP(chunk));
             $("#monthlyportpolio_exp").html("").html(generateTableWithEXP(chunk1));
-            //$("#monthlyportpolio_aop").append(generateTableWithAOP(chunk));
-            //$("#monthlyportpolio_exp").append(generateTableWithEXP(chunk1));
             captureDivContentmonthly(document.getElementById('monthlyportfoliobysite'), isSPV);
         }
+        MonthlyAOP_vs_Actual = [];
+        MonthlyExpetex_vs_Actual = [];
     }
     function yearlyportfolio(isSPV) {
 
@@ -1973,72 +1911,11 @@
         head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
         document.getElementById("portpolioHeadYearly").innerHTML = head;
 
-        //console.log("Yearly AOP Data");
-        //console.log(YearlyAOP_vs_Actual);
-        //console.log("Yearly Expected Data ");
-        //console.log(YearlyMonthlyExpetex_vs_Actual);
-
+       
         /*------------------------------------------*/
 
-        /// Yearly Table Generation sample
-       /* var data = [
-            { site: 'Hiriyur', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Alote', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Aurad', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gangavathi', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Bellary', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Barod', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Kollegal', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Nagari', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Chamrajnagar', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kurdi Cross', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Chittapur', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Siddipet', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Badla_R1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gundlupet', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'CNHalli', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Madhugiri', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Shahapur', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Maragutti', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Manvi', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Ichhawar', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gurramkonda', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bhadla_R3', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Bhadla_R2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Koratagere', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'PD Kote', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' }
-        ];*/
-
        
-        /*--------Yearly Expected Based sample,------*/
-       /* var data_exp = [
-            { site: 'Hiriyur', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Alote', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Aurad', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gangavathi', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Bellary', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Barod', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Kollegal', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Nagari', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Chamrajnagar', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kurdi Cross', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Chittapur', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Siddipet', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Badla_R1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gundlupet', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'CNHalli', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Madhugiri', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Shahapur', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Maragutti', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Manvi', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Ichhawar', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Gurramkonda', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bhadla_R3', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Bhadla_R2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Koratagere', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'PD Kote', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' }
-        ];
-        */
+      
         $("#yearlyportpolio_aop").html("");
         $("#yearlyportpolio_exp").html("");
         for (let i = 0; i < YearlyAOP_vs_Actual.length; i += 10) {
@@ -2050,7 +1927,8 @@
             //$("#monthlyportpolio_exp").append(generateTableWithEXP(chunk1));
             captureDivContent(document.getElementById('yearlyportfoliobysite'), isSPV);
         }
-
+        YearlyAOP_vs_Actual = [];
+        YearlyMonthlyExpetex_vs_Actual = [];
         
         if (isDoneSite ==1 && isDoneSPV ==1)
         {
