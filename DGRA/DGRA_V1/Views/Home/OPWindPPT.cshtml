@@ -292,10 +292,10 @@
             datatype: "html",
             success: function (result, status, xhr) {
                 //console.log(result);
-                for (var j = 0; j < result.length; j++) {
-                    all_spvs += result[j].spv + ',';
-                }
-                all_spvs = spv.replace(/,\s*$/, "");
+                //for (var j = 0; j < result.length; j++) {
+                    //all_spvs += result[j].spv + ',';
+                //}
+                //all_spvs = spv.replace(/,\s*$/, "");
                 callReports(result, spvcall);
             }
         });
@@ -339,14 +339,14 @@
             var site_id     = param.site_ids;
             var site_name   = param.spv;
             spv_list        = param.spv;
-            var ac_capacity = param.ac_capacity;
+            var ac_capacity = param.total_mw;
         }
         else {
             isSPV           = 1;
             var site_id     = param.site_master_id;
             var site_name   = param.site;
             spv_list        = "";
-            var ac_capacity = param.capacity_mw;
+            var ac_capacity = param.total_mw;
         }
         var fromDate = monthdate.startdate;//"2023-11-01";
         var toDate  = monthdate.enddate;//"2023-11-30";
@@ -382,21 +382,24 @@
                     {
                         for (var i = 0; i < result.length; i++)
                         {
-                            expected_final       = result[i].expected_final;
-                            lineloss_final       = result[i].lineloss_final;
-                            target_final         = result[i].target_final;
-                            lossUSMH_final       = result[i].lossUSMH_final;
-                            lossSMH_final        = result[i].lossSMH_final;
-                            lossNC_final         = result[i].lossNC_final;
-                            lossIGBD_final       = result[i].lossIGBD_final;
-                            lossEGBD_final       = result[i].lossEGBD_final;
-                            lossLULL_final       = result[i].lossLULL_final;
-                            lossPCD_final        = result[i].lossPCD_final;
-                            actual_final         = result[i].actual_final;
-                            loadShedding         = result[i].loadShedding;
+                            expected_final       += result[i].expected_final;
+                            lineloss_final       += result[i].lineloss_final;
+                            target_final         += result[i].target_final;
+                            lossUSMH_final       += result[i].lossUSMH_final;
+                            lossSMH_final        += result[i].lossSMH_final;
+                            lossNC_final         += result[i].lossNC_final;
+                            lossIGBD_final       += result[i].lossIGBD_final;
+                            lossEGBD_final       += result[i].lossEGBD_final;
+                            lossLULL_final       += result[i].lossLULL_final;
+                            lossPCD_final        += result[i].lossPCD_final;
+                            actual_final         += result[i].actual_final;
+                            loadShedding         += result[i].loadShedding;
                             isMonthlyDataPresent = Number(result[i].monthlyData);
                             //document.getElementById("dataNotPresentDiv").style.display = "none";
-                            document.getElementById("Waterfall").style.display = "flex";
+                            
+
+                        }
+                       document.getElementById("Waterfall").style.display = "flex";
                             CreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4), site_name);
                             //portpolio calculation
                             monthlyaop_achive = (actual_final / target_final) * 100;
@@ -405,16 +408,15 @@
                             MonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": expected_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": monthlyexp_achive.toFixed(1) + '%' });
 
                            //monthlyComment(site_id, isSPV, spv_list);
-                            resolve("Success for " + site_name);
+                        resolve("Success for " + site_name);
 
-                        }
-                       
                     }
                     else
                     {
                         resolve("No data for " + site_name);
                         //reject("No data for " + site_name);
                     }
+                    console.log(MonthlyAOP_vs_Actual);
                     monthlyComment(site_id, isSPV, spv_list);
                     document.getElementById("siteandspv").innerHTML = site_name + "- Asset Performance";
                 },
@@ -422,6 +424,7 @@
                     //Handle error case
                     reject("Error for " + site_name);
                 }
+                
             });
         });
     }
@@ -719,29 +722,29 @@
                     let yearlyexp_achive = 0;
                     if (result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
-                            expected_final = result[i].expected_final;
-                            lineloss_final = result[i].lineloss_final;
-                            target_final   = result[i].target_final;
-                            lossUSMH_final = result[i].lossUSMH_final;
-                            lossSMH_final  = result[i].lossSMH_final;
-                            lossNC_final   = result[i].lossNC_final;
-                            lossIGBD_final = result[i].lossIGBD_final;
-                            lossEGBD_final = result[i].lossEGBD_final;
-                            lossLULL_final = result[i].lossLULL_final;
-                            lossPCD_final  = result[i].lossPCD_final;
-                            actual_final   = result[i].actual_final;
-                            loadShedding   = result[i].loadShedding;
-                            CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
-                            //Portpolio calculation
-                            yearlyaop_achive = (actual_final / target_final) * 100;
-                            yearlyexp_achive = (actual_final / expected_final) * 100;
-                            YearlyAOP_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "AOP": target_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyaop_achive.toFixed(1) + '%' });
-                            YearlyMonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": expected_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyexp_achive.toFixed(1) + '%' });
-
-                            //yearlyComment(site_id, isSPV, spv_list);
-                            resolve("Success for " + site_name);
+                            expected_final += result[i].expected_final;
+                            lineloss_final += result[i].lineloss_final;
+                            target_final   += result[i].target_final;
+                            lossUSMH_final += result[i].lossUSMH_final;
+                            lossSMH_final  += result[i].lossSMH_final;
+                            lossNC_final   += result[i].lossNC_final;
+                            lossIGBD_final += result[i].lossIGBD_final;
+                            lossEGBD_final += result[i].lossEGBD_final;
+                            lossLULL_final += result[i].lossLULL_final;
+                            lossPCD_final  += result[i].lossPCD_final;
+                            actual_final   += result[i].actual_final;
+                            loadShedding   += result[i].loadShedding;
+                           
                         }
-                       
+                        CreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                        //Portpolio calculation
+                        yearlyaop_achive = (actual_final / target_final) * 100;
+                        yearlyexp_achive = (actual_final / expected_final) * 100;
+                        YearlyAOP_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "AOP": target_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyaop_achive.toFixed(1) + '%' });
+                        YearlyMonthlyExpetex_vs_Actual.push({ "site": site_name, "MW": ac_capacity.toFixed(1), "expected": expected_final.toFixed(1), "actual": actual_final.toFixed(1), "archive": yearlyexp_achive.toFixed(1) + '%' });
+
+                        //yearlyComment(site_id, isSPV, spv_list);
+                        resolve("Success for " + site_name);
                     }
                     else {
                         resolve("No data for " + site_name);
@@ -982,7 +985,7 @@
                     var img = document.getElementById('imgPerformanceBysite');
                     if (isSPV == 1) {
                         imgOperationBySite.push(imageData);
-                        console.log("sitecount ->" + siteCount + " impge count -->" + imgOperationBySite.length);
+                        //console.log("sitecount ->" + siteCount + " impge count -->" + imgOperationBySite.length);
                        // console.log(imgOperationBySite);
                         if (siteCount == imgOperationBySite.length) {
                             //console.log("inside call portpolio");
@@ -991,14 +994,14 @@
                             yearlyportfolio(isSPV);
                             setTimeout(function () {
                                 //console.log(ChartImages);
-                               // GetSPV();
+                                GetSPV();
                             }, 11000);
                             
                         }
                     }
                     else {
                         imgOperationBySPV.push(imageData);
-                       // console.log(imgOperationBySPV);
+                        //console.log("imgOperationBySPV);
                         if (spvCount == imgOperationBySPV.length) {
                             //console.log("inside call portpolio");
                             //GetSPV();
@@ -1064,27 +1067,28 @@
                     {
                         for (var i = 0; i < result.length; i++)
                         {
-                            expected_final       = result[i].expected_final;
-                            lineloss_final       = result[i].lineloss_final;
-                            target_final         = result[i].target_final;
-                            lossUSMH_final       = result[i].lossUSMH_final;
-                            lossSMH_final        = result[i].lossSMH_final;
-                            lossNC_final         = result[i].lossNC_final;
-                            lossIGBD_final       = result[i].lossIGBD_final;
-                            lossEGBD_final       = result[i].lossEGBD_final;
-                            lossLULL_final       = result[i].lossLULL_final;
-                            lossPCD_final        = result[i].lossPCD_final;
-                            actual_final         = result[i].actual_final;
-                            loadShedding         = result[i].loadShedding;
+                            expected_final       += result[i].expected_final;
+                            lineloss_final       += result[i].lineloss_final;
+                            target_final         += result[i].target_final;
+                            lossUSMH_final       += result[i].lossUSMH_final;
+                            lossSMH_final        += result[i].lossSMH_final;
+                            lossNC_final         += result[i].lossNC_final;
+                            lossIGBD_final       += result[i].lossIGBD_final;
+                            lossEGBD_final       += result[i].lossEGBD_final;
+                            lossLULL_final       += result[i].lossLULL_final;
+                            lossPCD_final        += result[i].lossPCD_final;
+                            actual_final         += result[i].actual_final;
+                            loadShedding         += result[i].loadShedding;
                             isMonthlyDataPresent = Number(result[i].monthlyData);
                             //document.getElementById("dataNotPresentDiv").style.display = "none";
-                            document.getElementById("AllWaterfall").style.display = "flex";
-                            AllSiteCreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4), site_name);
-
-                            //AllmonthlyComment(site_id, isSPV, spv_list);
-                            resolve("Success for " + site_name);
+                            
 
                         }
+                        document.getElementById("AllWaterfall").style.display = "flex";
+                        AllSiteCreateChart(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4), site_name);
+
+                        //AllmonthlyComment(site_id, isSPV, spv_list);
+                        resolve("Success for " + site_name);
                     }
                     else
                     {
@@ -1388,24 +1392,25 @@
                     let yearlyexp_achive = 0;
                     if (result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
-                            expected_final = result[i].expected_final;
-                            lineloss_final = result[i].lineloss_final;
-                            target_final   = result[i].target_final;
-                            lossUSMH_final = result[i].lossUSMH_final;
-                            lossSMH_final  = result[i].lossSMH_final;
-                            lossNC_final   = result[i].lossNC_final;
-                            lossIGBD_final = result[i].lossIGBD_final;
-                            lossEGBD_final = result[i].lossEGBD_final;
-                            lossLULL_final = result[i].lossLULL_final;
-                            lossPCD_final  = result[i].lossPCD_final;
-                            actual_final   = result[i].actual_final;
-                            loadShedding   = result[i].loadShedding;
-                            AllCreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
-                            //Portpolio calculation
-
-                            //AllyearlyComment(site_id, isSPV, spv_list);
-                            resolve("Success for " + site_name);
+                            expected_final += result[i].expected_final;
+                            lineloss_final += result[i].lineloss_final;
+                            target_final   += result[i].target_final;
+                            lossUSMH_final += result[i].lossUSMH_final;
+                            lossSMH_final  += result[i].lossSMH_final;
+                            lossNC_final   += result[i].lossNC_final;
+                            lossIGBD_final += result[i].lossIGBD_final;
+                            lossEGBD_final += result[i].lossEGBD_final;
+                            lossLULL_final += result[i].lossLULL_final;
+                            lossPCD_final  += result[i].lossPCD_final;
+                            actual_final   += result[i].actual_final;
+                            loadShedding   += result[i].loadShedding;
+                            
                         }
+                        AllCreateChartYearly(target_final.toFixed(4), expected_final.toFixed(4), lossUSMH_final.toFixed(4), lossSMH_final.toFixed(4), lossNC_final.toFixed(4), lossIGBD_final.toFixed(4), lossEGBD_final.toFixed(4), lossLULL_final.toFixed(4), lossPCD_final.toFixed(4), lineloss_final.toFixed(4), actual_final.toFixed(4), loadShedding.toFixed(4));
+                        //Portpolio calculation
+
+                        //AllyearlyComment(site_id, isSPV, spv_list);
+                        resolve("Success for " + site_name);
                     }
                     else {
                         resolve("No data for " + site_name);
@@ -1642,7 +1647,7 @@
                     //Get the image data as a URL
                     var imageData = canvas.toDataURL();
                     allSitePerformanceImg.push(imageData);
-                    console.log(allSitePerformanceImg);
+                    //console.log(allSitePerformanceImg);
                 });
             }
         });
@@ -1673,68 +1678,7 @@
         head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
         document.getElementById("portpolioHeadMonthly").innerHTML = head;
 
-        //console.log("Monthly AOP Data");
-        //console.log(MonthlyAOP_vs_Actual);
-        //console.log("Monthly Expected Data ");
-        //console.log(MonthlyExpetex_vs_Actual);
-
-       /* var data = [
-            { site: 'Badnawar', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bableshwar', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Piploda', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bableshwar-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Piploda-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-1', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri-1', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh-1', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga-1', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-2', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bableshwar-2', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Piploda-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-2', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Kukudwad-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' }
-        ];
-        // Create HTML table string Monthly AOP Bases Site Wise
-
-        var data_exp = [
-            { site: 'Badnawar', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
-            { site: 'Bableshwar', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
-            { site: 'Piploda', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
-            { site: 'Bableshwar-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
-            { site: 'Piploda-1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-1', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri-1', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh-1', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga-1', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-2', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
-            { site: 'Bableshwar-2', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
-            { site: 'Piploda-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-2', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Kukudwad-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' }
-        ];*/
-
+       
         $("#monthlyportpolio_aop").html("");
         $("#monthlyportpolio_exp").html("");
        for (let i = 0; i < MonthlyAOP_vs_Actual.length; i += 10) {
@@ -1747,7 +1691,8 @@
             captureDivContentmonthly(document.getElementById('monthlyportfoliobysite'), isSPV);
         }
 
-
+       MonthlyAOP_vs_Actual = [];
+       MonthlyExpetex_vs_Actual = [];
     }
 
    function yearlyportfolio(isSPV)
@@ -1755,7 +1700,7 @@
         //console.log("Yearly AOP Data");
         //console.log(YearlyAOP_vs_Actual);
         //console.log("Yearly Expected Data ");
-        //console.log(YearlyMonthlyExpetex_vs_Actual);
+       // console.log(YearlyMonthlyExpetex_vs_Actual);
         var temDate = monthdate.startdate.split("-");
         var year = 0;
         var monthNo = 0;
@@ -1778,61 +1723,6 @@
         head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
         document.getElementById("portpolioHeadYearly").innerHTML = head;
 
-       /* var data = [
-            { site: 'Badnawar', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bableshwar', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Piploda', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bableshwar-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Piploda-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-1', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri-1', MW: '100MW', AOP: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh-1', MW: '100MW', AOP: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga-1', MW: '100MW', AOP: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli-1', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital-1', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad-1', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-2', MW: '20MW', AOP: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Bableshwar-2', MW: '15MW', AOP: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Piploda-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-2', MW: '22MW', AOP: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Kukudwad-2', MW: '22MW', AOP: 8.4, actual: 8.3, archive: '93%' }
-        ];
-
-        var data_exp = [
-            { site: 'Badnawar', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
-            { site: 'Bableshwar', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
-            { site: 'Piploda', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
-            { site: 'Bableshwar-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
-            { site: 'Piploda-1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-1', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Dangri-1', MW: '100MW', expected: 6.5, actual: 7.2, archive: '83%' },
-            { site: 'Devgarh-1', MW: '100MW', expected: 6.8, actual: 6.3, archive: '85%' },
-            { site: 'Gunga-1', MW: '100MW', expected: 5.9, actual: 6.2, archive: '85%' },
-            { site: 'Gurvepalli-1', MW: '20MW', expected: 9.1, actual: 9.0, archive: '91%' },
-            { site: 'Kavital-1', MW: '15MW', expected: 5.4, actual: 5.6, archive: '98%' },
-            { site: 'Kukudwad-1', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'Badnawar-2', MW: '20MW', expected: 9.1, actual: 9.0, archive: '93%' },
-            { site: 'Bableshwar-2', MW: '15MW', expected: 5.4, actual: 5.6, archive: '97%' },
-            { site: 'Piploda-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' },
-            { site: 'South Budh-2', MW: '22MW', expected: 7.2, actual: 7.1, archive: '91%' },
-            { site: 'Kukudwad-2', MW: '22MW', expected: 8.4, actual: 8.3, archive: '93%' }
-        ];*/
 
        $("#yearlyportpolio_aop").html("");
        $("#yearlyportpolio_exp").html("");
@@ -1845,10 +1735,11 @@
            //$("#monthlyportpolio_exp").append(generateTableWithEXP(chunk1));
            captureDivContent(document.getElementById('yearlyportfoliobysite'), isSPV);
        }
-
-        //console.log("Site Count" + isDoneSite + "SPV Count" + isDoneSPV);
-       //if (isDoneSite == 1 && isDoneSPV == 1)
-           if (isDoneSite == 1){
+       YearlyAOP_vs_Actual = [];
+       YearlyMonthlyExpetex_vs_Actual = [];
+        console.log("Site Count" + isDoneSite + "SPV Count" + isDoneSPV);
+       if (isDoneSite == 1 && isDoneSPV == 1) {
+           //if (isDoneSite == 1){
             setTimeout(function () {
                 //console.log(ChartImages);
                 makePPT(ChartImages);

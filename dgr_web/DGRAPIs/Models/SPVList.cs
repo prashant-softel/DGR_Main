@@ -25,6 +25,7 @@ namespace DGRAPIs.Models
         public double dc_capacity { get; set; }
         public double ac_capacity { get; set; }
         public double total_tarrif { get; set; }
+        public double total_mw { get; set; }
 
     }
     public class CustomeGroup

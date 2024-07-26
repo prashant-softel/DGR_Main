@@ -19145,7 +19145,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             else
             {
                 //query = "SELECT spv, GROUP_CONCAT(site_master_id SEPARATOR ',') AS site_ids,SUM(total_mw) as dc_capacity,SUM(capacity_mw) as ac_capacity,SUM(total_tarrif) as total_tarrif FROM site_master where site_master_id in(217,218) GROUP BY spv ";
-                query = "SELECT spv, GROUP_CONCAT(site_master_id SEPARATOR ',') AS site_ids,SUM(total_mw) as dc_capacity,SUM(capacity_mw) as ac_capacity,SUM(total_tarrif) as total_tarrif FROM site_master  GROUP BY spv ";
+                query = "SELECT spv, GROUP_CONCAT(site_master_id SEPARATOR ',') AS site_ids,SUM(total_mw) as dc_capacity,SUM(capacity_mw) as ac_capacity,SUM(total_tarrif) as total_tarrif,SUM(total_mw) as total_mw FROM site_master  GROUP BY spv ";
             }
             
             List<SPVGroup> _spvlist = new List<SPVGroup>();
