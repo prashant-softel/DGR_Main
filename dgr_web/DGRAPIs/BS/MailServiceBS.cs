@@ -69,7 +69,7 @@ namespace DGRAPIs.BS
                     // email.Cc.Add(MailboxAddress.Parse(mailRequest.CcEmail));
                     email.Subject = mailRequest.Subject;
                     var builder = new BodyBuilder();
-                    if (mailRequest.Attachments != null)
+                    if (mailRequest.Attachments != null && mailRequest.Attachments.Count > 0)
                     {
                         byte[] fileBytes;
                         foreach (var file in mailRequest.Attachments)

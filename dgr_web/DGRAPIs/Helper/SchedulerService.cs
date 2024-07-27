@@ -254,7 +254,8 @@ namespace DGRAPIs.Helper
                             bool WindMailSuccess = false;
                             try
                             {
-                                string apiUrlWind = hostName + "/api/DGR/MonthlyMailSend";
+                                //string apiUrlWind = hostName + "/api/DGR/MonthlyMailSend";
+                                string apiUrlWind = hostName + "/api/DGR/WindReviewMail";
                                 PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : API URL " + apiUrlWind);
                                 CallAPI(apiUrlWind);
                                 WindMailSuccess = true;

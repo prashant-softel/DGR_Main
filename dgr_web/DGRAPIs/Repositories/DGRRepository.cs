@@ -12316,6 +12316,11 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             if (dt.Rows.Count == 0)
             {
+                mYSQLDB = new MYSQLDBHelper(ConnectionString);
+                if (Context == null)
+                {
+                    Context = mYSQLDB;
+                }
                 string qry = $"insert into mail_send_log (report_type, site_type, set_time, status) values({report_type},{site_type},'{set_time}',1)";
                 int val = await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
                 return 0;
@@ -19170,7 +19175,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             PPT_InformationLog("From DGR Repository : Inside PPTCreate_Solar function for Solar Weekly Mail Send : Inside Method. " + DateTime.Now);
             //LogInfo(0, 1, 0, "PPTCreate_Solar", "Inside Method", backend);
 
-            string msg = "SolarPerfomance" + DateTime.Now.ToString("yyyy-MM-dd");
+            string msg = "SolarReview" + DateTime.Now.ToString("yyyy-MM-dd");
             MonthlyMailSend(msg);
             PPT_InformationLog("From DGR Repository : Inside PPTCreate_Solar function for Solar Weekly Mail Send : MailSend() function Called with Parameter : " + msg + " : " + DateTime.Now);
             //LogInfo(0, 1, 0, "PPTCreate_Solar", "MailSend() function Called with Parameter : " + msg, backend);
@@ -19323,6 +19328,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 request.Subject = subject;
                 request.Body = Msg;
                 var file = "C:\\inetpub\\wwwroot\\DGR_WEB\\pptupload\\" + fname + ".pptx";
+                //var file = "C:\\Users\\lenovo\\Downloads\\WindReview2024-07-26-final.pptx";
                 PPT_InformationLog("Monthly Mail Reading file path:- " + file);
                 try
                 {
