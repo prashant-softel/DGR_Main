@@ -49,115 +49,128 @@
 
 
     <section class="content">
-
-
+        <style>
+            .custom-input {
+                max-width: 100%;
+            }
+        </style>
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title text-center">
-                    Wind Breakdown Reports
-                    <div class="card-tools" style="float:right">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse" style="color:black">
-                            <i class="fas fa-minus"></i>
-                        </button>
-
-                    </div>
-                </h3>
+                <h3 class="card-title text-center">Wind Breakdown Report</h3>
             </div>
             <div class="card-body">
+                <div class="row" style="margin-top: -14px;">
+                    <div class="chart col-sm-8"></div>
+                    <div class="chart col-sm-4 text-right" id="customDiv">
+                        <span style="margin-left: -20px; margin-top: -6px;">
+                            <input type="checkbox" class="form-check-input group_by_site" id="group_by_site" name="group_by_site" value="1" style="width: 17px; height: 16px;" onclick="grouping_site()">
+                        </span>
+                        <span><b>&nbsp;&nbsp;&nbsp;Custom Grouping of Site</b></span>
+                    </div>
+                </div>
+                <div class="row" id="no_group" style="display:flex">
+                    <div class="col-12">
+                        <div class="row mt-3">
+                            <div class="col-sm-4">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label text-right">Date:</label>
+                                    <div class="col-sm-9">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control custom-input" id="daterange" name="daterange">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label text-right">Country:</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control custom-input" id="country" name="country">
+                                            <option value="india" selected>India</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label text-right">State:</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control custom-input" id="state" name="state[]" multiple onchange="GetSPV()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-sm-4">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label text-right">SPV:</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control custom-input" id="spv" name="spv[]" multiple onchange="GetSite()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label text-right">Site:</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control custom-input" id="site" name="site[]" multiple onchange="GetWTG(true)"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label text-right">WTG:</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control custom-input" id="wtg" name="wtg[]" multiple></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3 justify-content-center">
+                            <div class="col-sm-4 d-flex justify-content-center">
+                                <button type="button" class="btn btn-primary" onclick="GetBrekdownReport();" style="width: 5rem; line-height: 1.3;">Search</button>
+                            </div>
+                        </div>
 
-                <div class="row">
+                    </div>
+                </div>
+
+                <div class="row" id="groupbysite" style="display:none">
                     <div class="col-sm-4">
-                        <div class="input-group " style="margin-left: -14%; width: 118%;">
-                            <label class="col-sm-3 col-form-label text-right" style="padding-left: 10%; ">Date : </label>
+                        <div class="input-group">
+                            <label class="col-sm-2 col-form-label text-left">Date:</label>
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <input type="text" class="form-control float-right col-sm-6" id="daterange" name="daterange">
+                            <input type="text" class="form-control float-right col-sm-8" id="daterange_group" name="daterange">
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label text-right">Country : </label>
-                                <select class="form-control  col-sm-8" id="country" name="country" value="">
-
-                                    <option value="india" selected>India</option>
-
-
-                                </select>
+                                <label class="col-sm-4 col-form-label text-right">Custom Group:</label>
+                                <select class="form-control col-sm-8" id="cust_group" name="cust_group[]" value="" multiple></select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <!-- select -->
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-right">State : </label>
-                                <select class="form-control  col-sm-8" id="state" name="state[]" onchange="GetSPV();" multiple>
-                                </select>
-                            </div>
-                        </div>
+                    <br />
+
+                    <div class="col-sm-2 text-left">
+                        <button type="button" class="btn btn-block btn-primary" onclick="GetBreakdownReportGroup();" style="margin-left: 2rem; width: 5rem; line-height: 1.3;">Search</button>
                     </div>
-                </div>
-
-
-                <div class="row">
-
-                    <div class="col-sm-4">
-                        <!-- select -->
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-right">SPV : </label>
-                                <select class="form-control  col-sm-8" id="spv" name="spv[]" onchange="getSite(true)" multiple>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <!-- select -->
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-3 col-form-label text-right">Site : </label>
-                                <select class="form-control  col-sm-8" id="site" name="site[]" onchange="GetWTG()" multiple>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <!-- select -->
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label text-right">WTG : </label>
-                                <select class="form-control  col-sm-8" id="wtg" name="wtg[]" multiple>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row" style="justify-content:center">
-
-                    <div class="text-center">
-                        <button type="button" class="btn btn-block btn-primary" onclick="GetBrekdownReport();" style="width: 5rem;">Search</button>
-                    </div>
-
                 </div>
                 <hr>
                 <div id="reports" style="overflow-x: auto;" class="reports"></div>
-                <div id="loader" class="loader  center" style="display:none"></div>
-
-
+                <div id="loader" class="loader center" style="display: none;"></div>
             </div>
-
-            <!--<div class="card-footer">
-                Footer
-            </div>-->
-
         </div>
-
-
     </section>
 
 </div>
@@ -212,6 +225,7 @@
     window.onload = function () {
         console.log("User Id from session" + userIdFromSession);
         getPageColumns();
+        getCutomeGroup();
         getUserGroupColumns();
         GetState();
            // GetSPV(false);
@@ -241,6 +255,74 @@
         }
     });
     }
+
+    function grouping_site() {
+        var checkBox = document.getElementById("group_by_site");
+        console.log(checkBox.checked);
+
+        if (checkBox.checked) {
+            // Show only the custom grouping fields
+            document.getElementById('no_group').style.display = 'none';
+            //document.getElementById('no_group_tab').style.display = 'none'; // Hide this if you don't want it visible
+            document.getElementById('groupbysite').style.display = 'flex';
+            //document.getElementById('reportsDailygroup').style.display = 'none';
+            //document.getElementById('pr_reports').style.display = 'none';
+        } else {
+            // Show all other fields
+            document.getElementById('no_group').style.display = 'flex';
+            //document.getElementById('no_group_tab').style.display = 'flex';
+            document.getElementById('groupbysite').style.display = 'none';
+            //document.getElementById('reportsDailygroup').style.display = 'block';
+            //document.getElementById('pr_reports').style.display = 'block';
+        }
+    }
+    $(document).ready(function () {
+        console.log("Role=>", userRole);
+        if (userRole != "Admin") {
+            document.getElementById("customDiv").style.display = "none";
+            GetCustomGroupAccess();
+        }
+        $('#daterange').daterangepicker(
+            {
+                maxDate: new Date(),
+                locale: {
+                    format: 'DD/MM/YYYY',
+                }
+            });
+        $('#daterange_group').daterangepicker(
+            {
+                maxDate: new Date(),
+                locale: {
+                    format: 'DD/MM/YYYY',
+                }
+            });
+    });
+
+    function getCutomeGroup()
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCustomGroup", "SolarReport")?siteType=0',
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                var options = "";
+                for (var k = 0; k < result.length; k++)
+                {
+                    options += '<option value="' + result[k].site_ids + '">' + result[k].cust_group + '</option>';
+                }
+                $("#cust_group").multipleSelect('destroy');
+                $("#cust_group").html("").html(options);
+                $('select#cust_group').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "Select Group(s)",
+                    filter:true
+                });
+            }
+        });
+    }
+
     function getUserGroupColumns() {
         $.ajax({
         type: "GET",
@@ -595,7 +677,7 @@
                         }
                         if (userColumnId.includes(columnMap["Action_Taken"][0]) || columnMap["Action_Taken"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].action_taken + '</td>';
-                        }                        
+                        }
                         tbl += '</tr>';
                     }
                 }
@@ -673,5 +755,195 @@
         });
 
     }
+
+    function GetBreakdownReportGroup() {
+        document.getElementById("loader").style.display = 'flex';
+         let custom_site = "";
+         $('select#cust_group option:selected').each(function () {
+             custom_site += $(this).val() + ",";
+         });
+         custom_site = custom_site != "" ? custom_site.slice(0, -1) : custom_site;
+         var daterange = $('#daterange_group').val();
+         var arr1 = daterange.split("-");
+         var fromDate = moment(arr1[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+         var toDate = moment(arr1[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+         
+         $.ajax({
+             type: "GET",
+             url: '@Url.Action("GetWindBreakdownReportGroup", "WindReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&site_list=' + custom_site,
+             contentType: "application/json; charset=utf-8",
+             datatype: "JSON",
+             success: function (result, status, xhr) {
+                 var tbl = '<table id="example_wind_group" class="table table-bordered table-striped" style="width:150%">';
+                 tbl += '<thead class="tbl-head"><tr>';
+                 tbl += '<th>Date</th>';
+                 tbl += '<th>Country</th>';
+                 tbl += '<th>State</th>';
+                 tbl += '<th>SPV</th>';
+                 tbl += '<th>Group Name</th>';
+                 tbl += '<th>WTG</th>';
+                 tbl += '<th>Bd_Type</th>';
+                 tbl += '<th>Start_From</th>';
+                 tbl += '<th>Stop_To</th>';
+                 tbl += '<th>Total_Stop</th>';
+                 tbl += '<th>Reason_of_Breakdown</th>';
+                 tbl += '<th>Action_Taken</th>';
+                 tbl += '</tr></thead><tbody>';
+         
+                 if (result.length > 0) {
+                     for (var i = 0; i < result.length; i++) {
+                         let chielditem = result[i].item;
+                         let chield_class = result[i].cust_group.replace(/\s/g, "");
+                         let expand_btn = "";
+                         let totalStopInSeconds = 0;
+                         if (chielditem.length > 1) {
+                             expand_btn = '<div class="grp-btn" id="parant_' + chield_class + '" onclick="showchield(id)" style="display:inline-block"><i class="fas fa-plus"></i></div><div class="grp-btn"    id="phide_'   + chield_class + '" onclick="hidechield(id)" style="display:none"><i class="fas fa-minus"></i></div>';
+                         }
+         
+                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+
+                         for (var j = 0; j < chielditem.length; j++) {
+                             totalStopInSeconds += chielditem[j].total_stop.totalSeconds;
+                         }
+         
+                         var totalStopFormatted = toHoursMinutesSeconds1(totalStopInSeconds);
+         
+                         // Parent row with summed values
+                         tbl += '<tr>';
+                         tbl += '<td class="text-left">' + formattedDate + '</td>';
+                         tbl += '<td class="text-left">' + result[i].country + '</td>';
+                         tbl += '<td class="text-left">' + result[i].state + '</td>';
+                         tbl += '<td class="text-left">' + result[i].spv + '</td>';
+                         tbl += '<td class="text-left">' + expand_btn + ' ' + result[i].cust_group + '</td>';
+                         tbl += '<td class="text-left">' + result[i].wtg + '</td>';
+                         tbl += '<td class="text-left">' + result[i].bd_type + '</td>';
+                         tbl += '<td class="text-left">' + "All" + '</td>';
+                         tbl += '<td class="text-left">' + "All" + '</td>';
+                         tbl += '<td class="text-left">' + totalStopFormatted + '</td>'; // Display formatted total stop
+                         tbl += '<td class="text-left">' + result[i].error_description + '</td>';
+                         tbl += '<td class="text-left">' + result[i].action_taken + '</td>';
+                         tbl += '</tr>';
+         
+                         // Child rows
+                         for (var j = 0; j < chielditem.length; j++) {
+                             tbl += '<tr class="' + chield_class + '" style="display:none">';
+                             tbl += '<td class="text-left">' + formattedDate + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].country + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].state + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].spv + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].site + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].wtg + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].bd_type + '</td>';
+                             tbl += '<td class="text-left">' + toHoursAndMinutes(chielditem[j].stop_from.totalSeconds) + '</td>';
+                             tbl += '<td class="text-left">' + toHoursAndMinutes(chielditem[j].stop_to.totalSeconds) + '</td>';
+                             tbl += '<td class="text-left">' + toHoursAndMinutes(chielditem[j].total_stop.totalSeconds) + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].error_description + '</td>';
+                             tbl += '<td class="text-left">' + chielditem[j].action_taken + '</td>';
+                             tbl += '</tr>';
+                         }
+                     }
+                 } else {
+                     console.log("Data not available");
+                     tbl += '<tr><td colspan="16" style="text-align:center">Data Not Available</td></tr>';
+                 }
+         
+                 tbl += '</tbody></table>';
+                 $("#reports").html(tbl);
+         
+                 $('#example_wind_group').DataTable({
+                     dom: 'Bfrtip',
+                     title: 'ImportApproval',
+                     fixedHeader: true,
+                     responsive: true,
+                     scrollX: true,
+                     lengthChange: false,
+                     autoWidth: true,
+                     paging: true,
+                     searching: true,
+                     ordering: true,
+                     info: true,
+                     fixedColumns: {
+                         left: 5
+                     },
+                     "order": [[1, "asc"]],
+                     pageLength: 50,
+                     buttons: [
+                         {
+                             extend: 'excel',
+                             title: 'Solar Breakdown Reports',
+                             exportOptions: {
+                                 columns: ':visible'
+                             }
+                         },
+                         {
+                             extend: 'csv',
+                             title: 'Solar Breakdown Reports',
+                             exportOptions: {
+                                 columns: ':visible'
+                             }
+                         },
+                         'colvis',
+                         {
+                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                             className: 'btn ml-1',
+                             action: function () {
+                                 exportToExcel();
+                             }
+                         },
+                     ]
+                 });
+         
+                 $(".dt-buttons").addClass('btn-group flex-wrap');
+                 $(".dt-buttons").css("margin-bottom", "0%");
+         
+                 $(".dt-buttons > button").addClass('btn btn-secondary');
+                 $(".dataTables_filter > label > input").addClass('form-control form-control-sm');
+                 $(".dataTables_filter").css("margin-top", "-35px");
+                 $(document).on("click", "div.dt-button-collection > div > button", function () {
+                     if ($(this).hasClass("active")) {
+                         $(this).css("background-color", "white");
+                     } else {
+                         $(this).css("background-color", "#31576d");
+                     }
+                    
+                 });
+                 document.getElementById("loader").style.display = 'none';
+             }
+         });
+    }
+    
+    function showchield(id) {
+        var cls = id.replace('parant_', '');
+        $('.' + cls).show();
+        $('#parant_' + cls).hide();
+        $('#phide_' + cls).show();
+    }
+    
+    function hidechield(id) {
+        var cls = id.replace('phide_', '');
+        $('.' + cls).hide();
+        $('#parant_' + cls).show();
+        $('#phide_' + cls).hide();
+    }
+
+    function toMinutes(totalSeconds) {
+        if (isNaN(totalSeconds)) {
+            return 'N/A';
+        }
+        const minutes = Math.floor(totalSeconds / 60);
+        return minutes + 'm';
+    }
+
+    function toHoursMinutesSeconds1(totalSeconds) {
+        if (isNaN(totalSeconds) || totalSeconds < 0) {
+            return 'N/A';
+        }
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+
 
 </script>

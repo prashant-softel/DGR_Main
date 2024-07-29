@@ -3421,6 +3421,40 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Route("GetSolarDailyBreakdownReportGroupBySite")]
+        [HttpGet]
+        public async Task<IActionResult> GetSolarDailyBreakdownReportGroupBySite(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetSolarDailyBreakdownReportGroupBySite(fromDate, toDate, site_list);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("GetWindDailyBreakdownReportGroupBySite")]
+        [HttpGet]
+        public async Task<IActionResult> GetWindDailyBreakdownReportGroupBySite(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                var data = await _dgrBs.GetWindDailyBreakdownReportGroupBySite(fromDate, toDate, site_list);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
     }
 }

@@ -24,6 +24,28 @@ namespace DGRAPIs.Models
         public string bd_remarks { get; set; }
         public string action_taken { get; set; }
     }
+
+    public class SolarDailyBreakdownReportGroup
+    {
+        public dynamic date { get; set; }
+        public string country { get; set; }
+        public string state { get; set; }
+        public string spv { get; set; }
+        public string site { get; set; }
+        public string breakdown { get; set; }
+        public string bd_type { get; set; }
+        public string icr { get; set; }
+        public string inv { get; set; }
+        public string smb { get; set; }
+        public string strings { get; set; }
+        public dynamic from_bd { get; set; }
+        public dynamic to_bd { get; set; }
+        public dynamic total_stop { get; set; }
+        public string bd_remarks { get; set; }
+        public string action_taken { get; set; }
+        public string cust_group { get; set; }
+        public List<SolarDailyBreakdownReportGroup> item { get; set; }
+    }
     public class SolarFileBreakdown
     {
         public int daily_bd_loss_solar_id { get; set; }

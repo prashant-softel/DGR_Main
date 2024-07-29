@@ -241,6 +241,8 @@ namespace DGRAPIs.BS
         Task<List<GetFormulaLog>> GetFormulaLog(int site_id);
         Task<int> SaveFormula(int id, int site_id, string formulas, int login_id, string fieldType, string oldFormulas);
         Task<double> GetCalculatedValue(double U, double S, double IG, double EG, double OTHER, double LS, string updateFormulaValue);
+        Task<List<SolarDailyBreakdownReportGroup>> GetSolarDailyBreakdownReportGroupBySite(string fromDate, string toDate,string site_list);
+        Task<List<WindDailyBreakdownReportGroup>> GetWindDailyBreakdownReportGroupBySite(string fromDate, string toDate, string site_list);
     }
     public class DGRBS : IDGRBS
     {
@@ -3331,6 +3333,38 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.GetFormulaLog(site_id);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<SolarDailyBreakdownReportGroup>> GetSolarDailyBreakdownReportGroupBySite(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetSolarDailyBreakdownReportGroupBySite(fromDate, toDate, site_list);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<WindDailyBreakdownReportGroup>> GetWindDailyBreakdownReportGroupBySite(string fromDate, string toDate, string site_list)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.GetWindDailyBreakdownReportGroupBySite(fromDate, toDate, site_list);
 
                 }
             }

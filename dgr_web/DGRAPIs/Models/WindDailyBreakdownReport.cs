@@ -41,5 +41,27 @@ namespace DGRAPIs.Models
         public string action_taken { get; set; }
         public string approve_status { get; set; }
     }
-  
+
+    public class WindDailyBreakdownReportGroup
+    {
+        public int uploading_file_breakdown_id { get; set; }
+        public dynamic date { get; set; }
+        public string wtg { get; set; }
+        public string bd_type { get; set; }
+        public int bd_type_id { get; set; }
+        public string bd_type_name { get; set; }
+        public dynamic stop_from { get; set; }
+        public dynamic stop_to { get; set; }
+        public dynamic total_stop { get; set; }
+        public string error_description { get; set; }
+        public string action_taken { get; set; }
+        public string country { get; set; }
+        public string state { get; set; }
+        public string spv { get; set; }
+        public string site { get; set; }
+        public int site_id { get; set; }
+        public string cust_group { get; set; }
+        public List<WindDailyBreakdownReportGroup> item { get; set; }
+    }
+
 }

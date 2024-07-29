@@ -213,14 +213,7 @@ namespace DGRA_V1.Controllers
          
         public async Task<IActionResult> GetSolarBreakdownReport(string fromDate, string toDate, string country, string state, string spv, string site, string inv)
         {
-            /* fromDate = "2022-10-18";
-             toDate = "2022-10-20";
-             country     = "";
-             state       = "";
-             spv         = "";
-             site        = "";
-             wtg         = "";*/
-            //WindBreakdownReports breakdown = new WindBreakdownReports();
+            
             string line = "";
             try
             {
@@ -1018,6 +1011,32 @@ namespace DGRA_V1.Controllers
                     {
                         line = readStream.ReadToEnd().Trim();
 
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["notification"] = "Data Not Presents !";
+            }
+            return Content(line, "application/json");
+        }
+
+        public async Task<IActionResult> GetSolarBreakdownReportGroup(string fromDate, string toDate, string site_list)
+        {
+
+            string line = "";
+            try
+            {
+                var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/DGR/GetSolarDailyBreakdownReportGroupBySite?fromDate=" + fromDate + "&toDate=" + toDate + "&site_list=" + site_list + "";
+                WebRequest request = WebRequest.Create(url);
+
+                using (WebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    Stream receiveStream = response.GetResponseStream();
+                    using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                    {
+                        line = readStream.ReadToEnd().Trim();
+                        //  breakdown.list = JsonConvert.DeserializeObject<List<WindBreakdownReports>>(line);
                     }
                 }
             }
