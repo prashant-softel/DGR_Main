@@ -3397,9 +3397,6 @@
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
-                //tbl += '<th>Tar</th>';
-                //tbl += '<th>Act</th>';
-                //tbl += '<th>Var (%)</th>';
                 tbl += '<th>Tar</th>';
                 tbl += '<th>Act</th>';
                 tbl += '<th>Var (%)</th>';
@@ -3579,9 +3576,7 @@
                         tbl += '<td class="text-right">' + avg_tar_pr.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + avg_act_pr.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + pr_var.toFixed(2) + '</td>';
-                        //tbl += '<td class="text-right">' + result[i].tar_pr.toFixed(2) + '</td>';
-                        //tbl += '<td class="text-right">' + result[i].temp_corrected_pr.toFixed(2) + '</td>';
-                        //tbl += '<td class="text-right">' + TCPr_var.toFixed(2) + '</td>';
+                        
                         tbl += '<td class="text-right">' + avg_tar_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + avg_act_ma.toFixed(2) + '</td>';
                         tbl += '<td class="text-right">' + ma_var.toFixed(2) + '</td>';
@@ -3693,9 +3688,7 @@
                             tbl += '<td class="text-right">' + chielditem[j].tar_pr.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + act_prval_chield.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + pr_var_chield.toFixed(2) + '</td>';
-                            //tbl += '<td class="text-right">' + chielditem[j].tar_pr.toFixed(2) + '</td>';
-                            //tbl += '<td class="text-right">' + chielditem[j].temp_corrected_pr.toFixed(2) + '</td>';
-                            //tbl += '<td class="text-right">' + TCPr_var_chield.toFixed(2) + '</td>';
+                            
                             tbl += '<td class="text-right">' + chielditem[j].tar_ma.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + chielditem[j].act_ma.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + ma_var_chield.toFixed(2) + '</td>';
@@ -3713,11 +3706,10 @@
                 {
                 }
                 tbl += '</table>';
-                //$("#reportsDailygroup").html("").html(tbl);
+               
                 $("#reportsDailygroup").html("");
                 $("#reportsDailygroup").html(tbl);
-                //document.getElementById("mint_total_" + count).innerHTML = total_minr;
-                //$("#reportsDailygroup").html("").html(tbl);
+                
                 $('#example_solar_group').DataTable({
                     dom: 'Bfrtip',
                     searching: false,
@@ -3741,7 +3733,6 @@
                             extend: 'excel',
                             footer: true,
                             title: 'Solar Performance Reports Group By Site',
-                            //titleAttr: 'Export Excel',
                             "oSelectorOpts": { filter: 'applied', order: 'current' },
                             exportOptions: {
                                 columns: ':visible',
@@ -3864,7 +3855,6 @@
                             extend: 'csv',
                             footer: true,
                             title: 'Solar Performance Reports Group By Site',
-                            //titleAttr: 'Export Excel',
                             "oSelectorOpts": { filter: 'applied', order: 'current' },
                             exportOptions: {
                                 columns: ':visible',
@@ -4093,87 +4083,7 @@
                                 }
                             }
                         },
-                        /*{
-                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
-                            className: 'btn ml-1   ',
-
-                            action: function () {
-                                ExportToExcelSiteWise();
-                            },
-                            format: {
-                                header: function (data, columnIdx) {
-                                    if (columnIdx == 1) {
-                                        return 'Capacity (MW)';
-                                    }
-                                    else if (columnIdx == 2) {
-                                        return 'JMR Energy (in MU)  Tar';
-                                    }
-                                    else if (columnIdx == 3) {
-                                        return 'JMR Energy (in MU)  Exp';
-                                    }
-                                    else if (columnIdx == 4) {
-                                        return 'JMR Energy (in MU)  Act';
-                                    }
-                                    else if (columnIdx == 5) {
-                                        return 'JMR Energy (in MU)  T.Var (%)';
-                                    }
-                                    else if (columnIdx == 6) {
-                                        return 'JMR Energy (in MU)  E.Var (%)';
-                                    }
-                                    else if (columnIdx == 7) {
-                                        return 'Revenue (MINR) ';
-                                    }
-                                    else if (columnIdx == 8) {
-                                        return 'Wind Speed (m/s)  Tar';
-                                    }
-                                    else if (columnIdx == 9) {
-                                        return 'Wind Speed (m/s)  Act ';
-                                    }
-                                    else if (columnIdx == 10) {
-                                        return 'Wind Speed (m/s)  Var (%) ';
-                                    }
-                                    else if (columnIdx == 11) {
-                                        return 'PLF (%)  Tar';
-                                    }
-                                    else if (columnIdx == 12) {
-                                        return 'PLF (%)  Act ';
-                                    }
-                                    else if (columnIdx == 13) {
-                                        return 'PLF (%)  Var (%) ';
-                                    }
-                                    else if (columnIdx == 14) {
-                                        return 'MA Actual (%)  Tar';
-                                    }
-                                    else if (columnIdx == 15) {
-                                        return 'MA Actual (%)  Act ';
-                                    }
-                                    else if (columnIdx == 16) {
-                                        return 'MA Actual (%)  Var (%) ';
-                                    }
-                                    else if (columnIdx == 17) {
-                                        return 'IGA (%)  Tar';
-                                    }
-                                    else if (columnIdx == 18) {
-                                        return 'IGA (%)  Act ';
-                                    }
-                                    else if (columnIdx == 19) {
-                                        return 'IGA (%)  Var (%) ';
-                                    }
-                                    else if (columnIdx == 20) {
-                                        return 'EGA (%)  Tar';
-                                    }
-                                    else if (columnIdx == 21) {
-                                        return 'EGA (%)  Act ';
-                                    }
-                                    else if (columnIdx == 22) {
-                                        return 'EGA (%)  Var (%) ';
-                                    }
-                                    else {
-                                        return data;
-                                    }
-                                }
-                            }
-                        },*/
+                        
                     ]
                 });
                 $(".dt-buttons").addClass('btn-group flex-wrap');

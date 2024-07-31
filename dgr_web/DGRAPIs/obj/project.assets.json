@@ -174,6 +174,15 @@
           "lib/netstandard2.1/MailKit.dll": {}
         }
       },
+      "MathParser.org-mXparser/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp3.1/MathParser.org-mXparser.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/MathParser.org-mXparser.dll": {}
+        }
+      },
       "Microsoft.DotNet.PlatformAbstractions/2.0.4": {
         "type": "package",
         "dependencies": {
@@ -2376,6 +2385,32 @@
         "lib/netstandard2.1/MailKit.xml",
         "mailkit.3.5.0.nupkg.sha512",
         "mailkit.nuspec"
+      ]
+    },
+    "MathParser.org-mXparser/6.0.0": {
+      "sha512": "6rI0i4ioGQbQnLsoxkbHauuuGHkMhs8gVo3hxEEEny6Le1DB43l8woPt9kUamwHaRDAq06eC0UAg35cd7GzJ7w==",
+      "type": "package",
+      "path": "mathparser.org-mxparser/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.txt",
+        "images/icon.png",
+        "lib/net35/MathParser.org-mXparser.dll",
+        "lib/net462/MathParser.org-mXparser.dll",
+        "lib/net472/MathParser.org-mXparser.dll",
+        "lib/net481/MathParser.org-mXparser.dll",
+        "lib/net6.0/MathParser.org-mXparser.deps.json",
+        "lib/net6.0/MathParser.org-mXparser.dll",
+        "lib/net8.0/MathParser.org-mXparser.deps.json",
+        "lib/net8.0/MathParser.org-mXparser.dll",
+        "lib/netcoreapp3.1/MathParser.org-mXparser.deps.json",
+        "lib/netcoreapp3.1/MathParser.org-mXparser.dll",
+        "lib/netstandard2.1/MathParser.org-mXparser.deps.json",
+        "lib/netstandard2.1/MathParser.org-mXparser.dll",
+        "mathparser.org-mxparser.6.0.0.nupkg.sha512",
+        "mathparser.org-mxparser.nuspec"
       ]
     },
     "Microsoft.DotNet.PlatformAbstractions/2.0.4": {
@@ -7200,6 +7235,7 @@
       "Hangfire >= 1.7.33",
       "Hangfire.Core >= 1.7.33",
       "MailKit >= 3.5.0",
+      "MathParser.org-mXparser >= 6.0.0",
       "Microsoft.Extensions.Caching.Memory >= 6.0.1",
       "MimeKit >= 3.5.0",
       "MySql.Data >= 8.0.28",
@@ -7214,11 +7250,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectUniqueName": "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "projectName": "DGRAPIs",
-      "projectPath": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+      "projectPath": "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
       "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-      "outputPath": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
+      "outputPath": "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -7266,6 +7302,10 @@
           "MailKit": {
             "target": "Package",
             "version": "[3.5.0, )"
+          },
+          "MathParser.org-mXparser": {
+            "target": "Package",
+            "version": "[6.0.0, )"
           },
           "Microsoft.Extensions.Caching.Memory": {
             "target": "Package",

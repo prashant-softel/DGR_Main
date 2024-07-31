@@ -149,8 +149,8 @@
 
         result = exceldata;
         var columns = [
-            "Country", "Site", "SPV", "State", "Model", "DOC", "Capacity", "WTG", "Total_MW", "Tariff", "GBI", "Total_Tariff"
-            , "LL_Compensation"
+            "Country", "Site", "SPV", "State", "Model","Lat_Long", "DOC", "Capacity", "WTG", "Total_MW", "Tariff", "GBI", "Total_Tariff"
+            , "LL_Compensation", "Hub_Height","Rotor_Dia", "PSS_Capacity", "GSS_Name", "GSS_Voltage", "GSS_capacity", "Type_Of_Project"
         ];
 
         var rows = [];
@@ -162,6 +162,7 @@
             row.push(result[i].spv);
             row.push(result[i].state);
             row.push(result[i].model);
+            row.push(result[i].lat_long);
             row.push(formattedDate);
             row.push(result[i].capacity_mw);
             row.push(result[i].wtg);
@@ -170,6 +171,13 @@
             row.push(result[i].gbi);
             row.push(result[i].total_tarrif);
             row.push(result[i].ll_compensation);
+            row.push(result[i].hub_height);
+            row.push(result[i].rotor_dia);
+            row.push(result[i].pss_capacity);
+            row.push(result[i].gss_name);
+            row.push(result[i].gss_voltage);
+            row.push(result[i].gss_capacity);
+            row.push(result[i].type_of_project);
 
             rows.push(row);
         }
@@ -222,6 +230,9 @@
             if (userColumnId.includes(columnMap["Model"][0]) || columnMap["Model"][1] == 1 || isAdmin == 1) {
                 tbl += '<th>Model</th>';
             }
+            if (userColumnId.includes(columnMap["Lat_Long"][0]) || columnMap["Lat_Long"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Lat_Long</th>';
+            }
             if (userColumnId.includes(columnMap["DOC"][0]) || columnMap["DOC"][1] == 1 || isAdmin == 1) {
                 tbl += '<th>DOC</th>';
             }
@@ -245,6 +256,27 @@
             }
             if (userColumnId.includes(columnMap["LL_compensation"][0]) || columnMap["LL_compensation"][1] == 1 || isAdmin == 1) {
                 tbl += '<th>LL_Compensation<br>(%)</th>';
+            }
+            if (userColumnId.includes(columnMap["Hub_Height"][0]) || columnMap["Hub_Height"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Hub_Height</th>';
+            }
+            if (userColumnId.includes(columnMap["Rotor_Dia"][0]) || columnMap["Rotor_Dia"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Rotor_Dia</th>';
+            }
+            if (userColumnId.includes(columnMap["PSS_Capacity"][0]) || columnMap["PSS_Capacity"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>PSS_Capacity</th>';
+            }
+            if (userColumnId.includes(columnMap["GSS_Name"][0]) || columnMap["GSS_Name"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>GSS_Name</th>';
+            }
+            if (userColumnId.includes(columnMap["GSS_Voltage"][0]) || columnMap["GSS_Voltage"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>GSS_Voltage</th>';
+            }
+            if (userColumnId.includes(columnMap["GSS_capacity"][0]) || columnMap["GSS_capacity"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>GSS_capacity</th>';
+            }
+            if (userColumnId.includes(columnMap["Type_Of_Project"][0]) || columnMap["Type_Of_Project"][1] == 1 || isAdmin == 1) {
+                tbl += '<th>Type_Of_Project</th>';
             }
             if (userColumnId.includes(columnMap["Action"][0]) || columnMap["Action"][1] == 1 || isAdmin == 1) {
                 tbl += '<th style="width:10%">Action</th>';
@@ -272,6 +304,9 @@
                     if (userColumnId.includes(columnMap["Model"][0]) || columnMap["Model"][1] == 1 || isAdmin == 1) {
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].model + '</td>';
                     }
+                    if (userColumnId.includes(columnMap["Lat_Long"][0]) || columnMap["Lat_Long"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].lat_long + '</td>';
+                    }
                     if (userColumnId.includes(columnMap["DOC"][0]) || columnMap["DOC"][1] == 1 || isAdmin == 1) {
                         tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
                     }
@@ -296,6 +331,27 @@
                     if (userColumnId.includes(columnMap["LL_compensation"][0]) || columnMap["LL_compensation"][1] == 1 || isAdmin == 1) {
                         tbl += '<td class="text-right">' + result[i].ll_compensation.toFixed(2) + '</td>';
                     }
+                    if (userColumnId.includes(columnMap["Hub_Height"][0]) || columnMap["Hub_Height"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].hub_height.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Rotor_Dia"][0]) || columnMap["Rotor_Dia"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].rotor_dia.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["PSS_Capacity"][0]) || columnMap["PSS_Capacity"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].pss_capacity.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["GSS_Name"][0]) || columnMap["GSS_Name"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].gss_name + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["GSS_Voltage"][0]) || columnMap["GSS_Voltage"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].gss_voltage.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["GSS_capacity"][0]) || columnMap["GSS_capacity"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].gss_capacity.toFixed(2) + '</td>';
+                    }
+                    if (userColumnId.includes(columnMap["Type_Of_Project"][0]) || columnMap["Type_Of_Project"][1] == 1 || isAdmin == 1) {
+                        tbl += '<td class="text-right">' + result[i].type_of_project.toFixed(2) + '</td>';
+                    }
                     if (userColumnId.includes(columnMap["Action"][0]) || columnMap["Action"][1] == 1 || isAdmin == 1) {
                         tbl += '<td class="text-center"><a href="#"  class="btn btn-block btn-danger" onclick="DeleteWindSite(' + result[i].site_master_id + ')"  style="padding: 0.15rem 0.75rem;width: 70%;display: inline;" >Delete</a></td>';
                     }
@@ -314,16 +370,15 @@
                 dom: 'Bfrtip',
                 fixedHeader: true,
                 responsive: true,
-                //scrollX: true,
-                lengthChange: true,
+                scrollX: true,
+                lengthChange: false,
                 autoWidth: true,
                 paging: true,
-                lengthChange: true,
+                lengthChange: false,
                 searching: true,
                 ordering: true,
                 info: true,
-                autoWidth: false,
-                responsive: true,
+                autoWidth: true,
                 pageLength: 50,
 
                     buttons: [

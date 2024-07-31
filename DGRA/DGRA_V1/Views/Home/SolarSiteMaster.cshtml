@@ -165,7 +165,7 @@
 
     result = exceldata;
     var columns = [
-            "Country", "State", "SPV", "Site", "DOC", "DC_Capacity", "AC_Capacity",  "Total_Tariff"
+        "Country", "State", "SPV", "Site", "DOC", "DC_Capacity", "AC_Capacity", "Total_Tariff", "INV_Make", "INV_Model", "INV_Capacity", "Lat_Long", "PSS_Capacity", "GSS_Name", "GSS_Voltage", "GSS_capacity", "Type_Of_Project"
 
     ];
 
@@ -177,10 +177,19 @@
         row.push(result[i].state);
         row.push(result[i].spv);
         row.push(result[i].site);
-         row.push(formattedDate);
-            row.push(result[i].dc_capacity);
-            row.push(result[i].ac_capacity);
+        row.push(formattedDate);
+        row.push(result[i].dc_capacity);
+        row.push(result[i].ac_capacity);
         row.push(result[i].total_tarrif);
+        row.push(result[i].inv_make);
+        row.push(result[i].inv_model);
+        row.push(result[i].inv_capacity);
+        row.push(result[i].lat_long);
+        row.push(result[i].pss_capacity);
+        row.push(result[i].gss_name);
+        row.push(result[i].gss_voltage);
+        row.push(result[i].gss_capacity);
+        row.push(result[i].type_of_project);
         rows.push(row);
     }
 
@@ -240,6 +249,33 @@
                 if (userColumnId.includes(columnMap["Total_tarrif"][0]) || (columnMap["Total_tarrif"][1] == 1 || isAdmin == 1)) {
                     tbl += '<th>Total_Tariff</th>';
                 }
+                if (userColumnId.includes(columnMap["INV_Make"][0]) || (columnMap["INV_Make"][1] == 1 || isAdmin == 1)) {
+                    tbl += '<th>INV_Make</th>';
+                }
+                if (userColumnId.includes(columnMap["INV_Model"][0]) || (columnMap["INV_Model"][1] == 1 || isAdmin == 1)) {
+                    tbl += '<th>INV_Model</th>';
+                }
+                if (userColumnId.includes(columnMap["INV_Capacity"][0]) || (columnMap["INV_Capacity"][1] == 1 || isAdmin == 1)) {
+                    tbl += '<th>INV_Capacity</th>';
+                }
+                if (userColumnId.includes(columnMap["Lat_Long"][0]) || columnMap["Lat_Long"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Lat_Long</th>';
+                }
+                if (userColumnId.includes(columnMap["PSS_Capacity"][0]) || columnMap["PSS_Capacity"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>PSS_Capacity</th>';
+                }
+                if (userColumnId.includes(columnMap["GSS_Name"][0]) || columnMap["GSS_Name"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>GSS_Name</th>';
+                }
+                if (userColumnId.includes(columnMap["GSS_Voltage"][0]) || columnMap["GSS_Voltage"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>GSS_Voltage</th>';
+                }
+                if (userColumnId.includes(columnMap["GSS_capacity"][0]) || columnMap["GSS_capacity"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>GSS_capacity</th>';
+                }
+                if (userColumnId.includes(columnMap["Type_Of_Project"][0]) || columnMap["Type_Of_Project"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Type_Of_Project</th>';
+                }
                 if (userColumnId.includes(columnMap["Action"][0]) || (columnMap["Action"][1] == 1 || isAdmin == 1)) {
                     tbl += '<th style="width:10%">Action</th>';
                 }
@@ -274,6 +310,33 @@
                         if (userColumnId.includes(columnMap["Total_tarrif"][0]) || (columnMap["Total_tarrif"][1] == 1 || isAdmin == 1)) {
                             tbl += '<td class="text-right">' + result[i].total_tarrif.toFixed(2) + '</td>';
                         }
+                        if (userColumnId.includes(columnMap["INV_Make"][0]) || columnMap["INV_Make"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].inv_make + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["INV_Model"][0]) || columnMap["INV_Model"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].inv_model + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["INV_Capacity"][0]) || columnMap["INV_Capacity"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].inv_capacity.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Lat_Long"][0]) || columnMap["Lat_Long"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].lat_long + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["PSS_Capacity"][0]) || columnMap["PSS_Capacity"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].pss_capacity.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["GSS_Name"][0]) || columnMap["GSS_Name"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].gss_name + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["GSS_Voltage"][0]) || columnMap["GSS_Voltage"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].gss_voltage.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["GSS_capacity"][0]) || columnMap["GSS_capacity"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].gss_capacity.toFixed(2) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Type_Of_Project"][0]) || columnMap["Type_Of_Project"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right">' + result[i].type_of_project.toFixed(2) + '</td>';
+                        }
                         if (userColumnId.includes(columnMap["Action"][0]) || (columnMap["Action"][1] == 1 || isAdmin == 1)) {
                             tbl += '<td class="text-center"><a href="#"  class="btn btn-block btn-danger" onclick="DeleteSolarSite(' + result[i].site_master_solar_id + ')"  style="padding: 0.15rem 0.75rem;width: 70%;display: inline;" >Delete</a></td>';
                         }
@@ -286,60 +349,60 @@
                     // tbl += '<tr><th colspan="19" style="text-align:center">Data Not Available <th></tr>';
                 }
                 tbl += '</table>';
-                $("#siteData").html(tbl);
-                //$('#example1').DataTable({
-                //    dom: 'Bfrtip',
-                //    fixedHeader: true,
-                //    responsive: true,
-                //    lengthChange: false,
-                //    autoWidth: false,
-                //    paging: true,
-                //    lengthChange: false,
-                //    searching: true,
-                //    ordering: true,
-                //    info: true,
-                //    autoWidth: false,
-                //    responsive: false,
-                //    pageLength: 50,
-                //    buttons: [
-                //        {
-                //            extend: 'excel',
-                //            title: 'Solar Site Master',
-                //            exportOptions: {
-                //                columns: ':visible'
-                //            }
-                //        },
-                //        {
-                //            extend: 'csv',
-                //            title: 'Solar Site Master',
-                //            exportOptions: {
-                //                columns: ':visible'
-                //            }
-                //        },
+                $("#siteData").html("").html(tbl);
+                $.fn.DataTable.ext.pager.numbers_length = 6;
+                $('#example1').DataTable({
+                    dom: 'Bfrtip',
+                    fixedHeader: true,
+                    responsive: true,
+                    scrollX: true,
+                    lengthChange: false,
+                    autoWidth: true,
+                    paging: true,
+                    lengthChange: false,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: true,
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Site Master',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Site Master',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
 
-                //        'colvis',
-                //        {
-                //            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
-                //            className: 'btn ml-1   ',
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
 
-                //            action: function () {
-                //                exportToExcel();
-                //            }
-                //        },
-                //    ],
-                //});
-                //$(".dt-buttons").addClass('btn-group flex-wrap');
-                //$(".dt-buttons > button").addClass('btn btn-secondary');
-                //$(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-                //$(document).on("click", "div.dt-button-collection > div > button", function () {
-                //    if ($(this).hasClass("active")) {
-                //        $(this).css("background-color", "white");
-                //    } else {
-                //        $(this).css("background-color", "#31576d");
-                //    }
-                //});
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
 
-                //$('#example1').removeClass('dataTable');
+                $('#example1').removeClass('dataTable');
             }
         });
     }

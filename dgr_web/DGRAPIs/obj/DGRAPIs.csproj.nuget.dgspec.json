@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {}
+    "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {}
   },
   "projects": {
-    "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {
+    "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+        "projectUniqueName": "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
         "projectName": "DGRAPIs",
-        "projectPath": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+        "projectPath": "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "C:\\18 July DGR CA\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
+        "outputPath": "C:\\25 July DGR\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -59,6 +59,10 @@
             "MailKit": {
               "target": "Package",
               "version": "[3.5.0, )"
+            },
+            "MathParser.org-mXparser": {
+              "target": "Package",
+              "version": "[6.0.0, )"
             },
             "Microsoft.Extensions.Caching.Memory": {
               "target": "Package",
