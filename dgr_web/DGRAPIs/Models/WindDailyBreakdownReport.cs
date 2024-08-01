@@ -23,6 +23,9 @@ namespace DGRAPIs.Models
         public string spv { get; set; }
         public string site { get; set; }
         public int site_id { get; set; }
+        public double energy_loss { get; set; }
+        public double reveneu_loss { get; set; }
+
     }
     public class WindFileBreakdown
     {

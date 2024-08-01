@@ -578,7 +578,7 @@
     result = exceldata;
     var columns = [
             "Date", "Country", "State", "SPV", "Site", "BD_Type", "ICR", "INV", "SMB", "Strings",
-        "Start_From", "Stop_To", "Total_Stop", "Reason of Breakdown", "Action Taken"
+        "Start_From", "Stop_To", "Total_Stop", "Energy_Loss","Reveneu_Loss", "Reason of Breakdown", "Action Taken"
     ];
 
     var rows = [];
@@ -588,12 +588,12 @@
             var start_time = toHoursAndMinutes(result[i].from_bd.totalSeconds);
             var stop_time = toHoursAndMinutes(result[i].to_bd.totalSeconds);
             var total_time = toHoursAndMinutes(result[i].total_stop.totalSeconds);
-        row.push(formattedDate);
-        row.push(result[i].country);
-        row.push(result[i].state);
-        row.push(result[i].spv);
-        row.push(result[i].site);
-        row.push(result[i].bd_type);
+            row.push(formattedDate);
+            row.push(result[i].country);
+            row.push(result[i].state);
+            row.push(result[i].spv);
+            row.push(result[i].site);
+            row.push(result[i].bd_type);
             row.push(result[i].icr);
             row.push(result[i].inv);
             row.push(result[i].smb);
@@ -601,9 +601,11 @@
             row.push(start_time);
             row.push(stop_time);
             row.push(total_time);
+            row.push(result[i].energy_loss);
+            row.push(result[i].reveneu_loss);
             row.push(result[i].bd_remarks);
             row.push(result[i].action_taken);
-        rows.push(row);
+            rows.push(row);
     }
 
     var data = [columns].concat(rows);
@@ -728,8 +730,17 @@
                 }
                 if (userColumnId.includes(columnMap["Total_Stop"][0]) || columnMap["Total_Stop"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Total_Stop</th>';
-
+                    
                 }
+
+                if (userColumnId.includes(columnMap["Energy_Loss"][0]) || columnMap["Energy_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Energy_Loss</th>';
+                }
+
+                if (userColumnId.includes(columnMap["Reveneu_Loss"][0]) || columnMap["Reveneu_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Reveneu_Loss</th>';
+                }
+
                 if (userColumnId.includes(columnMap["Reason_of_Breakdown"][0]) || columnMap["Reason_of_Breakdown"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Reason of Breakdown</th>';
 
@@ -796,6 +807,14 @@
                         if (userColumnId.includes(columnMap["Total_Stop"][0]) || columnMap["Total_Stop"][1] == 1 || isAdmin == 1) {
                             tbl += '<td>' + total_time + '</td>';
 
+                        }
+
+                        if (userColumnId.includes(columnMap["Energy_Loss"][0]) || columnMap["Energy_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].energy_loss + '</td>';
+                        }
+
+                        if (userColumnId.includes(columnMap["Reveneu_Loss"][0]) || columnMap["Reveneu_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].reveneu_loss + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Reason_of_Breakdown"][0]) || columnMap["Reason_of_Breakdown"][1] == 1 || isAdmin == 1) {
                             tbl += '<td>' + result[i].bd_remarks + '</td>';

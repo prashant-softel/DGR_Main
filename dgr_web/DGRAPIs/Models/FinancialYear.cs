@@ -9,7 +9,8 @@ namespace DGRAPIs.Models
         internal string Name;
 
         public string financial_year { get; set; }
-       // public string bd_type_name { get; set; }
-       // public string totalTime { get; set; }
+        public dynamic start_date { get; set; }
+        public dynamic end_date { get; set; }
+        
     }
 }

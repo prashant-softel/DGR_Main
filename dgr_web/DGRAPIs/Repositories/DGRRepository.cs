@@ -69,7 +69,7 @@ namespace DGRAPIs.Repositories
             //_FinancialYear.Add(new FinancialYear { financial_year = "2022-23" });
             //_FinancialYear.Add(new FinancialYear { financial_year = "2023-24" });
             //_FinancialYear.Add(new FinancialYear { financial_year = "2024-25" });
-            string qry = "SELECT financial_year FROM `year_master` where status='Y'";
+            string qry = "SELECT financial_year,start_date,end_date FROM `year_master` where status='Y'";
             _FinancialYear = await Context.GetData<FinancialYear>(qry).ConfigureAwait(false);
             return _FinancialYear;
 
@@ -2424,7 +2424,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             List<WindDailyBreakdownReport> _windBDList2 = new List<WindDailyBreakdownReport>();
 
 
-            string fetchQry1 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status =1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type WHERE " + filter + " AND t1.approve_status = 1 and t1.import_batch_id = 0 ORDER BY t1.date ASC";
+            string fetchQry1 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,energy_loss,reveneu_loss,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status =1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type WHERE " + filter + " AND t1.approve_status = 1 and t1.import_batch_id = 0 ORDER BY t1.date ASC";
             string functionName = "GetWindDailyBDReport";
             try
             {
@@ -2438,7 +2438,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             }
 
 
-            string fetchQry2 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status =1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
+            string fetchQry2 = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,energy_loss,reveneu_loss,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status =1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
 
                 try
                 {
@@ -3329,14 +3329,14 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             List<SolarDailyBreakdownReport> _solarBDList1 = new List<SolarDailyBreakdownReport>();
 
 
-            string fetchQry1 = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id  WHERE " + filter + " AND t1.approve_status = 1 and t1.import_batch_id= 0 ORDER BY t1.date ASC";
+            string fetchQry1 = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,energy_loss,reveneu_loss,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id  WHERE " + filter + " AND t1.approve_status = 1 and t1.import_batch_id= 0 ORDER BY t1.date ASC";
 
             _solarBDList1 = await Context.GetData<SolarDailyBreakdownReport>(fetchQry1).ConfigureAwait(false);
 
             List<SolarDailyBreakdownReport> _solarBDList = new List<SolarDailyBreakdownReport>();
            
 
-                string fetchQry = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
+                string fetchQry = "SELECT date,t2.country,t2.state,t2.spv,t2.site,bd_type,icr,inv,smb,strings, from_bd,to_bd,total_bd as total_stop,energy_loss,reveneu_loss,bd_remarks, action_taken FROM uploading_file_breakdown_solar t1 left join site_master_solar t2 on t2.site_master_solar_id=t1.site_id left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
             string functionName = "GetSolarDailyBreakdownReport";
                 try
                 {

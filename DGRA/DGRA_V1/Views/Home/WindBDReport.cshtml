@@ -501,7 +501,7 @@
 
         result = exceldata;
         var columns = [
-            "Date", "Country", "State", "SPV", "Site", "WTG", "BD_Type", "Start_From", "Stop_To", "Total_Stop", "Reason of Breakdown", "Action Taken"
+            "Date", "Country", "State", "SPV", "Site", "WTG", "BD_Type", "Start_From", "Stop_To", "Energy_Loss", "Reveneu_Loss", "Total_Stop", "Reason of Breakdown", "Action Taken"
         ];
 
         var rows = [];
@@ -518,6 +518,8 @@
             row.push(toHoursAndMinutes(result[i].stop_from.totalSeconds));
             row.push(toHoursAndMinutes(result[i].stop_to.totalSeconds));
             row.push(toHoursAndMinutes(result[i].total_stop.totalSeconds));
+            row.push(result[i].energy_loss);
+            row.push(result[i].reveneu_loss);
             row.push(result[i].error_description);
             row.push(result[i].action_taken);
             rows.push(row);
@@ -628,6 +630,12 @@
                 if (userColumnId.includes(columnMap["Total_Stop"][0]) || columnMap["Total_Stop"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Total_Stop</th>';
                 }
+                if (userColumnId.includes(columnMap["Energy_Loss"][0]) || columnMap["Energy_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Energy_Loss</th>';
+                }
+                if (userColumnId.includes(columnMap["Reveneu_Loss"][0]) || columnMap["Reveneu_Loss"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th>Reveneu_Loss</th>';
+                }
                 if (userColumnId.includes(columnMap["Reason_of_Breakdown"][0]) || columnMap["Reason_of_Breakdown"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Reason of Breakdown</th>';
                 }
@@ -671,6 +679,12 @@
                         }
                         if (userColumnId.includes(columnMap["Total_Stop"][0]) || columnMap["Total_Stop"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + toHoursAndMinutes(result[i].total_stop.totalSeconds) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Energy_Loss"][0]) || columnMap["Energy_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].energy_loss + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Reveneu_Loss"][0]) || columnMap["Reveneu_Loss"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].reveneu_loss + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Reason_of_Breakdown"][0]) || columnMap["Reason_of_Breakdown"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].error_description + '</td>';

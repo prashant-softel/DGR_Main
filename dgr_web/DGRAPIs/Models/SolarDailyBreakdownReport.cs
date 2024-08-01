@@ -23,6 +23,8 @@ namespace DGRAPIs.Models
         public dynamic total_stop { get; set; }
         public string bd_remarks { get; set; }
         public string action_taken { get; set; }
+        public double energy_loss { get; set; }
+        public double reveneu_loss { get; set; }
     }
 
     public class SolarDailyBreakdownReportGroup
