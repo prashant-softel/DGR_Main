@@ -95,12 +95,12 @@
                                         @*<option value="0">Please select</option>*@
                                         @if (windAccess == true)
                                         {
-                                        <option value="Wind">Wind</option>
+                                            <option value="Wind">Wind</option>
 
                                         }
                                         @if (solarAccess == true)
                                         {
-                                        <option value="Solar">Solar</option>
+                                            <option value="Solar">Solar</option>
                                         }
                                         @if (@HttpContextAccessor.HttpContext.Session.GetString("role") == "Admin")
                                         {
@@ -109,9 +109,9 @@
                                         }
 
                                         @*foreach (var fileUploadType in FileUploadType.All)
-                                        {
-                                            <option value="@fileUploadType">@fileUploadType</option>
-                                        }*@
+                        {
+                            <option value="@fileUploadType">@fileUploadType</option>
+                        }*@
 
                                     </select>
                                 </div>
@@ -123,10 +123,10 @@
                                 <label class="custom-file-label" for="customFile">Choose file</label>
                             </div>
                         </div>
-                        <div class="col-md-2"><button type="submit" class="btn btn-block btn-success" onclick="onSubmit();">Upload</button></div>
-                        @*<div class="col-md-2"><button type="button" class="btn btn-block btn-danger">Cancel</button></div>*@
-                        @*<div class="col-md-2"><div type="button" class="btn btn-block btn-danger"><a href="~/Admin/FileUpload/Upload" style="color: white !important; text-decoration: none; transition: none ">Cancel</a></div></div>*@
-                    <div class="col-md-2"><a href="~/Admin/FileUpload/Upload"><div type="button" class="btn btn-block btn-danger">Cancel</div></a></div>
+                        <div class="col-md-2"><button type="submit" class="btn btn-block btn-success" id="uploadButton" onclick="onSubmit();">Upload</button></div>
+                        <div class="col-md-2">
+                        <button type="button" class="btn btn-block btn-danger" id="cancelButton" onclick="window.location.href='~/Admin/FileUpload/Upload';">Cancel</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -222,16 +222,16 @@
     });
 
     function onSubmit() {
-        //console.log("You clicked upload button....!");
-        var a = document.getElementById("loader")
-        //console.log(a);
-        //console.log(a.style.display);
-        if (a.style.display == "none") {
-            a.style.display = "flex";
+        var loader = document.getElementById("loader");
+
+        if (loader.style.display === "none" || loader.style.display === "") {
+            loader.style.display = "flex";
         }
-        if (a.style.display == "flex") {
-            a.style.display = "flex";
-        }
+        console.log('Upload button:', uploadButton);
+        console.log('Cancel button:', cancelButton);
+
+        document.getElementById('uploadButton').disabled = true;
+        document.getElementById('cancelButton').disabled = true;
     }
 </script>
 <!-- /.content-wrapper -->
