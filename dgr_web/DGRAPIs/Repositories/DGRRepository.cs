@@ -3772,12 +3772,26 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
         {
             //check for existing records with date and site reference to delete existing records before inserting fresh data
             string delQry = "delete from daily_target_kpi_solar where";
-            string qry = "insert into daily_target_kpi_solar (fy, date, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf, Toplining_kWh, Toplining_MA, Toplining_IGA, Toplining_EGA, Toplining_PR, Toplining_PLF, Plant_kWh, Plant_PR, Plant_PLF, Inv_kWh, Inv_PR, Inv_PLF,p_50,p_75,p_90) values ";
+            string qry = "insert into daily_target_kpi_solar (fy, date, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf, Toplining_kWh, Toplining_MA, Toplining_IGA, Toplining_EGA, Toplining_PR, Toplining_PLF,Toplining_GHI,Toplining_POA, Plant_kWh, Plant_PR, Plant_PLF, Inv_kWh, Inv_PR, Inv_PLF,p_50,p_75,p_90) values ";
             string insertValues = "";
 
             foreach (var unit in set)
             {
-                insertValues += "('" + unit.FY + "','" + unit.Date + "','" + unit.Sites + "','" + unit.site_id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + unit.Toplining_EGA + "','" + unit.Toplining_PR + "','" + unit.Toplining_PLF + "','" + unit.Plant_kWh + "','" + unit.Plant_PR + "','" + unit.Plant_PLF + "','" + unit.Inv_kWh + "','" + unit.Inv_PR + "','" + unit.Inv_PLF + "','" + unit.P50 + "','" + unit.P75 + "','" + unit.P90 + "'),";
+                insertValues += "('" + unit.FY + "','" + unit.Date + "','" + unit.Sites + "','" + unit.site_id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + 
+                    unit.Toplining_EGA + "','" + 
+                    unit.Toplining_PR + "','" + 
+                    unit.Toplining_PLF + "','" +
+                    unit.toplining_ghi + "','" +
+                    unit.toplining_poa + "','" +
+                    unit.Plant_kWh + "','" + 
+                    unit.Plant_PR + "','" + 
+                    unit.Plant_PLF + "','" + 
+                    unit.Inv_kWh + "','" + 
+                    unit.Inv_PR + "','" + 
+                    unit.Inv_PLF + "','" + 
+                    unit.P50 + "','" + 
+                    unit.P75 + "','" + 
+                    unit.P90 + "'),";
 
                 delQry += " sites= '" + unit.Sites + "' and date = '" + unit.Date + "' and fy = '" + unit.FY + "' or";
             }
@@ -3794,7 +3808,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             SolarMonthlyTargetKPI existingRecord = new SolarMonthlyTargetKPI();
             int val = 0;
             string updateQry = "insert into monthly_target_kpi_solar (monthly_target_kpi_solar_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf,Toplining_kWh, Toplining_MA, Toplining_IGA, Toplining_EGA, Toplining_PR, Toplining_PLF, Plant_kWh, Plant_PR, Plant_PLF, Inv_kWh, Inv_PR, Inv_PLF, p_50,p_75,p_90) values";
-            string qry = "insert into monthly_target_kpi_solar (fy, month, month_no, year, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf,Toplining_kWh, Toplining_MA, Toplining_IGA, Toplining_EGA, Toplining_PR, Toplining_PLF, Plant_kWh, Plant_PR, Plant_PLF, Inv_kWh, Inv_PR, Inv_PLF,p_50, p_75, p_90) values";
+            string qry = "insert into monthly_target_kpi_solar (fy, month, month_no, year, sites, site_id, ghi, poa, gen_nos, ma, iga, ega, pr, plf,Toplining_kWh, Toplining_MA, Toplining_IGA, Toplining_EGA, Toplining_PR, Toplining_PLF,Toplining_GHI,Toplining_POA, Plant_kWh, Plant_PR, Plant_PLF, Inv_kWh, Inv_PR, Inv_PLF,p_50, p_75, p_90) values";
             string insertValues = "";
             string updateValues = "";
             foreach (var unit in set)
@@ -3802,15 +3816,43 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                 existingRecord = tableData.Find(tSite => (tSite.Site_Id == unit.Site_Id && tSite.year == unit.year && tSite.month_no == unit.month_no));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.FY + "','" + unit.Month + "','" + unit.month_no + "','" + unit.year + "','" + unit.Sites + "','" + unit.Site_Id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + unit.Toplining_EGA + "','" + unit.Toplining_PR + "','" + unit.Toplining_PLF + "','" + unit.Plant_kWh + "','" + unit.Plant_PR + "','" + unit.Plant_PLF + "','" + unit.Inv_kWh + "','" + unit.Inv_PR + "','" + unit.Inv_PLF + "','" + unit.P50 + "','" + unit.P75 + "','" + unit.P90 + "'),";
+                    insertValues += "('" + unit.FY + "','" + unit.Month + "','" + unit.month_no + "','" + unit.year + "','" + unit.Sites + "','" + unit.Site_Id + "','" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + unit.Toplining_EGA + "','" + unit.Toplining_PR + "','" + unit.Toplining_PLF + "','" +
+                        unit.toplining_ghi + "','" +
+                        unit.toplining_poa + "','" +
+                        unit.Plant_kWh + "','" + 
+                        unit.Plant_PR + "','" + 
+                        unit.Plant_PLF + "','" + 
+                        unit.Inv_kWh + "','" + 
+                        unit.Inv_PR + "','" + 
+                        unit.Inv_PLF + "','" + 
+                        unit.P50 + "','" + 
+                        unit.P75 + "','" + 
+                        unit.P90 + "'),";
                 }
                 else
                 {
-                    updateValues += "(" + existingRecord.monthly_target_kpi_solar_id + ",'" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + unit.Toplining_EGA + "','" + unit.Toplining_PR + "','" + unit.Toplining_PLF + "','" + unit.Plant_kWh + "','" + unit.Plant_PR + "','" + unit.Plant_PLF + "','" + unit.Inv_kWh + "','" + unit.Inv_PR + "','" + unit.Inv_PLF + "','" + unit.P50 + "','" + unit.P75 + "','" + unit.P90 + "'),";
+                    updateValues += "(" + existingRecord.monthly_target_kpi_solar_id + ",'" + unit.GHI + "','" + unit.POA + "','" + unit.kWh + "','" + unit.MA + "','" + unit.IGA + "','" + unit.EGA + "','" + unit.PR + "','" + unit.PLF + "','" + unit.Toplining_kWh + "','" + unit.Toplining_MA + "','" + unit.Toplining_IGA + "','" + unit.Toplining_EGA + "','" + unit.Toplining_PR + "','" + 
+                        unit.Toplining_PLF + "','" +
+                        unit.toplining_ghi + "','" +
+                        unit.toplining_poa + "','" +
+                        unit.Plant_kWh + "','" + 
+                        unit.Plant_PR + "','" + 
+                        unit.Plant_PLF + "','" + 
+                        unit.Inv_kWh + "','" + 
+                        unit.Inv_PR + "','" + 
+                        unit.Inv_PLF + "','" + 
+                        unit.P50 + "','" + 
+                        unit.P75 + "','" + 
+                        unit.P90 + "'),";
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_target_kpi_solar_id = VALUES(monthly_target_kpi_solar_id), ghi = VALUES(ghi), poa = VALUES(poa), gen_nos = VALUES(gen_nos), ma = VALUES(ma), iga = VALUES(iga), ega = VALUES(ega), pr = VALUES(pr), plf = VALUES(plf),Toplining_kWh = VALUES(Toplining_kWh),Toplining_MA = VALUES(Toplining_MA),Toplining_IGA = VALUES(Toplining_IGA), Toplining_EGA = VALUES(Toplining_EGA),Toplining_PR = VALUES(Toplining_PR),Toplining_PLF = VALUES(Toplining_PLF),Plant_kWh = VALUES(Plant_kWh),Plant_PR = VALUES(Plant_PR),Plant_PLF = VALUES(Plant_PLF),Inv_kWh = VALUES(Inv_kWh),Inv_PR = VALUES(Inv_PR),Inv_PLF = VALUES(Inv_PLF), p_50 = VALUES(p_50), p_75 = VALUES(p_75), p_90 = VALUES(p_90);";
+            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE monthly_target_kpi_solar_id = VALUES(monthly_target_kpi_solar_id), ghi = VALUES(ghi), poa = VALUES(poa), gen_nos = VALUES(gen_nos), ma = VALUES(ma), iga = VALUES(iga), ega = VALUES(ega), pr = VALUES(pr), plf = VALUES(plf),Toplining_kWh = VALUES(Toplining_kWh),Toplining_MA = VALUES(Toplining_MA),Toplining_IGA = VALUES(Toplining_IGA), Toplining_EGA = VALUES(Toplining_EGA),Toplining_PR = VALUES(Toplining_PR)," +
+                "Toplining_PLF = VALUES(Toplining_PLF)," +
+                "Toplining_GHI = VALUES(Toplining_GHI)," +
+                "Toplining_POA = VALUES(Toplining_POA)," +
+                "Plant_kWh = VALUES(Plant_kWh)," +
+                "Plant_PR = VALUES(Plant_PR),Plant_PLF = VALUES(Plant_PLF),Inv_kWh = VALUES(Inv_kWh),Inv_PR = VALUES(Inv_PR),Inv_PLF = VALUES(Inv_PLF), p_50 = VALUES(p_50), p_75 = VALUES(p_75), p_90 = VALUES(p_90);";
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
@@ -6368,7 +6410,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
         internal async Task<List<SolarDailyTargetKPI>> GetSolarDailyTargetKPI(string fromDate, string todate, string site)
         {
             string filter = "site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
-            string qry = @"SELECT fy,date, sites,site_id,ghi,poa ,gen_nos as kWh ,ma,iga,ega ,pr,plf ,Toplining_kWh ,Toplining_MA ,Toplining_IGA, Toplining_EGA ,Toplining_PR ,Toplining_PLF,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF  FROM daily_target_kpi_solar  where " + filter;
+            string qry = @"SELECT fy,date, sites,site_id,ghi,poa ,gen_nos as kWh ,ma,iga,ega ,pr,plf ,Toplining_kWh ,Toplining_MA ,Toplining_IGA, Toplining_EGA ,Toplining_PR ,Toplining_PLF,toplining_ghi,toplining_poa,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF  FROM daily_target_kpi_solar  where " + filter;
             return await Context.GetData<SolarDailyTargetKPI>(qry).ConfigureAwait(false);
 
         }
@@ -6438,16 +6480,78 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 existingRecord = tableData.Find(tableRecord => tableRecord.site.Equals(unit.site));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.country + "','" + unit.site + "','" + unit.doc + "','" + unit.spv + "','" + unit.state + "','" + unit.model + "','" + unit.capacity_mw + "','" + unit.wtg + "','" + unit.total_mw + "','" + unit.tarrif + "','" + unit.total_tarrif + "','" + unit.gbi + "','" + unit.ll_compensation + "'),";
+                    insertValues += "('" +
+                                unit.country + "','" +
+                                unit.site + "','" +
+                                unit.doc + "','" +
+                                unit.spv + "','" +
+                                unit.state + "','" +
+                                unit.model + "','" +
+                                unit.capacity_mw + "','" +
+                                unit.wtg + "','" +
+                                unit.total_mw + "','" +
+                                unit.tarrif + "','" +
+                                unit.total_tarrif + "','" +
+                                unit.gbi + "','" +
+                                unit.ll_compensation + "','" +
+                                unit.lat_long + "','" +
+                                unit.hub_height + "','" +
+                                unit.rotor_dia + "','" +
+                                unit.pss_capacity + "','" +
+                                unit.gss_name + "','" +
+                                unit.gss_voltage + "','" +
+                                unit.gss_capacity + "','" +
+                                unit.type_of_project + "'),";
+
                 }
                 else
                 {
                     //if match is found
-                    updateValues += "(" + existingRecord.site_master_id + ",'" + unit.doc + "','" + unit.capacity_mw + "','" + unit.wtg + "','" + unit.total_mw + "','" + unit.tarrif + "','" + unit.total_tarrif + "','" + unit.gbi + "','" + unit.ll_compensation + "'),";
+                    updateValues += "(" + existingRecord.site_master_id + ",'" +
+                                unit.doc + "','" +
+                                unit.spv + "','" +
+                                unit.state + "','" +
+                                unit.model + "','" +
+                                unit.capacity_mw + "','" +
+                                unit.wtg + "','" +
+                                unit.total_mw + "','" +
+                                unit.tarrif + "','" +
+                                unit.total_tarrif + "','" +
+                                unit.gbi + "','" +
+                                unit.ll_compensation + "','" +
+                                unit.lat_long + "','" +
+                                unit.hub_height + "','" +
+                                unit.rotor_dia + "','" +
+                                unit.pss_capacity + "','" +
+                                unit.gss_name + "','" +
+                                unit.gss_voltage + "','" +
+                                unit.gss_capacity + "','" +
+                                unit.type_of_project + "'),";
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE site_master_id = VALUES(site_master_id), capacity_mw = VALUES(capacity_mw), wtg = VALUES(wtg), total_mw = VALUES(total_mw), tarrif = VALUES(tarrif), total_tarrif = VALUES(total_tarrif), gbi = VALUES(gbi), ll_compensation = VALUES(ll_compensation), doc= VALUES(doc);";
+            updateQry += string.IsNullOrEmpty(updateValues)
+                        ? ""
+                        : updateValues.Substring(0, (updateValues.Length - 1)) +
+                          " ON DUPLICATE KEY UPDATE " +
+                          "site_master_id  = VALUES(site_master_id), " +
+                          "capacity_mw     = VALUES(capacity_mw), " +
+                          "wtg             = VALUES(wtg), " +
+                          "total_mw        = VALUES(total_mw), " +
+                          "tarrif          = VALUES(tarrif), " +
+                          "total_tarrif    = VALUES(total_tarrif), " +
+                          "gbi             = VALUES(gbi), " +
+                          "ll_compensation = VALUES(ll_compensation), " +
+                          "doc             = VALUES(doc), " +
+                          "lat_long        = VALUES(lat_long), " +
+                          "hub_height      = VALUES(hub_height), " +
+                          "rotor_dia       = VALUES(rotor_dia), " +
+                          "pss_capacity    = VALUES(pss_capacity), " +
+                          "gss_name        = VALUES(gss_name), " +
+                          "gss_voltage     = VALUES(gss_voltage), " +
+                          "gss_capacity    = VALUES(gss_capacity), " +
+                          "type_of_project = VALUES(type_of_project);";
+
             if (!(string.IsNullOrEmpty(insertValues)))
             {
                 val = await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
@@ -6529,7 +6633,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 }
 
             }
-            string qry = @"SELECT  fy, month, sites, ghi, poa, gen_nos as kWh, ma, iga, ega, pr, plf,Toplining_kWh ,Toplining_MA ,Toplining_IGA, Toplining_EGA ,Toplining_PR ,Toplining_PLF,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF,p_50 as P50,p_75 as P75,p_90 as P90 FROM monthly_target_kpi_solar " + filter;
+            string qry = @"SELECT  fy, month, sites, ghi, poa, gen_nos as kWh, ma, iga, ega, pr, plf,Toplining_kWh ,Toplining_MA ,Toplining_IGA, Toplining_EGA ,Toplining_PR ,Toplining_PLF,toplining_ghi,toplining_poa,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF,p_50 as P50,p_75 as P75,p_90 as P90 FROM monthly_target_kpi_solar " + filter;
             return await Context.GetData<SolarMonthlyTargetKPI>(qry).ConfigureAwait(false);
         }
         internal async Task<int> InsertWindLocationMaster(List<WindLocationMaster> set)
@@ -7060,19 +7164,71 @@ FROM daily_bd_loss_solar where   " + datefilter;
                 existingRecord = tableData.Find(tableRecord => tableRecord.site.Equals(unit.site));
                 if (existingRecord == null)
                 {
-                    insertValues += "('" + unit.country + "','" + unit.site + "','" + unit.doc + "','" + unit.spv + "','" + unit.state + "','" + unit.dc_capacity + "','" + unit.ac_capacity + "','" + unit.total_tarrif + "'),";
+                    insertValues += "('" +
+                            unit.country + "','" +
+                            unit.site + "','" +
+                            unit.doc + "','" +
+                            unit.spv + "','" +
+                            unit.state + "','" +
+                            unit.dc_capacity + "','" +
+                            unit.ac_capacity + "','" +
+                            unit.total_tarrif + "','" +
+                            unit.inv_make + "','" +
+                            unit.inv_model + "','" +
+                            unit.inv_capacity + "','" +
+                            unit.lat_long + "','" +
+                            unit.pss_capacity + "','" +
+                            unit.gss_name + "','" +
+                            unit.gss_voltage + "','" +
+                            unit.gss_capacity + "','" +
+                            unit.type_of_project + "'),";
+
                 }
                 else
                 {
-                    //if match is found
-                    //updateValues += "(" + existingRecord.site_master_solar_id + ",'" + unit.dc_capacity + "','" + unit.ac_capacity + "','" + unit.total_tarrif + "'),";
-                    updateValues += "(" + existingRecord.site_master_solar_id + ",'" + unit.doc + "','" + unit.country + "','" + unit.spv + "','" + unit.state + "','" + unit.dc_capacity + "','" + unit.ac_capacity + "','" + unit.total_tarrif + "'),";
-
-                    //updateQry += "update site_master_solar set dc_capacity = '" + unit.dc_capacity + "', ac_capacity = '" + unit.ac_capacity + "', total_tarrif = '" + unit.total_tarrif + "' where site_master_solar_id = '" + existingRecord.site_master_solar_id + "';";
+                    updateValues += "(" + 
+                        existingRecord.site_master_solar_id + ",'" + 
+                        unit.doc + "','" + 
+                        unit.country + "','" + 
+                        unit.spv + "','" + 
+                        unit.state + "','" + 
+                        unit.dc_capacity + "','" + 
+                        unit.ac_capacity + "','" +
+                        unit.total_tarrif + "','" +
+                        unit.inv_make + "','" +
+                        unit.inv_model + "','" +
+                        unit.inv_capacity + "','" +
+                        unit.lat_long + "','" +
+                        unit.pss_capacity + "','" +
+                        unit.gss_name + "','" +
+                        unit.gss_voltage + "','" +
+                        unit.gss_capacity + "','" +
+                        unit.type_of_project + "'),";
                 }
             }
             qry += insertValues;
-            updateQry += string.IsNullOrEmpty(updateValues) ? "" : updateValues.Substring(0, (updateValues.Length - 1)) + " ON DUPLICATE KEY UPDATE site_master_solar_id = VALUES(site_master_solar_id),country=VALUES(country), spv=VALUES(spv), state=VALUES(state), dc_capacity = VALUES(dc_capacity), ac_capacity = VALUES(ac_capacity), total_tarrif = VALUES(total_tarrif), doc = VALUES(doc);";
+            updateQry += string.IsNullOrEmpty(updateValues)
+                    ? ""
+                    : updateValues.Substring(0, updateValues.Length - 1) +
+                      " ON DUPLICATE KEY UPDATE " +
+                      "site_master_solar_id = VALUES(site_master_solar_id), " +
+                      "country              = VALUES(country), " +
+                      "spv                  = VALUES(spv), " +
+                      "state                = VALUES(state), " +
+                      "dc_capacity          = VALUES(dc_capacity), " +
+                      "ac_capacity          = VALUES(ac_capacity), " +
+                      "total_tarrif         = VALUES(total_tarrif), " +
+                      "doc                  = VALUES(doc), " +
+                      "inv_make             = VALUES(inv_make), " +
+                      "inv_model            = VALUES(inv_model), " +
+                      "inv_capacity         = VALUES(inv_capacity), " +
+                      "lat_long             = VALUES(lat_long), " +
+                      "pss_capacity         = VALUES(pss_capacity), " +
+                      "gss_name             = VALUES(gss_name), " +
+                      "gss_voltage          = VALUES(gss_voltage), " +
+                      "gss_capacity         = VALUES(gss_capacity), " +
+                      "type_of_project      = VALUES(type_of_project);";
+
 
             if (!(string.IsNullOrEmpty(insertValues)))
             {

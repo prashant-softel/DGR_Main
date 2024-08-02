@@ -211,7 +211,7 @@
                         </div>
                     </div>
                     <div class="col-md-2"></div>
-                    <div class="col-md-2"><button type="button" class="btn btn-block btn-primary" onclick="getReport()" style=" width:5rem ">Search</button></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-block btn-primary" id="searchbtn" onclick="getReport()" style=" width:5rem ">Search</button></div>
                     <div class="col-md-5"></div>
                 </div>
                
@@ -220,7 +220,7 @@
 
                     <div class="row" id="approvebtn" style="display:none">
                         <div class="col-md-2"><button type="button" id="btndsable" class="btn btn-block btn-success" onclick="DataApproved(1)">Approved</button></div>
-                        <div class="col-md-2"><button type="button" class="btn btn-block btn-danger" onclick="DataApproved(2)">Reject</button></div>
+                        <div class="col-md-2"><button type="button" id="rejectbtn" class="btn btn-block btn-danger" onclick="DataApproved(2)">Reject</button></div>
                         <!--<div class="col-md-2"><button type="button" class="btn btn-block btn-info" onclick="ExportToExcel()">Export Selected Data</button></div>-->
                         <div class="col-md-2"></div>
                     </div>
@@ -310,28 +310,7 @@
     });
 
     window.onload = function () {
-      @* var state = "";
-        var spv = "";
-         var site_ids = "@Html.Raw(windUserSiteList.TrimEnd(','))";
-        $.ajax({
-            type: "GET",
-
-            url: '@Url.Action("GetSiteList", "WindReport")' + '?sitelist=' + site_ids,
-            contentType: "application/json; charset=utf-8",
-            datatype: "html",
-            success: function (result, status, xhr) {
-                var options = "";
-
-                for (var k = 0; k < result.length; k++) {
-                    options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
-                }
-                $("#site").html(options);
-                $('#site').multipleSelect({
-                    "minimumCountSelected": 2,
-                    "placeholder": "Select Wind Site(s)",
-                });
-            }
-        });*@
+     
     }
 
 
@@ -419,6 +398,7 @@
 
             getWindReport();
         }
+        
     }
     // WInd Import Reports
     function getWindReport() {
@@ -433,6 +413,9 @@
             return false;
         }
         document.getElementById("loader").style.display = 'flex';
+        document.getElementById('searchbtn').disabled = true;
+        document.getElementById('btndsable').disabled = true;
+        document.getElementById('rejectbtn').disabled = true;
         console.log(site);
         var status = $('select#status option:selected').val();
         var importType = $('select#importType option:selected').val();
@@ -582,6 +565,9 @@
                 $("dataTables_filter").css("margin-top", "-35px");
                 $('#example1').removeClass('dataTable');
                 document.getElementById("loader").style.display = 'none';
+                document.getElementById('searchbtn').disabled = false;
+                document.getElementById('btndsable').disabled = false;
+                document.getElementById('rejectbtn').disabled = false;
                 document.getElementById("approvebtn").style.display = 'flex';
             }
         });
@@ -624,6 +610,9 @@
             return false;
         }
         document.getElementById("loader").style.display = 'flex';
+        document.getElementById('searchbtn').disabled = true;
+        document.getElementById('btndsable').disabled = true;
+        document.getElementById('rejectbtn').disabled = true;
         var status = $('select#status option:selected').val();
         var importType = $('select#importType option:selected').val();
         var daterange = $('#daterange').val();
@@ -783,6 +772,9 @@
                 $("dataTables_filter").css("margin-top", "-35px");
                 $('#example1').removeClass('dataTable');
                 document.getElementById("loader").style.display = 'none';
+                document.getElementById('searchbtn').disabled = false;
+                document.getElementById('btndsable').disabled = false;
+                document.getElementById('rejectbtn').disabled = false;
                 document.getElementById("approvebtn").style.display = 'flex';
             }
         });

@@ -208,7 +208,7 @@
                     columnMap[item.column_name] = [item.column_id, item.required];
                 });
                 console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+                //console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
             }
             else {
             }
@@ -243,7 +243,7 @@
         result = exceldata;
 
         var columns = [
-            "FY", "Month", "Site", "GHI", "POA", "kWh", "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)","P50","P75","P90"
+            "FY", "Month", "Site", "GHI", "POA", "kWh", "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)", "P50", "P75", "P90", "Toplining_Kwh", "Toplining_MA", "Toplining_IGA", "Toplining_EGA", "Toplining_PR", "Toplining_PLF", "Toplining_GHI", "Toplining_POA", "Plant_Kwh", "Plant_PR", "Plant_PLF", "INV_Kwh", "INV_PR", "INV_PLF"
         ];
 
         var rows = [];
@@ -264,6 +264,19 @@
             row.push(result[i].p50);
             row.push(result[i].p75);
             row.push(result[i].p90);
+            row.push(result[i].toplining_kWh || 0);
+            row.push(result[i].toplining_iga || 0);
+            row.push(result[i].toplining_ega || 0);
+            row.push(result[i].toplining_pr || 0);
+            row.push(result[i].toplining_plf || 0);
+            row.push(result[i].toplining_ghi || 0);
+            row.push(result[i].toplining_poa || 0);
+            row.push(result[i].Plant_Kwh || 0);
+            row.push(result[i].Plant_pr || 0);
+            row.push(result[i].Plant_plf || 0);
+            row.push(result[i].INV_Kwh || 0);
+            row.push(result[i].INV_pr || 0);
+            row.push(result[i].INV_plf || 0);
             rows.push(row);
 
         }
@@ -313,7 +326,7 @@
 
         });
         month = month != "" ? month.slice(0, -1) : month;
-        console.log(month);
+        //console.log(monthSolarMonthlyTargetKPIView
         // var year = "2021-22";
         //var month = "Apr";
         $.ajax({
@@ -369,6 +382,48 @@
                 if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>P90 </th>';
                 }
+                if (userColumnId.includes(columnMap["Toplining_Kwh"][0]) || columnMap["Toplining_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_kWh (in MU)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_MA"][0]) || columnMap["Toplining_MA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining _MA (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_IGA"][0]) || columnMap["Toplining_IGA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_IGA (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_EGA"][0]) || columnMap["Toplining_EGA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_EGA (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_PR"][0]) || columnMap["Toplining_PR"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_PR (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_PLF"][0]) || columnMap["Toplining_PLF"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_PLF (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_GHI"][0]) || columnMap["Toplining_GHI"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_GHI (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_POA"][0]) || columnMap["Toplining_POA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_POA (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Plant_Kwh"][0]) || columnMap["Plant_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Plant_kWh (in MU)</th>';
+                }
+                if (userColumnId.includes(columnMap["Plant_PR"][0]) || columnMap["Plant_PR"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Plant_PR (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Plant_PLF"][0]) || columnMap["Plant_PLF"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Plant_PLF (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["INV_Kwh"][0]) || columnMap["INV_Kwh"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Inv_kWh (in MU)</th>';
+                }
+                if (userColumnId.includes(columnMap["INV_PR"][0]) || columnMap["INV_PR"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Inv_PR (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["INV_PLF"][0]) || columnMap["INV_PLF"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Inv_PLF(%)</th>';
+                }
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -416,7 +471,49 @@
                         }
                         if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + (result[i].p90 || 0).toFixed(2) + '</td>';
-                        }                     
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_Kwh"][0]) || columnMap["Toplining_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_kWh && result[i].toplining_kWh != null ? result[i].toplining_kWh.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_MA"][0]) || columnMap["Toplining_MA"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_MA && result[i].toplining_MA != null ? result[i].toplining_MA.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_IGA"][0]) || columnMap["Toplining_IGA"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_IGA && result[i].toplining_IGA != null ? result[i].toplining_IGA.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_EGA"][0]) || columnMap["Toplining_EGA"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_EGA && result[i].toplining_EGA != null ? result[i].toplining_EGA.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_PR"][0]) || columnMap["Toplining_PR"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_PR && result[i].toplining_PR != null ? result[i].toplining_PR.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_PLF"][0]) || columnMap["Toplining_PLF"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_PLF && result[i].toplining_PLF != null ? result[i].toplining_PLF.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_GHI"][0]) || columnMap["Toplining_GHI"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_ghi && result[i].toplining_ghi != null ? result[i].toplining_ghi.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_POA"][0]) || columnMap["Toplining_POA"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_poa && result[i].toplining_poa != null ? result[i].toplining_poa.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Plant_Kwh"][0]) || columnMap["Plant_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plant_kWh && result[i].plant_kWh != null ? result[i].plant_kWh.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Plant_PR"][0]) || columnMap["Plant_PR"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plant_PR && result[i].plant_PR != null ? result[i].plant_PR.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Plant_PLF"][0]) || columnMap["Plant_PLF"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plant_PLF && result[i].plant_PLF != null ? result[i].plant_PLF.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["INV_Kwh"][0]) || columnMap["INV_Kwh"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].inv_kWh && result[i].inv_kWh != null ? result[i].inv_kWh.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["INV_PR"][0]) || columnMap["INV_PR"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].inv_PR && result[i].inv_PR != null ? result[i].inv_PR.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["INV_PLF"][0]) || columnMap["INV_PLF"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].inv_PLF && result[i].inv_PLF != null ? result[i].inv_PLF.toFixed(2) : 0) + '</td>';
+                        }
                         tbl += '</tr>';
                     }
                 }
@@ -431,14 +528,13 @@
                     responsive: true,
                     scrollX: true,
                     lengthChange: false,
-                    //autoWidth: true,
+                    autoWidth: true,
                     paging: true,
                     lengthChange: false,
                     searching: true,
                     ordering: true,
                     info: true,
-                    autoWidth: false,
-                    responsive: true,
+                    autoWidth: true,
                     pageLength: 50,
                     fixedColumns: {
                         left: 3

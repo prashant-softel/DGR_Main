@@ -25,6 +25,8 @@ namespace DGRA_V1.Models
         public dynamic Toplining_EGA { get; set; }
         public dynamic Toplining_PR { get; set; }
         public dynamic Toplining_PLF { get; set; }
+        public dynamic toplining_ghi { get; set; }
+        public dynamic toplining_poa { get; set; }
         public dynamic Plant_kWh { get; set; }
         public dynamic Plant_PR { get; set; }
         public dynamic Plant_PLF { get; set; }

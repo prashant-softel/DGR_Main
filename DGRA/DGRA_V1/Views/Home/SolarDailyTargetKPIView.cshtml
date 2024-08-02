@@ -205,7 +205,7 @@
 
         var columns = [
             "FY", "Date", "Site", "GHI", "POA", "kWh ",
-                "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)"
+            "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)", "P50", "P75", "P90", "Toplining_Kwh", "Toplining_MA", "Toplining_IGA", "Toplining_EGA", "Toplining_PR", "Toplining_PLF", "Toplining_GHI", "Toplining_POA", "Plant_Kwh", "Plant_PR", "Plant_PLF", "INV_Kwh", "INV_PR","INV_PLF"
         ];
 
         var rows = [];
@@ -224,6 +224,23 @@
             row.push(result[i].ega || 0);
             row.push(result[i].pr || 0);
             row.push(result[i].plf || 0);
+            row.push(result[i].p50 || 0);
+            row.push(result[i].p75 || 0);
+            row.push(result[i].p90 || 0);
+            row.push(result[i].toplining_kWh || 0);
+            row.push(result[i].toplining_iga || 0);
+            row.push(result[i].toplining_ega || 0);
+            row.push(result[i].toplining_pr || 0);
+            row.push(result[i].toplining_plf || 0);
+            row.push(result[i].toplining_ghi || 0);
+            row.push(result[i].toplining_poa || 0);
+            row.push(result[i].Plant_Kwh || 0);
+            row.push(result[i].Plant_pr || 0);
+            row.push(result[i].Plant_plf || 0);
+            row.push(result[i].INV_Kwh || 0);
+            row.push(result[i].INV_pr || 0);
+            row.push(result[i].INV_plf || 0);
+
             rows.push(row);
         }
 
@@ -334,7 +351,13 @@
                     tbl += '<th style="white-space: nowrap;">Toplining_PR (%)</th>';                    
                 }
                 if (userColumnId.includes(columnMap["Toplining_PLF"][0]) || columnMap["Toplining_PLF"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th style="white-space: nowrap;">Toplining_PLF (%)</th>';                    
+                    tbl += '<th style="white-space: nowrap;">Toplining_PLF (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_GHI"][0]) || columnMap["Toplining_GHI"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_GHI (%)</th>';
+                }
+                if (userColumnId.includes(columnMap["Toplining_POA"][0]) || columnMap["Toplining_POA"][1] == 1 || isAdmin == 1) {
+                    tbl += '<th style="white-space: nowrap;">Toplining_POA (%)</th>';
                 }
                 if (userColumnId.includes(columnMap["Plant_Kwh"][0]) || columnMap["Plant_Kwh"][1] == 1 || isAdmin == 1) {
                     tbl += '<th style="white-space: nowrap;">Plant_kWh (in MU)</th>';                    
@@ -428,6 +451,12 @@
                         if (userColumnId.includes(columnMap["Toplining_PLF"][0]) || columnMap["Toplining_PLF"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_PLF && result[i].toplining_PLF != null ? result[i].toplining_PLF.toFixed(2) : 0) + '</td>';                            
                         }
+                        if (userColumnId.includes(columnMap["Toplining_GHI"][0]) || columnMap["Toplining_GHI"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_ghi && result[i].toplining_ghi != null ? result[i].toplining_ghi.toFixed(2) : 0) + '</td>';
+                        }
+                        if (userColumnId.includes(columnMap["Toplining_POA"][0]) || columnMap["Toplining_POA"][1] == 1 || isAdmin == 1) {
+                            tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].toplining_poa && result[i].toplining_poa != null ? result[i].toplining_poa.toFixed(2) : 0) + '</td>';
+                        }
                         if (userColumnId.includes(columnMap["Plant_Kwh"][0]) || columnMap["Plant_Kwh"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right" style="text-wrap: nowrap;">' + (result[i].plant_kWh && result[i].plant_kWh != null ? result[i].plant_kWh.toFixed(2) : 0) + '</td>';                            
                         }
@@ -459,15 +488,15 @@
                     dom: 'Bfrtip',
                     fixedHeader: true,
                     responsive: true,
+                    scrollX: true,
                     lengthChange: false,
-                    autoWidth: false,
+                    autoWidth: true,
                     paging: true,
                     lengthChange: false,
                     searching: true,
                     ordering: true,
                     info: true,
-                    autoWidth: false,
-                    responsive: false,
+                    autoWidth: true,
                     pageLength: 50,
                     fixedColumns: {
                         left: 3

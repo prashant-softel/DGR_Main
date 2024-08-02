@@ -3652,11 +3652,6 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.Toplining_kWh = Convert.ToDouble((dr[11] is DBNull) ? 0 : dr[11]);
                         errorFlag.Add(negativeNullValidation(addUnit.Toplining_kWh, "Toplining kWh (in MU)", rowNumber));
 
-                        /*addUnit.Toplining_kWh = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining kWh (in MU)"]), "Toplining kWh (in MU)");
-                        errorFlag.Add((addUnit.Toplining_kWh > 100 || addUnit.Toplining_kWh < 0) ? true : false); */
-
-                        //addUnit.ghi_1 = Convert.ToDouble((dr["GHI-1"] is DBNull) || string.IsNullOrEmpty((string)dr["GHI-1"]) || ((string)dr["GHI-1"] == "") ? 0 : dr["GHI-1"]);
-
                         addUnit.Toplining_MA = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining MA (%)"]), "Toplining MA (%)");
                         errorFlag.Add((addUnit.Toplining_MA > 100 || addUnit.Toplining_MA < 0) ? true : false);
 
@@ -3671,6 +3666,12 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.Toplining_PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining PLF (%)"]), "Toplining PLF (%)");
                         errorFlag.Add((addUnit.Toplining_PLF > 100 || addUnit.Toplining_PLF < 0) ? true : false);
+
+                        addUnit.toplining_ghi = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining_GHI (%)"]), "Toplining_GHI (%)");
+                        errorFlag.Add((addUnit.toplining_ghi > 100 || addUnit.toplining_ghi < 0) ? true : false);
+
+                        addUnit.toplining_poa = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Toplining_POA (%)"]), "Toplining_GHI (%)");
+                        errorFlag.Add((addUnit.toplining_poa > 100 || addUnit.toplining_poa < 0) ? true : false);
 
                         addUnit.Plant_kWh = Convert.ToDouble((dr[17] is DBNull) ? 0 : dr[17]);
                         errorFlag.Add(negativeNullValidation(addUnit.Plant_kWh, "Plant kWH (in MU)", rowNumber));
@@ -3916,6 +3917,34 @@ namespace DGRA_V1.Areas.admin.Controllers
 
                         addUnit.total_tarrif = Convert.ToDouble(dr["Total Tariff"]);
                         errorFlag.Add(numericNullValidation(addUnit.total_tarrif, "Total Tariff", rowNumber));
+
+                        addUnit.inv_make = Convert.ToString(dr["INV_Make"]);
+                        errorFlag.Add(stringNullValidation(addUnit.inv_make, "INV_Make", rowNumber));
+
+                        addUnit.inv_model = Convert.ToString(dr["INV_Model"]);
+                        errorFlag.Add(stringNullValidation(addUnit.inv_model, "INV_Model", rowNumber));
+
+                        addUnit.inv_capacity = Convert.ToDouble(dr["INV_Capacity"]);
+                        errorFlag.Add(numericNullValidation(addUnit.inv_capacity, "INV_Capacity", rowNumber));
+
+                        addUnit.lat_long = Convert.ToDouble(dr["Lat_Long"]);
+                        errorFlag.Add(numericNullValidation(addUnit.lat_long, "Lat_Long", rowNumber));
+
+                        addUnit.pss_capacity = Convert.ToDouble(dr["PSS_Capacity"]);
+                        errorFlag.Add(numericNullValidation(addUnit.pss_capacity, "PSS_Capacity", rowNumber));
+
+                        addUnit.gss_name = Convert.ToString(dr["GSS_Name"]);
+                        errorFlag.Add(stringNullValidation(addUnit.gss_name, "GSS_Name", rowNumber));
+
+                        addUnit.gss_voltage = Convert.ToDouble(dr["GSS_Voltage"]);
+                        errorFlag.Add(numericNullValidation(addUnit.gss_voltage, "GSS_Voltage", rowNumber));
+
+                        addUnit.gss_capacity = Convert.ToDouble(dr["GSS_capacity"]);
+                        errorFlag.Add(numericNullValidation(addUnit.gss_capacity, "GSS_capacity", rowNumber));
+
+                        addUnit.type_of_project = Convert.ToDouble(dr["Type_Of_Project"]);
+                        errorFlag.Add(numericNullValidation(addUnit.type_of_project, "Type_Of_Project", rowNumber));
+
                         uniqueRecordCheckSolarSiteMaster(addUnit, addSet, rowNumber);
                         foreach (bool item in errorFlag)
                         {
@@ -4015,6 +4044,9 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.model = string.IsNullOrEmpty((string)dr["Model"]) ? "Nil" : Convert.ToString(dr["Model"]);
                         errorFlag.Add(stringNullValidation(addUnit.model, "Model", rowNumber));
 
+                        addUnit.lat_long = Convert.ToDouble(dr["Lat_Long"]);
+                        errorFlag.Add(numericNullValidation(addUnit.lat_long, "Lat_Long", rowNumber));
+
                         addUnit.capacity_mw = string.IsNullOrEmpty((string)dr["Capacity(MW)"]) ? 0 : Convert.ToDouble(dr["Capacity(MW)"]);
                         errorFlag.Add(numericNullValidation(addUnit.capacity_mw, "Capacity(MW)", rowNumber));
 
@@ -4028,12 +4060,30 @@ namespace DGRA_V1.Areas.admin.Controllers
                         errorFlag.Add(numericNullValidation(addUnit.tarrif, "Tariff", rowNumber));
 
                         addUnit.gbi = string.IsNullOrEmpty((string)dr["GBI"]) ? 0 : Convert.ToDouble(dr["GBI"]);
-                        // errorFlag.Add(numericNullValidation(addUnit.gbi, "GBI", rowNumber));
-                        //addUnit.gbi = Convert.ToDouble((string)dr["GBI"]);
-                        // errorFlag.Add(numericNullValidation(addUnit.gbi, "GBI", rowNumber));
 
                         addUnit.total_tarrif = string.IsNullOrEmpty((string)dr["Total_Tariff"]) ? 0 : Convert.ToDouble(dr["Total_Tariff"]);
                         errorFlag.Add(numericNullValidation(addUnit.total_tarrif, "Total_Tariff", rowNumber));
+
+                        addUnit.hub_height = Convert.ToDouble(dr["Hub_Height"]);
+                        errorFlag.Add(numericNullValidation(addUnit.hub_height, "Hub_Height", rowNumber));
+
+                        addUnit.rotor_dia = Convert.ToDouble(dr["Rotor_Dia"]);
+                        errorFlag.Add(numericNullValidation(addUnit.rotor_dia, "Rotor_Dia", rowNumber));
+
+                        addUnit.pss_capacity = Convert.ToDouble(dr["PSS_Capacity"]);
+                        errorFlag.Add(numericNullValidation(addUnit.pss_capacity, "PSS_Capacity", rowNumber));
+
+                        addUnit.gss_name = Convert.ToString(dr["GSS_Name"]);
+                        errorFlag.Add(stringNullValidation(addUnit.gss_name, "GSS_Name", rowNumber));
+
+                        addUnit.gss_voltage = Convert.ToDouble(dr["GSS_Voltage"]);
+                        errorFlag.Add(numericNullValidation(addUnit.gss_voltage, "GSS_Voltage", rowNumber));
+
+                        addUnit.gss_capacity = Convert.ToDouble(dr["GSS_capacity"]);
+                        errorFlag.Add(numericNullValidation(addUnit.gss_capacity, "GSS_capacity", rowNumber));
+
+                        addUnit.type_of_project = Convert.ToDouble(dr["Type_Of_Project"]);
+                        errorFlag.Add(numericNullValidation(addUnit.type_of_project, "Type_Of_Project", rowNumber));
 
                         addUnit.ll_compensation = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["LL_Compensation%"]), "LL_Compensation%");
                         uniqueRecordCheckWindSiteMaster(addUnit, addSet, rowNumber);
