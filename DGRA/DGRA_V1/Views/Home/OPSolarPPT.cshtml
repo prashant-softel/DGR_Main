@@ -104,7 +104,7 @@
             <hr>
             <br>
             <div id="divPerformanceBySite">
-                <img id="imgPerformanceBySite" style="display:none" />
+                <img id="imgPerformanceBysite" style="display:none" />
                 <div id="siteandspv" style="margin-left: 13px; font-size: 18px; font-weight: bold; color: #31576D;">Alote- Asset Performance</div>
                 <div class="row" style="margin-right: 0; margin-left: 9px;">
                     <div class="col-md-8" style=" position: relative; border: 2px solid lightgray;">
@@ -263,8 +263,8 @@
         fdate = getFinancialYearDateStartDate(fyear);
         monthdate = GetMonthDate(today);
        
-        //GetSPV();
-        GetSite();
+        GetSPV();
+        //GetSite();
         //yearlyportfolio(0);
         //monthlyportfolio(0);
         ///sitewiseportfolio();
@@ -285,7 +285,7 @@
         });
 
     }
-    function GetSite() {
+    @*function GetSite() {
         let state    = "";
         var site_ids = "";
         let spv      = "";
@@ -306,7 +306,7 @@
                 callReports(result,spvcall);
             }
         });
-    }
+    }*@
 
     async function callReports(sitedata, spvcall) {
 
@@ -366,22 +366,22 @@
                     {
                         let total_target        = 0;
                         let total_expected      = 0;
-                        let total_usmh          = 0;
-                        let total_smh           = 0;
+                        //let total_usmh          = 0;
+                        //let total_smh           = 0;
                         let total_oh            = 0;
                         let total_igbd          = 0;
                         let total_egbd          = 0;
-                        let total_curtaiment    = 0;
+                        //let total_curtaiment    = 0;
                         let total_pr            = 0;
                         let avg_pr              = 0;
                         let total_actual        = 0;
                         let expected_cal        = 0;
-                        let usmh_cal            = 0;
-                        let smh_cal             = 0;
+                        //let usmh_cal            = 0;
+                        //let smh_cal             = 0;
                         let oh_cal              = 0;
                         let igbd_cal            = 0;
                         let egbd_cal            = 0;
-                        let curtailment_cal     = 0;
+                        //let curtailment_cal     = 0;
                         let pr_cal              = 0;
                         let pr_chart            = 0;
                         let actual_cal          = 0;
@@ -403,25 +403,25 @@
                             cnt++;
                             total_target        += result[i].target;
                             total_expected      += (result[i].pexpected);
-                            total_usmh          += (result[i].usmh);
-                            total_smh           += (result[i].smh);
+                            //total_usmh          += (result[i].usmh);
+                            //total_smh           += (result[i].smh);
                             total_oh            += (result[i].oh);
                             total_actual        += (result[i].inv_kwh);
                             total_pr            += pr_value;
                             total_igbd          += (result[i].igbdh);
                             total_egbd          += (result[i].egbdh);
-                            total_curtaiment    += (result[i].load_shedding);
+                            //total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
-                        usmh_cal        = (total_usmh / total_expected) * 100;
-                        smh_cal         = (total_smh / total_expected) * 100;
+                        //usmh_cal        = (total_usmh / total_expected) * 100;
+                        //smh_cal         = (total_smh / total_expected) * 100;
                         oh_cal          = (total_oh / total_expected) * 100;
                         igbd_cal        = (total_igbd / total_expected) * 100;
                         egbd_cal        = (total_egbd / total_expected) * 100;
-                        curtailment_cal = (total_curtaiment / total_expected) * 100;
+                        //curtailment_cal = (total_curtaiment / total_expected) * 100;
                         pr_cal          = (total_pr / total_expected) * 100;
                         actual_cal      = (total_actual / total_expected) * 100;
-                        monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual, site_name);
+                        monthlychart(total_target, total_expected,total_oh, total_igbd, total_egbd, total_pr, total_actual, site_name);
 
                       //push data in monthly array show in portfolio section
 
@@ -460,37 +460,46 @@
     }
 
 //Monthly Chart
-    function monthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual, site_name)
+    function monthlychart(total_target, total_expected, total_oh, total_igbd, total_egbd, total_pr, total_actual, site_name)
     {
         let t_target            = Number(total_target).toFixed(2);
         let t_expected          = Number(total_expected).toFixed(2);
-        let t_usmh              = Number(total_usmh * -1).toFixed(2);
-        let t_smh               = Number(total_smh * -1).toFixed(2);
+        //let t_usmh              = Number(total_usmh * -1).toFixed(2);
+        //let t_smh               = Number(total_smh * -1).toFixed(2);
         let t_oh                = Number(total_oh * -1).toFixed(2);
         let t_igbd              = Number(total_igbd * -1).toFixed(2);
         let t_egbd              = Number(total_egbd * -1).toFixed(2);
-        let t_curtaiment        = Number(total_curtaiment * -1).toFixed(2);
+        //let t_curtaiment        = Number(total_curtaiment * -1).toFixed(2);
         let t_pr                = Number(total_pr).toFixed(2);
         let t_actual            = Number(total_actual).toFixed(2);
         let data_target         = Number(total_target);
         let data_expected       = Number(total_expected);
-        let data_usmh           = Number(total_usmh) * -1;
-        let data_smh            = Number(total_smh) * -1;
+        //let data_usmh           = Number(total_usmh) * -1;
+        //let data_smh            = Number(total_smh) * -1;
         let data_oh             = Number(total_oh) * -1;
         let data_igbd           = Number(total_igbd) * -1;
         let data_egbd           = Number(total_egbd) * -1;
-        let data_curtaiment     = Number(total_curtaiment) * -1;
+        //let data_curtaiment     = Number(total_curtaiment) * -1;
         let data_pr             = Number(total_pr);
-        let data_actual         = Number(total_actual);
+        let data_actual = Number(total_actual);
+
+        console.log("Target:", data_target);
+        console.log("Expected:", data_expected);
+        console.log("Other:", data_oh);
+        console.log("IGBD:", data_igbd);
+        console.log("EGBD:", data_egbd);
+        console.log("PR:", data_pr);
+        console.log("Actual:", data_actual);
+
         //Percentage Value
         let tar_percentage      = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage      = 100;
-        let usmh_percentage     = (data_usmh / data_expected) * 100;
-        let smh_percentage      = (data_smh / data_expected) * 100;
+        //let usmh_percentage     = (data_usmh / data_expected) * 100;
+        //let smh_percentage      = (data_smh / data_expected) * 100;
         let oh_percentage       = (data_oh / data_expected) * 100;
         let igbd_percentage     = (data_igbd / data_expected) * 100;
         let egbd_percentage     = (data_egbd / data_expected) * 100;
-        let cur_percentage      = (data_curtaiment / data_expected) * 100;
+        //let cur_percentage      = (data_curtaiment / data_expected) * 100;
         let pr_percentage       = (data_pr / data_expected) * 100;
         let actul_percentage    = ((data_actual) / data_expected) * 100;
         let prMeasure = "";
@@ -511,24 +520,24 @@
                 measure: [
                     rMeasure,
                     aMeasure,
+                    //rMeasure,
+                    //rMeasure,
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
+                    //rMeasure,
                     rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
+                    //"USMH",
+                    //"SMH",
                     "Other",
-                    "IGBD",
+                    "BD",
                     "EGBD",
-                    "Curtailment",
+                    //"Curtailment",
                     "PR",
                     "Actual"
                 ],
@@ -536,56 +545,61 @@
                 text: [
                     t_target,
                     t_expected,
-                    t_usmh,
-                    t_smh,
+                    //t_usmh,
+                    //t_smh,
                     t_oh,
                     t_igbd,
                     t_egbd,
-                    t_curtaiment,
+                    //t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
                     data_expected,
-                    data_usmh,
-                    data_smh,
+                    //data_usmh,
+                    //data_smh,
                     data_oh,
                     data_igbd,
                     data_egbd,
-                    data_curtaiment,
+                    //data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2)+ '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    //'<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    //'<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
                     '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
                     '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    //'<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
                 totals: { marker: { color: "#86C466" } },
                 increasing: { marker: { color: "#77CAE7" } },
                 decreasing: { marker: { color: "#EE403D" } },
-                connector: { line: { color: "white" } },
+                connector: {
+                    line: {
+                        color: "white"
+                    }
+                },
             }
+
         ];
-        var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
-        if (data_curtaiment > 0)
+        var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
+        @*if (data_curtaiment > 0)
         {
             columnColors[7] = "#14a105";
             data[0].measure[7].marker = { color: '#14a105' };
-        }
-        if (data_pr > 0)
+        }*@
+        @*if (data_pr > 0)
         {
             columnColors[8] = "#14a105";
             data[0].measure[8].marker = { color: '#14a105' };
-        }
+        }*@
         layout = {
             xaxis: {
                 type: "category",
@@ -604,7 +618,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 380,
         };
         var config = {
@@ -755,23 +769,23 @@
                     if (result.length > 0) {
                         let total_target     = 0;
                         let total_expected   = 0;
-                        let total_usmh       = 0;
-                        let total_smh        = 0;
+                        //let total_usmh       = 0;
+                        //let total_smh        = 0;
                         let total_oh         = 0;
                         let total_igbd       = 0;
                         let total_egbd       = 0;
-                        let total_curtaiment = 0;
+                        //let total_curtaiment = 0;
                         let total_pr         = 0;
                         let avg_pr           = 0;
                         let total_actual     = 0;
                         var cnt              = 0;
                         let expected_cal     = 0;
-                        let usmh_cal         = 0;
-                        let smh_cal          = 0;
+                        //let usmh_cal         = 0;
+                        //let smh_cal          = 0;
                         let oh_cal           = 0;
                         let igbd_cal         = 0;
                         let egbd_cal         = 0;
-                        let curtailment_cal  = 0;
+                        //let curtailment_cal  = 0;
                         let pr_cal           = 0;
                         let actual_cal       = 0;
                         let main_data        = [];
@@ -781,31 +795,31 @@
                         for (var i = 0; i < result.length; i++)
                         {
                             let pr_value        = 0;
-                            let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                            let total_breakdown = (result[i].pexpected - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
                             pr_value            = result[i].inv_kwh - total_breakdown;
                             cnt++;
                             total_target        += result[i].target;
                             total_expected      += (result[i].pexpected);
-                            total_usmh          += (result[i].usmh);
-                            total_smh           += (result[i].smh);
+                            //total_usmh          += (result[i].usmh);
+                            //total_smh           += (result[i].smh);
                             total_oh            += (result[i].oh);
                             total_actual        += (result[i].inv_kwh);
                             total_pr            += (pr_value);
                             total_igbd          += (result[i].igbdh);
                             total_egbd          += (result[i].egbdh);
-                            total_curtaiment    += (result[i].load_shedding);
+                            //total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
-                        usmh_cal        = (total_usmh / total_expected) * 100;
-                        smh_cal         = (total_smh / total_expected) * 100;
+                        //usmh_cal        = (total_usmh / total_expected) * 100;
+                        //smh_cal         = (total_smh / total_expected) * 100;
                         oh_cal          = (total_oh / total_expected) * 100;
                         igbd_cal        = (total_igbd / total_expected) * 100;
                         egbd_cal        = (total_egbd / total_expected) * 100;
-                        curtailment_cal = (total_curtaiment / total_expected) * 100;
+                        //curtailment_cal = (total_curtaiment / total_expected) * 100;
                         pr_cal          = (total_pr / total_expected) * 100;
                         actual_cal      = (total_actual / total_expected) * 100;
                         // Call function draw the yearly chart
-                        yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
+                        yearlyChart(total_target, total_expected, total_oh, total_igbd, total_egbd, total_pr, total_actual);
 
                         yearlyaop_achive = (total_actual / total_target) * 100;
                         yearlyexp_achive = (total_actual / total_expected) * 100;
@@ -832,37 +846,37 @@
         })
     }
     //Yearly chart
-    function yearlyChart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual)
+    function yearlyChart(total_target, total_expected, total_oh, total_igbd, total_egbd, total_pr, total_actual)
     {
         let t_target        = Number(total_target).toFixed(2);
         let t_expected      = Number(total_expected).toFixed(2);
-        let t_usmh          = Number(total_usmh * -1).toFixed(2);
-        let t_smh           = Number(total_smh * -1).toFixed(2);
+        //let t_usmh          = Number(total_usmh * -1).toFixed(2);
+        //let t_smh           = Number(total_smh * -1).toFixed(2);
         let t_oh            = Number(total_oh * -1).toFixed(2);
         let t_igbd          = Number(total_igbd * -1).toFixed(2);
         let t_egbd          = Number(total_egbd * -1).toFixed(2);
-        let t_curtaiment    = Number(total_curtaiment * -1).toFixed(2);
+        //let t_curtaiment    = Number(total_curtaiment * -1).toFixed(2);
         let t_pr            = Number(total_pr).toFixed(2);
         let t_actual        = Number(total_actual).toFixed(2);
         let data_target     = Number(total_target);
         let data_expected   = Number(total_expected);
-        let data_usmh       = Number(total_usmh *-1) ;
-        let data_smh        = Number(total_smh *-1) ;
+        //let data_usmh       = Number(total_usmh *-1) ;
+        //let data_smh        = Number(total_smh *-1) ;
         let data_oh         = Number(total_oh *-1) ;
         let data_igbd       = Number(total_igbd *-1) ;
         let data_egbd       = Number(total_egbd *-1) ;
-        let data_curtaiment = Number(total_curtaiment *-1) ;
+        //let data_curtaiment = Number(total_curtaiment *-1) ;
         let data_pr         = Number(total_pr);
         let data_actual     = Number(total_actual);
         // Percentage Value
         let tar_percentage  = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage  = 100;
-        let usmh_percentage = (data_usmh / data_expected) * 100;
-        let smh_percentage  = (data_smh / data_expected) * 100;
+        //let usmh_percentage = (data_usmh / data_expected) * 100;
+        //let smh_percentage  = (data_smh / data_expected) * 100;
         let oh_percentage   = (data_oh / data_expected) * 100;
         let igbd_percentage = (data_igbd / data_expected) * 100;
         let egbd_percentage = (data_egbd / data_expected) * 100;
-        let cur_percentage  = (data_curtaiment / data_expected) * 100;
+        //let cur_percentage  = (data_curtaiment / data_expected) * 100;
         let pr_percentage   = (data_pr / data_expected) * 100;
         let actul_percentage = ((data_actual) / data_expected) * 100;
         let prMeasure        = "";
@@ -883,24 +897,24 @@
                 measure: [
                     rMeasure,
                     aMeasure,
+                    //rMeasure,
+                    //rMeasure,
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
+                    //rMeasure,
                     rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
+                    //"USMH",
+                    //"SMH",
                     "Other",
-                    "IGBD",
+                    "BD",
                     "EGBD",
-                    "Curtailment",
+                    //"Curtailment",
                     "PR",
                     "Actual"
                 ],
@@ -908,36 +922,36 @@
                 text: [
                     t_target,
                     t_expected,
-                    t_usmh,
-                    t_smh,
+                    //t_usmh,
+                    //t_smh,
                     t_oh,
                     t_igbd,
                     t_egbd,
-                    t_curtaiment,
+                    //t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
                     data_expected,
-                    data_usmh,
-                    data_smh,
+                    //data_usmh,
+                    //data_smh,
                     data_oh,
                     data_igbd,
                     data_egbd,
-                    data_curtaiment,
+                    //data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    //'<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    //'<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
                     '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    //'<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
@@ -969,7 +983,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 380,
         };
         var config = {
@@ -1085,13 +1099,15 @@
                     var imageData = canvas.toDataURL();
                     //Set the image source to the data URL
                     var img = document.getElementById('imgPerformanceBysite');
-                    if(isSPV ==1)
-                    {
+                    if (isSPV == 1) {
                         imgOperationBySite.push(imageData);
+                        console.log("Image added to imgOperationBySite");
+                        console.log("imgOperationBySite length:", imgOperationBySite.length);
+                        console.log("siteCount:", siteCount);
                         //console.log(imgOperationBySite);
                         if (siteCount == imgOperationBySite.length) {
                             console.log("inside call portpolio");
-                            isDoneSPV = 1;
+                            isDoneSite = 1;
                             monthlyportfolio(isSPV);
                             yearlyportfolio(isSPV);
                             GetSPV();
@@ -1104,7 +1120,7 @@
                         //console.log(imgOperationBySPV);
                         if (spvCount == imgOperationBySPV.length) {
                             console.log("inside call portpolio");
-                            isDoneSite = 1;
+                            isDoneSPV = 1;
                             monthlyportfolio(isSPV);
                             yearlyportfolio(isSPV);
                             
@@ -1155,22 +1171,22 @@
                     {
                         let total_target        = 0;
                         let total_expected      = 0;
-                        let total_usmh          = 0;
-                        let total_smh           = 0;
+                        //let total_usmh          = 0;
+                        //let total_smh           = 0;
                         let total_oh            = 0;
                         let total_igbd          = 0;
                         let total_egbd          = 0;
-                        let total_curtaiment    = 0;
+                        //let total_curtaiment    = 0;
                         let total_pr            = 0;
                         let avg_pr              = 0;
                         let total_actual        = 0;
                         let expected_cal        = 0;
-                        let usmh_cal            = 0;
-                        let smh_cal             = 0;
+                        //let usmh_cal            = 0;
+                        //let smh_cal             = 0;
                         let oh_cal              = 0;
                         let igbd_cal            = 0;
                         let egbd_cal            = 0;
-                        let curtailment_cal     = 0;
+                        //let curtailment_cal     = 0;
                         let pr_cal              = 0;
                         let pr_chart            = 0;
                         let actual_cal          = 0;
@@ -1186,31 +1202,31 @@
                             let ega             = (1 - ((result[i].egbdh + result[i].load_shedding) / result[i].pexpected)) * 100;
                             let pr_value        = 0;
                             let total_breakdown = 0;
-                            total_breakdown     = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                            total_breakdown     = (result[i].pexpected - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
                             pr_value            = result[i].inv_kwh - total_breakdown;
                             var formattedDate   = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                             cnt++;
                             total_target        += result[i].target;
                             total_expected      += (result[i].pexpected);
-                            total_usmh          += (result[i].usmh);
-                            total_smh           += (result[i].smh);
+                            //total_usmh          += (result[i].usmh);
+                            //total_smh           += (result[i].smh);
                             total_oh            += (result[i].oh);
                             total_actual        += (result[i].inv_kwh);
                             total_pr            += pr_value;
                             total_igbd          += (result[i].igbdh);
                             total_egbd          += (result[i].egbdh);
-                            total_curtaiment    += (result[i].load_shedding);
+                            //total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
-                        usmh_cal        = (total_usmh / total_expected) * 100;
-                        smh_cal         = (total_smh / total_expected) * 100;
+                        //usmh_cal        = (total_usmh / total_expected) * 100;
+                        //smh_cal         = (total_smh / total_expected) * 100;
                         oh_cal          = (total_oh / total_expected) * 100;
                         igbd_cal        = (total_igbd / total_expected) * 100;
                         egbd_cal        = (total_egbd / total_expected) * 100;
-                        curtailment_cal = (total_curtaiment / total_expected) * 100;
+                        //curtailment_cal = (total_curtaiment / total_expected) * 100;
                         pr_cal          = (total_pr / total_expected) * 100;
                         actual_cal      = (total_actual / total_expected) * 100;
-                        Allmonthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual, site_name);
+                        Allmonthlychart(total_target, total_expected,total_oh, total_igbd, total_egbd, total_pr, total_actual, site_name);
                         AllmonthlyComment(site_id, isSPV, spv_list);
                         resolve("Success for " + site_name);
                     }
@@ -1235,36 +1251,36 @@
 
         });
     }
-    function Allmonthlychart(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual, site_name) {
+    function Allmonthlychart(total_target, total_expected,total_oh, total_igbd, total_egbd, total_pr, total_actual, site_name) {
         let t_target         = Number(total_target).toFixed(2);
         let t_expected       = Number(total_expected).toFixed(2);
-        let t_usmh           = Number(total_usmh * -1).toFixed(2);
-        let t_smh            = Number(total_smh * -1).toFixed(2);
+        //let t_usmh           = Number(total_usmh * -1).toFixed(2);
+        //let t_smh            = Number(total_smh * -1).toFixed(2);
         let t_oh             = Number(total_oh * -1).toFixed(2);
         let t_igbd           = Number(total_igbd * -1).toFixed(2);
         let t_egbd           = Number(total_egbd * -1).toFixed(2);
-        let t_curtaiment     = Number(total_curtaiment * -1).toFixed(2);
+        //let t_curtaiment     = Number(total_curtaiment * -1).toFixed(2);
         let t_pr             = Number(total_pr).toFixed(2);
         let t_actual         = Number(total_actual).toFixed(2);
         let data_target      = Number(total_target);
         let data_expected    = Number(total_expected);
-        let data_usmh        = Number(total_usmh) * -1;
-        let data_smh         = Number(total_smh) * -1;
+        //let data_usmh        = Number(total_usmh) * -1;
+        //let data_smh         = Number(total_smh) * -1;
         let data_oh          = Number(total_oh) * -1;
         let data_igbd        = Number(total_igbd) * -1;
         let data_egbd        = Number(total_egbd) * -1;
-        let data_curtaiment  = Number(total_curtaiment) * -1;
+        //let data_curtaiment  = Number(total_curtaiment) * -1;
         let data_pr          = Number(total_pr);
         let data_actual      = Number(total_actual);
         //Percentage Value
         let tar_percentage   = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage   = 100;
-        let usmh_percentage  = (data_usmh / data_expected) * 100;
-        let smh_percentage   = (data_smh / data_expected) * 100;
+        //let usmh_percentage  = (data_usmh / data_expected) * 100;
+        //let smh_percentage   = (data_smh / data_expected) * 100;
         let oh_percentage    = (data_oh / data_expected) * 100;
         let igbd_percentage  = (data_igbd / data_expected) * 100;
         let egbd_percentage  = (data_egbd / data_expected) * 100;
-        let cur_percentage   = (data_curtaiment / data_expected) * 100;
+        //let cur_percentage   = (data_curtaiment / data_expected) * 100;
         let pr_percentage    = (data_pr / data_expected) * 100;
         let actul_percentage = ((data_actual) / data_expected) * 100;
         let prMeasure = "";
@@ -1283,24 +1299,24 @@
                 measure: [
                     rMeasure,
                     aMeasure,
+                    //rMeasure,
+                    //rMeasure,
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
+                    //rMeasure,
                     rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
+                    //"USMH",
+                    //"SMH",
                     "Other",
                     "IGBD",
                     "EGBD",
-                    "Curtailment",
+                    //"Curtailment",
                     "PR",
                     "Actual"
                 ],
@@ -1308,36 +1324,36 @@
                 text: [
                     t_target,
                     t_expected,
-                    t_usmh,
-                    t_smh,
+                    //t_usmh,
+                    //t_smh,
                     t_oh,
                     t_igbd,
                     t_egbd,
-                    t_curtaiment,
+                    //t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
                     data_expected,
-                    data_usmh,
-                    data_smh,
+                    //data_usmh,
+                    //data_smh,
                     data_oh,
                     data_igbd,
                     data_egbd,
-                    data_curtaiment,
+                    //data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    //'<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    //'<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
                     '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    //'<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )',
                 ],
@@ -1347,11 +1363,11 @@
                 connector: { line: { color: "white" } },
             }
         ];
-        var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
-        if (data_curtaiment > 0) {
+        var columnColors = ["#EE403D", "#77CAE7", "#14a105", "#14a105", "#14a105", "#14a105", "#77CAE7"];
+        @*if (data_curtaiment > 0) {
             columnColors[7] = "#14a105";
             data[0].measure[7].marker = { color: '#14a105' };
-        }
+        }*@
         if (data_pr > 0) {
             columnColors[8] = "#14a105";
             data[0].measure[8].marker = { color: '#14a105' };
@@ -1374,7 +1390,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 380,
         };
         var config = {
@@ -1520,23 +1536,23 @@
                     if (result.length > 0) {
                         let total_target        = 0;
                         let total_expected      = 0;
-                        let total_usmh          = 0;
-                        let total_smh           = 0;
+                        //let total_usmh          = 0;
+                        //let total_smh           = 0;
                         let total_oh            = 0;
                         let total_igbd          = 0;
                         let total_egbd          = 0;
-                        let total_curtaiment    = 0;
+                        //let total_curtaiment    = 0;
                         let total_pr            = 0;
                         let avg_pr              = 0;
                         let total_actual        = 0;
                         var cnt                 = 0;
                         let expected_cal        = 0;
-                        let usmh_cal            = 0;
-                        let smh_cal             = 0;
+                        //let usmh_cal            = 0;
+                        //let smh_cal             = 0;
                         let oh_cal              = 0;
                         let igbd_cal            = 0;
                         let egbd_cal            = 0;
-                        let curtailment_cal     = 0;
+                        //let curtailment_cal     = 0;
                         let pr_cal              = 0;
                         let actual_cal          = 0;
                         let main_data           = [];
@@ -1546,31 +1562,31 @@
                         for (var i = 0; i < result.length; i++)
                         {
                             let pr_value        = 0;
-                            let total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+                            let total_breakdown = (result[i].pexpected - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
                             pr_value            = result[i].inv_kwh - total_breakdown;
                             cnt++;
                             total_target        += result[i].target;
                             total_expected      += (result[i].pexpected);
-                            total_usmh          += (result[i].usmh);
-                            total_smh           += (result[i].smh);
+                            //total_usmh          += (result[i].usmh);
+                            //total_smh           += (result[i].smh);
                             total_oh            += (result[i].oh);
                             total_actual        += (result[i].inv_kwh);
                             total_pr            += (pr_value);
                             total_igbd          += (result[i].igbdh);
                             total_egbd          += (result[i].egbdh);
-                            total_curtaiment    += (result[i].load_shedding);
+                            //total_curtaiment    += (result[i].load_shedding);
                         }
                         expected_cal    = (total_expected / total_expected) * 100;
-                        usmh_cal        = (total_usmh / total_expected) * 100;
-                        smh_cal         = (total_smh / total_expected) * 100;
+                        //usmh_cal        = (total_usmh / total_expected) * 100;
+                        //smh_cal         = (total_smh / total_expected) * 100;
                         oh_cal          = (total_oh / total_expected) * 100;
                         igbd_cal        = (total_igbd / total_expected) * 100;
                         egbd_cal        = (total_egbd / total_expected) * 100;
-                        curtailment_cal = (total_curtaiment / total_expected) * 100;
+                        //curtailment_cal = (total_curtaiment / total_expected) * 100;
                         pr_cal          = (total_pr / total_expected) * 100;
                         actual_cal      = (total_actual / total_expected) * 100;
                         //Call function draw the yearly chart
-                        AllCreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual);
+                        AllCreateChartYearly(total_target, total_expected,total_oh, total_igbd, total_egbd, total_pr, total_actual);
                         //montly comment function
                         AllyearlyComment(site_id, isSPV, spv_list);
                         resolve("Success for " + site_name);
@@ -1589,36 +1605,36 @@
             });
         })
     }
-    function AllCreateChartYearly(total_target, total_expected, total_usmh, total_smh, total_oh, total_igbd, total_egbd, total_curtaiment, total_pr, total_actual) {
+    function AllCreateChartYearly(total_target, total_expected,total_oh, total_igbd, total_egbd, total_pr, total_actual) {
         let t_target         = Number(total_target).toFixed(2);
         let t_expected       = Number(total_expected).toFixed(2);
-        let t_usmh           = Number(total_usmh * -1).toFixed(2);
-        let t_smh            = Number(total_smh * -1).toFixed(2);
+        //let t_usmh           = Number(total_usmh * -1).toFixed(2);
+        //let t_smh            = Number(total_smh * -1).toFixed(2);
         let t_oh             = Number(total_oh * -1).toFixed(2);
         let t_igbd           = Number(total_igbd * -1).toFixed(2);
         let t_egbd           = Number(total_egbd * -1).toFixed(2);
-        let t_curtaiment     = Number(total_curtaiment * -1).toFixed(2);
+        //let t_curtaiment     = Number(total_curtaiment * -1).toFixed(2);
         let t_pr             = Number(total_pr).toFixed(2);
         let t_actual         = Number(total_actual).toFixed(2);
         let data_target      = Number(total_target);
         let data_expected    = Number(total_expected);
-        let data_usmh        = Number(total_usmh * -1);
-        let data_smh         = Number(total_smh * -1);
+        //let data_usmh        = Number(total_usmh * -1);
+        //let data_smh         = Number(total_smh * -1);
         let data_oh          = Number(total_oh * -1);
         let data_igbd        = Number(total_igbd * -1);
         let data_egbd        = Number(total_egbd * -1);
-        let data_curtaiment  = Number(total_curtaiment * -1);
+        //let data_curtaiment  = Number(total_curtaiment * -1);
         let data_pr          = Number(total_pr);
         let data_actual      = Number(total_actual);
         // Percentage Value
         let tar_percentage   = ((data_expected - data_target) / data_target) * 100;
         let exp_percentage   = 100;
-        let usmh_percentage  = (data_usmh / data_expected) * 100;
-        let smh_percentage   = (data_smh / data_expected) * 100;
+        //let usmh_percentage  = (data_usmh / data_expected) * 100;
+        //let smh_percentage   = (data_smh / data_expected) * 100;
         let oh_percentage    = (data_oh / data_expected) * 100;
         let igbd_percentage  = (data_igbd / data_expected) * 100;
         let egbd_percentage  = (data_egbd / data_expected) * 100;
-        let cur_percentage   = (data_curtaiment / data_expected) * 100;
+        //let cur_percentage   = (data_curtaiment / data_expected) * 100;
         let pr_percentage    = (data_pr / data_expected) * 100;
         let actul_percentage = ((data_actual) / data_expected) * 100;
         let prMeasure        = "";
@@ -1637,24 +1653,24 @@
                 measure: [
                     rMeasure,
                     aMeasure,
+                    //rMeasure,
+                    //rMeasure,
                     rMeasure,
                     rMeasure,
                     rMeasure,
-                    rMeasure,
-                    rMeasure,
-                    rMeasure,
+                    ///rMeasure,
                     rMeasure,
                     aMeasure
                 ],
                 x: [
                     "Target",
                     "Expected",
-                    "USMH",
-                    "SMH",
+                    //"USMH",
+                    //"SMH",
                     "Other",
-                    "IGBD",
+                    "BD",
                     "EGBD",
-                    "Curtailment",
+                    //"Curtailment",
                     "PR",
                     "Actual"
                 ],
@@ -1662,36 +1678,36 @@
                 text: [
                     t_target,
                     t_expected,
-                    t_usmh,
-                    t_smh,
+                    //t_usmh,
+                    //t_smh,
                     t_oh,
                     t_igbd,
                     t_egbd,
-                    t_curtaiment,
+                    //t_curtaiment,
                     t_pr,
                     t_actual
                 ],
                 y: [
                     data_target,
                     data_expected,
-                    data_usmh,
-                    data_smh,
+                    //data_usmh,
+                    //data_smh,
                     data_oh,
                     data_igbd,
                     data_egbd,
-                    data_curtaiment,
+                    //data_curtaiment,
                     data_pr,
                     data_actual
                 ],
                 hovertemplate: [
                     '<b>Target</b><br>Value: ' + data_target.toFixed(4) + '<br> (' + tar_percentage.toFixed(2) + '% )',
                     '<b>Expected</b><br>Value: ' + data_expected.toFixed(4) + '<br> (' + exp_percentage.toFixed(2) + '% )',
-                    '<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
-                    '<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
+                    //'<b>USMH</b><br>Value: ' + data_usmh.toFixed(4) + '<br> (' + usmh_percentage.toFixed(2) + '% )',
+                    //'<b>SMH</b><br>Value: ' + data_smh.toFixed(4) + '<br> (' + smh_percentage.toFixed(2) + '% )',
                     '<b>Other</b><br>Value: ' + data_oh.toFixed(4) + '<br> (' + oh_percentage.toFixed(2) + '% )',
-                    '<b>IGBD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
+                    '<b>BD</b><br>Value: ' + data_igbd.toFixed(4) + '<br> (' + igbd_percentage.toFixed(2) + '% )',
                     '<b>EGBD</b><br>Value: ' + data_egbd.toFixed(4) + '<br> (' + egbd_percentage.toFixed(2) + '% )',
-                    '<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
+                    //'<b>Curtaiment</b><br>Value: ' + data_curtaiment.toFixed(4) + '<br> (' + cur_percentage.toFixed(2) + '% )',
                     '<b>PR</b><br>Value: ' + data_pr.toFixed(4) + '<br> (' + pr_percentage.toFixed(2) + '% )',
                     '<b>Actual</b><br>Value: ' + data_actual.toFixed(4) + '<br> (' + actul_percentage.toFixed(2) + '% )'
                 ],
@@ -1723,7 +1739,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 380,
         };
         var config = {
@@ -1929,13 +1945,17 @@
         }
         YearlyAOP_vs_Actual = [];
         YearlyMonthlyExpetex_vs_Actual = [];
-        
-        if (isDoneSite ==1 && isDoneSPV ==1)
-        {
+        //console.log("Site Count" + isDoneSite + "SPV Count" + isDoneSPV);
+        console.log("isDoneSPV before timeout: " + isDoneSPV);
+        console.log("ChartImages: ", ChartImages);
+
+
+        if (isDoneSPV == 1) {
             setTimeout(function () {
-                //console.log(ChartImages);
+                console.log("Inside timeout - isDoneSPV: ", isDoneSPV);
+                
                 makePPT(ChartImages);
-            }, 11000);
+            }, 17000);
         }
     }
 

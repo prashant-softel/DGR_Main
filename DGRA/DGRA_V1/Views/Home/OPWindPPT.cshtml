@@ -251,13 +251,13 @@
         fyear       = getFinancialYear(today);
         fdate       = getFinancialYearDateStartDate(fyear);
         monthdate   = GetMonthDate(today);
-        GetSite();
-        //GetSPV();
+        //GetSite();
+        GetSPV();
         //monthlyportfolio(1);
        // yearlyportfolio(1);
     }
 
-    function GetSite()
+    @*function GetSite()
     {
         let state_id = "";
         var site_ids = "";
@@ -280,7 +280,7 @@
                 callReports(result,spvcall);
             }
         });
-    }
+    }*@
     function GetSPV() {
         let state    = "";
         var site_ids = "";
@@ -549,7 +549,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 350,
         };
         var config = {
@@ -855,7 +855,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 350,
         };
         var config = {
@@ -1223,7 +1223,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 350,
         };
         var config = {
@@ -1520,7 +1520,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 1000,
+            width: 850,
             height: 350,
         };
         var config = {
@@ -1731,15 +1731,14 @@
            let chunk1 = YearlyMonthlyExpetex_vs_Actual.slice(i, i + 10);
            $("#yearlyportpolio_aop").html("").html(generateTableWithAOP(chunk));
            $("#yearlyportpolio_exp").html("").html(generateTableWithEXP(chunk1));
-           //$("#monthlyportpolio_aop").append(generateTableWithAOP(chunk));
-           //$("#monthlyportpolio_exp").append(generateTableWithEXP(chunk1));
+           
            captureDivContent(document.getElementById('yearlyportfoliobysite'), isSPV);
        }
        YearlyAOP_vs_Actual = [];
        YearlyMonthlyExpetex_vs_Actual = [];
         console.log("Site Count" + isDoneSite + "SPV Count" + isDoneSPV);
-       if (isDoneSite == 1 && isDoneSPV == 1) {
-           //if (isDoneSite == 1){
+       //if (isDoneSite == 1 && isDoneSPV == 1) {
+           if (isDoneSPV == 1){
             setTimeout(function () {
                 //console.log(ChartImages);
                 makePPT(ChartImages);
