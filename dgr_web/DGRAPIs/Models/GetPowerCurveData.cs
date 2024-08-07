@@ -15,5 +15,6 @@ namespace DGRAPIs.Models
         public dynamic date { get; set; }
         public double avg_active_power { get; set; }
         public double avg_wind_speed { get; set; }
+        public string wtg { get; set; }
     }
 }

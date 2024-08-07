@@ -15101,9 +15101,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 tmlFilter += " AND WTGs IN(" + wtgs + ")";
             }
-            tmlFilter += " AND DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ORDER BY site_id, avg_wind_speed";
+            tmlFilter += " AND DATE(Time_stamp) >= '" + fromDate + "' AND DATE(Time_stamp) <= '" + toDate + "' ORDER BY site_id, WTGs, avg_wind_speed ";
 
-            string tmlQry = "SELECT site, site_id, DATE(Time_stamp) as date, avg_active_power, avg_wind_speed FROM uploading_file_tmr_data WHERE " + tmlFilter;
+            string tmlQry = "SELECT site, site_id,WTGs as wtg, DATE(Time_stamp) as date, avg_active_power, avg_wind_speed FROM uploading_file_tmr_data WHERE " + tmlFilter;
 
             try
             {
