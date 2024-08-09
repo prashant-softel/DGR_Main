@@ -262,13 +262,32 @@
         fyear = getFinancialYear(today);
         fdate = getFinancialYearDateStartDate(fyear);
         monthdate = GetMonthDate(today);
-       
+
         GetSPV();
         //GetSite();
         //yearlyportfolio(0);
         //monthlyportfolio(0);
         ///sitewiseportfolio();
     }
+
+    @*function GetSPV1(fliterVal) {
+        let state = "";
+        
+        state = state != "" ? state.slice(0, -1) : state;
+        let site_ids = "";
+        
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSPVList", "SolarReport")' + '?state=' + state + '&sitelist=' + site_ids,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr) {
+                
+            }
+        });
+        //GetSite(false);
+    }*@
+
     function GetSPV() {
         let state = "";
         var site_ids = "";
@@ -280,7 +299,14 @@
             datatype: "html",
             success: function (result, status, xhr) {
                 //console.log(result);
-               callReports(result, spvcall);
+                
+                for (var j = 0; j < result.length; j++) {
+                    spv_list += result[j].spv + ',';
+                }
+                spv_list = spv_list.replace(/,\s*$/, "");
+                callReports(result, spvcall);
+                getAllSiteReport(spvcall, spv_list);
+                getAllYearlyReport(spvcall, spv_list);
             }
         });
 
@@ -618,7 +644,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 380,
         };
         var config = {
@@ -756,7 +782,7 @@
         }
         var fromToDates = fdate//getFinancialYearDates(toDate);
         var fromDate    = fdate.startdate;//"2023-11-01";
-        var toDate      = fdate.enddate; //"2023-11-30"; 
+        var toDate      = fdate.enddate; //"2023-11-30";
         let prType      = "AOP";
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -983,7 +1009,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 380,
         };
         var config = {
@@ -1123,7 +1149,7 @@
                             isDoneSPV = 1;
                             monthlyportfolio(isSPV);
                             yearlyportfolio(isSPV);
-                            
+
                         }
                     }
 
@@ -1138,20 +1164,20 @@
         });
     }
     //All Site Data
-    async function getAllSiteReport(site_ids, spvcall)
+    async function getAllSiteReport(spvcall, spv_list)
     {
-         let spv_list  = "";
+         //let spv_list  = "";
          var site_id   = "";
          var site_name = "";
          if (spvcall == 1) {
              isSPV    = 0;
-             site_id  = site_ids;
-             spv_list = "";
+             //site_id  = site_ids;
+             //spv_list = "";
          }
          else {
              isSPV    = 1;
-             site_id  = site_ids;
-             spv_list = "";
+             //site_id  = site_ids;
+             //spv_list = "";
          }
          var fromDate = monthdate.startdate;//"2023-11-01";
          var toDate   = monthdate.enddate;//"2023-11-30";//
@@ -1368,10 +1394,12 @@
             columnColors[7] = "#14a105";
             data[0].measure[7].marker = { color: '#14a105' };
         }*@
-        if (data_pr > 0) {
-            columnColors[8] = "#14a105";
+        if (data[0] && data[0].measure && data[0].measure[8]) {
             data[0].measure[8].marker = { color: '#14a105' };
+        } else {
+            //console.error('data[0].measure[8] is not defined');
         }
+
         layout = {
             xaxis: {
                 type: "category",
@@ -1390,7 +1418,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 380,
         };
         var config = {
@@ -1506,29 +1534,29 @@
             }
         });
     }
-    async function getAllYearlyReport(site_ids, spvcall)
+    async function getAllYearlyReport(spvcall, spv_list)
     {
-        let spv_list  = "";
-        var site_id   = "";
+        //let spv_list  = "";
+        var spv   = "";
         var site_name = "";
         if (spvcall == 1) {
             isSPV    = 0;
-            site_id  = site_ids;
-            spv_list = "";
+            spv  = spv;
+            //spv_list = "";
         }
         else {
             isSPV    = 1;
-            site_id  = site_ids;
-            spv_list = "";
+            spv  = spv;
+            //spv_list = "";
         }
         var fromToDates = fdate//getFinancialYearDates(toDate);
         var fromDate    = fdate.startdate;//"2023-11-01";
-        var toDate      = fdate.enddate;//"2023-11-30"; 
+        var toDate      = fdate.enddate;//"2023-11-30";
         let prType      = "AOP";
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&site=' + site_id + '&prType=' + prType,
+                url: '@Url.Action("GetActualVSExpectedYearly", "SolarReport")' + '?fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&prType=' + prType,
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr)
@@ -1739,7 +1767,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 380,
         };
         var config = {
@@ -1889,7 +1917,7 @@
         head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
         document.getElementById("portpolioHeadMonthly").innerHTML = head;
 
-        
+
         $("#monthlyportpolio_aop").html("");
         $("#monthlyportpolio_exp").html("");
 
@@ -1927,11 +1955,11 @@
         head += '<br><span style="font-weight: 400; border-bottom: 1px solid;"> million units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
         document.getElementById("portpolioHeadYearly").innerHTML = head;
 
-       
+
         /*------------------------------------------*/
 
-       
-      
+
+
         $("#yearlyportpolio_aop").html("");
         $("#yearlyportpolio_exp").html("");
         for (let i = 0; i < YearlyAOP_vs_Actual.length; i += 10) {
@@ -1953,7 +1981,7 @@
         if (isDoneSPV == 1) {
             setTimeout(function () {
                 console.log("Inside timeout - isDoneSPV: ", isDoneSPV);
-                
+
                 makePPT(ChartImages);
             }, 17000);
         }

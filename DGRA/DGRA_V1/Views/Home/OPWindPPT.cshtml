@@ -292,10 +292,12 @@
             datatype: "html",
             success: function (result, status, xhr) {
                 //console.log(result);
-                //for (var j = 0; j < result.length; j++) {
-                    //all_spvs += result[j].spv + ',';
-                //}
-                //all_spvs = spv.replace(/,\s*$/, "");
+                for (var j = 0; j < result.length; j++) {
+                    spv_list += result[j].spv + ',';
+                }
+                spv_list = spv_list.replace(/,\s*$/, "");
+                getAllSiteReport(spvcall,spv_list);
+                getAllYearlyReport(spvcall,spv_list);
                 callReports(result, spvcall);
             }
         });
@@ -549,7 +551,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 350,
         };
         var config = {
@@ -855,7 +857,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 350,
         };
         var config = {
@@ -1018,21 +1020,21 @@
         });
     }
     //All Site Data
-    async function getAllSiteReport(site_ids, spv, spvcall)
+    async function getAllSiteReport(spvcall,spv_list)
     {
-        let spv_list = "";
+        //let spv_list = "";
         var site_id = "";
         var site_name = "";
-        /*if (spvcall == 1) {
+        if (spvcall == 1) {
             isSPV    = 0;
-            site_id  = site_ids;
-            spv_list = spv;
+            //site_id  = site_ids;
+            //spv_list = spv;
         }
-        else {*/
+        else {
             isSPV    = 1;
-            site_id  = site_ids;
-            spv_list = spv;
-        //}
+            //site_id  = site_ids;
+            //spv_list = spv;
+        }
          var fromDate = monthdate.startdate;//"2023-11-01";
          var toDate   = monthdate.enddate; //"2023-11-30";
         //let prType = "AOP";
@@ -1040,7 +1042,7 @@
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate,
+                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&spv=' + spv_list + '&fromDate=' + fromDate + '&toDate=' + toDate,
                 contentType: "application/json; charset=utf-8",
                 datatype: "JSON",
                 success: function (result, status, xhr)
@@ -1223,7 +1225,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 350,
         };
         var config = {
@@ -1351,27 +1353,27 @@
             }
        });
     }
-    async function getAllYearlyReport(site_ids, spv, spvcall) {
-        let spv_list = "";
+    async function getAllYearlyReport(spvcall,spv_list) {
+        //let spv_list = "";
         var site_id = "";
         var site_name = "";
-        /*if (spvcall == 1) {
+        if (spvcall == 1) {
             isSPV = 0;
-            site_id = site_ids;
-            spv_list = spv;
+            //site_id = site_ids;
+            //spv_list = spv;
         }
-        else {*/
+        else {
             isSPV = 1;
-            site_id = site_ids;
-            spv_list = spv;
-        //}
+            //site_id = site_ids;
+            //spv_list = spv;
+        }
         var fromToDates = fdate//getFinancialYearDates(toDate);
         var fromDate    = fdate.startdate;//"2023-11-01"; 
         var toDate      = fdate.enddate; //"2023-11-30";
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&isYearly=1',
+                url: '@Url.Action("GetWindTMLGraphData", "WindView")' + '?site=' + site_id + '&fromDate=' + fromDate + '&toDate=' + toDate + '&spv=' + spv_list + '&isYearly=1',
                 contentType: "application/json; charset=utf-8",
                 datatype: "JSON",
                 success: function (result, status, xhr) {
@@ -1520,7 +1522,7 @@
                 b: 30,
                 r: 1,
             },
-            width: 850,
+            width: 900,
             height: 350,
         };
         var config = {
