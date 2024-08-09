@@ -207,6 +207,7 @@
 <script src="~/Content/theme/plugins/jszip/jszip.min.js" defer></script>
 <script src="~/Content/theme/plugins/pdfmake/pdfmake.min.js" defer></script>
 <script src="~/Content/theme/plugins/datatables-buttons/js/buttons.colVis.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <!--<script src="~/Content/theme/plugins/datatables/dataTables.fixedHeader.min.js" defer></script>-->
 <script src="~/Content/theme/dist/js/comman.js"></script>
 <!--<script src="~/Content/theme/plugins/chart.js/Chart.min.js"></script>-->
@@ -274,7 +275,7 @@
             }
         });
     });
-    
+    var exceldata;
     window.onload = function () {
         console.log("User Id from session" + userIdFromSession);
         getPageColumns();
@@ -515,6 +516,7 @@
                 }
                 tbl += '</tr></thead>';
                 if (result.length > 0) {
+                    exceldata = result;
                     let total_target = 0;
                     let total_expected = 0;
                     let total_usmh = 0;
@@ -678,7 +680,15 @@
                             columns: ':visible'
                         }
                     },
-                    'colvis'
+                    'colvis',
+                    {
+                        text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                        className: 'btn ml-1   ',
+
+                        action: function () {
+                            exportToExcel();
+                        }
+                    },
                 ],
                 initComplete: function () {
                     $('.dt-buttons').append('<div style="text-align: center; margin-left: 20px; justify: center"><p style="text-align: center; justify: center">Note : Data Showing In Million Units</p></div>');
@@ -1164,4 +1174,57 @@ function getYearlyReport()
         document.getElementById("CloseViewTableBtn").style.display = 'none';
     }
 
+    function exportToExcel() {
+
+        result = exceldata;
+        var columns = [
+            "Date", "Site", "Target_Energy", "Expected", "USMH_Loss", "SMH_Loss", "OH_Loss", "IGBD_Loss", "EGBD_Loss", "Curtaiment", "PR", "Actual", "MA", "IGA", "EGA_A", "EGA_B", "EGA_C"
+        ];
+
+        var rows = [];
+        for (var i = 0; i < result.length; i++) {
+            var row = [];
+            let pr_value = 0;
+            let total_breakdown = 0;
+            total_breakdown = (result[i].pexpected - result[i].usmh - result[i].smh - result[i].oh - result[i].igbdh - result[i].egbdh - result[i].load_shedding);
+            pr_value = result[i].jmr_kwh - total_breakdown;
+            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            //var formattedDate = moment(result[i].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
+            row.push(formattedDate);
+            row.push(result[i].site);
+            row.push(result[i].target);
+            row.push(result[i].pexpected);
+            row.push(result[i].usmh);
+            row.push(result[i].smh);
+            row.push(result[i].oh);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
+            row.push(pr_value); //
+            row.push(result[i].jmr_kwh);
+            row.push(result[i].ma);
+            row.push(result[i].iga);
+            row.push(result[i].ega_a);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
+            rows.push(row);
+        }
+
+        var data = [columns].concat(rows);
+
+        var ws = XLSX.utils.aoa_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Solar ExpectedVsActual Losses");
+        var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), "Solar ExpectedVsActual Losses.xlsx");
+
+    }
 </script>

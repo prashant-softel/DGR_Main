@@ -119,7 +119,7 @@ namespace DGRAPIs.Repositories
             }
             if (monthly == true)
             {
-                groupby = " MONTH(t1.data_date),t1.site_id ";
+                groupby = " MONTH(t1.data_date),t1.site_id order by  MONTH(t1.data_date)";
             }
             else 
             {
@@ -597,7 +597,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             }
             if (monthly == true)
             {
-                groupby = " MONTH(t1.data_date) ";
+                groupby = " MONTH(t1.data_date) order by MONTH(t1.data_date) asc ";
             }
             else
             {

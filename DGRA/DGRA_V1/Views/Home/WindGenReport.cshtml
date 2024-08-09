@@ -3630,9 +3630,9 @@
                         {
                             text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
                             className: 'btn ml-1   ',
-                            action: function ()
-                            {
-                                yearlyexportToExcelwtgwise();
+
+                            action: function () {
+                                yearlyexportToExcelsitewise();
                             }
                         },
                     ],
@@ -3846,12 +3846,12 @@
             row.push(result[i].grid_hrs);
             row.push(result[i].lull_hrs);
             //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
+           row.push(result[i].unschedule_hrs);
+           row.push(result[i].schedule_hrs);
+           row.push(result[i].others);
+           row.push(result[i].igbdh);
+           row.push(result[i].egbdh);
+           row.push(result[i].load_shedding);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
            row.push(Math.abs(parseFloat(result[i].usmh_loss)*-1) * 1000000);
@@ -3915,12 +3915,12 @@
             row.push(result[i].grid_hrs);
             row.push(result[i].lull_hrs);
             //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
+            row.push(result[i].unschedule_hrs);
+            row.push(result[i].schedule_hrs);
+            row.push(result[i].others);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
             row.push(Math.abs(parseFloat(result[i].usmh_loss)*-1) * 1000000);
@@ -3985,12 +3985,12 @@
             row.push(result[i].grid_hrs);
             row.push(result[i].lull_hrs);
             //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
+            row.push(result[i].unschedule_hrs);
+            row.push(result[i].schedule_hrs);
+            row.push(result[i].others);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
             row.push(Math.abs(parseFloat(result[i].usmh_loss)*-1) * 1000000);
@@ -4018,8 +4018,8 @@
     }
 
     function yearlyexportToExcelsitewise() {
-        var fyyear  = $('select#fyM option:selected').val();
-        result      = exceldata6;
+        var fyyear = $('select#fyY option:selected').val();
+        result = exceldata6;
         var columns = [
             "Date", "Country", "State", "SPV", "Site", "Capacity", "Wind", "kWh", "PLF", "MA_ACT", "MA_CON", "IGA", "EGA_A", "EGA_B", "EGA_C", "Gen_Hrs", "Lull_Hrs", "USMH", "SMH", "Others",
             "IGBDH", "EGBDH", "LS", "Total_BD", "USMH_Loss", "SMH_Loss", 'Others_Loss', "IGBDH_Loss", "EGBDH_Loss", "LS_Loss", 'Total_Loss'
@@ -4054,12 +4054,12 @@
             row.push(result[i].grid_hrs);
             row.push(result[i].lull_hrs);
             //row.push(result[i].production_hrs);
-            row.push(result[i].unschedule_num);
-            row.push(result[i].schedule_num);
-            row.push(result[i].others_num);
-            row.push(result[i].igbdh_num);
-            row.push(result[i].egbdh_num);
-            row.push(result[i].load_shedding_num);
+            row.push(result[i].unschedule_hrs);
+            row.push(result[i].schedule_hrs);
+            row.push(result[i].others);
+            row.push(result[i].igbdh);
+            row.push(result[i].egbdh);
+            row.push(result[i].load_shedding);
             row.push(total_hourse);
             //row.push(result[i].load_shedding_num);
             row.push(Math.abs(parseFloat(result[i].usmh_loss)*-1) * 1000000);

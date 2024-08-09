@@ -513,6 +513,8 @@
                 GetWindChartData(tendays, "Last 10 Days", isOnloadGraph);
                 GetWindChartDataMonthly(monthdate, "Monthly", isOnloadGraphMonthly);
             }
+            $("#customRadio2").prop('checked', false);
+            $("#customRadio1").prop('checked', true);
         }
         else
         {
@@ -722,16 +724,19 @@
                 GetSolarDataByLastDay();
                 if ($("#customRadio1").is(":checked"))
                 {
-                    chartTitle               = "Last 10 Days";
+                    chartTitle = "Last 10 Days";
+                    chartTitle1 = "Monthly";
                     var graphGenerate        = 1;
                     var graphGenerateMonthly = 0;
                     if (solarChanged == 1)
                     {
                         GetSolarData(tendays, chartTitle, graphGenerate);
+                        GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                     }
                     if (windChanged == 1)
                     {
                         GetWindChartData(tendays, chartTitle, graphGenerate);
+                        GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
                     }
                 }
                 if ($("#customRadio2").is(":checked"))
@@ -742,10 +747,12 @@
                     if (solarChanged == 1)
                     {
                         GetSolarDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                        GetSolarData(tendays, chartTitle, graphGenerate);
                     }
                     if (windChanged == 1)
                     {
                         GetWindChartDataMonthly(monthdate, chartTitle, graphGenerateMonthly);
+                        GetWindChartData(tendays, chartTitle, graphGenerate);
                     }
                 }
             }
@@ -1448,7 +1455,7 @@
                                 wcd_actual_wind.push(0);
                                 wcd_target_energy.push(0);
                                 wcd_actual_energy.push(0);
-                                wcd_exp_energy.push();
+                                wcd_exp_energy.push(0);
                             }
                         }
                     }
@@ -1556,6 +1563,7 @@
     }
     function windChart(title, datelebels, taget_wind, actual_wind, target_energy, actual_energy,exp_energy)
     {
+        console.log(exp_energy);
         let chartStatus = Chart.getChart("energy_wind"); // <canvas> id
         let dataset_value = [];
         if (chartStatus != undefined)
@@ -2014,11 +2022,11 @@
             chartTitle = "Last 10 Days";
             if (displaychart.wind)
             {
-                windChart(wcd_title, wcd_datelebels, wcd_taget_wind, wcd_actual_wind, wcd_target_energy, wcd_actual_energy);
+                windChart(wcd_title, wcd_datelebels, wcd_taget_wind, wcd_actual_wind, wcd_target_energy, wcd_actual_energy, wcd_exp_energy);
             }
             if (displaychart.solar)
             {
-                solarChart(scd_title, scd_datelebels, scd_target_kwh, scd_actual_kwh, scd_target_ir, scd_actual_ir);
+                solarChart(scd_title, scd_datelebels, scd_target_kwh, scd_actual_kwh, scd_target_ir, scd_actual_ir, scd_exp_kwh);
             }
         }
         if (type == 2)
@@ -2026,11 +2034,11 @@
             chartTitle = "Monthly";
             if (displaychart.wind)
             {
-                windChart(wcd_title_md, wcd_datelebels_md, wcd_taget_wind_md, wcd_actual_wind_md, wcd_target_energy_md, wcd_actual_energy_md);
+                windChart(wcd_title_md, wcd_datelebels_md, wcd_taget_wind_md, wcd_actual_wind_md, wcd_target_energy_md, wcd_actual_energy_md, wcd_exp_energy_md);
             }
             if (displaychart.solar)
             {
-                solarChart(scd_title_md, scd_datelebels_md, scd_target_kwh_md, scd_actual_kwh_md, scd_target_ir_md, scd_actual_ir_md);
+                solarChart(scd_title_md, scd_datelebels_md, scd_target_kwh_md, scd_actual_kwh_md, scd_target_ir_md, scd_actual_ir_md, scd_exp_kwh_md);
             }
         }
     }
