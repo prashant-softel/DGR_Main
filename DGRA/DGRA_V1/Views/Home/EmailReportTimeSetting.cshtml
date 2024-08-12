@@ -72,6 +72,12 @@
                         <div class="">
                             <label class="">Solar Weekly Report Time : <strong id="solarWeeklyTime">  </strong></label>
                         </div>
+                        <div class="">
+                            <label class="">Solar Monthly Report Time : <strong id="solarMonthlyTime">  </strong></label>
+                        </div>
+                        <div class="">
+                            <label class="">Wind Monthly Report Time : <strong id="windMonthlyTime">  </strong></label>
+                        </div>
                     </div>
                     <div style="display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 1rem">
                         <div class="">
@@ -82,6 +88,12 @@
                         </div>
                         <div class="">
                             <label class="">Solar Weekly Report Day : <strong id="solarWeeklyDay"> </strong> </label>
+                        </div>
+                        <div class="">
+                            <label class="">Solar Monthly Report Date : <strong id="solarmonthlydate"> </strong> </label>
+                        </div>
+                        <div class="">
+                            <label class="">Wind Monthly Report Date : <strong id="windmonthlydate"> </strong> </label>
                         </div>
                     </div>
                 </div>
@@ -105,6 +117,14 @@
                         <div class="" style="display: flex; flex-direction: row; width: 100%">
                             <label class="" style="width: 100%">Solar Weekly Report Time : </label>
                             <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="solarWeeklyReport" name="solarWeeklyReport" placeholder="Enter Solar Weekly Report Time ">
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class="" style="width: 100%">Solar Monthly Report Time : </label>
+                            <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="solarmonthlyreport" name="solarmonthlyreport" placeholder="Enter Solar Weekly Report Time ">
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class="" style="width: 100%">Wind Monthly Report Time : </label>
+                            <input type="time" class="" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " id="windmonthlyreport" name="windmonthlyreport" placeholder="Enter Solar Weekly Report Time ">
                         </div>
                     </div>
 
@@ -134,6 +154,80 @@
                                 <option value="Fri">Fri</option>
                                 <option value="Sat">Sat</option>
                                 <option value="Sun">Sun</option>
+                            </select>
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class=" " style="width: 100%">Solar Monthly Report Date : </label>
+                            <select id="solarmonthdate" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " name="solarmonthdate" onchange="solarDateSelect()">
+                                
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                                <option value="31">31</option>
+                            </select>
+                        </div>
+                        <div class="" style="display: flex; flex-direction: row; width: 100%">
+                            <label class=" " style="width: 100%">Wind Monthly Report Date : </label>
+                            <select id="windmonthdate" style="display: block; width: 100%; border: 1px; border-style: solid; border-color: #ced4da; border-radius: 0.25rem; font-size: 1rem; font-weight: 400; line-height: 1.5; padding-top: 0.375rem; padding-bottom: 0.375rem; padding-left: 0.75rem; padding-right: 0.75rem; " name="windmonthdate" onchange="windDateSelect()">
+                                
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                                <option value="31">31</option>
                             </select>
                         </div>
                     </div>
@@ -257,6 +351,8 @@
 <script type="text/javascript">
     var windWeekDay = "";
     var solarWeekDay = "";
+    var solarmonthlydate = "";
+    var windmonthlydate = "";
     var loader = document.getElementById("loader").style;
     var username = "@username";
     var role = "@role";
@@ -273,16 +369,25 @@
     var temp5 = "";
     var temp6 = "";
     var temp7 = "";
+    var temp8 = "";
+    var temp9 = "";
+    var temp10 = "";
+    var temp11 = "";
 
     function GetEmailTime() {
         console.log("Inside GetEmialTime function.");
-        var dailyTime = document.getElementById("dailyTime");
-        var windWeeklyTime = document.getElementById("windWeeklyTime");
-        var solarWeeklyTime = document.getElementById("solarWeeklyTime");
-        var windWeeklyDay = document.getElementById("windWeeklyDay");
-        var solarWeeklyDay = document.getElementById("solarWeeklyDay");
-        var firstReminderTime = document.getElementById("firstReminderTime");
+        var dailyTime          = document.getElementById("dailyTime");
+        var windWeeklyTime     = document.getElementById("windWeeklyTime");
+        var solarWeeklyTime    = document.getElementById("solarWeeklyTime");
+        var windWeeklyDay      = document.getElementById("windWeeklyDay");
+        var solarWeeklyDay     = document.getElementById("solarWeeklyDay");
+        var firstReminderTime  = document.getElementById("firstReminderTime");
         var secondReminderTime = document.getElementById("secondReminderTime");
+
+        var solarMonthlyTime   = document.getElementById("solarMonthlyTime");
+        var windMonthlyTime    = document.getElementById("windMonthlyTime");
+        var solarmonthlydate   = document.getElementById("solarmonthlydate");
+        var windmonthlydate    = document.getElementById("windmonthlydate");
 
         $.ajax({
             type: "POST",
@@ -303,7 +408,12 @@
                     temp5 = result[0].solar_weekly_day.toString();
                     temp6 = result[0].first_dgr_reminder.toString();
                     temp7 = result[0].second_dgr_reminder.toString();
-                    //console.log(temp1, " ", temp2, " ", temp3, " ", temp4, " ", temp5);
+
+                    temp8 = result[0].solar_monthly_time.toString();
+                    temp9 = result[0].wind_monthly_time.toString();
+                    temp10 = result[0].solar_monthly_date.toString();
+                    temp11 = result[0].wind_monthly_date.toString();
+                    
                     dailyTime.innerHTML = temp1;
                     windWeeklyTime.innerHTML = temp2;
                     solarWeeklyTime.innerHTML = temp3;
@@ -311,6 +421,11 @@
                     solarWeeklyDay.innerHTML = temp5;
                     firstReminderTime.innerHTML = temp6;
                     secondReminderTime.innerHTML = temp7;
+
+                    solarMonthlyTime.innerHTML = temp8;
+                    windMonthlyTime.innerHTML = temp9;
+                    solarmonthlydate.innerHTML = temp10;
+                    windmonthlydate.innerHTML = temp11;
                 }
             }
         });
@@ -324,6 +439,18 @@
         solarWeekDay = document.getElementById("solarweekday").value;
         console.log("Solar Week Day Selected is  : " + solarWeekDay);
     }
+
+   function solarDateSelect() {
+       solarmonthdate = document.getElementById("solarmonthdate").value;
+       console.log("Solar Monthly Date Selected is  : " + solarmonthdate);
+    }
+
+    function windDateSelect() {
+        windmonthdate = document.getElementById("windmonthdate").value;
+        console.log("Solar Week Day Selected is  : " + windmonthdate);
+    }
+
+
     function Update() {
         if (loader.display == "none") {
             loader.display = "flex";
@@ -337,7 +464,13 @@
         var firstReminderTime = document.getElementById("firstReminder").value;
         var secondReminderTime = document.getElementById("secondReminder").value;
 
-        if (dailytime === "" && windWeeklyTime === "" && solarWeeklyTime === "" && windWeekDay === "" && solarWeekDay === "") {
+        var solarmonthlytime = document.getElementById("solarmonthlyreport").value;
+        var windmonthlytime = document.getElementById("windmonthlyreport").value;
+
+        var solarmonthdate = document.getElementById("solarmonthdate").value;
+        var windmonthdate = document.getElementById("windmonthdate").value;
+
+        if (dailytime === "" && windWeeklyTime === "" && solarWeeklyTime === "" && windWeekDay === "" && solarWeekDay === "" && solarmonthlytime === "" && windmonthlytime === "" && solarmonthdate === "" && windmonthdate === "") {
             alert("Please enter data...!");
             if (loader.display == "flex") {
                 loader.display = "none";
@@ -378,10 +511,32 @@
             } else {
                 secondReminderTime = temp7;
             }
+
+            if (solarmonthlytime !== "") {
+                solarmonthlytime = solarmonthlytime;
+            } else {
+                solarmonthlytime = temp8;
+            }
+
+            if (windmonthlytime !== "") {
+                windmonthlytime = windmonthlytime;
+            } else {
+                windmonthlytime = temp9;
+            }
+            if (solarmonthdate !== "") {
+                solarmonthdate = solarmonthdate;
+            } else {
+                solarmonthdate = temp10;
+            }
+            if (windmonthdate !== "") {
+                windmonthdate = windmonthdate;
+            } else {
+                windmonthdate = temp11;
+            }
             console.log("username : ", username, " role : ", role, " user_id : ", user_id);
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay +'&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + '&solarmonthlytime=' + solarmonthlytime + '&windmonthlytime=' + windmonthlytime + '&solarmonthdate=' + solarmonthdate + '&windmonthdate=' + windmonthdate + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr) {
@@ -409,6 +564,9 @@
         var solarWeeklyTime = document.getElementById("solarWeeklyReport").value;
         var firstReminderTime = document.getElementById("firstReminder").value;
         var secondReminderTime = document.getElementById("secondReminder").value;
+
+        var solarmonthlytime = document.getElementById("solarmonthlytime").value;
+        var windmonthlytime = document.getElementById("windmonthlytime").value;
 
         if (firstReminderTime === "" && secondReminderTime === "") {
             alert("Please enter data...!");
@@ -451,10 +609,30 @@
             } else {
                 solarWeekDay = temp5;
             }
+            if (solarmonthlytime !== "") {
+                solarmonthlytime = solarmonthlytime;
+            } else {
+                solarmonthlytime = temp8;
+            }
+            if (windmonthlytime !== "") {
+                windmonthlytime = windmonthlytime;
+            } else {
+                windmonthlytime = temp9;
+            }
+            if (solarmonthdate !== "") {
+                solarmonthdate = solarmonthdate;
+            } else {
+                solarmonthdate = temp10;
+            }
+            if (windmonthdate !== "") {
+                windmonthdate = windmonthdate;
+            } else {
+                windmonthdate = temp11;
+            }
             console.log("username : ", username, " role : ", role, " user_id : ", user_id);
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime +"&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + '&solarmonthlytime=' + solarmonthlytime + '&windmonthlytime=' + windmonthlytime + '&solarmonthdate=' + solarmonthdate + '&windmonthdate=' + windmonthdate + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr) {
@@ -479,12 +657,20 @@
         var wwd = document.getElementById("windweekday");
         var swd = document.getElementById("solarweekday");
 
+        var smt = document.getElementById("solarmonthlyreport");
+        var wmt = document.getElementById("windmonthlyreport");
+        var smd = document.getElementById("solarmonthdate");
+        var wmd = document.getElementById("windmonthdate");
+
         dt.value = "";
         wwt.value = "";
         swt.value = "";
         wwd.value = "";
         swd.value = "";
-
+        smt.value = "";
+        wmt.value = "";
+        smd.value = "";
+        wmd.value = "";
     }
 
     function CancelReminder() {

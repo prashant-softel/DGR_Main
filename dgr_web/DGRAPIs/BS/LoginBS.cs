@@ -33,7 +33,7 @@ namespace DGRAPIs.BS
 
         //SubmitCloneUserAccess
         Task<int> SubmitCloneUserAccess(int login_id, int site_type, int page_type, int identity, int upload_access);
-        Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role);
+        Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role,string SolarMonthlyTime,string WindMonthlyTime,string solarmonthdate,string windmonthdate);
         Task<List<EmailReportTimingsLog>> EmailReportTimings();
         Task<List<CustomGroup>> GetCustomGroup(int login_id, int site_type,string groupPage);
         Task<int> SubmitGroupBySite(int login_id, string reportgroup, string site_type);
@@ -353,13 +353,13 @@ namespace DGRAPIs.BS
             }
         }
 
-        public async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role)
+        public async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role,string SolarMonthlyTime,string WindMonthlyTime, string solarmonthdate,string windmonthdate)
         {
             try
             {
                 using (var repos = new LoginRepository(getDB))
                 {
-                    return await repos.EmailReportTimeChangeSetting(dailytime, windweeklytime, solarweeklytime, windweekday, solarweekday, firstReminderTime, secondReminderTime, username, user_id, role);
+                    return await repos.EmailReportTimeChangeSetting(dailytime, windweeklytime, solarweeklytime, windweekday, solarweekday, firstReminderTime, secondReminderTime, username, user_id, role, SolarMonthlyTime, WindMonthlyTime,solarmonthdate,windmonthdate);
 
                 }
             }

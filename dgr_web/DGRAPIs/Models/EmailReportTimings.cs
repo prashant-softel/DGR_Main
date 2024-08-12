@@ -28,5 +28,9 @@ namespace DGRAPIs.Models
         public int updated_by_id { get; set; }
         public string updated_by_role { get; set; }
         public dynamic created_on { get; set; }
+        public string solar_monthly_time { get; set; }
+        public string wind_monthly_time { get; set; }
+        public string solar_monthly_date { get; set; }
+        public string wind_monthly_date { get; set; }
     }
 }

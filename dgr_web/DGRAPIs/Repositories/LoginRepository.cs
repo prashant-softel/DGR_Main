@@ -154,7 +154,7 @@ namespace DGRAPIs.Repositories
             
         }
 
-        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay, string firstReminderTime, string secondReminderTime, string username, int user_id, string role)
+        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay, string firstReminderTime, string secondReminderTime, string username, int user_id, string role,string SolarMonthlyTime,string WindMonthlyTime, string solarmonthdate,string windmonthdate)
         {
 
             int finalRes = 1;
@@ -256,6 +256,62 @@ namespace DGRAPIs.Repositories
                     finalRes = 0;
                     return finalRes;
                 }
+                try
+                {
+                    MyConfig["Timer:SolarMonthlyTime"] = SolarMonthlyTime;
+                    jsonObject["Timer"]["SolarMonthlyTime"] = SolarMonthlyTime;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing second Dgr uploading Reminder time, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+                try
+                {
+                    MyConfig["Timer:WindMonthlyTime"] = WindMonthlyTime;
+                    jsonObject["Timer"]["WindMonthlyTime"] = WindMonthlyTime;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing second Dgr uploading Reminder time, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+                try
+                {
+                    MyConfig["Timer:solarmonthdate"] = solarmonthdate;
+                    jsonObject["Timer"]["solarmonthdate"] = solarmonthdate;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing Wind weekly email report Day, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
+                try
+                {
+                    MyConfig["Timer:WindMonthlyTime"] = windmonthdate;
+                    jsonObject["Timer"]["windmonthdate"] = windmonthdate;
+                    updatedJson = jsonObject.ToString();
+                    File.WriteAllText("appsettings.json", updatedJson);
+                }
+                catch (Exception e)
+                {
+                    string msg = e.ToString();
+                    API_ErrorLog("Exception while changing Wind weekly email report Day, due to : " + msg);
+                    finalRes = 0;
+                    return finalRes;
+                }
             }
             catch (Exception e)
             {
@@ -267,8 +323,23 @@ namespace DGRAPIs.Repositories
             {
                 try
                 {
-                    string insertTimingsDataQry = "INSERT INTO email_report_timings_log (daily_report, wind_weekly, solar_weekly, wind_weekly_day, solar_weekly_day, first_dgr_reminder,second_dgr_reminder,updated_by_name, updated_by_id, updated_by_role) VALUES ( '" + dailytime + "', '" + windweeklytime + "', '" + solarweeklytime + "', '" + windWeekDay + "', '" + solarWeekDay + "', '" + firstReminderTime + "', '" + secondReminderTime + "','" + username + "', " + user_id + ", '" + role + "' );";
-                    insertTimeDataRes = await Context.ExecuteNonQry<int>(insertTimingsDataQry).ConfigureAwait(false);
+                    string updateTimingsDataQry = "UPDATE email_report_timings_log SET " +
+                                               "daily_report        = '" + dailytime + "', " +
+                                               "wind_weekly         = '" + windweeklytime + "', " +
+                                               "solar_weekly        = '" + solarweeklytime + "', " +
+                                               "wind_weekly_day     = '" + windWeekDay + "', " +
+                                               "solar_weekly_day    = '" + solarWeekDay + "', " +
+                                               "first_dgr_reminder  = '" + firstReminderTime + "', " +
+                                               "second_dgr_reminder = '" + secondReminderTime + "', " +
+                                               "solar_monthly_time  = '" + SolarMonthlyTime + "', " +
+                                               "wind_monthly_time   = '" + WindMonthlyTime + "', " +
+                                               "solar_monthly_date  = '" + solarmonthdate + "', " +
+                                               "wind_monthly_date   = '" + windmonthdate + "', " +
+                                               "updated_by_name     = '" + username + "', " +
+                                               "updated_by_id       = " + user_id + ", " +
+                                               "updated_by_role     = '" + role + "' " +
+                                               "WHERE updated_by_id = " + user_id + ";";
+                    insertTimeDataRes = await Context.ExecuteNonQry<int>(updateTimingsDataQry).ConfigureAwait(false);
 
                 }
                 catch (Exception e)

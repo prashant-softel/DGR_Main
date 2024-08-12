@@ -347,12 +347,12 @@ namespace Login.Controllers
         [Route("EmailReportTimeChangeSetting")]
         [HttpGet]
         // public async Task<IActionResult> UserLogin(string username, string password)
-        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role)
+        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime, string username, int user_id, string role,string SolarMonthlyTime,string WindMonthlyTime,string solarmonthdate,string windmonthdate)
         {
             try
             {
 
-                var data = await _loginBs.EmailReportTimeChangeSetting(dailytime, windweeklytime, solarweeklytime, windweekday, solarweekday, firstReminderTime, secondReminderTime, username, user_id, role);
+                var data = await _loginBs.EmailReportTimeChangeSetting(dailytime, windweeklytime, solarweeklytime, windweekday, solarweekday, firstReminderTime, secondReminderTime, username, user_id, role, SolarMonthlyTime, WindMonthlyTime, solarmonthdate, windmonthdate);
                 return Ok(data);
             }
             catch (Exception ex)
