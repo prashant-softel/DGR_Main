@@ -1779,7 +1779,7 @@
                             tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-right">' + result[i].production_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].grid_hrs.toFixed(2) + '</td>';
                         }
                         if (userColumnId.includes(columnMap["Lull_hrs"][0]) || columnMap["Lull_hrs"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
@@ -1887,6 +1887,7 @@
                 }
                 tbl += '</table>';
                 $("#reportsDaily").html(tbl);
+                document.getElementById("loaderD").style.display = 'none';
                 $.fn.DataTable.ext.pager.numbers_length = 6;
                 $('#example1').DataTable({
                     dom: 'Bfrtip',

@@ -1413,6 +1413,7 @@
                     for (var k = 0; k < result.length; k++) {
                         total_mw += result[k].total_mw;
                     }
+                    console.log();
                     let missingDates = [];
                     const lengthOfRes       = result.length;
                     const differenceOfRes = 10 - lengthOfRes;
@@ -1542,8 +1543,8 @@
                             wcd_datelebels_md.push(monthName);
                             previous = monthName;
                         }
-                        tar_wind = result[w].tarwind / total_mw;
-                        act_wind = result[w].wind / total_mw;
+                        tar_wind = result[w].tarwind / result[w].total_mw; //total_mw;
+                        act_wind = result[w].wind / result[w].total_mw;
                         wcd_taget_wind_md.push(tar_wind.toFixed(1));
                         wcd_actual_wind_md.push(act_wind.toFixed(1));
                         wcd_target_energy_md.push((result[w].tarkwh).toFixed(1));
@@ -1755,8 +1756,8 @@
                             {
                                 if (dateConString === moment(result[j].date, 'YYYY-MM-DD').toString())
                                 {
-                                    ir_act = result[j].ir / total_capacity;
-                                    ir_tar = result[j].tarIR / total_capacity;
+                                    ir_act = result[j].ir / result[j].ac_capacity;//total_capacity;
+                                    ir_tar = result[j].tarIR / result[j].ac_capacity;//total_capacity;
                                     scd_datelebels.push(formattedDate);
                                     //scd_actual_kwh.push((result[j].jmrkwh / 1000000).toFixed(1));
                                     //scd_target_kwh.push((result[j].tarkwh / 1000000).toFixed(1));
@@ -1786,8 +1787,8 @@
                     {
                         for (var s = 0; s < result.length; s++)
                         {
-                            ir_act = result[s].ir / total_capacity;
-                            ir_tar = result[s].tarIR / total_capacity;
+                            ir_act = result[s].ir / result[s].ac_capacity;//total_capacity;
+                            ir_tar = result[s].tarIR / result[s].ac_capacity;// total_capacity;
                             var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                             scd_datelebels.push(formattedDate);
                             var dateConString = moment(result[s].date, 'YYYY-MM-DD').toString();
@@ -1854,8 +1855,8 @@
                     }
                     for (var s = 0; s < result.length; s++)
                     {
-                        ir_act = result[s].ir / total_capacity;
-                        ir_tar = result[s].tarIR / total_capacity;
+                        ir_act = result[s].ir / result[s].ac_capacity;//total_capacity;
+                        ir_tar = result[s].tarIR / result[s].ac_capacity;//total_capacity;
                         var formattedDate = moment(result[s].date, 'YYYY-MM-DD').format('DD-MM-YYYY');
                         if (title == "Monthly")
                         {

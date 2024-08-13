@@ -1901,9 +1901,9 @@
                 if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Site</th>';
                 }
-                if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Inverter</th>';
-                }
+                //if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
+                    //tbl += '<th>Inverter</th>';
+                //}
                 if (userColumnId.includes(columnMap["DC_Capacity"][0]) || columnMap["DC_Capacity"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>DC_Capacity<br>(kWp)</th>';
                 }
@@ -2005,6 +2005,14 @@
                 if (result.length > 0) {
                      exceldata2 = result;
                     for (var i = 0; i < result.length; i++) {
+                        var Expected_value = 0.00;
+                        if (result[i].expected_kwh < 0) {
+                            Expected_value = 0.00;
+                        }
+                        else {
+                            Expected_value = result[i].expected_kwh.toFixed(2);
+                        }
+
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         let totalFinal = result[i].total_losses + result[i].tracker_losses;
                         tbl += '<tr>';
@@ -2025,9 +2033,9 @@
                         if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
                         }
-                        if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
-                        }
+                        //if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
+                            //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
+                        //}
                         if (userColumnId.includes(columnMap["DC_Capacity"][0]) || columnMap["DC_Capacity"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].dc_capacity.toFixed(2) + '</td>';
                         }
@@ -2892,9 +2900,9 @@
                 if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Site</th>';
                 }
-                if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Inverter</th>';
-                }
+                //if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
+                    //tbl += '<th>Inverter</th>';
+                //}
                 if (userColumnId.includes(columnMap["DC_Capacity"][0]) || columnMap["DC_Capacity"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>DC_Capacity<br>(MW)</th>';
                 }
@@ -3062,9 +3070,9 @@
                         if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
                         }
-                        if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
-                        }
+                        //if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
+                            //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
+                        //}
                         if (userColumnId.includes(columnMap["DC_Capacity"][0]) || columnMap["DC_Capacity"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].dc_capacity.toFixed(2) + '</td>';
                         }
@@ -3897,9 +3905,9 @@
                 if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Site</th>';
                 }
-                if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Inverter</th>';
-                }
+                //if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
+                    //tbl += '<th>Inverter</th>';
+                //}
                 if (userColumnId.includes(columnMap["DC_Capacity"][0]) || columnMap["DC_Capacity"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>DC_Capacity<br>(kWp)</th>';
                 }
@@ -4063,9 +4071,9 @@
                         if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
                         }
-                        if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
-                        }
+                        //if (userColumnId.includes(columnMap["Inverter"][0]) || columnMap["Inverter"][1] == 1 || isAdmin == 1) {
+                            //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].inverter + '</td>';
+                        //}
                         if (userColumnId.includes(columnMap["DC_Capacity"][0]) || columnMap["DC_Capacity"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].dc_capacity.toFixed(2) + '</td>';
                         }

@@ -112,10 +112,12 @@ namespace DGRAPIs.Repositories
         internal async Task<List<WindDashboardData>> GetWindDashboardData(string startDate, string endDate, string FY, string sites,bool monthly = false)
         {
             string groupby = "";
+            string filtersite = "";
             string filter = "(t1.data_date >= '" + startDate + "'  and t1.data_date<= '" + endDate + "')";
             if (!string.IsNullOrEmpty(sites))
             {
                 filter += " and t1.site_id in(" + sites + ")";
+                filtersite += " where site_master_id in (" + sites + ")";
             }
             if (monthly == true)
             {
@@ -128,7 +130,7 @@ namespace DGRAPIs.Repositories
             string qry5 = "";
             
            // qry5 = "SELECT t1.data_date as Date,month(t1.data_date) as month,year(t1.data_date) as year,t1.site_id, SUM(t1.controller_kwh) as KWH, SUM(t1.jmr_kwh) as jmrkwh,SUM(target_kwh) as tarkwh,  (sum(t1.act_wind * t2.total_mw)) as Wind,	(sum(t1.tar_wind * t2.total_mw)) as tarwind, SUM(t1.adjusted_expected) as expected_power, t2.total_mw FROM `daily_expected_vs_actual` as t1 left join site_master as t2 on t2.site_master_id = t1.site_id where " + filter + " group by "+ groupby + "";
-            qry5 = "SELECT t1.data_date as Date,month(t1.data_date) as month,year(t1.data_date) as year,t1.site_id, SUM(t1.controller_kwh) as KWH, SUM(t1.jmr_kwh) as jmrkwh,SUM(target_kwh) as tarkwh,  (sum(t1.act_wind)/count(t1.act_wind))* t2.total_mw as Wind, (sum(t1.tar_wind)/count(t1.tar_wind))* t2.total_mw  as tarwind, SUM(t1.adjusted_expected) as expected_power, t2.total_mw FROM `daily_expected_vs_actual` as t1 left join site_master as t2 on t2.site_master_id = t1.site_id where " + filter + " group by " + groupby + "";
+            qry5 = "SELECT t1.data_date as Date,month(t1.data_date) as month,year(t1.data_date) as year,t1.site_id, SUM(t1.controller_kwh) as KWH, SUM(t1.jmr_kwh) as jmrkwh,SUM(target_kwh) as tarkwh,  (sum(t1.act_wind)/count(t1.act_wind))* t2.total_mw as Wind, (sum(t1.tar_wind)/count(t1.tar_wind))* t2.total_mw as tarwind, SUM(t1.adjusted_expected) as expected_power, t2.total_mw FROM `daily_expected_vs_actual` as t1 left join site_master as t2 on t2.site_master_id = t1.site_id where " + filter + " group by " + groupby + "";
 
             List<WindDashboardData> _WindDashboardData = new List<WindDashboardData>();
             try
@@ -140,27 +142,70 @@ namespace DGRAPIs.Repositories
                 string msg = "Exception due to : " + e.ToString();
                 string finalMsg = "";
             }
+
+
             
-            var result = _WindDashboardData.GroupBy(
-            d => d.Date,
-             (key, group) => new WindDashboardData
-             {
-                 Date = key,
-                 month = group.Select(x => x.month).FirstOrDefault(),
-                 year = group.Select(x => x.year).FirstOrDefault(),
-                 KWH = group.Sum(x => x.KWH),
-                 jmrkwh = group.Sum(x => x.jmrkwh),
-                 tarkwh = group.Sum(x => x.tarkwh),
-                 Wind = group.Sum(x => x.Wind),
-                 tarwind = group.Sum(x => x.tarwind),
-                 expected_power = group.Sum(x => x.expected_power),
-                 total_mw = group.Sum(x => x.total_mw),
+            var totalMwSum = _WindDashboardData
+            .GroupBy(d => d.site_id)
+            .Sum(g => g.First().total_mw);
 
 
-                 //item = group.ToList()
-             }
-        ).ToList();
-            return result;
+
+            //  double totaltar = _WindDashboardData
+            // .GroupBy(d => d.site_id)
+            //.Sum(g => g.Sum().tarkwh);
+
+            if (monthly)
+            {
+                var result = _WindDashboardData.GroupBy(
+                d => d.month,
+                (key, group) => new WindDashboardData
+                {
+                    month = key,
+                    Date = group.Select(x => x.Date).FirstOrDefault(),
+                    year = group.Select(x => x.year).FirstOrDefault(),
+                    KWH = group.Sum(x => x.KWH),
+                    jmrkwh = group.Sum(x => x.jmrkwh),
+                    tarkwh = group.Sum(x => x.tarkwh),
+                    Wind = group.Sum(x => x.Wind),
+                    tarwind = group.Sum(x => x.tarwind),
+                    expected_power = group.Sum(x => x.expected_power),
+                    total_mw = totalMwSum,  // Assign the precomputed sum here
+
+                    //total_mw = group.Select(selector: x => totalMwSum),
+
+
+                    //item = group.ToList()
+                }
+                ).ToList();
+                return result;
+            }
+            else {
+                var result = _WindDashboardData.GroupBy(
+               d => d.Date,
+               (key, group) => new WindDashboardData
+               {
+                   Date = key,
+                    month = group.Select(x => x.month).FirstOrDefault(),
+                    year = group.Select(x => x.year).FirstOrDefault(),
+                   KWH = group.Sum(x => x.KWH),
+                   jmrkwh = group.Sum(x => x.jmrkwh),
+                   tarkwh = group.Sum(x => x.tarkwh),
+                   Wind = group.Sum(x => x.Wind),
+                   tarwind = group.Sum(x => x.tarwind),
+                   expected_power = group.Sum(x => x.expected_power),
+                   total_mw = totalMwSum,  // Assign the precomputed sum here
+
+                    //total_mw = group.Select(selector: x => totalMwSum),
+
+
+                    //item = group.ToList()
+                }
+               ).ToList();
+                return result;
+            }
+            
+           
             /* string qry6 = " select site, total_mw from site_master group by site;";
              string qry7 = "select site, site_id," + selfilter + ",sum(wind_speed)/count(wind_speed) as tarwind from "+ temp_viewtbl + " group by " + groupby1 + ",site order by date;";
              string qry8 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,sum(t1.Wind)/count(t1.Wind) as Wind FROM(SELECT t1.Date, month(t1.date) as month, year(t1.date) as year, t1.Site, sum(t1.wind_speed)/count(t1.wind_speed) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and year = year(t1.date)  left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + "   group by t1.site, t1.date  order by t1.date asc) as t1 group by " + groupby + ",site order by t1.Date"; 
@@ -323,7 +368,7 @@ namespace DGRAPIs.Repositories
                      }
                  }
              }*/
-            return _WindDashboardData;
+           // return _WindDashboardData;
         }
 
         internal async Task<List<WindDashboardData>> GetWindDashboardData_old_AdminApproval(string startDate, string endDate, string FY, string sites)
@@ -597,16 +642,16 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
             }
             if (monthly == true)
             {
-                groupby = " MONTH(t1.data_date) order by MONTH(t1.data_date) asc ";
+                groupby = " MONTH(t1.data_date),t1.site_id  order by MONTH(t1.data_date) asc ";
             }
             else
             {
-                groupby = " t1.data_date ";
+                groupby = " t1.data_date,t1.site_id  ";
             }
             string qry = "";
             // qry = "select date, month,year,fy,Site,line_loss, sum(jmrkwh) as jmrkwh from(SELECT t1.date, MONTH(t1.date) as month, year(t1.date) as year,t2.fy, t1.site as Site, SUM(t1.inv_kwh) as inv_kwh, t2.LineLoss as line_loss, SUM(t1.inv_kwh) - SUM(t1.inv_kwh) * (t2.LineLoss / 100) as jmrkwh, AVG(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on year = year(t1.date) and month_no = MONTH(t1.date) and t2.site_id = t1.site_id  where " + filter + " group by  " + groupby + ", site order by t1.site asc, t1.date asc) as jmr group by " + groupby2 + " order by date asc";
             //qry = "SELECT t1.data_date as date, MONTH(t1.data_date) as month,year(t1.data_date) as year,t1.site_id,inv_kwh,jmr_kwh as jmrkwh,target as tarkwh, expected_power,ir_act as IR,ir_tar as tarIR from daily_expected_vs_actual_solar as t1 where " + filter + "  group by "+ groupby + " order by t1.data_date desc ";
-            qry = "SELECT t1.data_date as date, MONTH(t1.data_date) as month,year(t1.data_date) as year,t1.site_id,SUM(t1.inv_kwh) as inv_kwh,SUM(t1.jmr_kwh) as jmrkwh,SUM(t1.target) as tarkwh, SUM(t1.expected_power) as expected_power,SUM(t1.ir_act * t2.ac_capacity) as IR,SUM(t1.ir_tar * t2.ac_capacity) as tarIR,t2.ac_capacity as ac_capacity from daily_expected_vs_actual_solar as t1 left join `site_master_solar` as t2 on t2.site_master_solar_id=t1.site_id where " + filter + "  group by " + groupby;//;+ " order by t1.data_date desc ";
+            qry = "SELECT t1.data_date as date, MONTH(t1.data_date) as month,year(t1.data_date) as year,t1.site_id,SUM(t1.inv_kwh) as inv_kwh,SUM(t1.jmr_kwh) as jmrkwh,SUM(t1.target) as tarkwh, SUM(t1.expected_power) as expected_power,(SUM(t1.ir_act)/count(*)) * t2.ac_capacity as IR,SUM(t1.ir_tar)/count(*) * t2.ac_capacity as tarIR,t2.ac_capacity as ac_capacity from daily_expected_vs_actual_solar as t1 left join `site_master_solar` as t2 on t2.site_master_solar_id=t1.site_id where " + filter + "  group by " + groupby;//;+ " order by t1.data_date desc ";
 
             List<SolarDashboardData> data = new List<SolarDashboardData>();
             try
@@ -618,7 +663,59 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
                 string msg = "Exception while fetching records for graph, due to : " + e.ToString();
                 string new12 = "";
             }
-             return data;
+
+            var totalMwSum = data
+            .GroupBy(d => d.site_id)
+            .Sum(g => g.First().ac_capacity);
+
+            if (monthly)
+            {
+                var result = data.GroupBy(
+                d => d.month,
+                (key, group) => new SolarDashboardData
+                {
+                    month = key,
+                    Date = group.Select(x => x.Date).FirstOrDefault(),
+                    year = group.Select(x => x.year).FirstOrDefault(),
+                    inv_kwh = group.Sum(x => x.inv_kwh),
+                    jmrkwh = group.Sum(x => x.jmrkwh),
+                    tarkwh = group.Sum(x => x.tarkwh),
+                    IR = group.Sum(x => x.IR),
+                    tarIR = group.Sum(x => x.tarIR),
+                    expected_power = group.Sum(x => x.expected_power),
+                    ac_capacity = totalMwSum,  // Assign the precomputed sum here
+
+                    
+                }
+                ).ToList();
+                return result;
+            }
+            else
+            {
+                var result = data.GroupBy(
+               d => d.Date,
+               (key, group) => new SolarDashboardData
+               {
+                   Date = key,
+                   month = group.Select(x => x.month).FirstOrDefault(),
+                   year = group.Select(x => x.year).FirstOrDefault(),
+                   inv_kwh = group.Sum(x => x.inv_kwh),
+                   jmrkwh = group.Sum(x => x.jmrkwh),
+                   tarkwh = group.Sum(x => x.tarkwh),
+                   IR = group.Sum(x => x.IR),
+                   tarIR = group.Sum(x => x.tarIR),
+                   expected_power = group.Sum(x => x.expected_power),
+                   ac_capacity = totalMwSum,  // Assign the precomputed sum here
+
+                   //total_mw = group.Select(selector: x => totalMwSum),
+
+
+                   //item = group.ToList()
+               }
+               ).ToList();
+                return result;
+            }
+           // return data;
            
         }
         internal async Task<List<SolarDashboardData>> GetSolarDashboardData_old_AdminApproval(string startDate, string endDate, string FY, string sites)
