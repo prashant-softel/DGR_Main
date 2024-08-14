@@ -1020,6 +1020,9 @@
                         wind_yearly_wspeed          = total_capActWind / total_capacity;
                         wind_yearly_wspeed_target   = total_capTarWind / total_capacity;
                     }
+                    console.log("total_capacity", total_capacity);
+                    console.log("tegetWind", total_capTarWind);
+                    console.log("actWind", total_capTarWind);
                     if (wind_yearly_wspeed_target != 0)
                     {
                         yearly_var_wspeed = ((wind_yearly_wspeed - wind_yearly_wspeed_target) / wind_yearly_wspeed_target) * 100;

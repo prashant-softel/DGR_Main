@@ -549,21 +549,7 @@ namespace DGRAPIs.Repositories
                // filter2 += " where  t1.site_id IN(" + sites + ")";
             }
             
-           /* string qry1 = "create or replace view temp_view_year as select t1.date, t1.site_id, t1.site, t1.kwh, t1.wind_speed from daily_target_kpi t1," +
-                " daily_gen_summary t2 where t1.date = t2.date and t1.site_id = t2.site_id " + filter1 +
-                " group by t1.date, t1.site_id;";
-            try
-            {
-                await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-                //
-            }
-            string qry2 = " select year(date) as year, Site, sum(kwh) as tarkwh, sum(wind_speed)/count(wind_speed) as tarwind from temp_view_year group by site; ";
-            List<WindDashboardData> _WindDashboardData2 = new List<WindDashboardData>();
-            _WindDashboardData2 = await Context.GetData<WindDashboardData>(qry2).ConfigureAwait(false);
-           */
+           
             //Wind Speed Issue Fix 
             //string qry5 = "SELECT t1.Date,month(t1.date) as month,year(t1.date) as year,t1.Site,SUM(t1.kwh) as KWH,SUM(t1.jmrkwh) as jmrkwh, avg(t1.Wind) as Wind FROM(SELECT t1.Date,month(t1.date)as month,year(t1.date)as year,t1.Site,SUM(t1.kwh) as KWH,t2.line_loss,SUM(t1.kwh) - SUM(t1.kwh) * (t2.line_loss / 100)as jmrkwh,(sum(t1.wind_speed)/count(t1.wind_speed)) as Wind FROM `daily_gen_summary` as t1 left join monthly_uploading_line_losses as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' left join site_master as t3 on t3.site_master_id = t1.site_id where " + filter + " group by t1.date, month(t1.date) ,year(t1.date),t1.site order by  t1.date asc ) as t1 group by t1.site";
             string qry5 = "SELECT t1.data_date as Date,month(t1.data_date) as month,year(t1.data_date) as year,t1.site_id, SUM(t1.controller_kwh) as KWH, SUM(t1.jmr_kwh) as jmrkwh,SUM(target_kwh) as tarkwh,  (sum(t1.act_wind)/count(t1.act_wind)) as Wind,	(sum(t1.tar_wind)/count(t1.tar_wind)) as tarwind ,SUM(t1.adjusted_expected) as expected_power FROM `daily_expected_vs_actual` as t1 where " + filter + " group by  t1.data_date, month(t1.data_date) ,year(t1.data_date),t1.site_id order by  t1.data_date asc";
@@ -588,7 +574,7 @@ namespace DGRAPIs.Repositories
                 }*/
                 foreach (WindDashboardData _windData2 in _WindDashboardData6)
                 {
-                    if (_windData.Site == _windData2.Site)
+                    if (_windData.site_id == _windData2.site_id)
                     {
                         _windData.total_mw = _windData2.total_mw;
                     }
@@ -2129,8 +2115,67 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.wtg_id AS wtg_id, det.wtg AS wtg, 
 LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.usmh_loss) + SUM(det.healthcheck_loss)) AS usmh_loss, SUM(det.smh_loss) AS smh_loss, SUM(det.others_loss) AS others_loss, SUM(det.igbd_loss) AS igbd_loss, SUM(det.egbd_loss) AS egbd_loss, SUM(det.loadshedding_loss) AS loadshedding_loss FROM daily_expected_vs_actual det LEFT JOIN site_master sm ON det.site_id = sm.site_master_id {tmrFilter}) AS tml on tml.site_id = gen.site_id;";
             //where  t1.approve_status="+approve_status+" and " + filter + " group by t1.state, t2.spv, t1.site , month(t1.date)";
 
-            return await Context.GetData<WindDailyGenReports2>(qry).ConfigureAwait(false);
+            //return await Context.GetData<WindDailyGenReports2>(qry).ConfigureAwait(false);
+            List<WindDailyGenReports2> _WindDailyData = new List<WindDailyGenReports2>();
+            try
+            {
+                _WindDailyData = await Context.GetData<WindDailyGenReports2>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
+            var result = _WindDailyData.GroupBy(
+               d => d.month,
+               (key, group) => new WindDailyGenReports2
+               {
+                   month             = key,
+                   year              = group.Select(x => x.year).FirstOrDefault(),
+                   wtg               = group.Select(x => x.wtg).FirstOrDefault(),
+                   site              = group.Select(x => x.site).FirstOrDefault(),
+                   state             = group.Select(x => x.state).FirstOrDefault(),
+                   spv               = group.Select(x => x.spv).FirstOrDefault(),
+                   date              = group.Select(x => x.date).FirstOrDefault(),
+                   country           = group.Select(x => x.country).FirstOrDefault(),
+                   wind_speed        = group.Select(x => x.wind_speed).FirstOrDefault(),
+                   usmh_loss         = group.Select(x => x.usmh_loss).FirstOrDefault(),
+                   unschedule_num    = group.Select(x => x.unschedule_num).FirstOrDefault(),
+                   unschedule_hrs    = group.Select(x => x.unschedule_hrs).FirstOrDefault(),
+                   total_mw          = group.Select(x => x.total_mw).FirstOrDefault(),
+                   total_loss        = group.Select(x => x.total_loss).FirstOrDefault(),
+                   total_hrs         = group.Select(x => x.total_hrs).FirstOrDefault(),
+                   smh_loss          = group.Select(x => x.smh_loss).FirstOrDefault(),
+                   schedule_num      = group.Select(x => x.schedule_num).FirstOrDefault(),
+                   schedule_hrs      = group.Select(x => x.schedule_hrs).FirstOrDefault(),
+                   plf               = group.Select(x => x.plf).FirstOrDefault(),
+                   others_num        = group.Select(x => x.others_num).FirstOrDefault(),
+                   others_loss       = group.Select(x => x.others_loss).FirstOrDefault(),
+                   others            = group.Select(x => x.others).FirstOrDefault(),
+                   ma_contractual    = group.Select(x => x.ma_contractual).FirstOrDefault(),
+                   ma_actual         = group.Select(x => x.ma_actual).FirstOrDefault(),
+                   lull_hrs          = group.Select(x => x.lull_hrs).FirstOrDefault(),
+                   load_shedding_num = group.Select(x => x.load_shedding_num).FirstOrDefault(),
+                   load_shedding     = group.Select(x => x.load_shedding).FirstOrDefault(),
+                   loadShedding_loss = group.Select(x => x.loadShedding_loss).FirstOrDefault(),
+                   kwh               = group.Select(x => x.kwh).FirstOrDefault(),
+                   igbdh_num         = group.Select(x => x.igbdh_num).FirstOrDefault(),
+                   igbdh_loss        = group.Select(x => x.igbdh_loss).FirstOrDefault(),
+                   igbdh             = group.Select(x => x.igbdh).FirstOrDefault(),
+                   iga               = group.Select(x => x.iga).FirstOrDefault(),
+                   grid_hrs          = group.Select(x => x.grid_hrs).FirstOrDefault(),
+                   egbdh_num         = group.Select(x => x.egbdh_num).FirstOrDefault(),
+                   egbdh_loss        = group.Select(x => x.egbdh_loss).FirstOrDefault(),
+                   egbdh             = group.Select(x => x.egbdh).FirstOrDefault(),
+                   ega_c             = group.Select(x => x.ega_c).FirstOrDefault(),
+                   ega_b             = group.Select(x => x.ega_b).FirstOrDefault(),
+                   ega               = group.Select(x => x.ega).FirstOrDefault(),
+                   capacity_mw       = group.Select(x => x.capacity_mw).FirstOrDefault(),
 
+               }
+               ).ToList();
+
+            return result;
         }
         // WTG WIse
         internal async Task<List<WindDailyGenReports1>> GetWindYearlyGenSummaryReport1(string fromDate, string toDate, string country, string state, string spv, string site, string wtg, string month)
