@@ -3317,9 +3317,9 @@
                 if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>FY</th>';
                 }
-                if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Month</th>';
-                }
+                //if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                    //tbl += '<th>Month</th>';
+                //}
                 if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Country</th>';
                 }
@@ -3458,9 +3458,9 @@
                         if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
                         }
-                        if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
-                            tbl += '<td class="text-left">' + result[i].month + '</td>';
-                        }
+                       // if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                            //tbl += '<td class="text-left">' + result[i].month + '</td>';
+                        //}
                         if (userColumnId.includes(columnMap["Country"][0]) || columnMap["Country"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].country + '</td>';
                         }

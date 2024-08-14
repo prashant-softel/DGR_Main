@@ -346,8 +346,8 @@
                 result.forEach(item => {
                     columnMap[item.column_name] = [item.column_id, item.required];
                 });
-                console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+               // console.log(columnMap);
+                //console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
             }
             else {
             }
@@ -3717,13 +3717,13 @@
                         tbl += '<td class="text-right"><b>' + total_act_kwh.toFixed(2) + '</b></td>';
                     }
                     if (userColumnId.includes(columnMap["GenNos_TVar"][0]) || columnMap["GenNos_TVar"][1] == 1 || isAdmin == 1) {
-                        tbl += '<td class="text-right"><b>' + avg_t_var.toFixed(2) + '</b></td>';
+                        tbl += '<td class="text-right"><b>' + avg_jmr_var.toFixed(2) + '</b></td>';
                     }
                     if (userColumnId.includes(columnMap["GenNos_Evar"][0]) || columnMap["GenNos_Evar"][1] == 1 || isAdmin == 1) {
                         tbl += '<td class="text-right"><b>' + avg_e_var.toFixed(2) + '</b></td>';
                     }
                     if (userColumnId.includes(columnMap["Revenue"][0]) || columnMap["Revenue"][1] == 1 || isAdmin == 1) {
-                        tbl += '<td class="text-right"><b>' + total_minr.toFixed(2) + '</b></td>';
+                        tbl += '<td class="text-right"><b>' + total_revenue.toFixed(2) + '</b></td>';
                     }
                     if (userColumnId.includes(columnMap["GHI_Tar"][0]) || columnMap["GHI_Tar"][1] == 1 || isAdmin == 1) {
                         tbl += '<td class="text-right"><b>' + avg_tar_ghi.toFixed(2) + '</b></td>';

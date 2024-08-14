@@ -421,8 +421,7 @@
 
         result = exceldata;
         var columns = [
-            "Date", "Site", "WTG", "From Time", "To Time", "Avg Active Power", "Avg Wind Speed", "Restructive WTG", "Expected Power"
-            , "Deviation kW", "Loss kWh", "Manual Breakdown ", "All Breakdown"
+            "Site", "Date", "WTG", "TML_Count", "WindSpeed", "Target_Energy", "Actual_Energy", "Expected_Energy", "USMH_Loss", "SMH_Loss", "OH_Loss", "IGBD_Loss", "EGBD_Loss", "LS_Loss", "PCD", "Lineloss", "MA", "IGA", "EGA_A", "EGA_B", "EGA_C"
         ];
 
         var rows = [];
@@ -435,26 +434,29 @@
             if (result[i].status_code === 0) {
                 status = "Available";
             }
-            var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
+            var usmh_loss = result[i].usmh_loss + result[i].initialization_loss;
+            var formattedDate = moment(result[i].data_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
             row.push(result[i].site);
             row.push(formattedDate);
-            row.push( result[i].wtGs);
-            row.push(toHoursAndMinutes(result[i].from_time.totalSeconds));
-            row.push(toHoursAndMinutes(result[i].to_time.totalSeconds));
-            row.push(result[i].avg_active_power);
-            row.push(result[i].avg_wind_speed);
-            row.push(result[i].restructive_WTG);
-            row.push(result[i].plC_max);
-            row.push(result[i].plC_min);
-            row.push(result[i].plc_state_code);
-            row.push(status);
-            row.push(result[i].recon_wind_speed);
-            row.push(result[i].exp_power_kw);
-            row.push(result[i].deviation_kw);
-            row.push(result[i].loss_kw);
-            row.push(result[i].manual_bd);
-            row.push(result[i].all_bd);
-
+            row.push(result[i].wtg);
+            row.push(result[i].tml_count);
+            row.push(result[i].actual_wind_speed);
+            row.push(result[i].target_kwh);
+            row.push(result[i].actual_active_power);
+            row.push(result[i].adjusted_expected);
+            row.push(usmh_loss);
+            row.push(result[i].smh_loss);
+            row.push(result[i].others_loss);
+            row.push(result[i].igbd_loss);
+            row.push(result[i].egbd_loss);
+            row.push(result[i].loadshedding_loss);
+            row.push(result[i].pcd_loss);
+            row.push(result[i].lineloss_mu);
+            row.push(result[i].ma);
+            row.push(result[i].iga);
+            row.push(result[i].ega_a);
+            row.push(result[i].ega_b);
+            row.push(result[i].ega_c);
             rows.push(row);
         }
 
