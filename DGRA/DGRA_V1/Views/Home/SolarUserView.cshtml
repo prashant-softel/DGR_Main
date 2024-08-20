@@ -199,7 +199,7 @@
         }
 
         id = GetURLParameter('id');
-        console.log(id);
+        //console.log(id);
         //GetUserAccess(id);
 
         GetDetails(id);
@@ -217,11 +217,11 @@
         datatype: "html",
         success: function (result, status, xhr) {
             if (result.length > 0) {
-                console.log(result);
+               // console.log(result);
                 result.forEach(item => {
                     UserAccessGroupList[item.page_id] = item.page_groups_id;
                 });
-                console.log(UserAccessGroupList);
+               // console.log(UserAccessGroupList);
             }
             else {
             }
@@ -250,7 +250,7 @@
         var state = "";
         var spv = "";
         var sitelist = "";
-        console.log("Outside");
+       // console.log("Outside");
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetSiteList", "SolarReport")' + '?sitelist=' + sitelist,
@@ -411,10 +411,10 @@
                     tbl_custom += '</table > ';
                     $("#customGroup").html(tbl_custom);
 
-                console.log("inside", customcount);
+               // console.log("inside", customcount);
                 if(customcount == 1)
                 {
-                    console.log("inside");
+                    //console.log("inside");
                     $(".custom-pages").attr('checked', true);
                     //tbl_custom += '<input type="checkbox"  disabled="disabled" class="form-check-input custom-pages" id="custom" name="cusotm" data-pageid ="" style="margin-left: 15px; margin-top: -6px;">';
                 }
@@ -454,21 +454,21 @@
 
                     if (result[i].to_Daily_Solar == 1) {
                         $(".emailDT").attr('checked', true);
-                        console.log("if ");
+                       // console.log("if ");
                     }
                     if (result[i].cc_Daily_Solar == 1) {
                         $(".emailDC").attr('checked', true);
-                        console.log("if ");
+                       // console.log("if ");
 
                     }
                     if (result[i].to_Weekly_Solar == 1) {
                         $(".emailWT").attr('checked', true);
-                        console.log("if ");
+                       // console.log("if ");
 
                     }
                     if (result[i].cc_Weekly_Solar == 1) {
                         $(".emailWC").attr('checked', true);
-                        console.log("if ");
+                       // console.log("if ");
 
                     }
                 }
@@ -501,7 +501,7 @@
     function selectAllR() {
         var ele = document.getElementsByName('chkR');
         var a = document.getElementById('checkAllR');
-        console.log(a.checked);
+       // console.log(a.checked);
         if (a.checked == true) {
             for (var i = 0; i < ele.length; i++) {
                 if (ele[i].type == 'checkbox')
@@ -547,7 +547,11 @@
                             SiteCnt++;
                         }
                         else if ((result[i].page_type != 3) && (result[i].site_type == 2 || result[i].site_type == 0)) {
-                            $("[data-pageid=" + result[i].identity + "]").attr('checked', true);
+                            //$("[data-pageid=" + result[i].identity + "]").attr('checked', true); // existing code 
+                           // $("[data-pageid='" + result[i].identity + "']").prop('checked', true);
+                            var safeIdentity = $.escapeSelector(result[i].identity);
+                            $("[data-pageid=" + safeIdentity + "]").prop('checked', true);
+                            console.log("[data-pageid=" + safeIdentity + "]");
                         }
                       //  $("[data-pageid=" + result[i].identity + "]").attr('checked', true);
                         $("data-pageid").attr("disabled", true);
@@ -558,7 +562,7 @@
                     }
                     $("input[type='checkbox'].view-pages").each(function () {
                         var a = $("input[type='checkbox'].view-pages");
-                        console.log(a.length);
+                        //console.log(a.length);
                         if (a.length == a.filter(":checked").length) {
                             $(".checkAllP").attr('checked', true);
                             //  alert('all checked');
@@ -566,7 +570,7 @@
                     });
                     $("input[type='checkbox'].report-pages").each(function () {
                         var a = $("input[type='checkbox'].report-pages");
-                        console.log(a.length);
+                       // console.log(a.length);
                         if (a.length == a.filter(":checked").length) {
                             $(".checkAllR").attr('checked', true);
                             //  alert('all checked');
@@ -648,7 +652,7 @@
         if (a == "Update") {
             var b = $(".site").val();
 
-            console.log(b);
+            //console.log(b);
 
             if (b == "" || b == undefined) {
                 alert("Please select Site");
@@ -675,7 +679,7 @@
 
     }
     function Cancel() {
-        console.log("cancel clicked")
+       // console.log("cancel clicked")
         document.getElementById("Edit").innerHTML = "Edit";
         $("input.view-pages").attr("disabled", true);
         $("input.heatmap-pages").attr("disabled", true);
@@ -780,7 +784,7 @@
             if (isSet) {
                 if (document.getElementById("ColumnDd_" + page_id)) {
                     var GroupId = document.getElementById("ColumnDd_" + page_id).value;
-                    console.log("Group_id is :" + GroupId);
+                   // console.log("Group_id is :" + GroupId);
                     groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
                 }
             }
@@ -793,7 +797,7 @@
             if (isSet) {
                 if (document.getElementById("ColumnDd_" + page_id)) {
                     var GroupId = document.getElementById("ColumnDd_" + page_id).value;
-                    console.log("Group_id is :" + GroupId);
+                    //console.log("Group_id is :" + GroupId);
                     groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
                 }
                 selected_report_page.push(page_id);
@@ -824,8 +828,8 @@
         var getVal = $('#custom').is(":checked");
         if (getVal == true) {
             var matchval = group_page.filter(value => selected_report_page.includes(value));
-            console.log("FInd Values");
-            console.log(matchval);
+           // console.log("FInd Values");
+           // console.log(matchval);
             if (matchval.length == 0) {
                 alert("Please Select Generation Report or Performance Summery");
                 return false;

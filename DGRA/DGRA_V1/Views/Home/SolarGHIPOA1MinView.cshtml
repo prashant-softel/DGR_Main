@@ -333,52 +333,74 @@
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                if (userColumnId.includes(columnMap["Date_Time"][0]) || columnMap["Date_Time"][1] == 1 || isAdmin == 1) {
+                if (userColumnId.length > 0)
+                {
+                    if (userColumnId.includes(columnMap["Date_Time"][0]) || columnMap["Date_Time"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th style="width: 12%;">Date Time</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Site</th>';
+                    }
+                    if (userColumnId.includes(columnMap["GHI_1"][0]) || columnMap["GHI_1"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>GHI 1</th>';
+                    }
+                    if (userColumnId.includes(columnMap["GHI_2"][0]) || columnMap["GHI_2"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>GHI 2</th>';
+                    }
+                    if (userColumnId.includes(columnMap["POA_1"][0]) || columnMap["POA_1"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>POA 1</th>';
+                    }
+                    if (userColumnId.includes(columnMap["POA_2"][0]) || columnMap["POA_2"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>POA 2</th>';
+                    }
+                    if (userColumnId.includes(columnMap["POA_3"][0]) || columnMap["POA_3"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>POA 3</th>';
+                    }
+                    if (userColumnId.includes(columnMap["POA_4"][0]) || columnMap["POA_4"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>POA 4</th>';
+                    }
+                    if (userColumnId.includes(columnMap["POA_5"][0]) || columnMap["POA_5"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>POA 5</th>';
+                    }
+                    if (userColumnId.includes(columnMap["POA_6"][0]) || columnMap["POA_6"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>POA 6</th>';
+                    }
+                    if (userColumnId.includes(columnMap["POA_7"][0]) || columnMap["POA_7"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>POA 7</th>';
+                    }
+                    if (userColumnId.includes(columnMap["AVG_GHI"][0]) || columnMap["AVG_GHI"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>AVG GHI</th>';
+                    }
+                    if (userColumnId.includes(columnMap["AVG_POA"][0]) || columnMap["AVG_POA"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>AVG POA</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Amb_Temp"][0]) || columnMap["Amb_Temp"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Amb Temp </th>';
+                    }
+                    if (userColumnId.includes(columnMap["Mod_Temp"][0]) || columnMap["Mod_Temp"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Mod Temp</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Weather_Type"][0]) || columnMap["Weather_Type"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Weather Type</th>';
+                    }
+                }
+                else
+                {
                     tbl += '<th style="width: 12%;">Date Time</th>';
-                }
-                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Site</th>';
-                }
-                if (userColumnId.includes(columnMap["GHI_1"][0]) || columnMap["GHI_1"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>GHI 1</th>';
-                }
-                if (userColumnId.includes(columnMap["GHI_2"][0]) || columnMap["GHI_2"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>GHI 2</th>';
-                }
-                if (userColumnId.includes(columnMap["POA_1"][0]) || columnMap["POA_1"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>POA 1</th>';
-                }
-                if (userColumnId.includes(columnMap["POA_2"][0]) || columnMap["POA_2"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>POA 2</th>';
-                }
-                if (userColumnId.includes(columnMap["POA_3"][0]) || columnMap["POA_3"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>POA 3</th>';
-                }
-                if (userColumnId.includes(columnMap["POA_4"][0]) || columnMap["POA_4"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>POA 4</th>';
-                }
-                if (userColumnId.includes(columnMap["POA_5"][0]) || columnMap["POA_5"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>POA 5</th>';
-                }
-                if (userColumnId.includes(columnMap["POA_6"][0]) || columnMap["POA_6"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>POA 6</th>';
-                }
-                if (userColumnId.includes(columnMap["POA_7"][0]) || columnMap["POA_7"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>POA 7</th>';
-                }
-                if (userColumnId.includes(columnMap["AVG_GHI"][0]) || columnMap["AVG_GHI"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>AVG GHI</th>';
-                }
-                if (userColumnId.includes(columnMap["AVG_POA"][0]) || columnMap["AVG_POA"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>AVG POA</th>';
-                }
-                if (userColumnId.includes(columnMap["Amb_Temp"][0]) || columnMap["Amb_Temp"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Amb Temp </th>';
-                }
-                if (userColumnId.includes(columnMap["Mod_Temp"][0]) || columnMap["Mod_Temp"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Mod Temp</th>';
-                }
-                if (userColumnId.includes(columnMap["Weather_Type"][0]) || columnMap["Weather_Type"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Weather Type</th>';
                 }
                 tbl += '</tr></thead>';
@@ -420,52 +442,73 @@
                         var formattedtime = moment(result[i].date_time, 'YYYY-MM-DD hh:mm:ss ').format('HH:mm');
                         if (formattedtime >= "05:00" && formattedtime <= "19:00") {
                             tbl += '<tr>';
-                            if (userColumnId.includes(columnMap["Date_Time"][0]) || columnMap["Date_Time"][1] == 1 || isAdmin == 1) {
+                            if (userColumnId.length > 0) {
+                                if (userColumnId.includes(columnMap["Date_Time"][0]) || columnMap["Date_Time"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td  class="text-left">' + formattedDate + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td  class="text-left">' + result[i].site + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["GHI_1"][0]) || columnMap["GHI_1"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["GHI_2"][0]) || columnMap["GHI_2"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["POA_1"][0]) || columnMap["POA_1"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["POA_2"][0]) || columnMap["POA_2"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["POA_3"][0]) || columnMap["POA_3"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["POA_4"][0]) || columnMap["POA_4"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["POA_5"][0]) || columnMap["POA_5"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["POA_6"][0]) || columnMap["POA_6"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["POA_7"][0]) || columnMap["POA_7"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["AVG_GHI"][0]) || columnMap["AVG_GHI"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["AVG_POA"][0]) || columnMap["AVG_POA"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["Amb_Temp"][0]) || columnMap["Amb_Temp"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["Mod_Temp"][0]) || columnMap["Mod_Temp"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
+                                }
+                                if (userColumnId.includes(columnMap["Weather_Type"][0]) || columnMap["Weather_Type"][1] == 1 || isAdmin == 1) {
+                                    tbl += '<td class="text-left" >' + weather + '</td>';
+                                }
+                            }
+                            else
+                            {
                                 tbl += '<td  class="text-left">' + formattedDate + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td  class="text-left">' + result[i].site + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["GHI_1"][0]) || columnMap["GHI_1"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td  class="text-right">' + result[i].ghi_1.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["GHI_2"][0]) || columnMap["GHI_2"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td  class="text-right">' + result[i].ghi_2.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["POA_1"][0]) || columnMap["POA_1"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].poa_1.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["POA_2"][0]) || columnMap["POA_2"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].poa_2.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["POA_3"][0]) || columnMap["POA_3"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].poa_3.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["POA_4"][0]) || columnMap["POA_4"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].poa_4.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["POA_5"][0]) || columnMap["POA_5"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].poa_5.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["POA_6"][0]) || columnMap["POA_6"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].poa_6.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["POA_7"][0]) || columnMap["POA_7"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].poa_7.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["AVG_GHI"][0]) || columnMap["AVG_GHI"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].avg_ghi.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["AVG_POA"][0]) || columnMap["AVG_POA"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].avg_poa.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["Amb_Temp"][0]) || columnMap["Amb_Temp"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].amb_temp.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["Mod_Temp"][0]) || columnMap["Mod_Temp"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].mod_temp.toFixed(2) + '</td>';
-                            }
-                            if (userColumnId.includes(columnMap["Weather_Type"][0]) || columnMap["Weather_Type"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-left" >' + weather + '</td>';
                             }
 

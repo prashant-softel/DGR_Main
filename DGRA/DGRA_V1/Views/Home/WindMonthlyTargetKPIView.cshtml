@@ -344,90 +344,125 @@
             contentType: "application/json; charset=utf-8",
             //data: '{"countryname":"' + selcountry + '"}',
             datatype: "JSON",
-            success: function (result, status, xhr) {
-                console.log(result);
+            success: function (result, status, xhr)
+            {
                 var tbl = '<table id="example1" class="table table-bordered table-striped">';
                 tbl += '<thead  class="tbl-head"><tr>';
-                if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                if (userColumnId.length > 0)
+                {
+                    if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th style="width:100px">FY</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Month</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th style="width:200px">Site</th>';
+                    }
+                    if (userColumnId.includes(columnMap["WindSpeed"][0]) || columnMap["WindSpeed"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th style="width:140px">Wind Speed (m/s)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Kwh"][0]) || columnMap["Kwh"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>kWh</th>';
+                    }
+                    if (userColumnId.includes(columnMap["MA"][0]) || columnMap["MA"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>MA (%)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["IGA"][0]) || columnMap["IGA"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>IGA (%)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["EGA"][0]) || columnMap["EGA"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>EGA (%)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["PLF"][0]) || columnMap["PLF"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>PLF (%)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["P50"][0]) || columnMap["P50"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>P50 </th>';
+                    }
+                    if (userColumnId.includes(columnMap["P75"][0]) || columnMap["P75"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>P75 </th>';
+                    }
+                    if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>P90 </th>';
+                    }
+                }
+                else
+                {
                     tbl += '<th style="width:100px">FY</th>';
-                }
-                if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Month</th>';
-                }
-                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                     tbl += '<th style="width:200px">Site</th>';
-                }
-                if (userColumnId.includes(columnMap["WindSpeed"][0]) || columnMap["WindSpeed"][1] == 1 || isAdmin == 1) {
                     tbl += '<th style="width:140px">Wind Speed (m/s)</th>';
-                }
-                if (userColumnId.includes(columnMap["Kwh"][0]) || columnMap["Kwh"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>kWh</th>';
-                }
-                if (userColumnId.includes(columnMap["MA"][0]) || columnMap["MA"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>MA (%)</th>';
-                }
-                if (userColumnId.includes(columnMap["IGA"][0]) || columnMap["IGA"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>IGA (%)</th>';
-                }
-                if (userColumnId.includes(columnMap["EGA"][0]) || columnMap["EGA"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>EGA (%)</th>';
-                }
-                if (userColumnId.includes(columnMap["PLF"][0]) || columnMap["PLF"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>PLF (%)</th>';
-                }
-                if (userColumnId.includes(columnMap["P50"][0]) || columnMap["P50"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>P50 </th>';
-                }
-                if (userColumnId.includes(columnMap["P75"][0]) || columnMap["P75"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>P75 </th>';
-                }
-                if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>P90 </th>';
                 }
-                
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
                     exceldata = result;
-                    for (var i = 0; i < result.length; i++) {
+                    for (var i = 0; i < result.length; i++)
+                    {
                         tbl += '<tr>';
-                        if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                        if (userColumnId.length > 0) {
+                            if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].fy + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].month + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].site + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["WindSpeed"][0]) || columnMap["WindSpeed"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].windSpeed.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Kwh"][0]) || columnMap["Kwh"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].kwh.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["MA"][0]) || columnMap["MA"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].ma.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["IGA"][0]) || columnMap["IGA"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["EGA"][0]) || columnMap["EGA"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["PLF"][0]) || columnMap["PLF"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["P50"][0]) || columnMap["P50"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + (result[i].p50 || 0).toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["P75"][0]) || columnMap["P75"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + (result[i].p75 || 0).toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + (result[i].p90 || 0).toFixed(2) + '</td>';
+                            }
+                        }
+                        else
+                        {
                             tbl += '<td class="text-left">' + result[i].fy + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].month + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].site + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["WindSpeed"][0]) || columnMap["WindSpeed"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].windSpeed.toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Kwh"][0]) || columnMap["Kwh"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].kwh.toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["MA"][0]) || columnMap["MA"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].ma.toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["IGA"][0]) || columnMap["IGA"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].iga.toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["EGA"][0]) || columnMap["EGA"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].ega.toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["PLF"][0]) || columnMap["PLF"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].plf.toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["P50"][0]) || columnMap["P50"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + (result[i].p50 || 0).toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["P75"][0]) || columnMap["P75"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + (result[i].p75 || 0).toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + (result[i].p90 || 0).toFixed(2) + '</td>';
+                            
                         }
-                        
                         tbl += '</tr>';
                     }
                 }

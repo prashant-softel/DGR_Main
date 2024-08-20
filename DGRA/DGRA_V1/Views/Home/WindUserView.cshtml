@@ -214,11 +214,11 @@
         datatype: "html",
         success: function (result, status, xhr) {
             if (result.length > 0) {
-                console.log(result);
+                //console.log(result);
                 result.forEach(item => {
                     UserAccessGroupList[item.page_id] = item.page_groups_id;
                 });
-                console.log(UserAccessGroupList);
+                //console.log(UserAccessGroupList);
             }
             else {
             }
@@ -511,6 +511,7 @@
             contentType: "application/json; charset=utf-8",
             datatype: "html",
             success: function (result, status, xhr) {
+                console.log(result);
                 if (result.length > 0) {
                     var SiteCnt = 0;
                     $(".report-pages").attr('checked', false);
@@ -524,11 +525,12 @@
 
                                 addRow('dataTable');
                             }
+                            console.log('Result: ' + result[i].identity);
                             $('.site:eq(' + SiteCnt + ')').val(result[i].identity).change();
                             $('.upload_access:eq(' + SiteCnt + ')').attr('checked', upload_access);
                             SiteCnt++;
                             $("[data-pageid=" + result[i].identity + "]").attr('checked', true);
-                            console.log(result[i].display_name);
+                            
                         }
                         else if ((result[i].page_type != 3) && (result[i].site_type == 1 || result[i].site_type ==0)) {
                             //  var page_access = (result[i].upload_access == 1) ? true : false;
@@ -788,7 +790,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + '&site_type=2 &importapproval=' + import_approval + '&heatmap=' + heatmap,
+            url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + '&site_type=1 &importapproval=' + import_approval + '&heatmap=' + heatmap,
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (result, status, xhr) {

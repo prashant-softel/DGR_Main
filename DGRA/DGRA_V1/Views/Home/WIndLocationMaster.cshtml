@@ -197,40 +197,59 @@
             //data: '{"countryname":"' + selcountry + '"}',
             datatype: "html",
             success: function (result, status, xhr) {
-                console.log(result);
+                
                 var tbl = '<table id="example1" class="table table-bordered table-striped">';
                 tbl += '<thead class="tbl-head"><tr>';
-                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                if (userColumnId.length > 0) {
+                    if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Site</th>';
+                    }
+                    if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>WTG</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Feeder"][0]) || columnMap["Feeder"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Feeder</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Max_Kwh_Per_Day"][0]) || columnMap["Max_Kwh_Per_Day"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Max_kWh/Day</th>';
+                    }
+                }
+                else
+                {
                     tbl += '<th>Site</th>';
-                }
-                if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>WTG</th>';
-                }
-                if (userColumnId.includes(columnMap["Feeder"][0]) || columnMap["Feeder"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Feeder</th>';
-                }
-                if (userColumnId.includes(columnMap["Max_Kwh_Per_Day"][0]) || columnMap["Max_Kwh_Per_Day"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Max_kWh/Day</th>';
-                }                
+                }
                 tbl += '</tr></thead>';
-                if (result.length > 0) {
+                if (result.length > 0)
+                {
                     exceldata = result;
-                    for (var i = 0; i < result.length; i++) {
-
-
+                    for (var i = 0; i < result.length; i++)
+                    {
                         tbl += '<tr>';
-                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        if (userColumnId.length > 0)
+                        {
+                            if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].wtg + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Feeder"][0]) || columnMap["Feeder"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].feeder.toFixed(2) + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Max_Kwh_Per_Day"][0]) || columnMap["Max_Kwh_Per_Day"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].max_kwh_day.toFixed(2) + '</td>';
+                            }
+                        }
+                        else
+                        {
                             tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].site + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["WTG"][0]) || columnMap["WTG"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left" style="text-wrap: nowrap;">' + result[i].wtg + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Feeder"][0]) || columnMap["Feeder"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].feeder.toFixed(2) + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Max_Kwh_Per_Day"][0]) || columnMap["Max_Kwh_Per_Day"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].max_kwh_day.toFixed(2) + '</td>';
-                        }                        
+                        }
                         tbl += '</tr>';
                     }
                 }

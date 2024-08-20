@@ -332,16 +332,25 @@
                 console.log(result);
                 var tbl = '<table id="example1" class="table table-bordered table-striped dataTable dtr-inline">';
                 tbl += '<thead class="tbl-head"><tr>';
-                if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                if (userColumnId.length > 0) {
+                    if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>FY</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Site</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Month</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Line Losses (%)</th>';
+                    }
+                }
+                else
+                {
                     tbl += '<th>FY</th>';
-                }
-                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Site</th>';
-                }
-                if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Month</th>';
-                }
-                if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Line Losses (%)</th>';
                 }
                 tbl += '</tr></thead>';
@@ -350,18 +359,28 @@
                     exceldata = result;
                     for (var i = 0; i < result.length; i++) {
                         tbl += '<tr>';
-                        if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                        if (userColumnId.length > 0) {
+                            if (userColumnId.includes(columnMap["FY"][0]) || columnMap["FY"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].fy + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].sites + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].month + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right" >' + result[i].lineLoss.toFixed(2) + '</td>';
+                            }
+                        }
+                        else
+                        {
                             tbl += '<td class="text-left">' + result[i].fy + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].sites + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Month"][0]) || columnMap["Month"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].month + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Line_Loss"][0]) || columnMap["Line_Loss"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right" >' + result[i].lineLoss.toFixed(2) + '</td>';
                         }
+
                         tbl += '</tr>';
                     }
                 }

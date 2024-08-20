@@ -167,8 +167,8 @@
                 result.forEach(item => {
                     columnMap[item.column_name] = [item.column_id, item.required];
                 });
-                console.log(columnMap);
-                console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
+                //console.log(columnMap);
+                //console.log(columnMap["Country"], " : ", columnMap["Country"][0], "  :  ", columnMap["Country"][1]);
             }
             else {
             }
@@ -267,28 +267,40 @@
             // data: '{"state":"' + val + '"}',
             datatype: "JSON",
             success: function (result, status, xhr) {
-                console.log(result);
+               
                 var tbl = '<table id="example1" class="table table-bordered table-striped">';
                 tbl += '<thead class="tbl-head"><tr>';
-                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                if (userColumnId.length > 0) {
+                    if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th style="width: 12%;">Site</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Date</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Start_Time"][0]) || columnMap["Start_Time"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Start Time</th>';
+                    }
+                    if (userColumnId.includes(columnMap["End_Time"][0]) || columnMap["End_Time"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>End Time</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Total_Time"][0]) || columnMap["Total_Time"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Total Time</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Permissible_Load"][0]) || columnMap["Permissible_Load"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Permissible Load (MW)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Gen_Loss_due_to_LS"][0]) || columnMap["Gen_Loss_due_to_LS"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Generation loss in kWh due to Load shedding</th>';
+                    }
+                }
+                else
+                {
                     tbl += '<th style="width: 12%;">Site</th>';
-                }
-                if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Date</th>';
-                }
-                if (userColumnId.includes(columnMap["Start_Time"][0]) || columnMap["Start_Time"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Start Time</th>';
-                }
-                if (userColumnId.includes(columnMap["End_Time"][0]) || columnMap["End_Time"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>End Time</th>';
-                }
-                if (userColumnId.includes(columnMap["Total_Time"][0]) || columnMap["Total_Time"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Total Time</th>';
-                }
-                if (userColumnId.includes(columnMap["Permissible_Load"][0]) || columnMap["Permissible_Load"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Permissible Load (MW)</th>';
-                }
-                if (userColumnId.includes(columnMap["Gen_Loss_due_to_LS"][0]) || columnMap["Gen_Loss_due_to_LS"][1] == 1 || isAdmin == 1) {
                     tbl += '<th>Generation loss in kWh due to Load shedding</th>';
                 }
                 tbl += '</tr></thead>';
@@ -300,25 +312,38 @@
                         var permissible = (result[i].permissible_Load_MW !== null && result[i].permissible_Load_MW !== undefined) ? result[i].permissible_Load_MW : "-";
                         var formattedDate = moment(result[i].date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
-                        if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        if (userColumnId.length > 0) {
+                            if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left" >' + result[i].site + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + formattedDate + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Start_Time"][0]) || columnMap["Start_Time"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes'] + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["End_Time"][0]) || columnMap["End_Time"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes'] + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Total_Time"][0]) || columnMap["Total_Time"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-left">' + result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes'] + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Permissible_Load"][0]) || columnMap["Permissible_Load"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + permissible + '</td>';
+                            }
+                            if (userColumnId.includes(columnMap["Gen_Loss_due_to_LS"][0]) || columnMap["Gen_Loss_due_to_LS"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].gen_loss_kWh + '</td>';
+                            }
+
+                        }
+                        else
+                        {
                             tbl += '<td class="text-left" >' + result[i].site + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + formattedDate + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Start_Time"][0]) || columnMap["Start_Time"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].start_Time['hours'] + ':' + result[i].start_Time['minutes'] + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["End_Time"][0]) || columnMap["End_Time"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].end_Time['hours'] + ':' + result[i].end_Time['minutes'] + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Total_Time"][0]) || columnMap["Total_Time"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-left">' + result[i].total_Time['hours'] + ':' + result[i].total_Time['minutes'] + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Permissible_Load"][0]) || columnMap["Permissible_Load"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + permissible + '</td>';
-                        }
-                        if (userColumnId.includes(columnMap["Gen_Loss_due_to_LS"][0]) || columnMap["Gen_Loss_due_to_LS"][1] == 1 || isAdmin == 1) {
                             tbl += '<td class="text-right">' + result[i].gen_loss_kWh + '</td>';
                         }
                         tbl += '</tr>';

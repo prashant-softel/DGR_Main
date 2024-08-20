@@ -310,48 +310,67 @@
 
                 var tbl = '<table id="example1" class="table table-bordered table-striped" style="width: 120%;">';
                 tbl += '<thead class="tbl-head"><tr>';
-                if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th style="width: 7%;">Date</th>';
+                if (userColumnId.length > 0) {
+                    if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th style="width: 7%;">Date</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th  style="width: 7%;">Site</th>';
+                    }
+                    if (userColumnId.includes(columnMap["From_Time"][0]) || columnMap["From_Time"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>From Time</th>';
+                    }
+                    if (userColumnId.includes(columnMap["To_Time"][0]) || columnMap["To_Time"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>To Time</th>';
+                    }
+                    if (userColumnId.includes(columnMap["AC_Capacity"][0]) || columnMap["AC_Capacity"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>AC Capacity (MW)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Nos_of_Trackers_in_BD"][0]) || columnMap["Nos_of_Trackers_in_BD"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Nos. of Trackers in BD. (Nos)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Nos_of_Module_Tracker"][0]) || columnMap["Nos_of_Module_Tracker"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Nos. of Module &#64; Tracker (Nos) </th>';
+                    }
+                    if (userColumnId.includes(columnMap["Modules"][0]) || columnMap["Modules"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Module (Wp)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["BD_Tracker_Capacity"][0]) || columnMap["BD_Tracker_Capacity"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>BD. Tracker Capacity (kW)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Actual_POA"][0]) || columnMap["Actual_POA"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Actual POA (kWh/m<sup class="superscript">2</sup>)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Actual_GHI"][0]) || columnMap["Actual_GHI"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Actual GHI (kWh/m<sup class="superscript">2</sup>)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["AOP_PR"][0]) || columnMap["AOP_PR"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>AOP PR (%)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Gen_Losses"][0]) || columnMap["Gen_Losses"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Gen Losses (kWh)</th>';
+                    }
+                    if (userColumnId.includes(columnMap["Remarks"][0]) || columnMap["Remarks"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Remarks </th>';
+                    }
                 }
-                if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th  style="width: 7%;">Site</th>';
+                else
+                {
+                        tbl += '<th style="width: 7%;">Date</th>';
+                        tbl += '<th  style="width: 7%;">Site</th>';
+                        tbl += '<th>From Time</th>';
+                        tbl += '<th>To Time</th>';
+                        tbl += '<th>AC Capacity (MW)</th>';
+                        tbl += '<th>Nos. of Trackers in BD. (Nos)</th>';
+                        tbl += '<th>Nos. of Module &#64; Tracker (Nos) </th>';
+                        tbl += '<th>Module (Wp)</th>';
+                        tbl += '<th>BD. Tracker Capacity (kW)</th>';
+                        tbl += '<th>Actual POA (kWh/m<sup class="superscript">2</sup>)</th>';
+                        tbl += '<th>Actual GHI (kWh/m<sup class="superscript">2</sup>)</th>';
+                        tbl += '<th>AOP PR (%)</th>';
+                        tbl += '<th>Gen Losses (kWh)</th>';
+                        tbl += '<th>Remarks </th>';
                 }
-                if (userColumnId.includes(columnMap["From_Time"][0]) || columnMap["From_Time"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>From Time</th>';
-                }
-                if (userColumnId.includes(columnMap["To_Time"][0]) || columnMap["To_Time"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>To Time</th>';
-                }
-                if (userColumnId.includes(columnMap["AC_Capacity"][0]) || columnMap["AC_Capacity"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>AC Capacity (MW)</th>';
-                }
-                if (userColumnId.includes(columnMap["Nos_of_Trackers_in_BD"][0]) || columnMap["Nos_of_Trackers_in_BD"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Nos. of Trackers in BD. (Nos)</th>';
-                }
-                if (userColumnId.includes(columnMap["Nos_of_Module_Tracker"][0]) || columnMap["Nos_of_Module_Tracker"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Nos. of Module &#64; Tracker (Nos) </th>';
-                }
-                if (userColumnId.includes(columnMap["Modules"][0]) || columnMap["Modules"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Module (Wp)</th>';
-                }
-                if (userColumnId.includes(columnMap["BD_Tracker_Capacity"][0]) || columnMap["BD_Tracker_Capacity"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>BD. Tracker Capacity (kW)</th>';
-                }
-                if (userColumnId.includes(columnMap["Actual_POA"][0]) || columnMap["Actual_POA"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Actual POA (kWh/m<sup class="superscript">2</sup>)</th>';
-                }
-                if (userColumnId.includes(columnMap["Actual_GHI"][0]) || columnMap["Actual_GHI"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Actual GHI (kWh/m<sup class="superscript">2</sup>)</th>';
-                }
-                if (userColumnId.includes(columnMap["AOP_PR"][0]) || columnMap["AOP_PR"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>AOP PR (%)</th>';
-                }
-                if (userColumnId.includes(columnMap["Gen_Losses"][0]) || columnMap["Gen_Losses"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Gen Losses (kWh)</th>';
-                }
-                if (userColumnId.includes(columnMap["Remarks"][0]) || columnMap["Remarks"][1] == 1 || isAdmin == 1) {
-                    tbl += '<th>Remarks </th>';
-                }              
                 tbl += '</tr></thead>';
 
                 if (result.length > 0) {
@@ -362,47 +381,66 @@
                        var start_time = toHoursAndMinutes(result[i].from_time.totalSeconds);
                        var stop_time = toHoursAndMinutes(result[i].to_time.totalSeconds);
                        tbl += '<tr>';
-                       if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td  class="text-right">' + formattedDate + '</td>';
+                       if (userColumnId.length > 0) {
+                           if (userColumnId.includes(columnMap["Date"][0]) || columnMap["Date"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td  class="text-right">' + formattedDate + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td  class="text-center">' + result[i].site + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["From_Time"][0]) || columnMap["From_Time"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + start_time + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["To_Time"][0]) || columnMap["To_Time"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + stop_time + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["AC_Capacity"][0]) || columnMap["AC_Capacity"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td  class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Nos_of_Trackers_in_BD"][0]) || columnMap["Nos_of_Trackers_in_BD"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].trackers_in_BD.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Nos_of_Module_Tracker"][0]) || columnMap["Nos_of_Module_Tracker"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].module_tracker.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Modules"][0]) || columnMap["Modules"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].module_WP.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["BD_Tracker_Capacity"][0]) || columnMap["BD_Tracker_Capacity"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].breakdown_tra_capacity.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Actual_POA"][0]) || columnMap["Actual_POA"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].actual_poa.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Actual_GHI"][0]) || columnMap["Actual_GHI"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].actual_ghi.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["AOP_PR"][0]) || columnMap["AOP_PR"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].target_aop_pr.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Gen_Losses"][0]) || columnMap["Gen_Losses"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td class="text-right">' + result[i].tracker_loss.toFixed(2) + '</td>';
+                           }
+                           if (userColumnId.includes(columnMap["Remarks"][0]) || columnMap["Remarks"][1] == 1 || isAdmin == 1) {
+                               tbl += '<td style="text-align:left">' + result[i].remark + '</td>';
+                           }
                        }
-                       if (userColumnId.includes(columnMap["Site"][0]) || columnMap["Site"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td  class="text-center">' + result[i].site + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["From_Time"][0]) || columnMap["From_Time"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + start_time + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["To_Time"][0]) || columnMap["To_Time"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + stop_time + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["AC_Capacity"][0]) || columnMap["AC_Capacity"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td  class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["Nos_of_Trackers_in_BD"][0]) || columnMap["Nos_of_Trackers_in_BD"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].trackers_in_BD.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["Nos_of_Module_Tracker"][0]) || columnMap["Nos_of_Module_Tracker"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].module_tracker.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["Modules"][0]) || columnMap["Modules"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].module_WP.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["BD_Tracker_Capacity"][0]) || columnMap["BD_Tracker_Capacity"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].breakdown_tra_capacity.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["Actual_POA"][0]) || columnMap["Actual_POA"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].actual_poa.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["Actual_GHI"][0]) || columnMap["Actual_GHI"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].actual_ghi.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["AOP_PR"][0]) || columnMap["AOP_PR"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].target_aop_pr.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["Gen_Losses"][0]) || columnMap["Gen_Losses"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td class="text-right">' + result[i].tracker_loss.toFixed(2) + '</td>';
-                       }
-                       if (userColumnId.includes(columnMap["Remarks"][0]) || columnMap["Remarks"][1] == 1 || isAdmin == 1) {
-                           tbl += '<td style="text-align:left">' + result[i].remark + '</td>';
+                       else
+                       {
+                            tbl += '<td  class="text-right">' + formattedDate + '</td>';
+                            tbl += '<td  class="text-center">' + result[i].site + '</td>';
+                            tbl += '<td class="text-right">' + start_time + '</td>';
+                            tbl += '<td class="text-right">' + stop_time + '</td>';
+                            tbl += '<td  class="text-right">' + result[i].ac_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].trackers_in_BD.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].module_tracker.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].module_WP.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].breakdown_tra_capacity.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].actual_poa.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].actual_ghi.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].target_aop_pr.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].tracker_loss.toFixed(2) + '</td>';
+                            tbl += '<td style="text-align:left">' + result[i].remark + '</td>';
                        }
                        tbl += '</tr>';
                     }
