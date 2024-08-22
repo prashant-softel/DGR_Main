@@ -26,13 +26,10 @@
 
     <section class="content-header">
     </section>
-
-
     <section class="content">
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title  text-center">Wind Site User Master</h3>
-
             </div>
             <div class="card-body">
                 <div class="row">
@@ -185,117 +182,121 @@
     var rcont = 1;
     const group_page = ['9', '11'];
     let UserAccessGroupList = {};
-    window.onload = function () {
-
-        function GetURLParameter(sParam) {
+    window.onload = function ()
+    {
+        function GetURLParameter(sParam)
+        {
             var sPageURL = window.location.search.substring(1);
             var sURLVariables = sPageURL.split('&');
-            for (var i = 0; i < sURLVariables.length; i++) {
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == sParam) {
+                if (sParameterName[0] == sParam)
+                {
                     return decodeURIComponent(sParameterName[1]);
                 }
             }
         }
         id = GetURLParameter('id');
-
         GetDetails(id);
-
         getSite();
+        getPageList(id);
         getUserAssignedGroups();
     }
-    function getUserAssignedGroups() {
-        $.ajax({
-        type: "GET",
-       // url: "/WindReport/GetSiteMaster",
-          url: '@Url.Action("GetUserAssignedGroups", "Home")' + '?user_id=' + id,
-        contentType: "application/json; charset=utf-8",
-        //data: '{"countryname":"' + selcountry + '"}',
-        datatype: "html",
-        success: function (result, status, xhr) {
-            if (result.length > 0) {
-                //console.log(result);
-                result.forEach(item => {
-                    UserAccessGroupList[item.page_id] = item.page_groups_id;
-                });
-                //console.log(UserAccessGroupList);
-            }
-            else {
-            }
-        }
-    });
-    }
-    function GetDetails(loginid) {
+    function getUserAssignedGroups()
+    {
         $.ajax({
             type: "GET",
-            //url: "/Home/GetWindUserInfo?login_id=" + loginid,
-            url: '@Url.Action("GetWindUserInfo", "Home")' + '?login_id=' + loginid,
+            url: '@Url.Action("GetUserAssignedGroups", "Home")' + '?user_id=' + id,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
-               // console.log(result);
-                document.getElementById("fullname").value = result[0].username;
-                document.getElementById("useremail").value = result[0].useremail;
-                document.getElementById("userrole").value = result[0].user_role;
-
+            success: function (result, status, xhr)
+            {
+                if (result.length > 0)
+                {
+                    result.forEach(item => {
+                        UserAccessGroupList[item.page_id] = item.page_groups_id;
+                    });
+                }
+                else
+                {
+                }
+                setTimeout(GetUserAccess(id), 1000);
             }
         });
     }
-
-    function getSite() {
+    function GetDetails(loginid)
+    {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWindUserInfo", "Home")' + '?login_id=' + loginid,
+            contentType: "application/json; charset=utf-8",
+            datatype: "html",
+            success: function (result, status, xhr)
+            {
+                document.getElementById("fullname").value = result[0].username;
+                document.getElementById("useremail").value = result[0].useremail;
+                document.getElementById("userrole").value = result[0].user_role;
+            }
+        });
+    }
+    function getSite()
+    {
         var state = "";
         var spv = "";
         var sitelist = "";
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetSiteList", "WindReport")' + '?state=' + state + '&spv=' + spv + '&sitelist=' + sitelist,
-           // url: "/WindReport/GetSiteList?state=" + state + "&spv=" + spv,
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 var options = "";
                 $(".site").html();
                 result.sort((a, b) => {
-                    if (a.site < b.site) {
+                    if (a.site < b.site)
+                    {
                         return -1;
                     }
-                    if (a.site > b.site) {
+                    if (a.site > b.site)
+                    {
                         return 1;
                     }
                     return 0;
 
                 });
                 options += '<option value="">Select Site</option>';
-                for (var k = 0; k < result.length; k++) {
+                for (var k = 0; k < result.length; k++)
+                {
                     options += '<option value="' + result[k].site_master_id + '">' + result[k].site + '</option>';
                 }
                 $(".site").html(options);
-
             }
         });
-        getPageList(id);
+       // getPageList(id);
     }
-    function getPageList(id) {
+    function getPageList(id)
+    {
         var group_page_list = "";
-        for (var n = 0; n < group_page.length; n++) {
+        for (var n = 0; n < group_page.length; n++)
+        {
             group_page_list += group_page[n] + ",";
         }
         group_page_list = group_page_list != "" ? group_page_list.slice(0, -1) : group_page_list;
-
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetPageList", "Home")' + '?login_id=' + id + '&site_type=1',
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
-                //console.log(result);
+            success: function (result, status, xhr)
+            {
                 $("#views").html();
                 $("#reports").html();
                 $("#importApproval").html();
                 $("#heatmap").html();
-                if (result.length > 0) {
-
+                if (result.length > 0)
+                {
                     var tbl = '<table class="table table-bordered table-striped importApproval-page">';
                     var tblheatmap = '<table class="table table-bordered table-striped heatmap-page">';
                     var tbl1 = '<table class="table table-bordered table-striped views-page">';
@@ -304,65 +305,78 @@
                     var tbl2 = '<table class="table table-bordered table-striped reports-page">';
                     tbl2 += '<th><input type="checkbox" disabled="disabled" class="checkAllR" id="checkAllR" onclick="selectAllR()" style="margin-left:10px"></th>';
                     tbl2 += '<th>Reports</th><th>Column Group</th></tr>';
-
-
-                    for (var i = 0; i < result.length; i++) {
-                        if (result[i].page_type == 4) {
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        if (result[i].page_type == 4)
+                        {
                             tbl += '<tr><th style="width:5.4rem"><input type="checkbox"  disabled="disabled" class="form-check-input import-pages" id="import" name="import" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></th>';
                             tbl += '<th>' + result[i].display_name + '</th>';
                             tbl += '</tr > ';
                         }
-                        if (result[i].page_type == 5) {
+                        if (result[i].page_type == 5)
+                        {
                             tblheatmap += '<tr><th style="width:5.4rem"><input type="checkbox"  disabled="disabled" class="form-check-input heatmap-pages" id="heatmap" name="heatmap" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></th>';
                             tblheatmap += '<th>' + result[i].display_name + '</th>';
                             tblheatmap += '</tr > ';
                         }
-                        if (result[i].page_type == 1) {
+                        if (result[i].page_type == 1)
+                        {
                             tbl1 += '<tr><td><input type="checkbox"  disabled="disabled" class="form-check-input view-pages" id="pages" name="chkP" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></td>';
                             tbl1 += '<td>' + result[i].display_name + '</td>';
-                            if (result[i].isGroupAvailable == 1) {
+                            if (result[i].isGroupAvailable == 1)
+                            {
                                 tbl1 += '<td style="padding: 5px !important;">';
-                                tbl1 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
+                                tbl1 += '<select class="column-group col-sm-12 page-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
                                 tbl1 += '<option value="0">Select Group</option>';
                                 result[i].pageGroupData.forEach(function (group) {
                                     var groupNo = UserAccessGroupList[result[i].id] || 0;
-                                    if (groupNo > 0 && groupNo == group.page_groups_id) {
+                                    if (groupNo > 0 && groupNo == group.page_groups_id)
+                                    {
                                         tbl1 += '<option value="' + group.page_groups_id + '" selected>' + group.page_group_name + '</option>';
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         tbl1 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
                                     }
                                 });
                                 tbl1 += '</select>';
                                 tbl1 += '</td>';
-                            } else {
+                            }
+                            else
+                            {
                                 tbl1 += '<td> No Groups Created </td>';
                             }
                             tbl1 += '</tr > ';
                         }
-                        if (result[i].page_type == 2) {
+                        if (result[i].page_type == 2)
+                        {
                             tbl2 += '<tr><td><input type="checkbox"  disabled="disabled" class="form-check-input report-pages" id="pages" name="chkR" data-pageid =' + result[i].id + ' style="margin-left: 15px; margin-top: -6px;"></td>';
                             tbl2 += '<td>' + result[i].display_name + '</td>';
-                            if (result[i].isGroupAvailable == 1) {
+                            if (result[i].isGroupAvailable == 1)
+                            {
                                 tbl2 += '<td style="padding: 5px !important;">';
                                 tbl2 += '<select class="column-group col-sm-12 report-select" disabled="true"; id="ColumnDd_' + result[i].id + '" placeholder="Select Group" onchange="pageChange()" value="" style="height: 37px;">';
                                 tbl2 += '<option value="0">Select Group</option>';
                                 result[i].pageGroupData.forEach(function (group) {
                                     var groupNo = UserAccessGroupList[result[i].id] || 0;
-                                    if (groupNo > 0 && groupNo == group.page_groups_id) {
+                                    if (groupNo > 0 && groupNo == group.page_groups_id)
+                                    {
                                         tbl2 += '<option value="' + group.page_groups_id + '"selected>' + group.page_group_name + '</option>';
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         tbl2 += '<option value="' + group.page_groups_id + '">' + group.page_group_name + '</option>';
                                     }
                                 });
                                 tbl2 += '</select>';
                                 tbl2 += '</td>';
-                            } else {
+                            }
+                            else
+                            {
                                 tbl2 += '<td> No Groups Created </td>';
                             }
                             tbl2 += '</tr > ';
                         }
-
-
                     }
                     tbl += '</table > ';
                     tblheatmap += '</table > ';
@@ -372,12 +386,10 @@
                     $("#views").html(tbl1);
                     tbl2 += '</table > ';
                     $("#reports").html(tbl2);
-
                 }
             }
         });
-
-         $.ajax({
+        $.ajax({
             type: "POST",
             url: '@Url.Action("GetCustomGroup", "Home")' + '?login_id=' + id + '&site_type=1&groupPage=' + group_page_list,
             contentType: "application/json; charset=utf-8",
@@ -410,177 +422,180 @@
 
         $.ajax({
             type: "POST",
-           // url: "/Home/GetPageList?login_id=" + id,
-             url: '@Url.Action("GetEmailAccess", "Home")' + '?login_id=' + id + '&site=1' +'&access=1',
+            url: '@Url.Action("GetEmailAccess", "Home")' + '?login_id=' + id + '&site=1' +'&access=1',
             contentType: "application/json; charset=utf-8",
-            // data: '{"state":"' + val + '"}',
             datatype: "html",
-            success: function (result, status, xhr) {
-                //console.log(result);
+            success: function (result, status, xhr)
+            {
                 $("#emailReports").html();
-                for (var i = 0; i < result.length; i++) {
+                for (var i = 0; i < result.length; i++)
+                {
                     var tbl3 = '<table class="table table-bordered table-striped ">';
                     tbl3 += '<th>Notifications</th>';
                     tbl3 += '<th>To</th>';
                     tbl3 += '<th>Cc</th></tr>';
-
                     tbl3 += '<tr><td> Daily Report </td>';
                     tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailDT  notification" id="emails" name="To_Daily_Wind" style="margin-left: 15px; margin-top: -6px;"></td>';
                     tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailDC notification" id="emails" name="Cc_Daily_Wind"  style="margin-left: 15px; margin-top: -6px;"></td>';
                     tbl3 += '</tr > ';
-
                     tbl3 += '<tr><td> Weekly Report </td>';
                     tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailWT notification" id="emails" name="To_Weekly_Wind"  style="margin-left: 15px; margin-top: -6px;"></td>';
                     tbl3 += '<td><input type="checkbox"  disabled="disabled" class="form-check-input emailWC notification" id="emails" name="Cc_Weekly_Wind"  style="margin-left: 15px; margin-top: -6px;"></td>';
                     tbl3 += '</tr > ';
                     tbl3 += '</table > ';
                     $("#emailReports").html(tbl3);
-
-                    if (result[i].to_Daily_Wind == 1) {
+                    if (result[i].to_Daily_Wind == 1)
+                    {
                         $(".emailDT").attr('checked', true);
                     }
-                    if (result[i].cc_Daily_Wind == 1) {
+                    if (result[i].cc_Daily_Wind == 1)
+                    {
                         $(".emailDC").attr('checked', true);
                     }
-                    if (result[i].to_Weekly_Wind == 1) {
+                    if (result[i].to_Weekly_Wind == 1)
+                    {
                         $(".emailWT").attr('checked', true);
                     }
-                    if (result[i].cc_Weekly_Wind == 1) {
+                    if (result[i].cc_Weekly_Wind == 1)
+                    {
                         $(".emailWC").attr('checked', true);
                     }
                 }
-
-
             }
         });
-
-        GetUserAccess(id);
-
-
+        //GetUserAccess(id);
     }
 
-    function selectAllP() {
+    function selectAllP()
+    {
         var ele = document.getElementsByName('chkP');
         var a = document.getElementById('checkAllP');
-        if (a.checked == true) {
-            for (var i = 0; i < ele.length; i++) {
-                if (ele[i].type == 'checkbox' )
-                    ele[i].checked = true;
-            }
-        }
-        else {
-            for (var i = 0; i < ele.length; i++) {
-                if (ele[i].type == 'checkbox')
-                    ele[i].checked = false;
-            }
-        }
-    }
-
-    function selectAllR() {
-        var ele = document.getElementsByName('chkR');
-        var a = document.getElementById('checkAllR');
-        console.log(a.checked);
-        if (a.checked == true) {
-            for (var i = 0; i < ele.length; i++) {
+        if (a.checked == true)
+        {
+            for (var i = 0; i < ele.length; i++)
+            {
                 if (ele[i].type == 'checkbox' )
                     ele[i].checked = true;
             }
         }
         else
         {
-            for (var i = 0; i < ele.length; i++) {
+            for (var i = 0; i < ele.length; i++)
+            {
                 if (ele[i].type == 'checkbox')
                     ele[i].checked = false;
             }
         }
     }
 
-    function CheckEmpty() {
+    function selectAllR()
+    {
+        var ele = document.getElementsByName('chkR');
+        var a = document.getElementById('checkAllR');
+        console.log(a.checked);
+        if (a.checked == true)
+        {
+            for (var i = 0; i < ele.length; i++)
+            {
+                if (ele[i].type == 'checkbox' )
+                    ele[i].checked = true;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < ele.length; i++)
+            {
+                if (ele[i].type == 'checkbox')
+                    ele[i].checked = false;
+            }
+        }
+    }
+
+    function CheckEmpty()
+    {
         var a = document.getElementById("site1").value;
         console.log(" you Clicked" + a);
-        if (a == "") {
+        if (a == "")
+        {
             alert("Please Select Site")
         }
     }
 
-    function GetUserAccess(loginid) {
+    function GetUserAccess(loginid)
+    {
         $.ajax({
             type: "GET",
-            //url: "/Home/GetUserAccess?login_id=" + loginid,
             url: '@Url.Action("GetUserAccess", "Home")' + '?login_id=' + loginid,
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-            success: function (result, status, xhr) {
-                console.log(result);
-                if (result.length > 0) {
+            success: function (result, status, xhr)
+            {
+                if (result.length > 0)
+                {
                     var SiteCnt = 0;
                     $(".report-pages").attr('checked', false);
                     $(".view-pages").attr('checked', false);
                     $(".import-pages").attr('checked', false);
-                    for (var i = 0; i < result.length; i++) {
-                        // Site access
-                        if (result[i].page_type == 3 && result[i].site_type == 1) {
+                    for (var i = 0; i < result.length; i++)
+                    {
+                        if (result[i].page_type == 3 && result[i].site_type == 1)
+                        {
                             var upload_access = (result[i].upload_access == 1) ? true : false;
-                            if (SiteCnt > 0) {
-
+                            if (SiteCnt > 0)
+                            {
                                 addRow('dataTable');
                             }
-                            console.log('Result: ' + result[i].identity);
                             $('.site:eq(' + SiteCnt + ')').val(result[i].identity).change();
                             $('.upload_access:eq(' + SiteCnt + ')').attr('checked', upload_access);
                             SiteCnt++;
                             $("[data-pageid=" + result[i].identity + "]").attr('checked', true);
-                            
                         }
-                        else if ((result[i].page_type != 3) && (result[i].site_type == 1 || result[i].site_type ==0)) {
-                            //  var page_access = (result[i].upload_access == 1) ? true : false;
-                            // page and report
-
-                            $("[data-pageid=" + result[i].identity + "]").attr('checked', true);
+                        else if ((result[i].page_type != 3) && (result[i].site_type == 1 || result[i].site_type == 0))
+                        {
+                            //$("[data-pageid=" + result[i].identity + "]").attr('checked', true);
+                            var identity = result[i].identity;
+                            var element = $("[data-pageid=" + identity + "]");
+                            element.attr('checked', true);
+                            console.log("Identity:", identity, "Element:", element[0]);
                         }
-                       // else if (result[i].page_type = 4 && result[i].site_type == 0) {
-                            //Approval
-                            // $("[data-pageid=" + result[i].identity + "]").attr('checked', true);
-                       // }
-
                         $("data-pageid").attr("disabled", true);
                         $('.site').prop('disabled', true);
                         $("input.upload_access").attr("disabled", true);
                         $("input.delete_btn").attr("disabled", true);
-
                     }
-                    $("input[type='checkbox'].view-pages").each(function () {
+                    $("input[type='checkbox'].view-pages").each(function ()
+                    {
                         var a = $("input[type='checkbox'].view-pages");
-                        console.log(a.length);
-                        if (a.length == a.filter(":checked").length) {
+                        if (a.length == a.filter(":checked").length)
+                        {
                             $(".checkAllP").attr('checked', true);
-                          //  alert('all checked');
                         }
                     });
-                    $("input[type='checkbox'].report-pages").each(function () {
+                    $("input[type='checkbox'].report-pages").each(function ()
+                    {
                         var a = $("input[type='checkbox'].report-pages");
-                        console.log(a.length);
-                        if (a.length == a.filter(":checked").length) {
+                        if (a.length == a.filter(":checked").length)
+                        {
                             $(".checkAllR").attr('checked', true);
-                          //  alert('all checked');
                         }
                     });
-                    $("input[type='checkbox'].view-pages").change(function () {
+                    $("input[type='checkbox'].view-pages").change(function ()
+                    {
                         var a = $("input[type='checkbox'].view-pages");
-                        console.log(a.length);
-                        if (a.length == a.filter(":checked").length) {
+                        if (a.length == a.filter(":checked").length)
+                        {
                             $(".checkAllP").attr('checked', true);
                         }
                         else
                         {
                             $(".checkAllP").attr('checked', false);
-
                         }
                     });
-                    $("input[type='checkbox'].report-pages").change(function () {
+                    $("input[type='checkbox'].report-pages").change(function ()
+                    {
                         var a = $("input[type='checkbox'].report-pages");
-                        console.log(a.length);
-                        if (a.length == a.filter(":checked").length) {
+                        if (a.length == a.filter(":checked").length)
+                        {
                             $(".checkAllR").attr('checked', true);
                         }
                         else
@@ -588,25 +603,18 @@
                             $(".checkAllR").attr('checked', false);
                         }
                     });
-
-                    //$("input.view-pages").attr("disabled", true);
-                    //$("input.report-pages").attr("disabled", true);
-                    //$('.site').prop('disabled', true);
-                    //$("input.upload_access").attr("disabled", true);
-
-
                 }
             }
         });
     }
-    function Edit() {
+    function Edit()
+    {
         var a = document.getElementById("Edit").innerHTML;
-        if (a == "Update") {
+        if (a == "Update")
+        {
             var b = $(".site").val();
-
-            console.log(b);
-
-            if (b == "" ||  b == undefined) {
+            if (b == "" || b == undefined)
+            {
                 alert("Please select Site");
                 return
             }
@@ -629,8 +637,8 @@
        // document.getElementById("delete_btn").disabled = false;
 
     }
-    function Cancle() {
-        console.log("cancel clicked")
+    function Cancle()
+    {
         document.getElementById("Edit").innerHTML = "Edit";
         $("input.import-pages").attr("disabled", true);
         $("input.heatmap-pages").attr("disabled", true);
@@ -645,62 +653,32 @@
         $("input.delete_btn").attr("disabled", true);
         document.getElementById("add_site_btn").disabled = true;
         //document.getElementById("delete_btn").disabled = true;
-
         window.location.reload();
-
     }
-    function addRow(tableID) {
+    function addRow(tableID)
+    {
         var cnt = rcont;
-
         var table = document.getElementById(tableID);
         var site_options = $('.site').first().html();
-        // console.log(site_options);
-
         var row = '<tr class="site-row"><td><select  class="form-control   col-sm-8 site" id="site" name="site" value="">' + site_options + '</select></td>';
         row += '<td><input  type="checkbox" class="form-check-input upload_access" id="upload_access1" name="upload_access" value="1" style="margin-left: 25px; margin-top: -6px;"></td>';
         row += '<td><input  type="button" class="btn btn-block btn-danger delete_btn" id="delete_btn" name="button1" value="Delete" style="width: 50%; margin-left: 25px;"></td></tr >';
         $(table).find('tbody').append(row);
-
-        //$('.site').prop('disabled', false);
-        //$("input.upload_access").attr("disabled", false);
-        //document.getElementById("add_site_btn").disabled = false
-        //document.getElementById("delete_btn").disabled = false;
         rcont++;
-        // var rowCount = table.rows.length;
-        //var row = table.insertRow(row);
-        //Column 1
-        /* debugger;
-         var cell1 = row.insertCell(0);
-         var element1 = document.createElement("input");
-         element1.type = "button";
-         var btnName = "button" + (rowCount + 1);
-         element1.name = btnName;
-         element1.setAttribute('value', 'Delete'); // or element1.value = "button";
-         element1.onclick = function () {
-             removeRow(btnName);
-         }
-         cell1.appendChild(element1);
-         //Column 2
-         var cell2 = row.insertCell(1);
-         cell2.innerHTML = rowCount + 1;
-         //Column 3
-         var cell3 = row.insertCell(2);
-         var element3 = document.createElement("input");
-         element3.type = "text";
-         cell3.appendChild(element3);*/
     }
 
-    $('table').on('click', '.delete_btn', function() {
-
+    $('table').on('click', '.delete_btn', function ()
+    {
         $(this).closest('tr').remove();
     });
-    function removeRow(btnName) {
-        try {
-
-
-           var table = document.getElementById('dataTable');
+    function removeRow(btnName)
+    {
+        try
+        {
+            var table = document.getElementById('dataTable');
             var rowCount = table.rows.length;
-            for (var i = 1; i < rowCount; i++) {
+            for (var i = 1; i < rowCount; i++)
+            {
                 var row = table.rows[i];
                 var rowObj = row.cells[0].childNodes[0];
                 if (rowObj.name == btnName) {
@@ -708,20 +686,20 @@
                     rowCount--;
                 }
             }
-        } catch (e) {
+        }
+        catch (e)
+        {
             alert(e);
         }
     }
-    function SubmitDetials() {
-
+    function SubmitDetials()
+    {
         let site_arr = {};
-           
         $('.site-row').each(function () {
             var sid = $(this).find('.site').val();
             var access = $(this).find('.upload_access').is(":checked");
             site_arr[sid] = access;
         });
-        //console.log(site_arr);
         let email_arr = [];
         let page_arr = {};
         let report_arr = {};
@@ -729,60 +707,69 @@
         let heatmap = 0;
 	    let selected_report_page = [];
 	    let groupData = [];
-        $('.view-pages').each(function () {
-        var page_id = $(this).attr('data-pageid');
-        var isSet = $(this).is(":checked");
+        $('.view-pages').each(function ()
+        {
+            var page_id = $(this).attr('data-pageid');
+            var isSet = $(this).is(":checked");
             page_arr[page_id] = isSet;
-            if (isSet) {
-                if (document.getElementById("ColumnDd_" + page_id)) {
+            if (isSet)
+            {
+                if (document.getElementById("ColumnDd_" + page_id))
+                {
                     var GroupId = document.getElementById("ColumnDd_" + page_id).value;
-                    console.log("Group_id is :" + GroupId);
                     groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
                 }
             }
         });
 
-        $('.report-pages').each(function () {
+        $('.report-pages').each(function ()
+        {
             var page_id = $(this).attr('data-pageid');
             var isSet = $(this).is(":checked");
             report_arr[page_id] = isSet;
-            if (isSet) {
-                if (document.getElementById("ColumnDd_" + page_id)) {
+            if (isSet)
+            {
+                if (document.getElementById("ColumnDd_" + page_id))
+                {
                     var GroupId = document.getElementById("ColumnDd_" + page_id).value;
-                    console.log("Group_id is :" + GroupId);
                     groupData.push({ "page_id": page_id, "page_groups_id": GroupId });
                 }
                 selected_report_page.push(page_id);
             }
         });
-        $('.import-pages').each(function () {
+        $('.import-pages').each(function ()
+        {
             var page_id = $(this).attr('data-pageid');
             var isSet = $(this).is(":checked");
-            if (isSet == true) {
+            if (isSet == true)
+            {
                 import_approval = page_id;
             }
         });
-        $('.heatmap-pages').each(function () {
+        $('.heatmap-pages').each(function ()
+        {
             var page_id = $(this).attr('data-pageid');
             var isSet = $(this).is(":checked");
-            if (isSet == true) {
+            if (isSet == true)
+            {
                 heatmap = page_id;
             }
         });
-        $('.notification').each(function () {
+        $('.notification').each(function ()
+        {
             var notification_name = $(this).attr('name');
             var isSet = $(this).is(":checked");
-            if (isSet == true) {
+            if (isSet == true)
+            {
                 email_arr.push(notification_name);
             }
         });
-
         var getVal = $('#custom').is(":checked");
-        if (getVal == true) {
+        if (getVal == true)
+        {
             var matchval = group_page.filter(value => selected_report_page.includes(value));
-            console.log("FInd Values");
-            console.log(matchval);
-            if (matchval.length == 0) {
+            if (matchval.length == 0)
+            {
                 alert("Please Select Generation Report or Performance Summery");
                 return false;
             }
@@ -793,33 +780,34 @@
             url: '@Url.Action("SubmitAccess", "Home")' + '?login_id=' + id + '&site=' + JSON.stringify(site_arr) + '&pages=' + JSON.stringify(page_arr) + '&reports=' + JSON.stringify(report_arr) + '&site_type=1 &importapproval=' + import_approval + '&heatmap=' + heatmap,
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            success: function (result, status, xhr) {
-                if (getVal == true) {
+            success: function (result, status, xhr)
+            {
+                if (getVal == true)
+                {
                     var group_page_list = "";
-                    for (var n = 0; n < group_page.length; n++) {
+                    for (var n = 0; n < group_page.length; n++)
+                    {
                         group_page_list += group_page[n] + ",";
                     }
                     group_page_list = group_page_list != "" ? group_page_list.slice(0, -1) : group_page_list;
                     submitGroupAccess(id, group_page_list);
                 }
-                else {
+                else
+                {
                     alert("Success");
                     location.href = '@Url.Action("SiteUserMaster", "Home")';
                 }
                 alert("Success");
-               // location.href = "/Home/WindSiteUserMaster";
-                //location.href = '@Url.Action("SiteUserMaster", "Home")';
             }
         });
-
-         $.ajax({
+        $.ajax({
             type: "POST",
-             url: '@Url.Action("GetEmailAccess", "Home")' + '?login_id=' + id + '&site=1&access=2&notifications=' + JSON.stringify(email_arr),
+            url: '@Url.Action("GetEmailAccess", "Home")' + '?login_id=' + id + '&site=1&access=2&notifications=' + JSON.stringify(email_arr),
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-             success: function (result, status, xhr) {
-
-             }
+            success: function (result, status, xhr)
+            {
+            }
          });
 
         $.ajax({
@@ -827,8 +815,9 @@
             url: '@Url.Action("AssignGroup", "Home")' + '?login_id=' + id + '&group_data=' + JSON.stringify(groupData),
             contentType: "application/json; charset=utf-8",
             datatype: "html",
-             success: function (result, status, xhr) {
-             }
+            success: function (result, status, xhr)
+            {
+            }
          });
     }
     function submitGroupAccess(login_id, page_group)
@@ -838,7 +827,8 @@
             url: '@Url.Action("SubmitGroupBySiteAccess", "Home")' + '?login_id=' + login_id + '&reportgroup=' + page_group + '&site_type=1',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            success: function (result, status, xhr) {
+            success: function (result, status, xhr)
+            {
                 alert("Success");
                 location.href = '@Url.Action("SiteUserMaster", "Home")';
             }
