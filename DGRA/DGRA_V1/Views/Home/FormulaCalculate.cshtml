@@ -284,6 +284,7 @@
             // Destroy any previous instance of multipleSelect
             $("#site").multipleSelect('destroy');
             // Initialize multipleSelect with all options selected
+             $("#site").html(options);
             $("#site").multipleSelect({
                 "minimumCountSelected": 2,
                 "placeholder": "All Selected",
@@ -293,7 +294,7 @@
             });
             //Manually set all options as selected
             var selectedValues = result.map(function (item) {
-                return item.site_master_solar_id.toString(); // Ensure values are strings
+                return item.site.toString(); // Ensure values are strings
             });
             $("#site").multipleSelect("setSelects", selectedValues);
         },

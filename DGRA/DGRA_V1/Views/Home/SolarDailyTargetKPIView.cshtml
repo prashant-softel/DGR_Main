@@ -205,7 +205,8 @@
 
         var columns = [
             "FY", "Date", "Site", "GHI", "POA", "kWh ",
-                "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)"
+            "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)", "P50", "P75", "P90", "Toplining_Kwh", "Toplining_MA", "Toplining_IGA", "Toplining_EGA", "Toplining_PR", "Toplining_PLF", "Plant_Kwh", "Plant_PR", "Plant_PLF", "INV_Kwh", "INV_PR", "INV_PLF"
+
         ];
 
         var rows = [];
@@ -224,6 +225,22 @@
             row.push(result[i].ega || 0);
             row.push(result[i].pr || 0);
             row.push(result[i].plf || 0);
+            row.push(result[i].p50);
+            row.push(result[i].p75);
+            row.push(result[i].p90);
+
+            row.push(result[i].toplining_kWh);
+            row.push(result[i].toplining_MA);
+            row.push(result[i].toplining_IGA);
+            row.push(result[i].toplining_EGA);
+            row.push(result[i].toplining_PR);
+            row.push(result[i].toplining_PLF);
+            row.push(result[i].plant_kWh);
+            row.push(result[i].plant_PR);
+            row.push(result[i].plant_PLF);
+            row.push(result[i].inv_kWh);
+            row.push(result[i].inv_PR);
+            row.push(result[i].inv_PLF);
             rows.push(row);
         }
 
