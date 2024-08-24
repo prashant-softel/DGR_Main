@@ -19129,6 +19129,120 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             return _ReturnData;
         }
 
+        internal async Task<List<ExpectedResult>> BulkCalculateDailySolarExpected(string site, string fromDate, string toDate)
+        {
+            List<ExpectedResult> _ReturnData = new List<ExpectedResult>();
+            List<string> dateRange = new List<string>();
+            List<ExpectedResult> _siteIdData = new List<ExpectedResult>();
+            try
+            {
+                DateTime startDate = DateTime.Parse(fromDate);
+                DateTime endDate = DateTime.Parse(toDate);
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateRange.Add(date.ToString("yyyy-MM-dd"));
+                }
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while generating dates between from and to dates, due to : " + e.Message;
+            }
+
+
+            if (site is null || site == "")
+            {
+                //fetch site_ids
+                string siteFetchQry = "SELECT site_master_solar_id AS site_id FROM site_master_solar;";
+                try
+                {
+                    _siteIdData = await Context.GetData<ExpectedResult>(siteFetchQry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Exception while fetching site_ids from masters table, due to : " + e.Message;
+                }
+            }
+            else
+            {
+                //site_id is included while call.
+                if (site.Contains(","))
+                {
+                    string[] siteIds = site.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string siteIdStr in siteIds)
+                    {
+                        if (int.TryParse(siteIdStr.Trim(), out int siteId))
+                        {
+                            ExpectedResult result = new ExpectedResult
+                            {
+                                site_id = siteId
+                            };
+                            _siteIdData.Add(result);
+                        }
+                    }
+                }
+                else
+                {
+                    //single site_id
+                    if (int.TryParse(site.Trim(), out int singleSiteId))
+                    {
+                        ExpectedResult result = new ExpectedResult
+                        {
+                            site_id = singleSiteId
+                        };
+                        _siteIdData.Add(result);
+                    }
+                }
+            }
+
+            //date List and siteList is ready iterate both and call the api for daily calculation.
+            try
+            {
+                foreach (var dateUnit in dateRange)
+                {
+                    foreach (var siteUnit in _siteIdData)
+                    {
+                        int funcRes = 0;
+                        try
+                        {
+                            funcRes = await CalculateDailyExpectedSolar(Convert.ToString(siteUnit.site_id), dateUnit, dateUnit);
+                            string status = "";
+                            if (funcRes == 10)
+                            {
+                                status = "Success.";
+                            }
+                           
+                            ExpectedResult tempData = new ExpectedResult
+                            {
+                                site_id = siteUnit.site_id,
+                                date = dateUnit,
+                                status = status
+                            };
+                            _ReturnData.Add(tempData);
+                        }
+                        catch (Exception e)
+                        {
+                            string msg = "Exception while calling the function of calculation, due to : " + e.Message;
+                            ExpectedResult tempData = new ExpectedResult
+                            {
+                                site_id = siteUnit.site_id,
+                                date = dateUnit,
+                                status = msg
+                            };
+                            _ReturnData.Add(tempData);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception while Iteratively calling the function, due to " + e.Message;
+                return _ReturnData;
+            }
+
+            return _ReturnData;
+        }
+
         // Tanvi's Changes.
         internal async Task<int> dgrUploadingReminder()
         {
@@ -19165,7 +19279,26 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             DateTime dt = DateTime.Today.AddDays(-1);
             string today = dt.ToString("yyyy-MM-dd");
             //string today = "2023-11-12";
-
+            //get Admin mail 
+            List<string> AddCCEach = new List<string>();
+            string qryadmin = $"SELECT useremail FROM  login where active_user = 1 AND user_role = 'Admin'";
+            try
+            {
+                List<UserLogin> admindata = await Context.GetData<UserLogin>(qryadmin).ConfigureAwait(false);
+                if (admindata.Count > 0)
+                {
+                    foreach (var item in admindata)
+                    {
+                        AddCCEach.Add(item.useremail);
+                        //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function  : Added to email id :" + item.useremail);
+                    }
+                }
+               
+            }
+            catch (Exception e)
+            {
+                string msg = e.ToString();
+            }
 
             string tb = "<p style='text-align: left;'>Dear User,<br><br>";
             tb += $"This is a reminder email that DGR data is not uploaded for {dt.ToString("dd-MMM-yyyy")} .<p>";
@@ -19213,7 +19346,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //AddToWind.Add("haresh@softeltech.in");
 
                 Windrequest.ToEmail = AddToWindEach;
-                //request.CcEmail = AddCc;
+                Windrequest.CcEmail = AddCCEach;
                 Windrequest.Subject = $"DGR Uploading Reminder {today} - {site.name}";
                 Windrequest.Body = tb;
 
@@ -19265,7 +19398,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //AddToSolar = new List<string>();
                 //AddToSolar.Add("tanvi@softeltech.in");
                 SolarRequest.ToEmail = AddToSolar;
-                //request.CcEmail = AddCc;
+                SolarRequest.CcEmail = AddCCEach;
                 SolarRequest.Subject = $"DGR Uploading Reminder {today} - {site.name}";
                 SolarRequest.Body = tb;
 

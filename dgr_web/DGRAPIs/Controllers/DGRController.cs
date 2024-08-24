@@ -2982,6 +2982,22 @@ namespace DGRAPIs.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Route("BulkCalculateDailySolarExpected")]
+        [HttpGet]
+        //Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate)
+        public async Task<IActionResult> BulkCalculateDailySolarExpected(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                var data = await _dgrBs.BulkCalculateDailySolarExpected(site, fromDate, toDate);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
 
         //DGR_v3 Email_report changes
         [Route("dgrUploadingReminder")]

@@ -209,6 +209,7 @@ namespace DGRAPIs.BS
         Task<int> CalculateDailyExpected(string site, string data_date);
         Task<int> CalculateDailyExpectedSolar(string site, string fromDate, string toDate);
         Task<List<ExpectedResult>> BulkCalculateDailyWindExpected(string site, string fromDate, string toDate);
+        Task<List<ExpectedResult>> BulkCalculateDailySolarExpected(string site, string fromDate, string toDate);
         //DGR_v3 Email_report changes
         Task<int> dgrUploadingReminder();
         Task<List<SPVGroup>> getGroupBySPV(int siteType);
@@ -2913,6 +2914,22 @@ namespace DGRAPIs.BS
                 using (var repos = new DGRRepository(getDB))
                 {
                     return await repos.BulkCalculateDailyWindExpected(site, fromDate, toDate);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public async Task<List<ExpectedResult>> BulkCalculateDailySolarExpected(string site, string fromDate, string toDate)
+        {
+            try
+            {
+                using (var repos = new DGRRepository(getDB))
+                {
+                    return await repos.BulkCalculateDailySolarExpected(site, fromDate, toDate);
 
                 }
             }
