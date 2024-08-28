@@ -1389,7 +1389,13 @@
         {
             site += $(this).val() + ",";
         });
-        site = site != "" ? site.slice(0, -1) : site;
+        if (userRole == "User" && site == "") {
+            site = wsite_list;
+        }
+        else
+        {
+            site = site != "" ? site.slice(0, -1) : site;
+        }
         var startDate = date_arr.startdate;
         var endDate   = GetPreviousDate();
         var FY        = fyear;
@@ -1504,7 +1510,12 @@
         {
             site += $(this).val() + ",";
         });
-        site = site != "" ? site.slice(0, -1) : site;
+        if (userRole == "User" && site == "") {
+            site = wsite_list;
+        }
+        else {
+            site = site != "" ? site.slice(0, -1) : site;
+        }
         var startDate = date_arr.startdate;
         var endDate   = GetPreviousDate();
         var FY        = fyear;
@@ -1721,7 +1732,13 @@
         {
             solar_site += $(this).val() + ",";
         });
-        solar_site      = solar_site != "" ? solar_site.slice(0, -1) : solar_site;
+        if (userRole == "User" && solar_site == "") {
+            solar_site = ssite_list;
+        }
+        else {
+            solar_site = solar_site != "" ? solar_site.slice(0, -1) : solar_site;
+        }
+       
         var startDate   = date_arr.startdate;
         var endDate     = GetPreviousDate();
         var FY          = fyear;
@@ -1826,7 +1843,12 @@
         {
             solar_site += $(this).val() + ",";
         });
-        solar_site      = solar_site != "" ? solar_site.slice(0, -1) : solar_site;
+        if (userRole == "User" && solar_site == "") {
+            solar_site = ssite_list;
+        }
+        else {
+            solar_site = solar_site != "" ? solar_site.slice(0, -1) : solar_site;
+        }
         var startDate   = date_arr.startdate;
         var endDate     = GetPreviousDate();//date_arr.enddate;
         var FY          = fyear;
