@@ -316,59 +316,59 @@
                 }
                 tbl += '</table>';
                 $("#siteData").html(tbl);
-                //$('#example1').DataTable({
-                //    dom: 'Bfrtip',
-                //    fixedHeader: true,
-                //    responsive: true,
-                //    lengthChange: false,
-                //    autoWidth: false,
-                //    paging: true,
-                //    lengthChange: false,
-                //    searching: true,
-                //    ordering: true,
-                //    info: true,
-                //    autoWidth: false,
-                //    responsive: false,
-                //    pageLength: 50,
-                //    buttons: [
-                //        {
-                //            extend: 'excel',
-                //            title: 'Solar Site Master',
-                //            exportOptions: {
-                //                columns: ':visible'
-                //            }
-                //        },
-                //        {
-                //            extend: 'csv',
-                //            title: 'Solar Site Master',
-                //            exportOptions: {
-                //                columns: ':visible'
-                //            }
-                //        },
+                $('#example1').DataTable({
+                    dom: 'Bfrtip',
+                    fixedHeader: true,
+                    responsive: true,
+                    lengthChange: false,
+                    autoWidth: false,
+                    paging: true,
+                    lengthChange: false,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    responsive: false,
+                    pageLength: 50,
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            title: 'Solar Site Master',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            title: 'Solar Site Master',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
 
-                //        'colvis',
-                //        {
-                //            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
-                //            className: 'btn ml-1   ',
+                        'colvis',
+                        {
+                            text: '<span class="fas fa-file-excel" title="Download from DB up to six decimal"></span>',
+                            className: 'btn ml-1   ',
 
-                //            action: function () {
-                //                exportToExcel();
-                //            }
-                //        },
-                //    ],
-                //});
-                //$(".dt-buttons").addClass('btn-group flex-wrap');
-                //$(".dt-buttons > button").addClass('btn btn-secondary');
-                //$(".dataTables_filter> label >input").addClass('form-control form-control-sm');
-                //$(document).on("click", "div.dt-button-collection > div > button", function () {
-                //    if ($(this).hasClass("active")) {
-                //        $(this).css("background-color", "white");
-                //    } else {
-                //        $(this).css("background-color", "#31576d");
-                //    }
-                //});
+                            action: function () {
+                                exportToExcel();
+                            }
+                        },
+                    ],
+                });
+                $(".dt-buttons").addClass('btn-group flex-wrap');
+                $(".dt-buttons > button").addClass('btn btn-secondary');
+                $(".dataTables_filter> label >input").addClass('form-control form-control-sm');
+                $(document).on("click", "div.dt-button-collection > div > button", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).css("background-color", "white");
+                    } else {
+                        $(this).css("background-color", "#31576d");
+                    }
+                });
 
-                //$('#example1').removeClass('dataTable');
+                $('#example1').removeClass('dataTable');
             }
         });
     }
