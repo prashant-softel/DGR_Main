@@ -657,7 +657,8 @@
 
                         minr = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) * result[i].total_tarrif.toFixed(2));
                         if (result[i].tar_kwh != 0) {
-                            t_var = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) / result[i].tar_kwh.toFixed(2)) * 100;
+                            //t_var = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) / result[i].tar_kwh.toFixed(2)) * 100;
+                            t_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
                         if (result[i].expected_kwh != 0) {
                             //e_var = ((result[i].act_kwh - result[i].expected_kwh / 1000000) / (result[i].expected_kwh / 1000000)) * 100;

@@ -210,7 +210,7 @@
         result = exceldata;
 
         var columns = [
-            "FY", "JMR Month", "Site", "Plant Selection", "Controller kwh INV", "Scheduled Unit kwh", "Export kwh", "Import kwh", "Net Export kwh", "Export kVah", "Import kVah", "Export kVarh log", "Import kVarh log",
+            "FY", "JMR Month", "Site", "Controller kwh INV", "Scheduled Unit kwh", "Export kwh", "Import kwh", "Net Export kwh", "Export kVah", "Import kVah", "Export kVarh log", "Import kVarh log",
             "Export kVarh lead", "Import kVah lead", "Net Billable kWh","JMR Date", "Line Loss", "Line Loss(%)", " kVarh(%)"
         ];
 
@@ -238,7 +238,7 @@
             row.push(result[i].fy);
             row.push(result[i].jmR_Month);
             row.push(result[i].site);
-            row.push(plant_sel);
+            //row.push(plant_sel);
             row.push(result[i].controller_KWH_INV);
             row.push(sch_Unit);
             row.push(result[i].export_kWh);
