@@ -274,29 +274,36 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (result, status, xhr) {
-            var options = "";
+                var options = "";
+                options += '<option value="0">All Selected</option>';
             for (var i = 0; i < result.length; i++) {
                 solar_total_mw += result[i].ac_capacity;
-                options += '<option value="' + result[i].site_master_solar_id + '" selected>' + result[i].site + '</option>';
+                options += '<option value="' + result[i].site_master_solar_id + '">' + result[i].site + '</option>';
             }
             // Hide the select element
             $("#site").hide();
             // Destroy any previous instance of multipleSelect
             $("#site").multipleSelect('destroy');
             // Initialize multipleSelect with all options selected
-             $("#site").html(options);
-            $("#site").multipleSelect({
+                $("#site").html(options);
+                $('select#site').multipleSelect({
+                    "minimumCountSelected": 2,
+                    "placeholder": "All Selected",
+                     //"filter": true,
+                    "selectAll": true,
+                });
+            /*$("#site").multipleSelect({
                 "minimumCountSelected": 2,
                 "placeholder": "All Selected",
                 "filter": true,
                 "selectAll": true,
                 "multiple": true
-            });
+            });*/
             //Manually set all options as selected
-            var selectedValues = result.map(function (item) {
-                return item.site.toString(); // Ensure values are strings
-            });
-            $("#site").multipleSelect("setSelects", selectedValues);
+            //var selectedValues = result.map(function (item) {
+            //    return item.site.toString(); // Ensure values are strings
+            //});
+           // $("#site").multipleSelect("setSelects", selectedValues);
         },
         error: function (xhr, status, error) {
             //console.error("Error fetching solar sites:", error);
@@ -572,8 +579,8 @@
                 //console.log(result.MA_Actual);
                 var tbl = '<table id="example1" class="table table-bordered table-striped">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th>Name</th>';
-                tbl += '<th>Formulas</th>';
+                tbl += '<th>KPI Name</th>';
+                tbl += '<th>Formula</th>';
                 tbl += '<th>Action</th>';
                 tbl += '<th>Validate</th>';
                 tbl += '<th>Results</th>';
@@ -644,8 +651,10 @@
                 //console.log(result);
                 var tbl = '<table id="example2" class="table table-bordered table-striped">';
                 tbl += '<thead class="tbl-head"><tr>';
-                tbl += '<th>Name</th>';
-                tbl += '<th>Formulas</th>';
+                tbl += '<th>Site Name</th>';
+                tbl += '<th>KPI Name</th>';
+                tbl += '<th>Old Formula</th>';
+                tbl += '<th>New Formula</th>';
                 tbl += '<th>Change By Name</th>';
                 tbl += '<th>Change By Date</th>';
                 tbl += '</tr></thead>';
@@ -654,14 +663,22 @@
                     for (var i = 0; i < result.length; i++) {
                         var formattedDate = moment(result[i].change_by_date, 'YYYY/MM/DD').format('DD-MM-YYYY');
                         tbl += '<tr>';
+                        if (site == 0) {
+                            tbl += '<td class="text-left">All Site</td>';
+                        }
+                        else {
+                            tbl += '<td class="text-left">' + result[i].site + '</td>';
+
+                        }
                         tbl += '<td class="text-left">' + result[i].formula_name + '</td>';
                         tbl += '<td class="text-left">' + result[i].formulas + '</td>';
+                        tbl += '<td class="text-left">' + result[i].changed_formula + '</td>';
                         tbl += '<td class="text-left">' + result[i].username + '</td>';
                         tbl += '<td class="text-left">' + formattedDate + '</td>';
                         tbl += '</tr>';
                     }
                 } else {
-                    tbl += '<tr><td colspan="4">No data available</td></tr>'; // Fix colspan to match number of columns
+                    tbl += '<tr><td colspan="6">No data available</td></tr>'; // Fix colspan to match number of columns
                 }
                 tbl += '</tbody>'; // Add this line to close tbody
                 tbl += '</table>';

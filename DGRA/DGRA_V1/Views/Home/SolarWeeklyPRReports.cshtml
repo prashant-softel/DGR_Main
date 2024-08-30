@@ -3435,7 +3435,7 @@
                         let ma_act_var = 0;
                         let iga_var = 0;
                         let ega_var = 0;
-                        revenue = (result[i].act_jmr_kwh_mu - result[i].tar_kwh_mu) * result[i].total_tarrif;
+                        //revenue = (result[i].act_jmr_kwh_mu - result[i].tar_kwh_mu) * result[i].total_tarrif;
                         let ghi_var = 0;
                         let poa_var = 0;
                         let pr_var = 0;
@@ -3446,7 +3446,10 @@
 
                         let TCPr_var = 0;
 
-                        revenue = (result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif;
+                       // revenue = (result[i].act_kwh - result[i].tar_kwh) * result[i].total_tarrif;
+                        // revenue = ((result[i].act_kwh.toFixed(2) - result[i].tar_kwh.toFixed(2)) * result[i].total_tarrif.toFixed(2));
+                        revenue = result[i].revenue.toFixed(2);
+
                         if (result[i].act_kwh != 0 || result[i].tar_kwh != 0) {
                             jmr_var = ((result[i].act_kwh - result[i].tar_kwh) / result[i].tar_kwh) * 100;
                         }
@@ -3464,7 +3467,7 @@
                             ghi_var = ((result[i].act_ghi.toFixed(2) - result[i].tar_ghi.toFixed(2)) / result[i].tar_ghi.toFixed(2)) * 100;
                         }
                         if (result[i].tar_poa != 0) {
-                            poa_var = ((result[i].act_poa.toFixed(2) - result[i].tar_poa.toFixed(2)) / result[i].tar_poa.toFixed(2)) * 100;
+                            poa_var = ((result[i].act_poa - result[i].tar_poa) / result[i].tar_poa) * 100;
                         }
 
                         TCPr_var = (result[i].temp_corrected_pr - result[i].tar_pr)
@@ -3537,14 +3540,14 @@
                         pas_pr_var.push(p_pr_pasitive);
                         neg_pr_var.push(p_pr_negative);
 
-                        revenue_arr.push(revenue.toFixed(2));
+                        revenue_arr.push(result[i].revenue.toFixed(2));
 
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
                         //total_expected_kwh += result[i].expected_kwh;
                         total_expected_kwh += Number(result[i].expected_kwh);
                         total_act_kwh += result[i].act_kwh;
-                        total_revenue += revenue;
+                        total_revenue += result[i].revenue;
                         total_tar_ghi += result[i].tar_ghi;
                         total_act_ghi += result[i].act_ghi;
                         total_tar_poa += result[i].tar_poa;
@@ -3607,7 +3610,7 @@
                                 tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
                             }
                             if (userColumnId.includes(columnMap["Revenue"][0]) || columnMap["Revenue"][1] == 1 || isAdmin == 1) {
-                                tbl += '<td class="text-right">' + revenue.toFixed(2) + '</td>';
+                                tbl += '<td class="text-right">' + result[i].revenue.toFixed(2) + '</td>';
                             }
                             if (userColumnId.includes(columnMap["GHI_Tar"][0]) || columnMap["GHI_Tar"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].tar_ghi.toFixed(2) + '</td>';
@@ -3691,7 +3694,7 @@
                             tbl += '<td class="text-right">' + result[i].act_kwh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + jmr_var.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + e_var.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + revenue.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].revenue.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].tar_ghi.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].act_ghi.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + ghi_var.toFixed(2) + '</td>';
@@ -5050,9 +5053,10 @@
             site += $(this).val() + ",";
         });
         site = site != "" ? site.slice(0, -1) : site;
-
+        let cnt = 0;
         $('select#spv option:selected').each(function () {
             spv += $(this).val() + ",";
+            cnt++;
         });
         spv = spv != "" ? spv.slice(0, -1) : spv;
         if (userRole == "User" && site == "") {
@@ -5152,6 +5156,7 @@
                     let total_tar_kwh = 0;
                     let total_act_kwh = 0;
                     let total_expected_kwh = 0;
+                    let total_pr_expected = 0;
                     let total_revenue = 0;
                     let total_capTarGhi = 0;
                     let total_tar_ghi = 0;
@@ -5305,6 +5310,7 @@
                         actual_pr.push(result[i].act_poa.toFixed(1));
                         pas_pr_var.push(pr_pasitive);
                         neg_pr_var.push(pr_negative);
+                        total_pr_expected += result[i].pr_expected_kwh;
                         total_capacity += result[i].capacity;
                         total_tar_kwh += result[i].tar_kwh;
                         total_expected_kwh += result[i].expected_kwh;
@@ -5438,7 +5444,16 @@
                         avg_tar_ghi = (total_capTarGhi / total_capacity);
                         avg_tar_plf = total_capTarPlf / total_capacity;
                         avg_tar_poa = total_capTarPoa / total_capacity;
-                        avg_tar_gain = total_capTarGain / total_capacity;
+                        if (cnt > 1) {
+                            avg_tar_gain = total_capTarGain / total_capacity;
+                            avg_act_gain = total_capActGain / total_capacity;
+                            avg_act_pr = total_capActPr / total_capacity;
+                        }
+                        else {
+                            avg_tar_gain = (total_capTarPoa / total_capTarGhi) * 100;
+                            avg_act_gain = (total_capActPoa / total_capActGhi) * 100;
+                            avg_act_pr = (total_act_kwh / total_pr_expected) * 100;
+                        }
                         avg_tar_pr = total_capTarPr / total_capacity;
                         avg_tar_ma = total_capTarMa / total_capacity;
                         avg_tar_iga = total_capTarIga / total_capacity;
@@ -5446,8 +5461,6 @@
                         avg_act_ghi = total_capActGhi / total_capacity;
                         avg_act_plf = total_capActPlf / total_capacity;
                         avg_act_poa = total_capActPoa / total_capacity;
-                        avg_act_gain = total_capActGain / total_capacity;
-                        avg_act_pr = total_capActPr / total_capacity;
                         avg_act_ma = total_capActMa / total_capacity;
                         avg_act_iga = total_capActIga / total_capacity;
                         avg_act_ega = total_capActEga / total_capacity;

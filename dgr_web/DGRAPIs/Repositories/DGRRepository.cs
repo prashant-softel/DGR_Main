@@ -3710,7 +3710,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                 }
                 request.Subject = subject;
                 request.Body = Msg;
-                //var file = "C:\\Users\\tanvi kinjale\\Downloads\\" + fname + ".pptx";
+               // var file = "C:\\Users\\lenovo\\Downloads\\WindReview2024-08-28.pptx";
                 var file = "C:\\inetpub\\wwwroot\\DGR_WEB\\pptupload\\" + fname + ".pptx";
                 PPT_InformationLog("Weekly Mail Reading file path:- " + file);
 
@@ -6302,6 +6302,7 @@ ORDER BY site;";
                 expDailyFilter += $" AND t1.site_id IN({spvsiteList})";
 
             }
+
             string qry1 = "create or replace view temp_viewSPV as select t1.date, t1.site_id, t2.site, t3.spv,t1.gen_nos, t1.ghi, t1.poa, t1.plf,t1.pr, t1.ma, t1.iga, t1.ega" +
                 " from daily_target_kpi_solar t1, daily_gen_summary_solar t2, site_master_solar t3" +
                 " where t1.site_id = t2.site_id and t1.date = t2.date and t1.site_id = t3.site_master_solar_id" +
@@ -6324,22 +6325,26 @@ ORDER BY site;";
             {
                 string st = "temp";
             }
-
-            string qry6 = "SELECT spv, sum(kwh_afterloss)/ 1000000 as act_kwh, avg(plf_afterloss) as act_plf FROM `temp_viewSPV2` where date between '" + fromDate + "' and '" + todate + "' group by spv";
+            //add site and group by site 
+            string qry6 = "SELECT spv,site, sum(kwh_afterloss)/ 1000000 as act_kwh, avg(plf_afterloss) as act_plf FROM `temp_viewSPV2` where date between '" + fromDate + "' and '" + todate + "' group by spv,site";
             List<SolarPerformanceReports1> newdata = new List<SolarPerformanceReports1>();
             newdata = await Context.GetData<SolarPerformanceReports1>(qry6).ConfigureAwait(false);
 
 
-
-            string qry2 = " select spv, sum(gen_nos) as tar_kwh," +
+            //add site and group by site
+            string qry2 = " select spv,site, sum(gen_nos) as tar_kwh," +
                 " sum(ghi) as tar_ghi, sum(poa) as tar_poa, sum(plf)/count(plf) as tar_plf," +
                 " sum(pr)/count(pr) as tar_pr, sum(ma)/count(ma) as tar_ma, sum(iga)/count(iga) as tar_iga, sum(ega)/count(ega) as tar_ega " +
-                "from temp_viewSPV group by spv ";
-            string newQuery2 = $@"SELECT spv, tar_kwh, tar_ghi/site_count AS tar_ghi, tar_poa/site_count AS tar_poa, tar_plf, tar_pr, tar_ma, tar_iga, tar_ega, site_count FROM (SELECT spv, sum(gen_nos) as tar_kwh, sum(ghi) as tar_ghi, sum(poa) as tar_poa, sum(plf)/count(plf) as tar_plf, sum(pr)/count(pr) as tar_pr, sum(ma)/count(ma) as tar_ma, sum(iga)/count(iga) as tar_iga, sum(ega)/count(ega) as tar_ega, t5.site_count FROM temp_viewSPV LEFT JOIN (SELECT COUNT(site) AS site_count, spv AS count_spv FROM `site_master_solar` GROUP BY spv ORDER BY spv) t5 ON spv = t5.count_spv GROUP BY spv) AS subquery;";
+                "from temp_viewSPV group by site ";  ///cange to group by site 
+
+            // change query 
+            //string newQuery2 = $@"SELECT spv, tar_kwh, tar_ghi/site_count AS tar_ghi, tar_poa/site_count AS tar_poa, tar_plf, tar_pr, tar_ma, tar_iga, tar_ega, site_count FROM (SELECT spv, sum(gen_nos) as tar_kwh, sum(ghi) as tar_ghi, sum(poa) as tar_poa, sum(plf)/count(plf) as tar_plf, sum(pr)/count(pr) as tar_pr, sum(ma)/count(ma) as tar_ma, sum(iga)/count(iga) as tar_iga, sum(ega)/count(ega) as tar_ega, t5.site_count FROM temp_viewSPV LEFT JOIN (SELECT COUNT(site) AS site_count, spv AS count_spv FROM `site_master_solar` GROUP BY spv ORDER BY spv) t5 ON spv = t5.count_spv GROUP BY spv) AS subquery;";
+            string newQuery2 = $@"SELECT spv,site, tar_kwh, tar_ghi AS tar_ghi, tar_poa AS tar_poa, tar_plf, tar_pr, tar_ma, tar_iga, tar_ega, site_count FROM (SELECT spv,site, sum(gen_nos) as tar_kwh, sum(ghi) as tar_ghi, sum(poa) as tar_poa, sum(plf)/count(plf) as tar_plf, sum(pr)/count(pr) as tar_pr, sum(ma)/count(ma) as tar_ma, sum(iga)/count(iga) as tar_iga, sum(ega)/count(ega) as tar_ega, t5.site_count FROM temp_viewSPV LEFT JOIN (SELECT COUNT(site) AS site_count, spv AS count_spv FROM `site_master_solar` GROUP BY spv ORDER BY spv) t5 ON spv = t5.count_spv GROUP BY spv,site) AS subquery;";
+
             List<SolarPerformanceReports1> tempdata = new List<SolarPerformanceReports1>();
             tempdata = await Context.GetData<SolarPerformanceReports1>(newQuery2).ConfigureAwait(false);
 
-            string qry7 = "select spv,SUM(ac_capacity)  as capacity from site_master_solar " + filter2+" group by spv ";
+            string qry7 = "select spv,SUM(ac_capacity)  as capacity from site_master_solar " + filter2+" group by site ";  //group by site
                 
             List<SolarPerformanceReports1> tempdata2 = new List<SolarPerformanceReports1>();
             tempdata2 = await Context.GetData<SolarPerformanceReports1>(qry7).ConfigureAwait(false);
@@ -6366,7 +6371,6 @@ ORDER BY site;";
             string newQery = $@"SELECT
     site,
 spv,
-site_count,
 inv_count,
 capacity,
 total_tarrif,
@@ -6374,24 +6378,25 @@ tar_kwh,
 act_kwh,
 pr_expected_kwh,
 lineloss,
-tar_ghi / site_count AS tar_ghi,
-act_ghi / inv_count AS act_ghi,
-tar_poa / site_count AS tar_poa,
-act_poa / inv_count AS act_poa,
+tar_ghi AS tar_ghi,
+(act_ghi*capacity) / inv_count AS act_ghi,
+tar_poa AS tar_poa,
+(act_poa*capacity) / inv_count AS act_poa,
 tar_plf,
 act_plf,
 tar_pr,
-act_pr,
+act_pr*capacity as act_pr ,
 tar_ma,
-act_ma,
+act_ma*capacity as act_ma,
 tar_iga,
-act_iga,
+act_iga*capacity as act_iga,
 tar_ega,
-act_ega
+act_ega*capacity as act_ega
 FROM
     (SELECT 
         t1.site AS site,
-        spv, t5.site_count AS site_count, t6.inv_count AS inv_count,
+        (SELECT  spv FROM `site_master_solar` where  site=t1.site GROUP BY site ORDER BY spv) as spv,
+        (SELECT COUNT(inverter) FROM solar_ac_dc_capacity WHERE site = t1.site) AS inv_count,
         (SELECT ac_capacity FROM site_master_solar where site=t1.site and state=t1.state)as capacity,
         (SELECT dc_capacity FROM site_master_solar where site=t1.site and state=t1.state)as dc_capacity,
         (SELECT total_tarrif FROM site_master_solar where site=t1.site and state=t1.state)as total_tarrif,
@@ -6412,8 +6417,8 @@ FROM
         (SELECT  sum(iga)/count(*) FROM daily_target_kpi_solar WHERE sites=t1.site AND {datefilter} AND fy= '{fy}') AS tar_iga,
         sum(iga)/count(*) AS act_iga,
         (SELECT  sum(ega)/count(*) FROM daily_target_kpi_solar WHERE sites=t1.site AND {datefilter} AND fy= '{fy}') AS tar_ega,
-        sum(ega)/count(*) AS act_ega FROM daily_gen_summary_solar t1 LEFT JOIN site_master_solar t2 ON t1.site = t2.site LEFT JOIN (SELECT COUNT(site) AS site_count, spv AS count_spv FROM `site_master_solar` GROUP BY spv ORDER BY spv) t5 ON spv = t5.count_spv LEFT JOIN (SELECT COUNT(inverter) AS inv_count, tb2.spv AS inv_spv FROM solar_ac_dc_capacity tb1 LEFT JOIN site_master_solar tb2 ON tb1.site_id = tb2.site_master_solar_id GROUP BY tb2.spv) t6 ON spv = t6.inv_spv WHERE {datefilter} {filter} 
-    GROUP BY spv) 
+        sum(ega)/count(*) AS act_ega FROM daily_gen_summary_solar t1  WHERE {datefilter} {filter} 
+    GROUP BY site) 
 AS subquery;";
 
             //count(*) as act_ega FROM daily_gen_summary_solar t1 left join site_master_solar t2 on t1.site =t2.site  where t1.approve_status=" + approve_status + " and " + datefilter + " group by spv";
@@ -6447,7 +6452,8 @@ AS subquery;";
                 getPower = "  select t2.site, t2.spv, sum(t1.P_exp_degraded)/60 as expected_kwh from `uploading_pyranometer_1_min_solar` as t1 left join site_master_solar as t2 on t1.site_id=t2.site_master_solar_id where " + datefilter2 + " group by t2.spv";
             } */
             //DGR_v3 dailybasis changes.
-            getPower = $"SELECT t2.site, t2.spv, SUM(t1.expected_power) AS expected_kwh FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE {expDailyFilter} AND t1.aop_top = 1 GROUP BY t2.spv";
+            //add group by site
+            getPower = $"SELECT t2.site, t2.spv, SUM(t1.expected_power) AS expected_kwh FROM daily_expected_vs_actual_solar t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE {expDailyFilter} AND t1.aop_top = 1 GROUP BY t2.spv,t2.site";
 
             List<SolarPerformanceReports1> data1min = new List<SolarPerformanceReports1>();
             string functionName = "GetSolarPerformanceReportBySPVWise";
@@ -6463,9 +6469,9 @@ AS subquery;";
                 //API_ErrorLog(msg);
                 LogError(0, 1, 5, functionName, msg, backend);
             }
-
+            //add group by site
            // string getTempCorrPr = "SELECT t2.site, t2.spv, t1.site_id, (SUM(t1.jmrTempPR) * 100) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t2.spv;"
-            string getTempCorrPr = "SELECT t2.site, t2.spv, t1.site_id, (SUM(t1.jmrTempPR)) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t2.spv;";
+            string getTempCorrPr = "SELECT t2.site, t2.spv, t1.site_id, (SUM(t1.jmrTempPR)) AS temp_corrected_pr FROM temperature_corrected_pr t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id WHERE " + datefilterTempCorr + " GROUP BY t2.spv,t2.site;";
 
             List<SolarPerformanceReports1> dataTempCorrPr = new List<SolarPerformanceReports1>();
             try
@@ -6483,37 +6489,39 @@ AS subquery;";
             {
                 foreach (SolarPerformanceReports1 _tempdataelement in tempdata)
                 {
-                    if (_dataelement.spv == _tempdataelement.spv)
+                    if (_dataelement.site == _tempdataelement.site)
                     {
                         _dataelement.tar_kwh = _tempdataelement.tar_kwh;
-                        _dataelement.tar_ega = _tempdataelement.tar_ega;
-                        _dataelement.tar_ghi = _tempdataelement.tar_ghi;
-                        _dataelement.tar_iga = _tempdataelement.tar_iga;
-                        _dataelement.tar_ma = _tempdataelement.tar_ma;
-                        _dataelement.tar_plf = _tempdataelement.tar_plf;
-                        _dataelement.tar_poa = _tempdataelement.tar_poa;
-                        _dataelement.tar_pr = _tempdataelement.tar_pr;
+                        _dataelement.tar_ega = _tempdataelement.tar_ega * _dataelement.capacity;
+                        _dataelement.tar_ghi = _tempdataelement.tar_ghi* _dataelement.capacity;
+                        _dataelement.tar_iga = _tempdataelement.tar_iga * _dataelement.capacity;
+                        _dataelement.tar_ma = _tempdataelement.tar_ma * _dataelement.capacity;
+                        _dataelement.tar_plf = _tempdataelement.tar_plf * _dataelement.capacity;
+                        _dataelement.tar_poa = _tempdataelement.tar_poa * _dataelement.capacity;
+                        _dataelement.tar_pr = _tempdataelement.tar_pr * _dataelement.capacity;
                     }
                 }
                 foreach (SolarPerformanceReports1 _tempdataelement in newdata)
                 {
-                    if (_dataelement.spv == _tempdataelement.spv) 
+                    if (_dataelement.site == _tempdataelement.site) 
                     {
                         _dataelement.act_kwh = _tempdataelement.act_kwh;
-                        _dataelement.act_plf = _tempdataelement.act_plf;
+                        _dataelement.act_plf = _tempdataelement.act_plf *_dataelement.capacity; ;
+
                     }
                 }
                 foreach (SolarPerformanceReports1 _tempdataelement in tempdata2)
                 {
-                    if (_dataelement.spv == _tempdataelement.spv)
+                    if (_dataelement.site == _tempdataelement.site)
                     {
                         _dataelement.capacity = _tempdataelement.capacity;
+                       
                     }
                 }
 
                 foreach (SolarPerformanceReports1 _tempdataelement in data1min)
                 {
-                    if (_dataelement.spv == _tempdataelement.spv)
+                    if (_dataelement.site == _tempdataelement.site)
                     {
                         _dataelement.expected_kwh = _tempdataelement.expected_kwh;
                     }
@@ -6521,14 +6529,69 @@ AS subquery;";
 
                 foreach (SolarPerformanceReports1 _tempdataelement in dataTempCorrPr)
                 {
-                    if (_dataelement.spv == _tempdataelement.spv)
+                    if (_dataelement.site == _tempdataelement.site)
                     {
                         //_dataelement.temp_corrected_pr = _tempdataelement.temp_corrected_pr;
                         _dataelement.temp_corrected_pr = ((_dataelement.act_kwh * 1000000) / _tempdataelement.temp_corrected_pr)*100;
                     }
                 }
+                foreach (SolarPerformanceReports1 _tempdataelement in tempdata)
+                {
+                    if (_dataelement.site == _tempdataelement.site)
+                    {
+                        _dataelement.revenue = (_dataelement.act_kwh - _dataelement.tar_kwh) * _dataelement.total_tarrif;
+                        //_dataelement.act_ghi = _dataelement.act_ghi * _tempdataelement.capacity;
+
+                    }
+                }
             }
-            return data;
+            var result = data.GroupBy(
+               d => d.spv,
+               (key, group) => new SolarPerformanceReports1
+               {
+                   spv = key,
+                   capacity = group.Sum(x => x.capacity),
+                  // tar_ghi = group.Sum(x => x.tar_ghi) / x.capacity,
+                   tar_kwh = group.Sum(x => x.tar_kwh),
+                   act_kwh = group.Sum(x => x.act_kwh),
+                   expected_kwh = group.Sum(x => x.expected_kwh),
+                   act_kwh_afterloss = group.Sum(x => x.act_kwh_afterloss),
+                   act_kwh_for_temp_corr = group.Sum(x => x.act_kwh_for_temp_corr),
+                   dc_capacity = group.Sum(x => x.dc_capacity),
+                   lineloss = group.Sum(x => x.lineloss),
+                   plant_kwh = group.Sum(x => x.plant_kwh),
+                   pr_expected_kwh = group.Sum(x => x.pr_expected_kwh),
+                   tar_ega = group.Sum(x => x.tar_ega)/group.Sum(x => x.capacity),
+                   tar_ghi = group.Sum(x => x.tar_ghi)/ group.Sum(x => x.capacity),
+                   tar_iga = group.Sum(x => x.tar_iga) / group.Sum(x => x.capacity),
+                   tar_ma = group.Sum(x => x.tar_ma) / group.Sum(x => x.capacity),
+                   tar_plf = group.Sum(x => x.tar_plf) / group.Sum(x => x.capacity),
+                   tar_poa = group.Sum(x => x.tar_poa) / group.Sum(x => x.capacity),
+                   tar_pr = group.Sum(x => x.tar_pr) / group.Sum(x => x.capacity),
+                   act_plf = group.Sum(x => x.act_plf) / group.Sum(x => x.capacity),
+                   act_ega = group.Sum(x => x.act_ega) / group.Sum(x => x.capacity),
+                   act_ghi = group.Sum(x => x.act_ghi) / group.Sum(x => x.capacity),
+                   act_iga = group.Sum(x => x.act_iga) / group.Sum(x => x.capacity),
+                   act_ma = group.Sum(x => x.act_ma) / group.Sum(x => x.capacity),
+                   act_poa = group.Sum(x => x.act_poa) / group.Sum(x => x.capacity),
+                   act_pr = group.Sum(x => x.act_pr) / group.Sum(x => x.capacity),
+                   act_temp_pr = group.Average(x => x.act_temp_pr),
+                   tar_temp_pr = group.Average(x => x.tar_temp_pr),
+                   temp_corrected_pr = group.Average(x => x.temp_corrected_pr),
+                   total_tarrif = group.Sum(x => x.total_tarrif),
+                   revenue = group.Sum(x => x.revenue),
+                   inv_count = group.Sum(x => x.inv_count),
+
+                   //total_mw = totalMwSum,  // Assign the precomputed sum here
+
+                   //total_mw = group.Select(selector: x => totalMwSum),
+
+
+                   //item = group.ToList()
+               }
+               ).ToList();
+            return result;
+            //return data;
         }
         internal async Task<List<SolarDailyBDloss>> GetSolarDailyBDLossData(string fromDate, string todate)
         {
@@ -6607,7 +6670,7 @@ FROM daily_bd_loss_solar where   " + datefilter;
         internal async Task<List<SolarDailyTargetKPI>> GetSolarDailyTargetKPI(string fromDate, string todate, string site)
         {
             string filter = "site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
-            string qry = @"SELECT fy,date, sites,site_id,ghi,poa ,gen_nos as kWh ,ma,iga,ega ,pr,plf ,Toplining_kWh ,Toplining_MA ,Toplining_IGA, Toplining_EGA ,Toplining_PR ,Toplining_PLF,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF  FROM daily_target_kpi_solar  where " + filter;
+            string qry = @"SELECT fy,date, sites,site_id,ghi,poa ,gen_nos as kWh ,ma,iga,ega ,pr,plf,p_50 as P50,p_75 as P75,p_90 as P90 ,Toplining_kWh ,Toplining_MA ,Toplining_IGA, Toplining_EGA ,Toplining_PR ,Toplining_PLF,plant_kWh ,Plant_PR ,Plant_PLF ,Inv_kWh ,Inv_PR ,Inv_PLF  FROM daily_target_kpi_solar  where " + filter;
             return await Context.GetData<SolarDailyTargetKPI>(qry).ConfigureAwait(false);
 
         }
@@ -19610,7 +19673,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 request.Subject = subject;
                 request.Body = Msg;
                 var file = "C:\\inetpub\\wwwroot\\DGR_WEB\\pptupload\\" + fname + ".pptx";
-                //var file = "C:\\Users\\lenovo\\Downloads\\WindReview2024-07-26-final.pptx";
+                //var file = "C:\\Users\\lenovo\\Downloads\\WindReview2024-08-28.pptx";
                 PPT_InformationLog("Monthly Mail Reading file path:- " + file);
                 try
                 {
@@ -21300,8 +21363,17 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
         internal async Task<List<GetFormulaLog>> GetFormulaLog(int site_id)
         {
             string query;
-            query = "SELECT fl.site_id,fl.formula_name,fl.formula AS formulas,l.username,fl.Changed_by_date AS change_by_date FROM formula_log as fl join login as l on l.login_id=fl.change_by_id WHERE fl.site_id = " + site_id + "";
+            if(site_id == 0)
+            {
+                query = "SELECT fl.site_id,fl.formula_name,fl.formula AS formulas,l.username,fl.Changed_by_date AS change_by_date,fl.changed_formula FROM formula_log as fl join login as l on l.login_id=fl.change_by_id WHERE fl.site_id = " + site_id + "";
+            }
+            else
+            {
+                query = "SELECT sm.site,fl.site_id,fl.formula_name,fl.formula AS formulas,l.username,fl.Changed_by_date AS change_by_date,fl.changed_formula FROM formula_log as fl join login as l on l.login_id = fl.change_by_id left join site_master as sm on sm.site_master_id = fl.site_id WHERE fl.site_id = " + site_id + "";
+            }
+            
             // Retrieve the data from the database
+
             List<GetFormulaLog> GetFormulaLog = await getDB.GetData<GetFormulaLog>(query).ConfigureAwait(false);
             return GetFormulaLog;
         }
@@ -21310,7 +21382,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             int result = 0;
             try
             {
-                string inserqry = "insert into formula_log (site_id,formula_id, formula_name, formula, change_by_id) values ('" + site_id + "','" + id + "','" + fieldType + "','" + oldFormulas + "','" + login_id + "')";
+                string inserqry = "insert into formula_log (site_id,formula_id, formula_name, formula, change_by_id,changed_formula ) values ('" + site_id + "','" + id + "','" + fieldType + "','" + oldFormulas + "','" + login_id + "','"+ formulas + "')";
                 await getDB.ExecuteNonQry<int>(inserqry).ConfigureAwait(false);
                 String query1 = "update wind_site_formulas set " + fieldType + "='" + formulas + "' where id= " + id + " and site_id=" + site_id + ";";
                 await getDB.ExecuteNonQry<int>(query1).ConfigureAwait(false);

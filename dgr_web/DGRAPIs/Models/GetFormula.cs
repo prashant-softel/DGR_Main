@@ -31,7 +31,8 @@ namespace DGRAPIs.Models
         public String username { get; set; }
         public String formulas { get; set; }
         public String formula_name { get; set; }
-        
+        public String site { get; set; }
+        public String changed_formula { get; set; }
         public dynamic change_by_date { get; set; }
 
     }

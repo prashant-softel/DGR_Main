@@ -95,7 +95,7 @@ namespace DGRAPIs.BS
                     TimeSpan endTime = schduledTime.Add(TimeSpan.FromMinutes(8)) ;
                     //if ((schduledTime >= approxTime) && (schduledTime <= timeNow))
                     if (((timeNow >= schduledTime) && (timeNow <= endTime)) || withoutSetTime == 1)
-                    {
+                   {
                         using var smtp = new MailKit.Net.Smtp.SmtpClient();
                         smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
                         // smtp.Connect(MailSettings.Host, MailSettings.Port, SecureSocketOptions.StartTls);
@@ -106,11 +106,11 @@ namespace DGRAPIs.BS
 
                         _MailResponse.Add(new MailResponse { mail_sent = true, message = "Mail sent successfully" });
                         break;
-                    }
-                    else
-                    {
-                        _MailResponse.Add(new MailResponse { mail_sent = false, message = "Mail not sent." });
-                    }
+                   }
+                   else
+                   {
+                     _MailResponse.Add(new MailResponse { mail_sent = false, message = "Mail not sent." });
+                   }
                 }
                     return _MailResponse;
                 
