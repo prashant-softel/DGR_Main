@@ -11121,7 +11121,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 ", igbdh = " + Final_IGBD_Loss + ", egbdh = " + Final_EGBD_Loss + ", load_shedding = " + Final_LS_Loss +
                 ", ma = " + Math.Round(MA, 6) + ", iga = " + Math.Round(IGA, 6) + ", ega = " + Math.Round(EGA, 6) + ", ega_b = " + Math.Round(EGAB, 6) + ", ega_c = " + Math.Round(EGAC, 6) + ", lull_hrs_bd = " + Math.Round(Lull_Hr, 6) + ", usmh_bd = " + Math.Round(USMH_Hr, 6) + ", smh_bd = " + Math.Round(SMH_Hr, 6) + ", igbdh_bd =" + Math.Round(IGBD_Hr, 6) + ", egbdh_bd =" + Math.Round(EGBD_Hr, 6) +
                 ", load_shedding_bd = " + LS_Hr + ", total_bd_hrs = " + Math.Round(Lull_Hr + USMH_Hr + SMH_Hr + IGBD_Hr + EGBD_Hr + LS_Hr, 6) + ", usmh=" + Final_USMH_Loss + ", smh=" + Final_SMH_Loss + ", oh= " + Final_OthersHour_Loss + ", igbdh = " + Final_IGBD_Loss + ", egbdh= " + Final_EGBD_Loss +
-                ", total_losses=" + totalLoss + ", prod_hrs = " + FinalProductionHrs + " where site_id = " + site_id + " and inverter = '" + inverter + "' and date = '" + fromDate + "'";
+                ", total_losses=" + totalLoss + ", prod_hrs = " + FinalProductionHrs + ",oh_bd="+Math.Round(O_Hr, 6)+ " where site_id = " + site_id + " and inverter = '" + inverter + "' and date = '" + fromDate + "'";
 
             string updateqry = "update uploading_file_generation_solar set inv_pr=inv_act*100/expected_kwh, plant_pr=plant_act*100/expected_kwh where " +
                 "site_id = " + site_id + " and date = '" + fromDate + "'";
