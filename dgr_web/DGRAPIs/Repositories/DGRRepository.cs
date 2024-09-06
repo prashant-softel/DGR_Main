@@ -12964,7 +12964,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 if (UpdateReconWSAndOtherRes == 8)
                 {
                     //DGR_v3
-                    string convDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                    //string convDate = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
+                    DateTime parsedDate = DateTime.ParseExact(date.ToString(), "dd-MMM-yy", System.Globalization.CultureInfo.InvariantCulture);
+                    string convDate = parsedDate.ToString("yyyy-MM-dd");
                     int tmlcount = await WindTMLRecordCount(convDate, site_id, type, set.Count, 0);
                     //DGR_v2
                     finalResult = 5;
@@ -17686,6 +17688,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             {
                                 int resUpdateInsert = await Context.ExecuteNonQry<int>(finalUpdateInsertQuery).ConfigureAwait(false);
                                 returnResult = 2;
+                                //call api on parcial upload in tml 
+                                int DailyData = await CalculateDailyExpected(site_id.ToString(), date);
                             }
                             catch (Exception e)
                             {
