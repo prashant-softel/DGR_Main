@@ -243,7 +243,7 @@
         result = exceldata;
 
         var columns = [
-            "FY", "Month", "Site", "GHI", "POA", "kWh", "MA (%)", "IGA (%)", "EGA (%)", "PR", "PLF (%)","P50","P75","P90","Toplining_Kwh","Toplining_MA","Toplining_IGA","Toplining_EGA","Toplining_PR","Toplining_PLF","Plant_Kwh","Plant_PR","Plant_PLF","INV_Kwh","INV_PR","INV_PLF"
+            "FY", "Month", "Site", "GHI", "POA", "kWh", "MA (%)", "IGA (%)", "EGA (%)", "PR (%)", "PLF (%)","P50 (%)","P75 (%)","P90 (%)","Toplining_Kwh","Toplining_MA","Toplining_IGA","Toplining_EGA","Toplining_PR","Toplining_PLF","Plant_Kwh","Plant_PR","Plant_PLF","INV_Kwh","INV_PR","INV_PLF"
         ];
 
         var rows = [];
@@ -373,13 +373,13 @@
                         tbl += '<th style="white-space: nowrap;">PLF (%)</th>';
                     }
                     if (userColumnId.includes(columnMap["P50"][0]) || columnMap["P50"][1] == 1 || isAdmin == 1) {
-                        tbl += '<th>P50 </th>';
+                        tbl += '<th style="white-space: nowrap;">P50 (%)</th>';
                     }
                     if (userColumnId.includes(columnMap["P75"][0]) || columnMap["P75"][1] == 1 || isAdmin == 1) {
-                        tbl += '<th>P75 </th>';
+                        tbl += '<th style="white-space: nowrap;">P75 (%)</th>';
                     }
                     if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
-                        tbl += '<th>P90 </th>';
+                        tbl += '<th style="white-space: nowrap;">P90 (%)</th>';
                     }
                     if (userColumnId.includes(columnMap["Toplining_Kwh"][0]) || columnMap["Toplining_Kwh"][1] == 1 || isAdmin == 1) {
                         tbl += '<th style="white-space: nowrap;">Toplining_kWh (in MU)</th>';
@@ -431,9 +431,9 @@
                     tbl += '<th  style="white-space: nowrap;">EGA (%)</th>';
                     tbl += '<th  style="white-space: nowrap;">PR (%)</th>';
                     tbl += '<th  style="white-space: nowrap;">PLF (%)</th>';
-                    tbl += '<th>P50 </th>';
-                    tbl += '<th>P75 </th>';
-                    tbl += '<th>P90 </th>';
+                    tbl += '<th style="white-space: nowrap;">P50 (%)</th>';
+                    tbl += '<th style="white-space: nowrap;">P75 (%)</th>';
+                    tbl += '<th style="white-space: nowrap;">P90 (%)</th>';
                     tbl += '<th style="white-space: nowrap;">Toplining_kWh (in MU)</th>';
                     tbl += '<th style="white-space: nowrap;">Toplining _MA (%)</th>';
                     tbl += '<th style="white-space: nowrap;">Toplining_IGA (%)</th>';
