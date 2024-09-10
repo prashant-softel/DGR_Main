@@ -265,7 +265,7 @@
         result = exceldata;
 
         var columns = [
-            "FY", "Month", "Site",  "Wind Speed (m/s)", "kWh","MA (%)","IGA (%)", "EGA (%)","PLF (%)","P50 (%)","P75 (%)","P90 (%)"
+            "FY", "Month", "Site",  "Wind Speed (m/s)", "kWh","MA (%)","IGA (%)", "EGA (%)","PLF (%)","P50","P75","P90"
         ];
 
         var rows = [];
@@ -378,13 +378,13 @@
                         tbl += '<th>PLF (%)</th>';
                     }
                     if (userColumnId.includes(columnMap["P50"][0]) || columnMap["P50"][1] == 1 || isAdmin == 1) {
-                        tbl += '<th>P50 (%)</th>';
+                        tbl += '<th>P50</th>';
                     }
                     if (userColumnId.includes(columnMap["P75"][0]) || columnMap["P75"][1] == 1 || isAdmin == 1) {
-                        tbl += '<th>P75 (%) </th>';
+                        tbl += '<th>P75</th>';
                     }
                     if (userColumnId.includes(columnMap["P90"][0]) || columnMap["P90"][1] == 1 || isAdmin == 1) {
-                        tbl += '<th>P90 (%)</th>';
+                        tbl += '<th>P90</th>';
                     }
                 }
                 else
@@ -398,9 +398,9 @@
                     tbl += '<th>IGA (%)</th>';
                     tbl += '<th>EGA (%)</th>';
                     tbl += '<th>PLF (%)</th>';
-                    tbl += '<th>P50 (%)</th>';
-                    tbl += '<th>P75 (%)</th>';
-                    tbl += '<th>P90 (%)</th>';
+                    tbl += '<th>P50</th>';
+                    tbl += '<th>P75</th>';
+                    tbl += '<th>P90</th>';
                 }
                 tbl += '</tr></thead>';
 

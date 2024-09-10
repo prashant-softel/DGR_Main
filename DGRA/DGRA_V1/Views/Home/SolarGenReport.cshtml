@@ -2040,6 +2040,10 @@
                     if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>Gen_Hrs</th>';
                     }
+                    if (userColumnId.includes(columnMap["Lull_Hrs"][0]) || columnMap["Lull_Hrs"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Lull_Hrs</th>';
+                    }
+                    
                     if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>USMH</th>';
                     }
@@ -2082,6 +2086,10 @@
                     if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>LULL_Loss</th>';
                     }
+                    if (userColumnId.includes(columnMap["Tracker_Loss"][0]) || columnMap["Tracker_Loss"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Tracker_Loss</th>';
+                    }
+                    
                     if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>Total_Loss</th>';
                     }
@@ -2110,6 +2118,7 @@
                         tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
                         tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                         tbl += '<th>Gen_Hrs</th>';
+                        tbl += '<th>Lull_Hrs</th>';
                         tbl += '<th>USMH</th>';
                         tbl += '<th>SMH</th>';
                         tbl += '<th>OH</th>';
@@ -2124,6 +2133,7 @@
                         tbl += '<th>EGBD_Loss</th>';
                         tbl += '<th>LS_Loss</th>';
                         tbl += '<th>LULL_Loss</th>';
+                        tbl += '<th>Tracker_Loss</th>';
                         tbl += '<th>Total_Loss</th>';
                 }
                 tbl += '</tr></thead>';
@@ -2215,6 +2225,9 @@
                             if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
                             }
+                            if (userColumnId.includes(columnMap["Lull_Hrs"][0]) || columnMap["Lull_Hrs"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
+                            }
                             if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
                             }
@@ -2257,6 +2270,9 @@
                             if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                             }
+                            if (userColumnId.includes(columnMap["Tracker_Loss"][0]) || columnMap["Tracker_Loss"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                            }
                             if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
                             }
@@ -2285,6 +2301,7 @@
                             tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].smh_bd.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].oh_bd.toFixed(2) + '</td>';
@@ -2299,6 +2316,7 @@
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
                         }
                     //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
@@ -3212,6 +3230,10 @@
                     if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>Gen_Hrs</th>';
                     }
+                    if (userColumnId.includes(columnMap["Lull_Hrs"][0]) || columnMap["Lull_Hrs"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Lull_Hrs</th>';
+                    }
+                    
                     if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>USMH</th>';
                     }
@@ -3251,9 +3273,11 @@
                     if (userColumnId.includes(columnMap["LS_Loss"][0]) || columnMap["LS_Loss"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>LS_Loss</th>';
                     }
-                    if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
-                        tbl += '<th>LULL_Loss</th>';
+                    if (userColumnId.includes(columnMap["Tracker_Loss"][0]) || columnMap["Tracker_Loss"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Tracker_Loss</th>';
                     }
+
+                   
                     if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>Total_Loss</th>';
                     }
@@ -3283,6 +3307,7 @@
                     tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
                     tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                     tbl += '<th>Gen_Hrs</th>';
+                    tbl += '<th>Lull_Hrs</th>';
                     tbl += '<th>USMH</th>';
                     tbl += '<th>SMH</th>';
                     tbl += '<th>OH</th>';
@@ -3297,6 +3322,7 @@
                     tbl += '<th>EGBD_Loss</th>';
                     tbl += '<th>LS_Loss</th>';
                     tbl += '<th>LULL_Loss</th>';
+                    tbl += '<th>Tracker_Loss</th>';
                     tbl += '<th>Total_Loss</th>';
                 }
                 //tbl += '<th>FY</th>';
@@ -3425,6 +3451,10 @@
                             if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
                             }
+                            if (userColumnId.includes(columnMap["Lull_Hrs"][0]) || columnMap["Lull_Hrs"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
+
+                            }
                             if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
                             }
@@ -3467,6 +3497,9 @@
                             if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                             }
+                            if (userColumnId.includes(columnMap["Tracker_Loss"][0]) || columnMap["Tracker_Loss"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                            }
                             if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
                             }
@@ -3496,6 +3529,8 @@
                             tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
+
                             tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].smh_bd.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].oh_bd.toFixed(2) + '</td>';
@@ -3510,6 +3545,7 @@
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
                         }
                         //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + fyyear + '</td>';
@@ -4389,6 +4425,10 @@
                     if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>Gen_Hrs</th>';
                     }
+                    if (userColumnId.includes(columnMap["Lull_Hrs"][0]) || columnMap["Lull_Hrs"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Lull_Hrs</th>';
+                    }
+                    
                     if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>USMH</th>';
                     }
@@ -4431,6 +4471,10 @@
                     if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>LULL_Loss</th>';
                     }
+                    if (userColumnId.includes(columnMap["Tracker_Loss"][0]) || columnMap["Tracker_Loss"][1] == 1 || isAdmin == 1) {
+                        tbl += '<th>Tracker_Loss</th>';
+                    }
+                    
                     if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                         tbl += '<th>Total_Loss</th>';
                     }
@@ -4459,6 +4503,7 @@
                     tbl += '<th>EGA_B<br>(%) <span class="information">i<span></th>';
                     tbl += '<th>EGA_C<br>(%) <span class="information">i<span></th>';
                     tbl += '<th>Gen_Hrs</th>';
+                    tbl += '<th>Lull_Hrs</th>';
                     tbl += '<th>USMH</th>';
                     tbl += '<th>SMH</th>';
                     tbl += '<th>OH</th>';
@@ -4473,6 +4518,7 @@
                     tbl += '<th>EGBD_Loss</th>';
                     tbl += '<th>LS_Loss</th>';
                     tbl += '<th>LULL_Loss</th>';
+                    tbl += '<th>Tracker_Loss</th>';
                     tbl += '<th>Total_Loss</th>';
                 }
                 //tbl += '<th>FY</th>';
@@ -4597,6 +4643,9 @@
                             if (userColumnId.includes(columnMap["Gen_Hrs"][0]) || columnMap["Gen_Hrs"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
                             }
+                            if (userColumnId.includes(columnMap["Lull_Hrs"][0]) || columnMap["Lull_Hrs"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
+                            }
                             if (userColumnId.includes(columnMap["USMH"][0]) || columnMap["USMH"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
                             }
@@ -4639,6 +4688,9 @@
                             if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
                             }
+                            if (userColumnId.includes(columnMap["Tracker_Loss"][0]) || columnMap["Tracker_Loss"][1] == 1 || isAdmin == 1) {
+                                tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                            }
                             if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].total_losses.toFixed() + '</td>';
                             }
@@ -4667,6 +4719,7 @@
                             tbl += '<td class="text-right">' + result[i].ega_b.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].ega_c.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].prod_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].lull_hrs_bd.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].usmh_bs.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].smh_bd.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].oh_bd.toFixed(2) + '</td>';
@@ -4681,6 +4734,7 @@
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].total_losses.toFixed() + '</td>';
                         }
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';
