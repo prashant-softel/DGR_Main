@@ -3193,14 +3193,14 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.Inv_PLF = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["Inv PLF (%)"]), "Inv PLF (%)");
                         errorFlag.Add((addUnit.Inv_PLF > 100 || addUnit.Inv_PLF < 0) ? true : false);
 
-                        addUnit.P50 = Convert.ToDouble((dr["P50 (%)"] is DBNull) || string.IsNullOrEmpty((string)dr["P50 (%)"]) ? 0 : dr["P50 (%)"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.P50, "P50 (%)", rowNumber));
+                        addUnit.P50 = Convert.ToDouble((dr["P50"] is DBNull) || string.IsNullOrEmpty((string)dr["P50"]) ? 0 : dr["P50"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P50, "P50", rowNumber));
 
-                        addUnit.P75 = Convert.ToDouble((dr["P75 (%)"] is DBNull) || string.IsNullOrEmpty((string)dr["P75 (%)"]) ? 0 : dr["P75 (%)"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.P75, "P75 (%)", rowNumber));
+                        addUnit.P75 = Convert.ToDouble((dr["P75"] is DBNull) || string.IsNullOrEmpty((string)dr["P75"]) ? 0 : dr["P75"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P75, "P75", rowNumber));
 
-                        addUnit.P90 = Convert.ToDouble((dr["P90 (%)"] is DBNull) || string.IsNullOrEmpty((string)dr["P90 (%)"]) ? 0 : dr["P90 (%)"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.P90, "P90 (%)", rowNumber));
+                        addUnit.P90 = Convert.ToDouble((dr["P90"] is DBNull) || string.IsNullOrEmpty((string)dr["P90"]) ? 0 : dr["P90"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P90, "P90", rowNumber));
 
                         errorFlag.Add(uniqueRecordCheckSolarPerMonthYear_KPI(addUnit, addSet, rowNumber));
 
@@ -3309,12 +3309,12 @@ namespace DGRA_V1.Areas.admin.Controllers
                         addUnit.plf = commonValidation.stringToPercentage(rowNumber, Convert.ToString(dr["PLF%"]), "PLF%");
                         errorFlag.Add((addUnit.ega > 100 || addUnit.plf < 0) ? true : false);
 
-                        addUnit.P50 = string.IsNullOrEmpty((string)dr["P50%"]) ? 0 : Convert.ToDouble(dr["P50%"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.P50, "P50%", rowNumber));
-                        addUnit.P75 = string.IsNullOrEmpty((string)dr["P75%"]) ? 0 : Convert.ToDouble(dr["P75%"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.P75, "P75%", rowNumber));
-                        addUnit.P90 = string.IsNullOrEmpty((string)dr["P90%"]) ? 0 : Convert.ToDouble(dr["P90%"]);
-                        errorFlag.Add(negativeNullValidation(addUnit.P90, "P90%", rowNumber));
+                        addUnit.P50 = string.IsNullOrEmpty((string)dr["P50"]) ? 0 : Convert.ToDouble(dr["P50"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P50, "P50", rowNumber));
+                        addUnit.P75 = string.IsNullOrEmpty((string)dr["P75"]) ? 0 : Convert.ToDouble(dr["P75"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P75, "P75", rowNumber));
+                        addUnit.P90 = string.IsNullOrEmpty((string)dr["P90"]) ? 0 : Convert.ToDouble(dr["P90"]);
+                        errorFlag.Add(negativeNullValidation(addUnit.P90, "P90", rowNumber));
 
 
 
