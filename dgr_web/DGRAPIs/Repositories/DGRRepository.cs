@@ -838,7 +838,7 @@ from monthly_line_loss_solar where fy='" + FY + "' and month=DATE_FORMAT(t1.date
            */
             //string qry = @" SELECT t1.date,MONTH(t1.date) as month, t1.site as site,SUM(t1.inv_kwh) as inv_kwh,t2.LineLoss as line_loss,SUM(t1.inv_kwh) - SUM(t1.inv_kwh)* (t2.LineLoss / 100) as jmrkwh ,sum(t1.poa)/count(t1.poa) as IR FROM `daily_gen_summary_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id = t1.site_id and month_no = MONTH(t1.date) and fy='" + FY + "' where " + filter + "  group by  MONTH(t1.date),site  order by t1.date asc ";
             //Get Data daily basis table 
-            string qry = @" SELECT t1.data_date as date, MONTH(t1.data_date) as month,t1.site_id,SUM(t1.inv_kwh),SUM(t1.jmr_kwh) as jmrkwh,SUM(t1.target) as tarkwh, SUM(t1.expected_power) as expected_power,t1.ir_act as IR,t1.ir_tar as tarIR from daily_expected_vs_actual_solar as t1 where " + filter + " group by  MONTH(t1.data_date),t1.site_id  order by t1.data_date asc";
+            string qry = @" SELECT t1.data_date as date, MONTH(t1.data_date) as month,t1.site_id,SUM(t1.inv_kwh),SUM(t1.jmr_kwh) as jmrkwh,SUM(t1.target) as tarkwh, SUM(t1.expected_power) as expected_power,SUM(t1.ir_act)/count(*) as IR,t1.ir_tar as tarIR from daily_expected_vs_actual_solar as t1 where " + filter + " group by  MONTH(t1.data_date),t1.site_id  order by t1.data_date asc";
 
 
             List<SolarDashboardData> data = new List<SolarDashboardData>();
