@@ -12,8 +12,8 @@ namespace DGRAPIs.Models
         public dynamic Start_Time { get; set; }
         public dynamic End_Time { get; set; }
         public dynamic Total_Time { get; set; }
-        public double Permissible_Load_MW { get; set; }
-        public double Gen_loss_kWh { get; set; }
+        public dynamic Permissible_Load_MW { get; set; }
+        public dynamic Gen_loss_kWh { get; set; }
 
     }
 }

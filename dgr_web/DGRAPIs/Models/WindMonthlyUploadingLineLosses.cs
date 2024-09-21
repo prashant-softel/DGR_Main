@@ -14,7 +14,7 @@ namespace DGRAPIs.Models
         public int month_no { get; set; }
         public int year { get; set; }
         public string month { get; set; }
-        public double lineLoss { get; set; }
+        public dynamic lineLoss { get; set; }
 
 
     }

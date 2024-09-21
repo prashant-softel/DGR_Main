@@ -6626,41 +6626,104 @@ FROM daily_bd_loss_solar where   " + datefilter;
         ////#region views
         internal async Task<List<DailyGenSummary>> GetWindDailyGenSummary(string site, string fromDate, string ToDate)
         {
-            if (String.IsNullOrEmpty(site)) return new List<DailyGenSummary>();
-            string filter = " where site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
-            //string filter = " where approve_status=" + approve_status + " and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
-            return await Context.GetData<DailyGenSummary>("Select * from daily_gen_summary " + filter).ConfigureAwait(false);
+            //if (String.IsNullOrEmpty(site)) return new List<DailyGenSummary>();
+            //string filter = " where site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
+            //return await Context.GetData<DailyGenSummary>("Select * from daily_gen_summary " + filter).ConfigureAwait(false);
+            
+            string filter = " where date >= '" + fromDate + "' and date <= '" + ToDate + "' "; 
+            if(!string.IsNullOrEmpty(site) && site != "All~")
+            {
+                filter += " and site_id in (" + site + ") "; 
+            }
+            string qry = "Select * from daily_gen_summary " + filter;
+
+            List<DailyGenSummary> _dailyGenSummery = new List<DailyGenSummary>();
+            try
+            {
+                _dailyGenSummery = await Context.GetData<DailyGenSummary>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
+            return _dailyGenSummery;
         }
         internal async Task<List<SolarDailyGenSummary>> GetSolarDailyGenSummary1(string site, string fromDate, string ToDate)
         {
-            if (String.IsNullOrEmpty(site)) return new List<SolarDailyGenSummary>();
-            string filter = " where site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
-            //string filter = " where approve_status=" + approve_status + " and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
-            return await Context.GetData<SolarDailyGenSummary>("Select * from daily_gen_summary_solar " + filter).ConfigureAwait(false);
+            //if (String.IsNullOrEmpty(site)) return new List<SolarDailyGenSummary>();
+            //string filter = " where site_id in (" + site + ") and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
+            //return await Context.GetData<SolarDailyGenSummary>("Select * from daily_gen_summary_solar " + filter).ConfigureAwait(false);
+
+            string filter = " where date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
+            if (!string.IsNullOrEmpty(site) && site != "All~")
+            {
+                filter += " and site_id in (" + site + ") ";
+            }
+            string qry = "Select * from daily_gen_summary_solar " + filter;
+
+            List<SolarDailyGenSummary> _dailyGenSummery = new List<SolarDailyGenSummary>();
+            try
+            {
+                _dailyGenSummery = await Context.GetData<SolarDailyGenSummary>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
+            return _dailyGenSummery;
         }
         internal async Task<List<SolarUploadingPyranoMeter1Min_1>> SolarGhi_Poa_1Min(string site, string fromDate, string ToDate)
         {
-            if (String.IsNullOrEmpty(site)) return new List<SolarUploadingPyranoMeter1Min_1>();
+            /*if (String.IsNullOrEmpty(site)) return new List<SolarUploadingPyranoMeter1Min_1>();
             string filter = " where t1.site_id in (" + site + ") and DATE(t1.date_time) >= '" + fromDate + "' and DATE(t1.date_time) <= '" + ToDate + "' ";
-            //string filter = " where approve_status=" + approve_status + " and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
-            // return await Context.GetData<SolarUploadingPyranoMeter1Min_1>("Select * from uploading_pyranometer_1_min_solar " + filter).ConfigureAwait(false);
-
             string fetchQry = "Select t1.*,t2.site from uploading_pyranometer_1_min_solar as t1 left join `site_master_solar` as t2 on t2.site_master_solar_id=t1.site_id left join import_batches t3 on t3.import_batch_id = t1.import_batch_id " + filter + " AND t3.is_approved = 1 ORDER BY t1.date_time ASC;";
-
             return await Context.GetData<SolarUploadingPyranoMeter1Min_1>(fetchQry).ConfigureAwait(false);
+            */
+            string filter = " where CONVERT(DATE, t1.date_time) >= '" + fromDate + "' and CONVERT(DATE, t1.date_time) <= '" + ToDate + "' ";
+            if (!string.IsNullOrEmpty(site) && site != "All~")
+            {
+                filter += " and t1.site_id in (" + site + ") ";
+            }
+            string fetchQry = "Select t1.*,t2.site from uploading_pyranometer_1_min_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id=t1.site_id left join import_batches t3 on t3.import_batch_id = t1.import_batch_id " + filter + " AND t3.is_approved = 1 ORDER BY t1.date_time ASC;";
+            List<SolarUploadingPyranoMeter1Min_1> _pyrano1mindata = new List<SolarUploadingPyranoMeter1Min_1>();
+            try
+            {
+                _pyrano1mindata = await Context.GetData<SolarUploadingPyranoMeter1Min_1>(fetchQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
+            return _pyrano1mindata;
         }
         internal async Task<List<SolarUploadingPyranoMeter15Min_1>> SolarGhi_Poa_15Min(string site, string fromDate, string ToDate)
         {
-            if (String.IsNullOrEmpty(site)) return new List<SolarUploadingPyranoMeter15Min_1>();
+            /*if (String.IsNullOrEmpty(site)) return new List<SolarUploadingPyranoMeter15Min_1>();
             string filter = " where t1.site_id in (" + site + ") and DATE(t1.date_time) >= '" + fromDate + "' and DATE(t1.date_time) <= '" + ToDate + "' ";
-            //string filter = " where approve_status=" + approve_status + " and date >= '" + fromDate + "' and date <= '" + ToDate + "' ";
-            // return await Context.GetData<SolarUploadingPyranoMeter15Min_1>("Select * from uploading_pyranometer_15_min_solar " + filter).ConfigureAwait(false);
-
-            //string fetchQry = "SELECT date,t1.wtg,bd_type,stop_from,stop_to,total_stop,error_description,action_taken,t3.country,t3.state,t3.spv, t2.site,t4.bd_type_name FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on 4.bd_type_id=t1.bd_type left join import_batches t5 on t5.import_batch_id = t1.import_batch_id WHERE " + filter + " AND t5.is_approved = 1 ORDER BY t1.date ASC";
-            
             string fetchQry = "Select t1.*,t2.site from uploading_pyranometer_15_min_solar  as t1 left join `site_master_solar` as t2 on t2.site_master_solar_id=t1.site_id left join import_batches t3 on t3.import_batch_id = t1.import_batch_id" + filter + " AND t3.is_approved = 1 ORDER BY t1.date_time ASC;";
-
             return await Context.GetData<SolarUploadingPyranoMeter15Min_1>(fetchQry).ConfigureAwait(false);
+           */
+            string filter = " where CONVERT(DATE, t1.date_time) >= '" + fromDate + "' and CONVERT(DATE, t1.date_time) <= '" + ToDate + "' ";
+            if (!string.IsNullOrEmpty(site) && site != "All~")
+            {
+                filter += " and t1.site_id in (" + site + ") ";
+            }
+            string fetchQry = "Select t1.*,t2.site from uploading_pyranometer_15_min_solar  as t1 left join site_master_solar as t2 on t2.site_master_solar_id=t1.site_id left join import_batches t3 on t3.import_batch_id = t1.import_batch_id" + filter + " AND t3.is_approved = 1 ORDER BY t1.date_time ASC;";
+            List<SolarUploadingPyranoMeter15Min_1> _pyrano15mindata = new List<SolarUploadingPyranoMeter15Min_1>();
+            try
+            {
+                _pyrano15mindata = await Context.GetData<SolarUploadingPyranoMeter15Min_1>(fetchQry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
+            return _pyrano15mindata;
+
         }
         internal async Task<List<SolarDailyGenSummary>> GetSolarDailyGenSummary(string fromDate, string ToDate)
         {
@@ -6969,7 +7032,18 @@ FROM daily_bd_loss_solar where   " + datefilter;
 
             }
             string qry = @"SELECT  fy,month,site,line_loss as LineLoss FROM monthly_uploading_line_losses " + filter;
-            return await Context.GetData<WindMonthlyUploadingLineLosses>(qry).ConfigureAwait(false);
+           
+            List<WindMonthlyUploadingLineLosses> _WindLinlossData = new List<WindMonthlyUploadingLineLosses>();
+            try
+            {
+                _WindLinlossData = await Context.GetData<WindMonthlyUploadingLineLosses>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
+            return _WindLinlossData; //await Context.GetData<WindMonthlyUploadingLineLosses>(qry).ConfigureAwait(false);
         }
         internal async Task<List<SolarMonthlyUploadingLineLosses>> GetSolarMonthlyLineLoss(string fy, string month, string site)
         {
@@ -7190,7 +7264,6 @@ FROM daily_bd_loss_solar where   " + datefilter;
             if (site == "") return new List<WindViewDailyLoadShedding>();
             string datefilter = " where site_id in (" + site + ") and (date >= '" + fromDate + "'  and date<= '" + toDate + "') ";
             string qry = @"SELECT * FROM daily_load_shedding " + datefilter;
-
             return await Context.GetData<WindViewDailyLoadShedding>(qry).ConfigureAwait(false);
         }
         internal async Task<List<SolarDailyLoadShedding>> GetSolarDailyloadShedding(string site, string fromDate, string toDate)
@@ -17792,7 +17865,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (siteType == 1)
             {
                 List<HeatMapData2> _HeatMapData = new List<HeatMapData2>();
-                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.TML_uploaded,t1.expected_TML,t1.actual_TML,t1.wtg_count FROM upload_status as t1 join site_master as t2 on t2.site_master_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+                //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.TML_uploaded,t1.expected_TML,t1.actual_TML,t1.wtg_count FROM upload_status as t1 join site_master as t2 on t2.site_master_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.TML_uploaded,t1.expected_TML,t1.actual_TML,t1.wtg_count FROM upload_status as t1 join site_master as t2 on t2.site_master_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date,t2.site,t1.automation,t1.TML_uploaded,t1.expected_TML,t1.actual_TML,t1.wtg_count";
 
                 try
                 {
@@ -17837,62 +17911,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             else
             {
                 List<HeatMapData1> _HeatMapData = new List<HeatMapData1>();
-                //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.approve_count FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '"+ toDate + "' and t1.site_id in ("+site+") and type = '"+ siteType + "' GROUP BY t1.site_id, t1.data_date";
-
-                //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' AND approve_count !=0 GROUP BY t1.site_id, t1.data_date";
-                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM `upload_status` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+                //string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM upload_status as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date";
+                string qry = "SELECT t2.site,t1.site_id,t1.data_date,t1.automation,t1.pyranometer1min,t1.pyranometer15min FROM upload_status as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id WHERE t1.data_date BETWEEN '" + fromDate + "' and '" + toDate + "' and t1.site_id in (" + site + ") and type = '" + siteType + "' GROUP BY t1.site_id, t1.data_date,t2.site,t1.automation,t1.pyranometer1min,t1.pyranometer15min";
 
                 try
                 {
                     _HeatMapData = await Context.GetData<HeatMapData1>(qry).ConfigureAwait(false);
-
-                    /* foreach (HeatMapData1 heatmap in _HeatMapData)
-                    {
-                        string siteName = heatmap.site;
-                        if (!resultMap.ContainsKey(siteName))
-                        {
-                            resultMap[siteName] = new List<Dictionary<string, object>>();
-                        }
-                        string date = heatmap.data_date.ToString("yyyy-MM-dd");
-                        int approveCount = heatmap.approve_count;
-                    
-                        Dictionary<string, object> dataEntry = new Dictionary<string, object>
-                        {
-                            { date, approveCount }
-                        };
-                        resultMap[siteName].Add(dataEntry);
-                    }*/
-
-
-                    /* List<HeatMapData1> resultListNew = new List<HeatMapData1>();
-
-                     foreach (var dateStr in allDates1)
-                     {
-                         var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
-
-                         if (entry != null)
-                         {
-                             // Date present in heatmapData, add the entry as is
-                             resultListNew.Add(entry);
-                         }
-                         else
-                         {
-                             // Date not present, create a new entry with default values
-                             HeatMapData1 newEntry = new HeatMapData1
-                             {
-                                 data_date = dateStr,
-                                 site = "Alote",
-                                 site_id = 3,
-                                 pyranometer15min = -1,
-                                 pyranometer1min = -1,
-                                 automation = -1
-                             };
-                             resultListNew.Add(newEntry);
-                         }
-                     }*/
-                    //int haresh = 1;
-                    //foreach (var dateStr in allDates1)
-                    //{
                     foreach (HeatMapData1 heatmap in _HeatMapData)
                     {
                         bool found = false;
@@ -17904,11 +17928,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         // var entry = _HeatMapData.FirstOrDefault(e => e.data_date.ToString("yyyy-MM-dd") == dateStr);
                         string date = heatmap.data_date.ToString("yyyy-MM-dd");
                         // Check if the date is in the list of allDates1
-
-
-
-                        if (allDates1.Contains(date))
-                        {
+                         if (allDates1.Contains(date))
+                         {
                             int approveCount = heatmap.approve_count;
                             int automation = heatmap.automation;
                             int pyrano15min = heatmap.pyranometer15min;
@@ -17940,65 +17961,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 resultMap[siteName].Add((Dictionary<string, object>)dictionary);
                             }
                         }
-
-                        /* foreach (var dateStr in allDates1)
-                         {
-                             if (dateStr == date)
-                             {
-                                 found = true;
-
-                                 break;
-                             }
-
-                         }
-                         int approveCount = 0;
-                         int automation = 0;
-                         int pyrano15min =0;
-                         int pyrano1min =0;
-                         IDictionary<string, object> dictionary = new Dictionary<string, object>();
-                         //if (date == element && heatmap.selected == 0)
-                         //{
-                         if (found)
-                         {
-
-                             approveCount = heatmap.approve_count;
-                             automation = heatmap.automation;
-                             pyrano15min = heatmap.pyranometer15min;
-                             pyrano1min = heatmap.pyranometer1min;
-
-                             dictionary.Add(new KeyValuePair<string, object>("date", date));
-                             dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
-                             dictionary.Add(new KeyValuePair<string, object>("pyranometer15min", pyrano15min));
-                             dictionary.Add(new KeyValuePair<string, object>("pyranometer1min", pyrano1min));
-
-                         }
-                         else
-                         {
-
-                                 approveCount = -1;
-                                 automation = -1;
-                                 pyrano15min = -1;
-                                 pyrano1min = -1;
-                                 //IDictionary<string, object> dictionary = new Dictionary<string, object>();
-                                 dictionary.Add(new KeyValuePair<string, object>("date", "2024-01-06"));
-                                 dictionary.Add(new KeyValuePair<string, object>("autonation", automation));
-                                 dictionary.Add(new KeyValuePair<string, object>("pyranometer15min", pyrano15min));
-                                 dictionary.Add(new KeyValuePair<string, object>("pyranometer1min", pyrano1min));
-                          }*/
-
-                        //}
-
-                        /* Dictionary<string, object> dataEntry = new Dictionary<string, object>
-                        {
-                            { date, approveCount }
-                        };
-                        resultMap[siteName].Add(dataEntry);*/
-                        // resultMap[siteName].Add((Dictionary<string, object>)dictionary);
                     }
-                    //}
-
-
-                    //Convert resultMap to the desired format
                 }
                 catch (Exception e)
                 {

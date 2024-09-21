@@ -12,27 +12,21 @@ namespace DGRAPIs.Models
         public string site { get; set; }
         public DateTime date { get; set; }
         public string wtg { get; set; }
-        public double wind_speed { get; set; }
-       
-        public double kwh { get; set; }
-        public double kwh_afterlineloss { get; set; }
-
+        public dynamic wind_speed { get; set; }
+        public dynamic kwh { get; set; }
+        public dynamic kwh_afterlineloss { get; set; }
         public string feeder { get; set; }
-       
-        public double ma_contractual { get; set; }
-     
-        public double ma_actual { get; set; }
-       
-        public double iga { get; set; }
-      
-        public double ega { get; set; }
-        public double ega_b { get; set; }
-        public double ega_c { get; set; }
-        public double plf { get; set; }
-        public double plf_afterlineloss { get; set; }
-        public double grid_hrs { get; set; }     
-        public double lull_hrs { get; set; }      
-        public double production_hrs { get; set; }
+        public dynamic ma_contractual { get; set; }
+        public dynamic ma_actual { get; set; }
+        public dynamic iga { get; set; }
+        public dynamic ega { get; set; }
+        public dynamic ega_b { get; set; }
+        public dynamic ega_c { get; set; }
+        public dynamic plf { get; set; }
+        public dynamic plf_afterlineloss { get; set; }
+        public dynamic grid_hrs { get; set; }     
+        public dynamic lull_hrs { get; set; }      
+        public dynamic production_hrs { get; set; }
         public dynamic unschedule_hrs { get; set; }
         public dynamic unschedule_num { get; set; }
         public dynamic schedule_hrs { get; set; }
