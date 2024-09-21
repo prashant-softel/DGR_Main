@@ -14,12 +14,12 @@ namespace DGRAPIs.Models
         public string spv { get; set; }
         public string state { get; set; }
         public string model { get; set; }
-        public double capacity_mw { get; set; }
-        public double wtg { get; set; }
-        public double total_mw { get; set; }
-        public double tarrif { get; set; }
-        public double gbi { get; set; }
-        public double total_tarrif { get; set; }
-        public double ll_compensation { get; set; }
+        public dynamic capacity_mw { get; set; }
+        public dynamic wtg { get; set; }
+        public dynamic total_mw { get; set; }
+        public dynamic tarrif { get; set; }
+        public dynamic gbi { get; set; }
+        public dynamic total_tarrif { get; set; }
+        public dynamic ll_compensation { get; set; }
     }
 }

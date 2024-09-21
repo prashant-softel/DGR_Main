@@ -29,22 +29,22 @@ namespace DGRAPIs.Models
         public dynamic date { get; set; }
         public string wtg { get; set; }
         public int wtg_id { get; set; }
-        public double wind_speed { get; set; }
-        public double grid_hrs { get; set; }
-        public double operating_hrs { get; set; }
-        public double lull_hrs { get; set; }
-        public double kwh { get; set; }
-        public double plf { get; set; }
-        public double plf_afterlineloss { get; set; }
-        public double ma_actual { get; set; }
-        public double ma_contractual { get; set; }
-        public double iga { get; set; }
-        public double ega { get; set; }
-        public double ega_b { get; set; }
-        public double ega_c { get; set; }
-        public double capacity_kw { get; set; }
-        public double kwh_afterloss { get; set; }
-        public double kwh_afterlineloss { get; set; }
+        public dynamic wind_speed { get; set; }
+        public dynamic grid_hrs { get; set; }
+        public dynamic operating_hrs { get; set; }
+        public dynamic lull_hrs { get; set; }
+        public dynamic kwh { get; set; }
+        public dynamic plf { get; set; }
+        public dynamic plf_afterlineloss { get; set; }
+        public dynamic ma_actual { get; set; }
+        public dynamic ma_contractual { get; set; }
+        public dynamic iga { get; set; }
+        public dynamic ega { get; set; }
+        public dynamic ega_b { get; set; }
+        public dynamic ega_c { get; set; }
+        public dynamic capacity_kw { get; set; }
+        public dynamic kwh_afterloss { get; set; }
+        public dynamic kwh_afterlineloss { get; set; }
         public dynamic unschedule_hrs { get; set; }
         public dynamic unschedule_num { get; set; }
         public dynamic schedule_hrs { get; set; }

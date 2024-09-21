@@ -14,9 +14,9 @@ namespace DGRAPIs.Models
  			public dynamic doc { get; set; }
             public string spv { get; set; }
             public string state { get; set; }
-            public double dc_capacity { get; set; }
-            public double ac_capacity { get; set; }
-        	public double total_tarrif { get; set; }
+            public dynamic dc_capacity { get; set; }
+            public dynamic ac_capacity { get; set; }
+        	public dynamic total_tarrif { get; set; }
 			public dynamic commissioning_date { get; set; }
 
          

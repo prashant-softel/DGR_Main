@@ -43,12 +43,12 @@ namespace DGRAPIs.Repositories
            */
             if (isSSO)
             {
-                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `useremail`='" + username + "'  and `active_user` = 1 ;";
+                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM login where useremail='" + username + "'  and active_user = 1 ;";
                
             }
             else {
-                qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `useremail`='" + username + "' and (`password` = md5('" + password + "') or password = '"+ password +"') and `active_user` = 1 ;";
-                //qry = "SELECT login_id,username,useremail,user_role,islogin as islogin FROM `login` where `useremail`='" + username + "' and `password` = md5('" + password + "') and `active_user` = 1 ;";
+                //qry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM login where useremail='" + username + "' and (password = md5('" + password + "') or password = '"+ password +"') and active_user = 1 ;";
+                qry = "SELECT login_id,username,useremail,user_role,CAST(islogin AS BIT) AS islogin, device_id FROM login where useremail='" + username + "' and (password = HASHBYTES('MD5', '" + password + "') or password = '" + password + "') and active_user = 1 ;";
 
             }
             try
@@ -56,7 +56,7 @@ namespace DGRAPIs.Repositories
                 var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                 if (_UserLogin.Count > 0)
                 {
-                    string qry1 = "update login set last_accessed=NOW(),islogin=1, device_id = '" + device_id + "' where login_id=" + _UserLogin[0].login_id + ";";
+                    string qry1 = "update login set last_accessed= GETDATE(),islogin=1, device_id = '" + device_id + "' where login_id=" + _UserLogin[0].login_id + ";";
                     await Context.ExecuteNonQry<int>(qry1).ConfigureAwait(false);
                 }
                 return _UserLogin.FirstOrDefault();
@@ -79,8 +79,8 @@ namespace DGRAPIs.Repositories
 
 
             {
-                //SELECT * FROM `login` where `device_id`=1494303526 AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute);
-                qry = "SELECT login_id, username, password, useremail,last_accessed, user_role, islogin as islogin, device_id FROM `login` where `device_id`='" + device_id + "' AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute) ;";
+                //qry = "SELECT login_id, username, password, useremail,last_accessed, user_role, islogin as islogin, device_id FROM `login` where `device_id`='" + device_id + "' AND `islogin` = 1 AND last_accessed > date_add(now(),interval -30 minute) ;";
+                qry = "SELECT login_id, username, password, useremail,last_accessed, user_role, CAST(islogin AS BIT) AS islogin, device_id FROM login where device_id='" + device_id + "' AND islogin = 1 AND last_accessed > DATEADD(MINUTE, -30, GETDATE())";
             }
             var _UserLogin = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
             if (_UserLogin.Count > 0)
@@ -106,19 +106,24 @@ namespace DGRAPIs.Repositories
             string InsertQry = "";
             if (userRole == "login")
             {
-                string selectQry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `login_id`=" + UserID + " AND `active_user` = 1 AND islogin = 1 ;";
+                //string selectQry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `login_id`=" + UserID + " AND `active_user` = 1 AND islogin = 1 ;";
+                string selectQry = "SELECT login_id,username,useremail,user_role,CAST(islogin AS BIT) AS islogin, device_id FROM login where login_id=" + UserID + " AND active_user = 1 AND islogin = 1 ;";
+
 
                 var _UserLogin = await Context.GetData<UserLogin>(selectQry).ConfigureAwait(false);
 
-                InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, login_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', NOW(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', NOW() );";
+                //InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, login_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', NOW(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', NOW() );";
+                InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, login_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', GETDATE(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', GETDATE() );";
             }
             if(userRole == "logout")
             {
-                string selectQry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `login_id`=" + UserID + " AND `active_user` = 1 ;";
+                //string selectQry = "SELECT login_id,username,useremail,user_role,islogin as islogin, device_id FROM `login` where `login_id`=" + UserID + " AND `active_user` = 1 ;";
+                string selectQry = "SELECT login_id,username,useremail,user_role,CAST(islogin AS BIT) AS islogin, device_id FROM login where login_id=" + UserID + " AND active_user = 1 ;";
 
                 var _UserLogin = await Context.GetData<UserLogin>(selectQry).ConfigureAwait(false);
 
-                InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, logout_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', NOW(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', NOW() );";
+                //InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, logout_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', NOW(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', NOW() );";
+                InsertQry = "INSERT INTO login_log (user_id, user_name, user_role, logout_time, device_id, user_email, created_on) VALUES (" + UserID + ", '" + _UserLogin[0].username + "', '" + _UserLogin[0].user_role + "', GETDATE(), '" + _UserLogin[0].device_id + "', '" + _UserLogin[0].useremail + "', GETDATE() );";
             }
             return await Context.ExecuteNonQry<int>(InsertQry).ConfigureAwait(false);
 
@@ -446,7 +451,7 @@ namespace DGRAPIs.Repositories
             }
             string qry = "";
            // qry = "SELECT login_id,username,useremail,user_role,created_on,active_user FROM `login` " + filter;
-            qry = "SELECT login_id,username,useremail,user_role,active_user FROM `login` " + filter;
+            qry = "SELECT login_id,username,useremail,user_role,active_user FROM  login " + filter;
             // Console.WriteLine(qry);
             // var _Userinfo = await Context.GetData<UserInfomation>(qry).ConfigureAwait(false);
             // return _Userinfo.FirstOrDefault();
@@ -483,11 +488,11 @@ namespace DGRAPIs.Repositories
            //qry = "SELECT * FROM `hfe_pages` where Visible=1 and site_type=2";
             if(site_type == 2)
             {
-                qry = "SELECT * FROM `hfe_pages` where Visible=1 and site_type=2 or site_type = 0";
+                qry = "SELECT * FROM hfe_pages where Visible=1 and site_type=2 or site_type = 0";
             }
             if (site_type == 1)
             {
-                qry = "SELECT * FROM `hfe_pages` where Visible=1 and site_type=1 or site_type = 0";
+                qry = "SELECT * FROM hfe_pages where Visible=1 and site_type=1 or site_type = 0";
             }
             // Console.WriteLine(qry);
             // var _Userinfo = await Context.GetData<UserInfomation>(qry).ConfigureAwait(false);
@@ -531,11 +536,13 @@ namespace DGRAPIs.Repositories
             string qry = "";
             if (role == "Admin")
             {
-                qry = "SELECT Site_Type as site_type,Page_type as page_type,display_name,Action_url,Controller_name FROM `hfe_pages` where Visible=1 order by Order_no";
+                qry = "SELECT Site_Type as site_type,Page_type as page_type,display_name,Action_url,Controller_name FROM hfe_pages where Visible=1 order by Order_no";
             }
             else
             {
-                qry = "SELECT t1.login_id,t1.site_type,if(t3.Page_type IS NOT NULL,t3.Page_type,3) as page_type,t1.identity,t1.upload_access,t3.display_name,t3.Action_url,t3.Controller_name FROM `user_access`as t1 left join hfe_pages as t3 on t3.Id=t1.identity and t1.category_id NOT IN(3) where t1.login_id='" + login_id + "' order by t3.Site_Type , t3.Order_no asc";
+                //qry = "SELECT t1.login_id,t1.site_type,if(t3.Page_type IS NOT NULL,t3.Page_type,3) as page_type,t1.identity,t1.upload_access,t3.display_name,t3.Action_url,t3.Controller_name FROM user_access as t1 left join hfe_pages as t3 on t3.Id=t1.identity and t1.category_id NOT IN(3) where t1.login_id='" + login_id + "' order by t3.Site_Type , t3.Order_no asc";
+                qry = "SELECT t1.login_id,t1.site_type, CASE WHEN t3.Page_type IS NOT NULL THEN t3.Page_type ELSE 3 END AS page_type,t1.[identity], t1.upload_access, t3.display_name, t3.Action_url, t3.Controller_name FROM user_access AS t1 LEFT JOIN hfe_pages AS t3 ON t3.Id = t1.[identity]  AND t1.category_id NOT IN(3) WHERE t1.login_id = '" + login_id + "' ORDER BY  t3.Site_Type,  t3.Order_no ASC";
+
             }
             List<UserAccess> _accesslist = new List<UserAccess>();
             _accesslist = await Context.GetData<UserAccess>(qry).ConfigureAwait(false);
@@ -557,11 +564,11 @@ namespace DGRAPIs.Repositories
             {
                 if (site == 1)
                 {
-                    qry = "SELECT login_id ,To_Daily_Wind, Cc_Daily_Wind, To_Weekly_Wind, Cc_Weekly_Wind FROM `login` where login_id = '" + login_id + "'";
+                    qry = "SELECT login_id ,To_Daily_Wind, Cc_Daily_Wind, To_Weekly_Wind, Cc_Weekly_Wind FROM login where login_id = '" + login_id + "'";
                 }
                 else
                 {
-                    qry = "SELECT login_id ,To_Daily_Solar, Cc_Daily_Solar, To_Weekly_Solar, Cc_Weekly_Solar FROM `login` where login_id = '" + login_id + "'";
+                    qry = "SELECT login_id ,To_Daily_Solar, Cc_Daily_Solar, To_Weekly_Solar, Cc_Weekly_Solar FROM login where login_id = '" + login_id + "'";
 
                 }
             }
@@ -739,7 +746,7 @@ namespace DGRAPIs.Repositories
         public async Task<List<CustomGroup>> GetCustomGroup(int login_id, int site_type, string groupPage)
         {
             string qry = "";
-            qry = "SELECT id,cust_group FROM `user_access` where login_id = "+ login_id + " and site_type = "+ site_type + " and identity in("+groupPage+") and category_id = 2";
+            qry = "SELECT id,cust_group FROM user_access where login_id = "+ login_id + " and site_type = "+ site_type + " and [identity] in("+groupPage+") and category_id = 2";
             List<CustomGroup> _customaccess = new List<CustomGroup>();
             _customaccess = await Context.GetData<CustomGroup>(qry).ConfigureAwait(false);
             return _customaccess;

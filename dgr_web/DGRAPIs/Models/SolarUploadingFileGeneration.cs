@@ -33,44 +33,44 @@ namespace DGRAPIs.Models
         public dynamic date { get; set; }
        
         public string inverter { get; set; }
-        public double ghi { get; set; }
-        public double poa { get; set; }
-        public double expected_kwh { get; set; }
+        public dynamic ghi { get; set; }
+        public dynamic poa { get; set; }
+        public dynamic expected_kwh { get; set; }
         
-        public double inv_act { get; set; }
-        public double inv_act_afterloss { get; set; }
-        public double plant_act { get; set; }
-        public double plant_act_afterloss { get; set; }
-        public double inv_pr { get; set; }
-        public double plant_pr { get; set; }
-        public double ma { get; set; }
-        public double iga { get; set; }
-        public double ega { get; set; }
-        public double ega_b { get; set; }
-        public double ega_c { get; set; }
-        public double inv_plf_ac { get; set; }
-        public double inv_plf_afterloss { get; set; }
-        public double inv_plf_dc { get; set; }
-        public double plant_plf_ac { get; set; }
-        public double plant_plf_afterloss { get; set; }
-        public double plant_plf_dc { get; set; }
+        public dynamic inv_act { get; set; }
+        public dynamic inv_act_afterloss { get; set; }
+        public dynamic plant_act { get; set; }
+        public dynamic plant_act_afterloss { get; set; }
+        public dynamic inv_pr { get; set; }
+        public dynamic plant_pr { get; set; }
+        public dynamic ma { get; set; }
+        public dynamic iga { get; set; }
+        public dynamic ega { get; set; }
+        public dynamic ega_b { get; set; }
+        public dynamic ega_c { get; set; }
+        public dynamic inv_plf_ac { get; set; }
+        public dynamic inv_plf_afterloss { get; set; }
+        public dynamic inv_plf_dc { get; set; }
+        public dynamic plant_plf_ac { get; set; }
+        public dynamic plant_plf_afterloss { get; set; }
+        public dynamic plant_plf_dc { get; set; }
         public dynamic pi { get; set; }
-        public double prod_hrs { get; set; }
-        public double lull_hrs_bd { get; set; }
-        public double usmh_bd { get; set; }
-        public double smh_bd { get; set; }
-        public double oh_bd { get; set; }
-        public double igbdh_bd { get; set; }
-        public double egbdh_bd { get; set; }
-        public double load_shedding_bd { get; set; }
-        public double total_bd_hrs { get; set; }
-        public double usmh { get; set; }
-        public double smh { get; set; }
-        public double oh { get; set; }
-        public double igbdh { get; set; }
-        public double egbdh { get; set; }
-        public double load_shedding { get; set; }
-        public double total_losses { get; set; }
+        public dynamic prod_hrs { get; set; }
+        public dynamic lull_hrs_bd { get; set; }
+        public dynamic usmh_bd { get; set; }
+        public dynamic smh_bd { get; set; }
+        public dynamic oh_bd { get; set; }
+        public dynamic igbdh_bd { get; set; }
+        public dynamic egbdh_bd { get; set; }
+        public dynamic load_shedding_bd { get; set; }
+        public dynamic total_bd_hrs { get; set; }
+        public dynamic usmh { get; set; }
+        public dynamic smh { get; set; }
+        public dynamic oh { get; set; }
+        public dynamic igbdh { get; set; }
+        public dynamic egbdh { get; set; }
+        public dynamic load_shedding { get; set; }
+        public dynamic total_losses { get; set; }
         public int import_batch_id { get; set; }
 
     }

@@ -69,7 +69,7 @@ namespace DGRAPIs.Repositories
             //_FinancialYear.Add(new FinancialYear { financial_year = "2022-23" });
             //_FinancialYear.Add(new FinancialYear { financial_year = "2023-24" });
             //_FinancialYear.Add(new FinancialYear { financial_year = "2024-25" });
-            string qry = "SELECT financial_year FROM `year_master` where status='Y'";
+            string qry = "SELECT financial_year FROM year_master where status='Y'";
             _FinancialYear = await Context.GetData<FinancialYear>(qry).ConfigureAwait(false);
             return _FinancialYear;
 
@@ -3409,9 +3409,18 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                 }
 
             }
-            string query = "SELECT * FROM `site_master_solar`" + filter+ " order by site ";
+            //string query = "SELECT * FROM `site_master_solar`" + filter+ " order by site ";
+            string query = "SELECT * FROM site_master_solar " + filter + " order by site ";
             List<SolarSiteMaster> _sitelist = new List<SolarSiteMaster>();
-            _sitelist = await Context.GetData<SolarSiteMaster>(query).ConfigureAwait(false);
+            try
+            {
+                _sitelist = await Context.GetData<SolarSiteMaster>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
             return _sitelist;
 
 
@@ -7676,23 +7685,23 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 filter += " and ib.is_approved  =" + status;
             }
-           /* if (userid != 0)
-            {
-                filter += " and ib.imported_by  =" + userid;
-            }*/
-            filter += " group by t3.import_batch_id";
-
+            //mysql
+            // filter += " group by t3.import_batch_id";
+            // Mssql 
+            filter += " group by ib.import_batch_id,ib.import_date,ib.import_file_type, ib.import_type, ib.site_id,ib.is_approved,ib.file_name, " +
+                	" ib.import_type,ib.imported_by,ib.import_by_name,ib.approval_date,ib.approved_by,ib.approved_by_name,ib.rejected_date,ib.rejected_by,ib.rejected_by_name,ib.log_filename,ib.data_date,sm.site ";
             if (importType == 1)
             {
-                // query = "select ib.*,sm.site as site_name from import_batches as ib join site_master_solar as sm on sm.site_master_id=ib.site_id join uploading_file_generation as t3 on t3.import_batch_id=ib.import_batch_id where DATE(ib.import_date)>='" + importFromDate + "' and DATE(ib.import_date) <='" + importToDate + "'and `file_name` like '%DGR_Automation%' and ib.import_type=" + importType + "" + filter + "";
-                query = "select ib.*,sm.site as site_name from import_batches as ib join site_master as sm on sm.site_master_id=ib.site_id join uploading_file_generation as t3 on t3.import_batch_id=ib.import_batch_id where DATE(ib.import_date)>='" + importFromDate + "' and DATE(ib.import_date) <='" + importToDate + "' and ib.import_file_type=1 and ib.import_type=" + importType + "" + filter + " order by is_approved";
+                //query = "select ib.*,sm.site as site_name from import_batches as ib join site_master as sm on sm.site_master_id=ib.site_id join uploading_file_generation as t3 on t3.import_batch_id=ib.import_batch_id where DATE(ib.import_date)>='" + importFromDate + "' and DATE(ib.import_date) <='" + importToDate + "' and ib.import_file_type=1 and ib.import_type=" + importType + "" + filter + " order by is_approved";
+
+                query = "select ib.*,sm.site as site_name from import_batches as ib join site_master as sm on sm.site_master_id=ib.site_id join uploading_file_generation as t3 on t3.import_batch_id=ib.import_batch_id where CAST(ib.import_date AS DATE) >='" + importFromDate + "' and CAST(ib.import_date AS DATE) <='" + importToDate + "' and ib.import_file_type=1 and ib.import_type=" + importType + "" + filter + " order by is_approved";
 
             }
             else if (importType == 2)
             {
-                query = "select ib.*,sm.site as site_name from import_batches as ib join site_master_solar as sm on sm.site_master_solar_id = ib.site_id join uploading_file_generation_solar as t3 on t3.import_batch_id = ib.import_batch_id where DATE(ib.import_date) >= '" + importFromDate + "' and DATE(ib.import_date) <='" + importToDate + "' and ib.import_file_type=1 and ib.import_type =" + importType + "" + filter + " order by is_approved";
+                //query = "select ib.*,sm.site as site_name from import_batches as ib join site_master_solar as sm on sm.site_master_solar_id = ib.site_id join uploading_file_generation_solar as t3 on t3.import_batch_id = ib.import_batch_id where DATE(ib.import_date) >= '" + importFromDate + "' and DATE(ib.import_date) <='" + importToDate + "' and ib.import_file_type=1 and ib.import_type =" + importType + "" + filter + " order by is_approved";
+                query = "SELECT ib.*,sm.site AS site_name FROM import_batches AS ib JOIN site_master_solar AS sm ON sm.site_master_solar_id = ib.site_id JOIN  uploading_file_generation_solar AS t3 ON t3.import_batch_id = ib.import_batch_id WHERE CAST(ib.import_date AS DATE) >= '" + importFromDate + "' AND CAST(ib.import_date AS DATE) <= '" + importToDate + "'  AND ib.import_file_type = 1  and ib.import_type =" + importType + "" + filter + "ORDER BY ib.is_approved ";
 
-               
             }
             List<approvalObject> _approvalObject = new List<approvalObject>();
             _approvalObject = await Context.GetData<approvalObject>(query).ConfigureAwait(false);
@@ -8552,7 +8561,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 filter += " and site_master_id IN(" + site + ") ";
             }
-            string query = "SELECT state FROM `site_master` where country='" + country + "'"+ filter + " group by state";
+            string query = "SELECT state FROM site_master where country='" + country + "'"+ filter + " group by state";
             List<StateList> _state = new List<StateList>();
             _state = await Context.GetData<StateList>(query).ConfigureAwait(false);
             return _state;
@@ -8565,7 +8574,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 filter += " and site_master_solar_id IN(" + site + ") ";
             }
-            string query = "SELECT state FROM `site_master_solar` where country='" + country + "' "+ filter + " group by state";
+            string query = "SELECT state FROM site_master_solar where country='" + country + "' "+ filter + " group by state";
             List<StateList> _state = new List<StateList>();
             _state = await Context.GetData<StateList>(query).ConfigureAwait(false);
             return _state;
@@ -8597,7 +8606,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 filter += filterSite;
             }
-            string query = "SELECT spv FROM `site_master` " + filter + " group by spv order by spv";
+            string query = "SELECT spv FROM site_master " + filter + " group by spv order by spv";
             List<SPVList> _spvlist = new List<SPVList>();
             _spvlist = await Context.GetData<SPVList>(query).ConfigureAwait(false);
             return _spvlist;
@@ -8629,7 +8638,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 filter += filterSite;
             }
-            string query = "SELECT spv FROM `site_master_solar` " + filter + " group by spv order by spv";
+            string query = "SELECT spv FROM site_master_solar " + filter + " group by spv order by spv";
             List<SPVList> _spvlist = new List<SPVList>();
             _spvlist = await Context.GetData<SPVList>(query).ConfigureAwait(false);
             return _spvlist;
@@ -8701,12 +8710,19 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
             }
-            string query = "SELECT * FROM `site_master`" + filter + "ORDER BY `site`";
+            //string query = "SELECT * FROM `site_master`" + filter + "ORDER BY `site`";
+            string query = "SELECT * FROM site_master" + filter + " ORDER BY site";
             List<WindSiteMaster> _sitelist = new List<WindSiteMaster>();
-            _sitelist = await Context.GetData<WindSiteMaster>(query).ConfigureAwait(false);
+            try
+            {
+                _sitelist = await Context.GetData<WindSiteMaster>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
             return _sitelist;
-
-
         }
         public async Task<List<SolarSiteMaster>> GetSiteDataSolar(string state, string spv, string site)
         {
@@ -8767,7 +8783,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 chkfilter = 1;
 
             }
-            string query = "SELECT * FROM `site_master_solar` " + filter + "ORDER BY `site`";
+            string query = "SELECT * FROM site_master_solar " + filter + "ORDER BY site";
             List<SolarSiteMaster> _sitelist = new List<SolarSiteMaster>();
             _sitelist = await Context.GetData<SolarSiteMaster>(query).ConfigureAwait(false);
             return _sitelist;
@@ -8827,7 +8843,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
              {
                  filter += " and site_master_id in (" + siteid + ") ";
              }*/
-            string query = "SELECT t2.location_master_id, t2.site_master_id,t2.site,t2.wtg,t2.wtg_onm,t2.feeder,t2.max_kwh_day FROM `site_master` as t1 left join location_master as t2 on t2.site_master_id = t1.site_master_id where t2.status = 1" + filter;
+            string query = "SELECT t2.location_master_id, t2.site_master_id,t2.site,t2.wtg,t2.wtg_onm,t2.feeder,t2.max_kwh_day FROM site_master as t1 left join location_master as t2 on t2.site_master_id = t1.site_master_id where t2.status = 1" + filter;
            // string query = "SELECT * FROM `location_master` where status = 1 " + filter;
             List<WindLocationMaster> _locattionmasterDate = new List<WindLocationMaster>();
             _locattionmasterDate = await Context.GetData<WindLocationMaster>(query).ConfigureAwait(false);
@@ -8891,61 +8907,103 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
         }
         public async Task<List<WindUploadingFilegeneration1>> GetImportGenData(int importId)
         {
-            // string query = "SELECT t1.*,t2.site as site_name FROM `uploading_file_generation` as t1 join site_master as t2 on t2.site_master_id=t1.site_id  where import_batch_id =" + importId + "";
-            string query = "SELECT t1.uploading_file_generation_id, t1.site_id, t1.date, t1.wtg, t1.wtg_id, t1.wind_speed, t1.grid_hrs, t1.operating_hrs, t1.lull_hrs, t1.kwh, t1.ma_contractual, t1.ma_actual, t1.iga, t1.ega, t1.ega_b, t1.ega_c, t1.plf,  t1.unschedule_num,  t1.schedule_num,  t1.others_num,  t1.igbdh_num,  t1.egbdh_num,  t1.load_shedding_num, t2.site as site_name FROM `uploading_file_generation` as t1 join site_master as t2 on t2.site_master_id=t1.site_id where import_batch_id =" + importId + "";
+            //string query = "SELECT t1.uploading_file_generation_id, t1.site_id, t1.date, t1.wtg, t1.wtg_id, t1.wind_speed, t1.grid_hrs, t1.operating_hrs, t1.lull_hrs, t1.kwh, t1.ma_contractual, t1.ma_actual, t1.iga, t1.ega, t1.ega_b, t1.ega_c, t1.plf,  t1.unschedule_num,  t1.schedule_num,  t1.others_num,  t1.igbdh_num,  t1.egbdh_num,  t1.load_shedding_num, t2.site as site_name FROM `uploading_file_generation` as t1 join site_master as t2 on t2.site_master_id=t1.site_id where import_batch_id =" + importId + "";
+            string query = "SELECT t1.uploading_file_generation_id, t1.site_id, t1.date, t1.wtg, t1.wtg_id, t1.wind_speed, t1.grid_hrs, t1.operating_hrs, t1.lull_hrs, t1.kwh, t1.ma_contractual, t1.ma_actual, t1.iga, t1.ega, t1.ega_b, t1.ega_c, t1.plf,  t1.unschedule_num,  t1.schedule_num,  t1.others_num,  t1.igbdh_num,  t1.egbdh_num,  t1.load_shedding_num, t2.site as site_name FROM uploading_file_generation as t1 join site_master as t2 on t2.site_master_id=t1.site_id where import_batch_id =" + importId + "";
+
             List<WindUploadingFilegeneration1> _importGenData = new List<WindUploadingFilegeneration1>();
-            _importGenData = await Context.GetData<WindUploadingFilegeneration1>(query).ConfigureAwait(false);
+            try
+            {
+                _importGenData = await Context.GetData<WindUploadingFilegeneration1>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
+           
             return _importGenData;
 
         }
         public async Task<List<WindUploadingFileBreakDown1>> GetBrekdownImportData(int importId)
         {
-            // string query = "SELECT t1.*,t2.site as site_name FROM `uploading_file_generation` as t1 join site_master as t2 on t2.site_master_id=t1.site_id  where import_batch_id =" + importId + "";
-            //string query = "SELECT * FROM `uploading_file_breakdown` where import_batch_id =" + importId + "";
-            string query = " SELECT t1.site_id,t1.date,t1.wtg,t1.stop_from,t1.stop_to,t1.total_stop,t1.error_description,t1.action_taken,t2.site,t3.bd_type_name FROM `uploading_file_breakdown` as t1 left join site_master as t2 on t2.site_master_id = t1.site_id left join bd_type as t3 on t3.bd_type_id = t1.bd_type_id where import_batch_id = " + importId + "";
+            string query = " SELECT t1.site_id,t1.date,t1.wtg,t1.stop_from,t1.stop_to,t1.total_stop,t1.error_description,t1.action_taken,t2.site,t3.bd_type_name FROM uploading_file_breakdown as t1 left join site_master as t2 on t2.site_master_id = t1.site_id left join bd_type as t3 on t3.bd_type_id = t1.bd_type_id where import_batch_id = " + importId + "";
             List<WindUploadingFileBreakDown1> _importBreakdownData = new List<WindUploadingFileBreakDown1>();
-            _importBreakdownData = await Context.GetData<WindUploadingFileBreakDown1>(query).ConfigureAwait(false);
+            try
+            {
+                _importBreakdownData = await Context.GetData<WindUploadingFileBreakDown1>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
             return _importBreakdownData;
 
         }
 
         public async Task<List<SolarUploadingFileGeneration2>> GetSolarImportGenData(int importId)
         {
-            string query = "SELECT t1.*, t2.site FROM `uploading_file_generation_solar` as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id where import_batch_id =" + importId + "";
+            string query = "SELECT t1.*, t2.site FROM uploading_file_generation_solar as t1 join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id where import_batch_id =" + importId + "";
            
             List<SolarUploadingFileGeneration2> _importSolarGenData = new List<SolarUploadingFileGeneration2>();
-            _importSolarGenData = await Context.GetData<SolarUploadingFileGeneration2>(query).ConfigureAwait(false);
+            try
+            {
+                _importSolarGenData = await Context.GetData<SolarUploadingFileGeneration2>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
             return _importSolarGenData;
 
         }
         public async Task<List<SolarUploadingFileBreakDown1>> GetSolarBrekdownImportData(int importId)
         {
 
-            string query = "SELECT t1.*,t3.bd_type_name FROM `uploading_file_breakdown_solar` as t1 left join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id left join bd_type as t3 on t3.bd_type_id = t1.bd_type_id where import_batch_id =" + importId + "";
-          //  string query = " SELECT t1.site_id,t1.date,t1.wtg,t1.stop_from,t1.stop_to,t1.total_stop,t1.error_description,t2.site,t3.bd_type_name FROM `uploading_file_breakdown` as t1 left join site_master as t2 on t2.site_master_id = t1.site_id left join bd_type as t3 on t3.bd_type_id = t1.bd_type_id where import_batch_id = " + importId + "";
+            string query = "SELECT t1.*,t3.bd_type_name FROM uploading_file_breakdown_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id left join bd_type as t3 on t3.bd_type_id = t1.bd_type_id where import_batch_id =" + importId + "";
             List<SolarUploadingFileBreakDown1> _importSolarBreakdownData = new List<SolarUploadingFileBreakDown1>();
-            _importSolarBreakdownData = await Context.GetData<SolarUploadingFileBreakDown1>(query).ConfigureAwait(false);
+            try
+            {
+                _importSolarBreakdownData = await Context.GetData<SolarUploadingFileBreakDown1>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
             return _importSolarBreakdownData;
 
         }
         public async Task<List<SolarUploadingPyranoMeter1Min_1>> GetSolarP1ImportData(int importId)
         {
-
-            //string query = "SELECT t1.*,t3.bd_type_name FROM `uploading_file_breakdown_solar` as t1 left join site_master_solar as t2 on //t2.site_master_solar_id = t1.site_id left join bd_type as t3 on t3.bd_type_id = t1.bd_type_id where import_batch_id =" + importId + "";
-
-            string query = "Select t1.*,t2.site from uploading_pyranometer_1_min_solar as t1 left join `site_master_solar` as t2 on t2.site_master_solar_id = t1.site_id where import_batch_id=" + importId + "";
+            string query = "Select t1.*,t2.site from uploading_pyranometer_1_min_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id where import_batch_id=" + importId + "";
             List<SolarUploadingPyranoMeter1Min_1> _importSolarP1Data = new List<SolarUploadingPyranoMeter1Min_1>();
-            _importSolarP1Data = await Context.GetData<SolarUploadingPyranoMeter1Min_1>(query).ConfigureAwait(false);
+            try
+            {
+                _importSolarP1Data = await Context.GetData<SolarUploadingPyranoMeter1Min_1>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
             return _importSolarP1Data;
 
         }
         public async Task<List<SolarUploadingPyranoMeter15Min_1>> GetSolarP15ImportData(int importId)
         {
-
-            //string query = "SELECT t1.*,t3.bd_type_name FROM `uploading_file_breakdown_solar` as t1 left join site_master_solar as t2 on /t2.site_master_solar_id = t1.site_id left join bd_type as t3 on t3.bd_type_id = t1.bd_type_id where import_batch_id =" + importId + "";
-            string query = "Select t1.*,t2.site from uploading_pyranometer_15_min_solar as t1 left join `site_master_solar` as t2 on t2.site_master_solar_id = t1.site_id where import_batch_id=" + importId + "";
+            string query = "Select t1.*,t2.site from uploading_pyranometer_15_min_solar as t1 left join site_master_solar as t2 on t2.site_master_solar_id = t1.site_id where import_batch_id=" + importId + "";
             List<SolarUploadingPyranoMeter15Min_1> _importSolarP15Data = new List<SolarUploadingPyranoMeter15Min_1>();
-            _importSolarP15Data = await Context.GetData<SolarUploadingPyranoMeter15Min_1>(query).ConfigureAwait(false);
+            try
+            {
+                _importSolarP15Data = await Context.GetData<SolarUploadingPyranoMeter15Min_1>(query).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Exception due to : " + e.ToString();
+                string finalMsg = "";
+            }
             return _importSolarP15Data;
 
         }
@@ -18816,6 +18874,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 string tempDate = $"'{Convert.ToDateTime(_dataElement.data_date).ToString("yyyy-MM-dd")}',";
                                 insertDates += tempDate;
                                 double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others - _dataElement.igbd - _dataElement.egbd - _dataElement.loadShedding);
+                               
                                 //_dataElement.pr = _dataElement.inv_kwh - total_bd;
                                 _dataElement.pr = (_actualData.jmr_kwh - total_bd) / 1000000;
                                 //_dataElement.inv_kwh = _actualData.inv_kwh;
@@ -20226,12 +20285,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             if (siteType == 1)
             {
             
-                query = "SELECT cust_group, GROUP_CONCAT(site_master_solar_id SEPARATOR ',') AS site_ids FROM site_master_solar WHERE cust_group IS NOT NULL GROUP BY cust_group";
+                query = "SELECT cust_group, STRING_AGG(site_master_solar_id, ',') AS site_ids FROM site_master_solar WHERE cust_group IS NOT NULL GROUP BY cust_group";
             }
             else
             {
               
-                query = "SELECT cust_group, GROUP_CONCAT(site_master_id SEPARATOR ',') AS site_ids FROM site_master WHERE cust_group IS NOT NULL GROUP BY cust_group";
+                query = "SELECT cust_group, STRING_AGG(site_master_id, ',') AS site_ids FROM site_master WHERE cust_group IS NOT NULL GROUP BY cust_group";
             }
 
             List<CustomeGroup> _customelist = new List<CustomeGroup>();
@@ -21113,7 +21172,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
             List<ColumnData> data = new List<ColumnData>();
             try
             {
-                string fetchQry = $"SELECT t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                string fetchQry = $"SELECT t1.column_id, t2.column_name, t1.required FROM page_column_master t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
                 data = await Context.GetData<ColumnData>(fetchQry).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -21407,7 +21466,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
 
             try
             {
-                string fetchQry = $"SELECT page_id, page_groups_id FROM `user_page_group_ca` WHERE user_id = {user_id};";
+                string fetchQry = $"SELECT page_id, page_groups_id FROM user_page_group_ca WHERE user_id = {user_id};";
                 finalData = await Context.GetData<pageColumns>(fetchQry).ConfigureAwait(false);
             }
             catch (Exception e)

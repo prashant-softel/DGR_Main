@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DGRAPIs.Helper;
 using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 namespace DGRAPIs.Helper
 {
     public class DatabaseProvider
@@ -17,7 +18,7 @@ namespace DGRAPIs.Helper
         }
         private MYSQLDBHelper GetSqlInstance(int timeout = -1)
         {
-            string connstr = (new MySqlConnectionStringBuilder(MainConnection)).ConnectionString;
+            string connstr = MainConnection; // SQL Server connection string
             return new MYSQLDBHelper(connstr);
         }
         public MYSQLDBHelper SqlInstance(int timeout = -1) => GetSqlInstance(timeout);
