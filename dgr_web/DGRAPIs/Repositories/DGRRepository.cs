@@ -18867,7 +18867,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                             {
                                 string tempDate = $"'{Convert.ToDateTime(_dataElement.data_date).ToString("yyyy-MM-dd")}',";
                                 insertDates += tempDate;
-                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
+                                //double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others + _dataElement.igbd + _dataElement.egbd - _dataElement.loadShedding);
+                                double total_bd = (_dataElement.expected_power - _dataElement.usmh - _dataElement.smh - _dataElement.others - _dataElement.igbd - _dataElement.egbd - _dataElement.loadShedding);
+
                                 //_dataElement.pr = _dataElement.inv_kwh - total_bd;
                                 _dataElement.pr = (_actualData.jmr_kwh - total_bd) / 1000000;
                                 //_dataElement.inv_kwh = _actualData.inv_kwh;
