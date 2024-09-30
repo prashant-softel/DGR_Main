@@ -154,7 +154,7 @@ namespace DGRAPIs.Repositories
             
         }
 
-        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay, string firstReminderTime, string secondReminderTime, string username, int user_id, string role,string SolarMonthlyTime,string WindMonthlyTime, string solarmonthdate,string windmonthdate)
+        internal async Task<int> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windWeekDay, string solarWeekDay, string firstReminderTime, string secondReminderTime, string username, int user_id, string role,string SolarMonthlyTime,string WindMonthlyTime, string solarmonthdate,string windmonthdate,int EmailLogId)
         {
 
             int finalRes = 1;
@@ -323,7 +323,16 @@ namespace DGRAPIs.Repositories
             {
                 try
                 {
-                    string updateTimingsDataQry = "UPDATE email_report_timings_log SET " +
+                    string updateTimingsDataQry = "";
+                    if (EmailLogId == 0)
+                    {
+                        updateTimingsDataQry = "INSERT INTO `email_report_timings_log` (daily_report, wind_weekly, solar_weekly, wind_weekly_day, solar_weekly_day,first_dgr_reminder,second_dgr_reminder,solar_monthly_time,wind_monthly_time,solar_monthly_date,wind_monthly_date,updated_by_name,updated_by_id,updated_by_role) VALUES " +
+                            "('"+ dailytime + "','"+ windweeklytime + "','"+ solarweeklytime + "','"+ windWeekDay + "','"+ solarWeekDay + "','"+ firstReminderTime + "','"+ secondReminderTime + "','"+ SolarMonthlyTime + "','"+ WindMonthlyTime + "','"+ solarmonthdate + "','"+ windmonthdate + "','"+ username + "','"+ user_id + "','"+ role + "')";
+         
+                    }
+                    else 
+                    {
+                         updateTimingsDataQry = "UPDATE email_report_timings_log SET " +
                                                "daily_report        = '" + dailytime + "', " +
                                                "wind_weekly         = '" + windweeklytime + "', " +
                                                "solar_weekly        = '" + solarweeklytime + "', " +
@@ -338,7 +347,9 @@ namespace DGRAPIs.Repositories
                                                "updated_by_name     = '" + username + "', " +
                                                "updated_by_id       = " + user_id + ", " +
                                                "updated_by_role     = '" + role + "' " +
-                                               "WHERE updated_by_id = " + user_id + ";";
+                                               "WHERE email_report_timings_log_id = " + EmailLogId + ";";
+                      
+                    }
                     insertTimeDataRes = await Context.ExecuteNonQry<int>(updateTimingsDataQry).ConfigureAwait(false);
 
                 }
