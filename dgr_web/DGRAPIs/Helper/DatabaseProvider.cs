@@ -14,7 +14,16 @@ namespace DGRAPIs.Helper
         public readonly IConfiguration _configuration;
         public DatabaseProvider(IConfiguration configuration)
         {
-            MainConnection = configuration.GetConnectionString("Con");
+            /*if (configuration.GetConnectionString("AllowConnection") == "1")
+            {
+                MainConnection = configuration.GetConnectionString("Con");
+            }
+            else 
+            {
+            */
+                MainConnection = configuration.GetConnectionString("Con");
+            //}
+            
         }
         private MYSQLDBHelper GetSqlInstance(int timeout = -1)
         {

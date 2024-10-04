@@ -17,11 +17,11 @@ namespace DGRAPIs.Models
         public int module_tracker { get; set; }
         public int module_WP { get; set; }
         public string remark { get; set; }
-        public double tracker_loss { get; set; }
-        public double breakdown_tra_capacity { get; set; }
-        public double actual_poa { get; set; }
-        public double actual_ghi { get; set; }
-        public double target_aop_pr { get; set; }
+        public dynamic tracker_loss { get; set; }
+        public dynamic breakdown_tra_capacity { get; set; }
+        public dynamic actual_poa { get; set; }
+        public dynamic actual_ghi { get; set; }
+        public dynamic target_aop_pr { get; set; }
         public string month { get; set; }
 
     }

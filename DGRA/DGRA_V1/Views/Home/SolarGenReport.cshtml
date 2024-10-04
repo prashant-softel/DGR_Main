@@ -1641,7 +1641,7 @@
                             tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0) + '</td>';
                             tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
                         }
                         tbl += '</tr>';
@@ -2268,7 +2268,7 @@
                                 tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                             }
                             if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
-                                tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                                tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0) + '</td>';
                             }
                             if (userColumnId.includes(columnMap["Tracker_Loss"][0]) || columnMap["Tracker_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
@@ -2315,8 +2315,8 @@
                             tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].tracker_losses && result[i].tracker_losses != null ? result[i].tracker_losses.toFixed(2) : 0) + '</td>';
                             tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
                         }
                     //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + formattedDate + '</td>';
@@ -2883,7 +2883,7 @@
                                 tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
                             }
                             if (userColumnId.includes(columnMap["LULL_Loss"][0]) || columnMap["LULL_Loss"][1] == 1 || isAdmin == 1) {
-                                tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                                tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0) + '</td>';
                             }
                             if (userColumnId.includes(columnMap["Total_Loss"][0]) || columnMap["Total_Loss"][1] == 1 || isAdmin == 1) {
                                 tbl += '<td class="text-right">' + result[i].total_losses.toFixed() + '</td>';
@@ -2928,7 +2928,7 @@
                             tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0) + '</td>';
                             tbl += '<td class="text-right">' + result[i].total_losses.toFixed() + '</td>';
                         }
                         //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + year + '</td>';
@@ -3544,8 +3544,8 @@
                             tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].tracker_losses && result[i].tracker_losses != null ? result[i].tracker_losses.toFixed(2) : 0) + '</td>';
                             tbl += '<td class="text-right">' + totalFinal.toFixed(2) + '</td>';
                         }
                         //tbl += '<td class="text-left" style="text-wrap: nowrap;">' + fyyear + '</td>';
@@ -4141,7 +4141,7 @@
                             tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0) + '</td>';
                             tbl += '<td class="text-right">' + result[i].total_losses.toFixed(2) + '</td>';
                         }
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear  + '</td>';
@@ -4733,8 +4733,8 @@
                             tbl += '<td class="text-right">' + result[i].igbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].egbdh.toFixed(2) + '</td>';
                             tbl += '<td class="text-right">' + result[i].load_shedding.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].lull_hrs.toFixed(2) + '</td>';
-                            tbl += '<td class="text-right">' + result[i].tracker_losses.toFixed(2) + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].lull_hrs && result[i].lull_hrs != null ? result[i].lull_hrs.toFixed(2) : 0)  + '</td>';
+                            tbl += '<td class="text-right">' + (result[i].tracker_losses && result[i].tracker_losses != null ? result[i].tracker_losses.toFixed(2) : 0)  + '</td>';
                             tbl += '<td class="text-right">' + result[i].total_losses.toFixed() + '</td>';
                         }
                         //tbl += '<td class="text-left"  style="text-wrap: nowrap;">' + fyyear + '</td>';

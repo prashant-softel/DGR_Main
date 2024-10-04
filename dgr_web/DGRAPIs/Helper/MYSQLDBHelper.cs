@@ -5,7 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using MySql.Data;
-//using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System.Data.SqlClient;
 using DGRAPIs.Helper;
 

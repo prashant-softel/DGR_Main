@@ -19,12 +19,11 @@ namespace DGRAPIs.Models
         public string smb { get; set; }
         public string strings { get; set; }
         public string string_configuration { get; set; }
-        public double total_string_current { get; set; }
-        public double total_string_voltage { get; set; }
-        public double modules_quantity { get; set; }
-        public double wp { get; set; }
-
-        public double capacity { get; set; }
+        public dynamic total_string_current { get; set; }
+        public dynamic total_string_voltage { get; set; }
+        public dynamic modules_quantity { get; set; }
+        public dynamic wp { get; set; }
+        public dynamic capacity { get; set; }
         public string module_make { get; set; }
         public string module_model_no { get; set; }
         public string module_type { get; set; }
