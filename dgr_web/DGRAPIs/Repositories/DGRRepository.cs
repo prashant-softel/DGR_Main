@@ -5803,7 +5803,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
                 }
                 filtersite += spvs.TrimEnd(',') + ")";
 
-                string masterquery = "SELECT site_master_solar_id FROM `site_master_solar` where " + filtersite;
+                string masterquery = "SELECT site_master_solar_id FROM site_master_solar where " + filtersite;
                 List<SolarSiteMaster> sitelist = new List<SolarSiteMaster>();
                 sitelist = await Context.GetData<SolarSiteMaster>(masterquery).ConfigureAwait(false);
                 for (var i = 0; i < sitelist.Count; i++)
@@ -20252,8 +20252,21 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             // string qry = @"SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, t2.country,t1.state,t2.spv,t2.cust_group,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh, sum(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END)/count(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END) as inv_pr, sum(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END)/count(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,(sum(ega_b)/count(*))as ega_b,(sum(ega_c)/count(*))as ega_c,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id " + filter + " group by t1.site ,month(t1.date) ORDER BY year(t1.date), month(t1.date),t1.site";//t1.site, year, month";
             //(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa 150152024
-            string qry = @"SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month, t2.country,t1.state,t2.spv,t2.cust_group,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi))as ghi,(sum(poa))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh, sum(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END)/count(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END) as inv_pr, sum(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END)/count(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,(sum(ega_b)/count(*))as ega_b,(sum(ega_c)/count(*))as ega_c,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id " + filter + " group by t1.site ,month(t1.date) ORDER BY year(t1.date), month(t1.date),t1.site";//t1.site, year, month";
+            string qry = @"SELECT year(t1.date)as year,FORMAT(t1.date, 'MMMM') as month, t2.country,t1.state,t2.spv,t2.cust_group,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi))as ghi,(sum(poa))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh, sum(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END)/count(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END) as inv_pr, sum(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END)/count(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,(sum(ega_b)/count(*))as ega_b,(sum(ega_c)/count(*))as ega_c,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses into #temp FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id " + filter + " group by t1.site ,month(t1.date),t2.country,t1.state ,t1.date,t2.spv,t2.cust_group,t2.dc_capacity,\r\n t2.ac_capacity ORDER BY year(t1.date), month(t1.date),t1.site; ";//t1.site, year, month";
 
+            qry = qry + @"select 
+                         year  as year, month  as month, country  as country, state  as state, spv  as spv, cust_group  as cust_group, 
+                         site  as site, avg(dc_capacity)  as dc_capacity, avg(ac_capacity)  as ac_capacity, sum(ghi)  as ghi, 
+                         sum(poa)  as poa, sum(expected_kwh)  as expected_kwh, sum(inv_kwh)  as inv_kwh, sum(plant_kwh)  as plant_kwh, 
+                         avg(inv_pr)  as inv_pr, avg(plant_pr)  as plant_pr, avg(inv_plf)  as inv_plf, avg(plant_plf)  as plant_plf, 
+                         avg(ma_actual)  as ma_actual, avg(ma_contractual)  as ma_contractual, avg(iga)  as iga, avg(ega)  as ega, 
+                         avg(ega_b)  as ega_b, avg(ega_c)  as ega_c, sum(prod_hrs)  as prod_hrs, 
+                         avg(lull_hrs_bd)  as lull_hrs_bd, sum(usmh_bs)  as usmh_bs, avg(smh_bd)  as smh_bd, avg(oh_bd)  as oh_bd, 
+                         sum(igbdh_bd)  as igbdh_bd, avg(egbdh_bd)  as egbdh_bd, avg(load_shedding_bd)  as load_shedding_bd, 
+                         sum(total_bd_hrs)  as total_bd_hrs, sum(usmh)  as usmh, sum(smh)  as smh, sum(oh)  as oh, sum(igbdh)  as igbdh, 
+                         sum(egbdh)  as egbdh, sum(load_shedding)  as load_shedding, sum(total_losses)  as total_losses
+                         from #temp
+                         group by year,month,country,state,spv,cust_group,site";
             List<SolarDailyGenReportsGroup> _monthlyGenData = new List<SolarDailyGenReportsGroup>();
             string functionName = "GetSolarMonthlyGenSummaryReport2";
             try
@@ -20268,7 +20281,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
             if (_monthlyGenData.Count > 0)
             {
-                string trackerQry = "SELECT t1.site, DATE_FORMAT(t1.date, '%M') AS month, SUM(t1.tracker_loss) AS tracker_losses FROM uploading_file_tracker_loss t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id " + trackerFilter + " GROUP BY t1.site_id, month(t1.date)";
+                string trackerQry = "SELECT t1.site, FORMAT(t1.date, 'MMMM') AS month, SUM(t1.tracker_loss) AS tracker_losses FROM uploading_file_tracker_loss t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id " + trackerFilter + " GROUP BY t1.site_id, month(t1.date), t1.site,t1.date";
                 List<SolarDailyGenReportsGroup> _trackerData = new List<SolarDailyGenReportsGroup>();
                 try
                 {
@@ -20280,7 +20293,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     LogError(0, 1, 5, functionName, msg, backend);
                 }
                 // get inverte count for site wise poa and ghi calcilaion 
-                string invertqury = "SELECT count(inverter) as inv_count,site FROM `solar_ac_dc_capacity` " + invfilter + " group by site";
+                string invertqury = "SELECT count(inverter) as inv_count,site FROM solar_ac_dc_capacity " + invfilter + " group by site";
                 List<SolarDailyInvCount> _invData = new List<SolarDailyInvCount>();
                 try
                 {
@@ -20312,56 +20325,132 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
                 }
             }
-            var result = _monthlyGenData.GroupBy(
-               d => d.cust_group,
-               (key, group) => new SolarDailyGenReportsGroup
-               {
-                   cust_group = key,
-                   country = group.Select(x => x.country).FirstOrDefault(),
-                   year = group.Select(x => x.year).FirstOrDefault(),
-                   month = group.Select(x => x.month).FirstOrDefault(),
-                   state = group.Select(x => x.state).FirstOrDefault(),
-                   date = group.Select(x => x.date).FirstOrDefault(),
-                   ac_capacity = group.Sum(x => x.ac_capacity),
-                   dc_capacity = group.Sum(x => x.dc_capacity),
-                   ega = group.Average(x => x.ega),
-                   ega_b = group.Average(x => x.ega_b),
-                   ega_c = group.Average(x => x.ega_c),
-                   egbdh = group.Sum(x => x?.egbdh ?? 0),
-                   egbdh_bd = group.Sum(x => x.egbdh_bd),
-                   expected_kwh = group.Sum(x => x.expected_kwh),
-                   ghi = group.Sum(x => x.ghi),
-                   iga = group.Average(x => x.iga),
-                   igbdh = group.Sum(x => x?.igbdh ?? 0),
-                   igbdh_bd = group.Sum(x => x.igbdh_bd),
-                   inv_kwh = group.Sum(x => x.inv_kwh),
-                   inv_plf = group.Sum(x => x.inv_plf),
-                   inv_pr = group.Sum(x => x.inv_pr),
-                   load_shedding = group.Sum(x => x?.load_shedding ?? 0),
-                   load_shedding_bd = group.Sum(x => x.load_shedding_bd),
-                   lull_hrs = group.Sum(x => x.lull_hrs),
-                   lull_hrs_bd = group.Average(x => x.lull_hrs_bd),
-                   ma_actual = group.Average(x => x.ma_actual),
-                   ma_contractual = group.Average(x => x.ma_contractual),
-                   oh = group.Sum(x => x.oh),
-                   oh_bd = group.Sum(x => x.oh_bd),
-                   plant_kwh = group.Sum(x => x.plant_kwh),
-                   plant_plf = group.Sum(x => x?.plant_plf ?? 0),
-                   plant_pr = group.Sum(x => x.plant_pr),
-                   poa = group.Sum(x => x.poa),
-                   prod_hrs = group.Sum(x => x.prod_hrs),
-                   smh = group.Sum(x => x.smh),
-                   smh_bd = group.Sum(x => x.smh_bd),
-                   total_losses = group.Sum(x => x?.total_losses ?? 0),
-                   tracker_losses = group.Sum(x => x.tracker_losses),
-                   usmh = group.Sum(x => x.usmh),
-                   usmh_bs = group.Sum(x => x.usmh_bs),
-                   total_bd_hrs = group.Sum(x => x.total_bd_hrs),
-                   item = group.ToList()
-               }
-           ).ToList();
+            try
+            {
+                // var result = _monthlyGenData.GroupBy(
+                //    d => d.cust_group,
+                //    (key, group) => new SolarDailyGenReportsGroup
+                //    {
+                //        cust_group = key,
+                //        country = group.Select(x => x.country).FirstOrDefault(),
+                //        year = group.Select(x => x.year).FirstOrDefault(),
+                //        month = group.Select(x => x.month).FirstOrDefault(),
+                //        state = group.Select(x => x.state).FirstOrDefault(),
+                //        date = group.Select(x => x.date).FirstOrDefault(),
+                //        ac_capacity = group.Sum(x => x.ac_capacity),
+                //        dc_capacity = group.Sum(x => x.dc_capacity),
+                //        ega = group.Average(x => x.ega),
+                //        ega_b = group.Average(x => x.ega_b),
+                //        ega_c = group.Average(x => x.ega_c),
+                //        egbdh = group.Sum(x => x?.egbdh ?? 0),
+                //        egbdh_bd = group.Sum(x => x.egbdh_bd),
+                //        expected_kwh = group.Sum(x => x.expected_kwh),
+                //        ghi = group.Sum(x => x.ghi),
+                //        iga = group.Average(x => x.iga),
+                //        igbdh = group.Sum(x => x?.igbdh ?? 0),
+                //        igbdh_bd = group.Sum(x => x.igbdh_bd),
+                //        inv_kwh = group.Sum(x => x.inv_kwh),
+                //        inv_plf = group.Sum(x => x.inv_plf),
+                //        inv_pr = group.Sum(x => x.inv_pr),
+                //        load_shedding = group.Sum(x => x?.load_shedding ?? 0),
+                //        load_shedding_bd = group.Sum(x => x.load_shedding_bd),
+                //        lull_hrs = group.Sum(x => x.lull_hrs),
+                //        lull_hrs_bd = group.Average(x => x.lull_hrs_bd),
+                //        ma_actual = group.Average(x => x.ma_actual),
+                //        ma_contractual = group.Average(x => x.ma_contractual),
+                //        oh = group.Sum(x => x.oh),
+                //        oh_bd = group.Sum(x => x.oh_bd),
+                //        plant_kwh = group.Sum(x => x.plant_kwh),
+                //        plant_plf = group.Sum(x => x?.plant_plf ?? 0),
+                //        plant_pr = group.Sum(x => x.plant_pr),
+                //        poa = group.Sum(x => x.poa),
+                //        prod_hrs = group.Sum(x => x.prod_hrs),
+                //        smh = group.Sum(x => x.smh),
+                //        smh_bd = group.Sum(x => x.smh_bd),
+                //        total_losses = group.Sum(x => x?.total_losses ?? 0),
+                //        tracker_losses = group.Sum(x => x.tracker_losses),
+                //        usmh = group.Sum(x => x.usmh),
+                //        usmh_bs = group.Sum(x => x.usmh_bs),
+                //        total_bd_hrs = group.Sum(x => x.total_bd_hrs),
+                //        item = group.ToList()
+                //    }
+                //).ToList();
+                var result = _monthlyGenData.GroupBy(
+    d => d.cust_group,
+    (key, group) => new SolarDailyGenReportsGroup
+    {
+        cust_group = key,
+        country = group.Select(x => x.country).FirstOrDefault(),
+        year = group.Select(x => x.year).FirstOrDefault(),
+        month = group.Select(x => x.month).FirstOrDefault(),
+        state = group.Select(x => x.state).FirstOrDefault(),
+        date = group.Select(x => x.date).FirstOrDefault(),
+        ac_capacity = group.Sum(x => x.ac_capacity),
+        dc_capacity = group.Sum(x => x.dc_capacity),
+        ega = group.Average(x => x.ega),
+        ega_b = group.Average(x => x.ega_b),
+        ega_c = group.Average(x => x.ega_c),
+
+        // Handle nullable decimal to int conversion
+        egbdh = (int)group.Sum(x => x?.egbdh ?? 0), // Safe cast to int after handling nulls
+        egbdh_bd = (int)group.Sum(x => x?.egbdh_bd ?? 0),
+
+        expected_kwh = group.Sum(x => x.expected_kwh),
+        ghi = group.Sum(x => x.ghi),
+        iga = group.Average(x => x.iga),
+
+        // Handle nullable decimal to int conversion
+        igbdh = (int)group.Sum(x => x?.igbdh ?? 0),
+        igbdh_bd = (int)group.Sum(x => x?.igbdh_bd ?? 0),
+
+        inv_kwh = group.Sum(x => x.inv_kwh),
+        inv_plf = group.Sum(x => x.inv_plf),
+        inv_pr = group.Sum(x => x.inv_pr),
+
+        // Handle nullable decimal to int conversion
+        load_shedding = (int)group.Sum(x => x?.load_shedding ?? 0),
+        load_shedding_bd = (int)group.Sum(x => x?.load_shedding_bd ?? 0),
+
+        // Handle nullable decimal to int conversion
+        lull_hrs = (int)group.Sum(x => x?.lull_hrs ?? 0),
+        lull_hrs_bd = group.Average(x => x.lull_hrs_bd),
+
+        ma_actual = group.Average(x => x.ma_actual),
+        ma_contractual = group.Average(x => x.ma_contractual),
+
+        // Handle nullable decimal to int conversion
+        oh = (int)group.Sum(x => x?.oh ?? 0),
+        oh_bd = (int)group.Sum(x => x?.oh_bd ?? 0),
+
+        plant_kwh = group.Sum(x => x.plant_kwh),
+        plant_plf = group.Sum(x => x?.plant_plf ?? 0),
+        plant_pr = group.Sum(x => x.plant_pr),
+        poa = group.Sum(x => x.poa),
+        prod_hrs = group.Sum(x => x.prod_hrs),
+
+        // Handle nullable decimal to int conversion
+        smh = (int)group.Sum(x => x?.smh ?? 0),
+        smh_bd = (int)group.Sum(x => x?.smh_bd ?? 0),
+        total_losses = (int)group.Sum(x => x?.total_losses ?? 0),
+        tracker_losses = group.Sum(x => x.tracker_losses),
+        usmh = (int)group.Sum(x => x?.usmh ?? 0),
+        usmh_bs = (int)group.Sum(x => x?.usmh_bs ?? 0),
+        total_bd_hrs = (int)group.Sum(x => x?.total_bd_hrs ?? 0),
+
+        item = group.ToList()
+    }
+).ToList();
+
+
+
+                return result;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
             //Console.WriteLine("Hello, World!");
-            return result;
+           
             //return _monthlyGenData;
         }
         internal async Task<List<SolarDailyGenReportsGroup>> GetCustomeSolarYearly(string fromDate, string toDate, string site_list)
@@ -20406,8 +20495,18 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 chkfilter = 1;
             }
             //string qry = @"SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date, t2.country,t1.state,t2.spv,t2.cust_group,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi)/count(*))as ghi,(sum(poa)/count(*))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,sum(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END)/count(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END) as inv_pr, sum(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END)/count(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,(sum(ega_b)/count(*))as ega_b,(sum(ega_c)/count(*))as ega_c,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id " + filter + " group by t1.site_id ORDER BY t1.site, year, month";
-            string qry = @"SELECT year(t1.date)as year,DATE_FORMAT(t1.date,'%M') as month,t1.date, t2.country,t1.state,t2.spv,t2.cust_group,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi))as ghi,(sum(poa))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,sum(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END)/count(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END) as inv_pr, sum(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END)/count(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,(sum(ega_b)/count(*))as ega_b,(sum(ega_c)/count(*))as ega_c,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id " + filter + " group by t1.site_id ORDER BY t1.site, year, month";
-
+            string qry = @"SELECT year(t1.date)as year,FORMAT(t1.date, 'MMMM') as month,t1.date, t2.country,t1.state,t2.spv,t2.cust_group,t1.site,(t2.dc_capacity)as dc_capacity, (t2.ac_capacity)as ac_capacity,(sum(ghi))as ghi,(sum(poa))as poa,sum(expected_kwh)as expected_kwh, sum(inv_kwh)as inv_kwh,sum(plant_kwh)as plant_kwh,sum(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END)/count(CASE WHEN t1.inv_pr >= 60 and t1.inv_pr <= 90 THEN t1.inv_pr END) as inv_pr, sum(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END)/count(CASE WHEN t1.plant_pr >= 60 and t1.plant_pr <= 90 THEN t1.plant_pr END) as plant_pr, sum(inv_plf_ac)/count(inv_plf_ac) as inv_plf,sum(plant_plf_ac)/count(plant_plf_ac) as plant_plf, sum(ma)/count(ma) as ma_actual,sum(ma)/count(ma) as ma_contractual, (sum(iga)/count(*))as iga,(sum(ega)/count(*))as ega,(sum(ega_b)/count(*))as ega_b,(sum(ega_c)/count(*))as ega_c,sum(prod_hrs) as prod_hrs, sum(lull_hrs_bd) as lull_hrs_bd, sum(usmh_bs) as usmh_bs, sum(smh_bd) as smh_bd, sum(oh_bd) as oh_bd, sum(igbdh_bd) as igbdh_bd, sum(egbdh_bd) as egbdh_bd, sum(load_shedding_bd) as load_shedding_bd, sum(total_bd_hrs) as total_bd_hrs, sum(usmh)as usmh,sum(smh)as smh, sum(oh)as oh,sum(igbdh)as igbdh,sum(egbdh)as egbdh, sum(load_shedding)as load_shedding, sum(total_losses)as total_losses into #temp FROM daily_gen_summary_solar t1 left join site_master_solar t2 on  t2.site_master_solar_id=t1.site_id " + filter + " group by t1.site_id ,t1.date,t2.country,t1.state,t2.spv,t2.cust_group,t1.site,t2.dc_capacity,t2.ac_capacity ORDER BY t1.site, year, month";
+            qry = qry + @"; select year, month,(select top 1 date from #temp) date, country, state, spv, cust_group, site,avg(dc_capacity) dc_capacity,
+                        avg(ac_capacity) ac_capacity,sum(ghi) ghi,sum(poa) poa,sum(expected_kwh) expected_kwh,sum(inv_kwh) inv_kwh,
+                        sum(plant_kwh) plant_kwh,avg(inv_pr) inv_pr,avg(plant_pr) plant_pr,avg(inv_plf) inv_plf,
+                        avg(plant_plf) plant_plf,avg(ma_actual) ma_actual,avg(ma_contractual) ma_contractual,avg(iga) iga,
+                        avg(ega) ega,avg(ega_b) ega_b,avg(ega_c) ega_c,sum(prod_hrs) prod_hrs,avg(lull_hrs_bd) lull_hrs_bd,
+                        sum(usmh_bs) usmh_bs,sum(smh_bd) smh_bd,sum(oh_bd) oh_bd,sum(igbdh_bd) igbdh_bd,sum(egbdh_bd) egbdh_bd,
+                        sum(load_shedding_bd) load_shedding_bd,sum(total_bd_hrs) total_bd_hrs,sum(usmh) usmh,sum(smh) smh,sum(oh) oh,
+                        sum(igbdh) igbdh,sum(egbdh) egbdh,sum(load_shedding) load_shedding,sum(total_losses) total_losses
+                        from #temp
+                        group by year, month,  country, state, spv, cust_group, site;
+                        ";
             List<SolarDailyGenReportsGroup> _yearlyGenData = new List<SolarDailyGenReportsGroup>();
             string functionName = "GetSolarYearlyGenSummaryReport2";
             try
@@ -20421,7 +20520,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if (_yearlyGenData.Count > 0)
             {
-                string trackerQry = "SELECT t1.site, year(t1.date) AS year, SUM(t1.tracker_loss) AS tracker_losses FROM uploading_file_tracker_loss t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id " + trackerFilter + " GROUP BY t1.site_id";
+                string trackerQry = "SELECT t1.site, year(t1.date) AS year, SUM(t1.tracker_loss) AS tracker_losses FROM uploading_file_tracker_loss t1 LEFT JOIN site_master_solar t2 ON t1.site_id = t2.site_master_solar_id " + trackerFilter + " GROUP BY t1.site,t1.date, t1.site_id";
                 List<SolarDailyGenReportsGroup> _trackerData = new List<SolarDailyGenReportsGroup>();
                 try
                 {
