@@ -475,14 +475,14 @@ namespace DGRA_V1.Controllers
 
         }
         [TypeFilter(typeof(SessionValidation))]
-        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime ,string username, int user_id, string role, string SolarMonthlyTime,string WindMonthlyTime,string solarmonthdate,string windmonthdate)
+        public async Task<IActionResult> EmailReportTimeChangeSetting(string dailytime, string windweeklytime, string solarweeklytime, string windweekday, string solarweekday, string firstReminderTime, string secondReminderTime ,string username, int user_id, string role, string SolarMonthlyTime,string WindMonthlyTime,string solarmonthdate,string windmonthdate,int email_logId)
         {
             var line = "";
             try
             {
                 var url = _idapperRepo.GetAppSettingValue("API_URL") + "/api/Login/EmailReportTimeChangeSetting?dailytime=" + dailytime + "&windweeklytime=" + windweeklytime + "&solarweeklytime=" + solarweeklytime + "&windweekday=" + windweekday + "&solarweekday=" + solarweekday +
                     "&firstReminderTime=" + firstReminderTime + "&secondReminderTime=" + secondReminderTime + "&SolarMonthlyTime=" + SolarMonthlyTime + "&WindMonthlyTime=" + WindMonthlyTime + "&solarmonthdate=" + solarmonthdate + "&windmonthdate=" + windmonthdate +
-                    "&username=" + username + "&user_id=" + user_id + "&role=" + role;
+                    "&username=" + username + "&user_id=" + user_id + "&role=" + role+"&EmailLogId="+ email_logId;
                 WebRequest request = WebRequest.Create(url);
                 using (WebResponse response = (HttpWebResponse)request.GetResponse())
                 {

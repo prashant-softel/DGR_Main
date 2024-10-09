@@ -20776,7 +20776,7 @@ LEFT JOIN (SELECT det.site_id AS site_id, det.data_date AS data_date, (SUM(det.u
                         int[] columnIdArray = new int[0];
                         try
                         {
-                            string fetchPageColumns = $"SELECT t1.column_id, t2.column_name, t1.required FROM `page_column_master` t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
+                            string fetchPageColumns = $"SELECT t1.column_id, t2.column_name, t1.required FROM page_column_master t1 LEFT JOIN column_master t2 ON t1.column_id = t2.column_id WHERE t1.page_id = {page_id};";
                             unit.column_data = await Context.GetData<ColumnData>(fetchPageColumns).ConfigureAwait(false);
                             result = 2;
                         }

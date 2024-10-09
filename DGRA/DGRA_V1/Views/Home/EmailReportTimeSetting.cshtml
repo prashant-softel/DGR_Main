@@ -357,6 +357,7 @@
     var username = "@username";
     var role = "@role";
     var user_id = parseInt("@user_id", 10);
+    var email_log_id = 0;
 
     window.onload = function () {
         Cancel();
@@ -401,6 +402,7 @@
                 //console.log(result);
                 if (result.length > 0) {
                     console.log("Inside If : ");
+                    email_log_id = result[0].email_report_timings_log_id;
                     temp1 = result[0].daily_report.toString();
                     temp2 = result[0].wind_weekly.toString();
                     temp3 = result[0].solar_weekly.toString();
@@ -536,7 +538,7 @@
             console.log("username : ", username, " role : ", role, " user_id : ", user_id);
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + '&solarmonthlytime=' + solarmonthlytime + '&windmonthlytime=' + windmonthlytime + '&solarmonthdate=' + solarmonthdate + '&windmonthdate=' + windmonthdate + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + '&solarmonthlytime=' + solarmonthlytime + '&windmonthlytime=' + windmonthlytime + '&solarmonthdate=' + solarmonthdate + '&windmonthdate=' + windmonthdate + "&username=" + username + "&user_id=" + user_id + "&role=" + role + "&email_logId=" + email_log_id,
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr) {
@@ -564,9 +566,8 @@
         var solarWeeklyTime = document.getElementById("solarWeeklyReport").value;
         var firstReminderTime = document.getElementById("firstReminder").value;
         var secondReminderTime = document.getElementById("secondReminder").value;
-
-        var solarmonthlytime = document.getElementById("solarmonthlytime").value;
-        var windmonthlytime = document.getElementById("windmonthlytime").value;
+        var solarmonthlytime = document.getElementById("solarmonthlyreport").value;
+        var windmonthlytime = document.getElementById("windmonthlyreport").value;
 
         if (firstReminderTime === "" && secondReminderTime === "") {
             alert("Please enter data...!");
@@ -632,7 +633,7 @@
             console.log("username : ", username, " role : ", role, " user_id : ", user_id);
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + '&solarmonthlytime=' + solarmonthlytime + '&windmonthlytime=' + windmonthlytime + '&solarmonthdate=' + solarmonthdate + '&windmonthdate=' + windmonthdate + "&username=" + username + "&user_id=" + user_id + "&role=" + role,
+                url: '@Url.Action("EmailReportTimeChangeSetting", "Home")' + '?dailytime=' + dailytime + '&windweeklytime=' + windWeeklyTime + '&solarweeklytime=' + solarWeeklyTime + '&windweekday=' + windWeekDay + '&solarweekday=' + solarWeekDay + '&firstReminderTime=' + firstReminderTime + '&secondReminderTime=' + secondReminderTime + '&solarmonthlytime=' + solarmonthlytime + '&windmonthlytime=' + windmonthlytime + '&solarmonthdate=' + solarmonthdate + '&windmonthdate=' + windmonthdate + "&username=" + username + "&user_id=" + user_id + "&role=" + role + "&email_logId=" + email_log_id,
                 contentType: "application/json; charset=utf-8",
                 datatype: "html",
                 success: function (result, status, xhr) {
