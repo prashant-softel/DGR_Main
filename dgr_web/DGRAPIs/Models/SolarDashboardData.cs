@@ -7,21 +7,21 @@ namespace DGRAPIs.Models
 {
     public class SolarDashboardData
     {
-        public dynamic Date { get; set; }
-        public dynamic month { get; set; }
-        public dynamic year { get; set; }
+        public DateTime Date { get; set; }
+        public int month { get; set; }
+        public int year { get; set; }
         public string fy { get; set; }
         public string Site { get; set; }
-        public dynamic IR { get; set; }
-        public dynamic inv_kwh { get; set; }
-        public dynamic line_loss { get; set; }
-        public dynamic lineLoss { get; set; }
-        public dynamic jmrkwh { get; set; }
-        public dynamic tarkwh { get; set; }
-        public dynamic tarIR { get; set; }
-        public dynamic ac_capacity { get; set; }
+        public decimal IR { get; set; }
+        public decimal inv_kwh { get; set; }
+        public decimal line_loss { get; set; }
+        public decimal lineLoss { get; set; }
+        public decimal jmrkwh { get; set; }
+        public decimal tarkwh { get; set; }
+        public decimal tarIR { get; set; }
+        public decimal ac_capacity { get; set; }
         public int site_id { get; set; }
-        public dynamic expected_power { get; set; }
+        public decimal expected_power { get; set; }
 
     }
     public class SolarDashboardData1
