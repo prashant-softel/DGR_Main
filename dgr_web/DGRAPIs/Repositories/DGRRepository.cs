@@ -7895,6 +7895,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         tb += "O&M - Team</p>";
                         tb += "<br>";
                         tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+                        tb += "<p>Email Send Log Time : " + DateTime.Now;
 
 
                         request.ToEmail = AddToWind;
@@ -8027,7 +8028,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         tb += "O&M - Team</p>";
                         tb += "<br>";
                         tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
-
+                        tb += "<p>Email Send Log Time : " + DateTime.Now;
                         request.ToEmail = AddTo;
                         request.CcEmail = AddCc;
                         request.Subject = $"DGR Data Rejected {dataDate} - {sites.name}";
@@ -8318,6 +8319,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         tb += "O&M - Team</p>";
                         tb += "<br>";
                         tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+                        tb += "<p>Email Send Log Time : " + DateTime.Now;
                         //AddTo = new List<string>();
                         //AddTo.Add("tanvi@softeltech.in");
                         request.ToEmail = AddTo;
@@ -8428,6 +8430,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                                 tb += "O&M - Team</p>";
                                 tb += "<br>";
                                 tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+                                tb += "<p>Email Send Log Time : " + DateTime.Now;
                                 //AddTo = new List<string>();
                                 //AddTo.Add("tanvi@softeltech.in");
                                 request.ToEmail = AddTo;
@@ -11758,6 +11761,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "O&M - Team</p>";
             tb += "<br>";
             tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+            tb += "<p>Email Send Log Time : " + DateTime.Now;
 
             try
             {
@@ -12461,6 +12465,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "O&M - Team</p>";
             tb += "<br>";
             tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+            tb += "<p>Email Send Log Time : " + DateTime.Now;
             try
             {
                 PPT_InformationLog("MailDailySend before function call from repository for solar");
@@ -19388,6 +19393,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             tb += "O&M - Team</p>";
             tb += "<br><br>";
             tb += "<p>This is a system generated email. Please Do Not Reply.</p>";
+            tb += "<p>Email Send Log Time : " + DateTime.Now;
 
 
             string windSiteQry = $"SELECT site_master_id as id,site as name FROM site_master as wind left join import_batches  on import_batches.site_id = wind.site_master_id and import_file_type = 1 and date(data_date) = '{today}' and import_type = 1 where site_id is null; ";
