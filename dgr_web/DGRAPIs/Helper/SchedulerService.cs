@@ -89,7 +89,7 @@ namespace DGRAPIs.Helper
                             {
                                 string apiUrlSolar = hostName+ "/api/DGR/EmailSolarReport?fy=" + fy +"&fromDate="+ datetimenow.ToString("yyyy-MM-dd") +"&site=";
                                 PPT_InformationLog("From Scheduler Service : For Daily Mail Send Solar : API URL " + apiUrlSolar);
-                                CallAPI(apiUrlSolar);
+                                await CallAPI(apiUrlSolar);
                                // await repo.EmailSolarReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 SolarMailSuccess = true;
                                 PPT_InformationLog("From Scheduler Service : For Daily Mail Send Solar : Inside try Solar Daily mail send");
@@ -103,7 +103,7 @@ namespace DGRAPIs.Helper
                             {
                                 string apiUrlWind = hostName + "/api/DGR/EmailWindReport?fy=" + fy + "&fromDate=" + datetimenow.ToString("yyyy-MM-dd") + "&site=";
                                 PPT_InformationLog("From Scheduler Service : For Daily Mail Send Wind : API URL " + apiUrlWind);
-                                CallAPI(apiUrlWind);
+                                await CallAPI(apiUrlWind);
                                 // await repo.EmailWindReport(fy, datetimenow.ToString("yyyy-MM-dd"), "");
                                 PPT_InformationLog("From Scheduler Service : For Daily Mail Send Wind : Inside try Wind mail send");
                                 WindMailSuccess = true;
@@ -168,7 +168,7 @@ namespace DGRAPIs.Helper
                             {
                                 string apiUrlWind = hostName + "/api/DGR/PPTCreate";
                                 PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : API URL " + apiUrlWind);
-                                CallAPI(apiUrlWind);
+                                await CallAPI(apiUrlWind);
                                 WindMailSuccess = true;
                                 PPT_InformationLog("From Scheduler Service : For Wind Weekly Mail Send : Inside try Wind Weekly Mail Send Flag : " + WindMailSuccess);
                             }
@@ -207,7 +207,7 @@ namespace DGRAPIs.Helper
                             {
                                 string apiUrlSolar = hostName + "/api/DGR/PPTCreate_Solar";
                                 PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Email weekly mail send solar API URL " + apiUrlSolar);
-                                CallAPI(apiUrlSolar);
+                                await CallAPI(apiUrlSolar);
                                 SolarMailSuccess = true;
                                 PPT_InformationLog("From Scheduler Service : For Solar Weekly Mail Send : Inside try Solar weekly mail send Flag : " + SolarMailSuccess );
                             }
@@ -257,7 +257,7 @@ namespace DGRAPIs.Helper
                                 //string apiUrlWind = hostName + "/api/DGR/MonthlyMailSend";
                                 string apiUrlWind = hostName + "/api/DGR/WindReviewMail";
                                 PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : API URL " + apiUrlWind);
-                                CallAPI(apiUrlWind);
+                                await CallAPI(apiUrlWind);
                                 WindMailSuccess = true;
                                 PPT_InformationLog("From Scheduler Service : For Wind Monthly Mail Send : Inside try Wind Monthly Mail Send Flag : " + WindMailSuccess);
                             }
@@ -295,7 +295,7 @@ namespace DGRAPIs.Helper
                             {
                                 string apiUrlSolar = hostName + "/api/DGR/SolarReviewMail";
                                 PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Email Monthly mail send solar API URL " + apiUrlSolar);
-                                CallAPI(apiUrlSolar);
+                                await CallAPI(apiUrlSolar);
                                 SolarMailSuccess = true;
                                 PPT_InformationLog("From Scheduler Service : For Solar Monthly Mail Send : Inside try Solar Monthly mail send Flag : " + SolarMailSuccess);
                             }
@@ -336,7 +336,7 @@ namespace DGRAPIs.Helper
                             {
                                 string apiUrlWind = hostName + "/api/DGR/dgrUploadingReminder";
                                 PPT_InformationLog("From Scheduler Service : For dgr reminder : API URL " + apiUrlWind);
-                                CallAPI(apiUrlWind);
+                               await CallAPI(apiUrlWind);
                                 reminderSuccess = true;
                                 PPT_InformationLog("From Scheduler Service : For dgr reminder : Inside try reminderSuccess Send Flag : " + reminderSuccess);
                             }
@@ -366,7 +366,8 @@ namespace DGRAPIs.Helper
             }
         }
 
-        public void CallAPI (string apiUrl)
+        //public async void CallAPI (string apiUrl)
+        public async Task CallAPI(string apiUrl)
         {
             try
             {

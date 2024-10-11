@@ -7869,6 +7869,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     foreach (var sites in sitelist)
                     {
+                        AddToWind.Clear();
+                        AddCcWind.Clear();
                         string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id}  AND login.active_user = 1 ;";
                         try
                         {
@@ -7903,12 +7905,14 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         try
                         {
                             var res2 = await MailService.SendEmailAsync(request, _settings, 1);
+                            
                             //PPT_InformationLog("From DGR Repository : Inside dgrUploadingReminder function for reminder Mail : SendEmailAsync function completed");
                         }
                         catch (Exception e)
                         {
                             string msg = e.Message;
                             PPT_ErrorLog("From DGR Repository : Inside SetApprovalFlagForImportBatches function for reminder Mail :  SendEmailAsync function failed exception :" + e.Message);
+                        
                         }
                     }
 
@@ -7994,7 +7998,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     foreach (var sites in sitelist)
                     {
-
+                        AddTo.Clear();
+                        AddCc.Clear();
                         string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 1 and identity = {sites.id}  AND login.active_user = 1;";
 
                         try
@@ -8288,6 +8293,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 {
                     foreach (var sites in sitelist)
                     {
+                        AddTo.Clear();
+                        AddCc.Clear();
                         string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id}  AND login.active_user = 1;";
                         try
                         {
@@ -8395,6 +8402,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         {
                             foreach (var sites in sitelist)
                             {
+                                AddTo.Clear();
+                                AddCc.Clear();
                                 string qryAdmin = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id and user_role = 'Admin' where site_type = 2 and identity = {sites.id}  AND login.active_user = 1;";
                                 try
                                 {
@@ -19446,6 +19455,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string qry = $"SELECT useremail FROM user_access left join login on login.login_id = user_access.login_id where site_type = 2 and identity = {site.id}  AND login.active_user = 1 AND user_access.upload_access = 1;";
                 try
                 {
+                    AddToSolar.Clear();
                     List<UserLogin> data2 = await Context.GetData<UserLogin>(qry).ConfigureAwait(false);
                     if (data2.Count > 0)
                     {
