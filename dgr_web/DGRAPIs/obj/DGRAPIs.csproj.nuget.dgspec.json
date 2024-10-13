@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {}
+    "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main_sqlserver\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {
+    "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main_sqlserver\\dgr_web\\DGRAPIs\\DGRAPIs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+        "projectUniqueName": "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main_sqlserver\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
         "projectName": "DGRAPIs",
-        "projectPath": "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
+        "projectPath": "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main_sqlserver\\dgr_web\\DGRAPIs\\DGRAPIs.csproj",
         "packagesPath": "C:\\Users\\PRASHANT S KUPPILI\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main\\dgr_web\\DGRAPIs\\obj\\",
+        "outputPath": "C:\\Users\\PRASHANT S KUPPILI\\source\\repos\\DGR_Main_sqlserver\\dgr_web\\DGRAPIs\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\PRASHANT S KUPPILI\\AppData\\Roaming\\NuGet\\NuGet.Config",
