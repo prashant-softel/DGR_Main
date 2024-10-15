@@ -763,7 +763,7 @@ namespace DGRAPIs.Repositories
         public async Task<List<CustomGroupAccess>> GetCustomGroupAccess(int login_id, int site_type)
         {
             string qry = "";
-            qry = "SELECT cust_group FROM `user_access` where login_id = " + login_id + " and site_type = " + site_type + " and category_id = 2  and cust_group=1";
+            qry = "SELECT cust_group FROM user_access where login_id = " + login_id + " and site_type = " + site_type + " and category_id = 2  and cust_group=1";
             List<CustomGroupAccess> _groupaccess = new List<CustomGroupAccess>();
             _groupaccess = await Context.GetData<CustomGroupAccess>(qry).ConfigureAwait(false);
             return _groupaccess;
