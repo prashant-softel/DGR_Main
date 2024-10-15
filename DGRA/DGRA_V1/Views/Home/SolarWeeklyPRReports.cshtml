@@ -1330,13 +1330,14 @@
 
                 let poa_positive;
                 let poa_negative;
-                if (poa_var_mn < 0) {
+                if (poa_var_yr < 0) {
+
                     poa_negative = (poa_var_yr).toFixed(1);
                 }
                 else {
                     poa_positive = (poa_var_yr).toFixed(1);
                 }
-
+                
                 actual_poa.push(avg_act_poa.toFixed(1));
                 target_poa.push(avg_tar_poa.toFixed(1));
                 var_poa_pos.push(poa_positive);
@@ -1434,7 +1435,8 @@
                 //console.log("var_ega_pos" + var_ega_pos);
                 //console.log("var_ega_neg" + var_ega_neg);
                 chartEnergyMU(actual_mu, target_mu, var_mu_pos, var_mu_neg);
-                console.log(target_mu[0] + " " + target_mu[1] + " " + target_mu[2]);
+                console.log("POA Neg:" + var_poa_neg + "Pasi:" + var_poa_pos);
+
                 chartIR(actual_poa, target_poa, var_poa_pos, var_poa_neg);
                 PLF_chart(actual_plf, target_plf, var_plf_pos, var_plf_neg);
                 MA_chart(actual_ma, target_ma, var_ma_pos, var_ma_neg);
@@ -1912,6 +1914,7 @@
     }
     //Wind Spped Chart
     function chartIR(actual_wind, target_wind, var_wind_pos, var_wind_neg) {
+        console.log(var_wind_neg);
         let chartStatus = Chart.getChart("wind_sp_chart"); // <canvas> id
         if (chartStatus != undefined) {
             chartStatus.destroy();
