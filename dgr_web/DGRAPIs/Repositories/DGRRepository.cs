@@ -5710,7 +5710,7 @@ sum(load_shedding)as load_shedding,sum(total_losses)as total_losses
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
-            string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string datefilter2 = "(CONVERT(DATE, date_time) >= '" + fromDate + "'  and CONVERT(DATE, date_time) <= '" + todate + "') ";
             string expDailyFilter = $" t1.data_date >='{fromDate}' AND t1.data_date <= '{todate}'";
             string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
             string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
@@ -6008,7 +6008,7 @@ ORDER BY site;";
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
-            string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string datefilter2 = "(CONVERT(DATE, date_time) >= '" + fromDate + "'  and CONVERT(DATE, date_time) <= '" + todate + "') ";
             string expDailyFilter = $" t1.data_date >='{fromDate}' AND t1.data_date <= '{todate}'";
             string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
             string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
@@ -8787,7 +8787,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 filter += " where site_master_id IN(" + site + ")";
             }
-                string query = "SELECT COUNT(site) as site_count, COUNT(spv) as spv_count, SUM(total_mw) as capacity FROM `site_master`" +filter ;
+                string query = "SELECT COUNT(site) as site_count, COUNT(spv) as spv_count, SUM(total_mw) as capacity FROM site_master " +filter ;
             List<WindOpertionalHead> _operationalData = new List<WindOpertionalHead>();
             _operationalData = await Context.GetData<WindOpertionalHead>(query).ConfigureAwait(false);
             return _operationalData;
@@ -8819,7 +8819,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             {
                 filter += " where site_master_solar_id IN(" + site + ")";
             }
-            string query = "SELECT COUNT(Site) as site_count,COUNT(spv) as spv_count, SUM(ac_capacity) as capacity FROM `site_master_solar` " + filter;
+            string query = "SELECT COUNT(Site) as site_count,COUNT(spv) as spv_count, SUM(ac_capacity) as capacity FROM site_master_solar " + filter;
             List<SolarOpertionalHead> _operationalData = new List<SolarOpertionalHead>();
             _operationalData = await Context.GetData<SolarOpertionalHead>(query).ConfigureAwait(false);
             return _operationalData;
@@ -8890,7 +8890,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
                 filtersite += spvs.TrimEnd(',') + ")";
 
-                string masterquery = "SELECT site_master_id FROM `site_master` where " + filtersite;
+                string masterquery = "SELECT site_master_id FROM site_master where " + filtersite;
                 List<WindSiteMaster> sitelist = new List<WindSiteMaster>();
                 sitelist = await Context.GetData<WindSiteMaster>(masterquery).ConfigureAwait(false);
                 for (var i = 0; i < sitelist.Count; i++)
@@ -8918,9 +8918,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             filter2 += " date >= '" + fromDate + "' and date <= '" + toDate + "'"; /*group by site_id,bd_type*/
 
 
-            string qry = "SELECT t1.date,t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg ,(HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop_num  FROM uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.bd_type_id in (1,2) AND t1.total_stop > '04:00:00'" + filter ;
+            string qry = "SELECT t1.date,t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg ,(DATEPART(HOUR, t1.total_stop) + DATEPART(MINUTE, t1.total_stop) / 60.0 + DATEPART(SECOND, t1.total_stop) / 3600.0) AS total_stop_num  FROM uploading_file_breakdown t1 left join import_batches as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.bd_type_id in (1,2) AND t1.total_stop > '04:00:00'" + filter ;
 
-            string qry2 = "SELECT date,site_id, site_name,bd_type_id, bd_type ,error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT t1.date,t1.site_id, t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg , (HOUR(t1.total_stop) + MINUTE(t1.total_stop) / 60 + SECOND(t1.total_stop) / 3600) as total_stop from uploading_file_breakdown t1 left join `import_batches` as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.total_stop > '01:00:00' AND NOT t1.bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date, site_name; ";
+            string qry2 = "SELECT date,site_id, site_name,bd_type_id, bd_type ,error_description ,action_taken, count(wtg) as wtg_cnt,sum(total_stop) as total_stop_num  FROM (SELECT t1.date,t1.site_id, t1.site_name,t1.bd_type_id, t1.bd_type , t1.error_description ,t1.action_taken, t1.wtg , (DATEPART(HOUR, t1.total_stop) + DATEPART(MINUTE, t1.total_stop) / 60.0 + DATEPART(SECOND, t1.total_stop) / 3600.0) as total_stop from uploading_file_breakdown t1 left join import_batches as t2 on t2.import_batch_id = t1.import_batch_id where t2.is_approved = 1 and t1.total_stop > '01:00:00' AND NOT t1.bd_type_id in (1, 2))as custom where" + filter2 + " GROUP BY bd_type_id, date, site_name,site_id,bd_type ,error_description ,action_taken; ";
 
             List<WindUploadingFileBreakDown> _bdData = new List<WindUploadingFileBreakDown>();
              _bdData = await Context.GetData<WindUploadingFileBreakDown>(qry).ConfigureAwait(false);
@@ -8982,7 +8982,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
                 //string qrySiteFormulas = "SELECT * FROM `wind_site_formulas` where site_id = '" + site_id + "'";
-                string qrySiteFormulas = "SELECT t1.*,t2.capacity_mw FROM `wind_site_formulas` as t1 left join `site_master` as t2 on t2.site_master_id = t1.site_id where t1.site_id = '" + site_id + "'";
+                string qrySiteFormulas = "SELECT t1.*,t2.capacity_mw FROM wind_site_formulas as t1 left join site_master as t2 on t2.site_master_id = t1.site_id where t1.site_id = '" + site_id + "'";
                 List<SiteFormulas> _SiteFormulas = await Context.GetData<SiteFormulas>(qrySiteFormulas).ConfigureAwait(false);
                 //API_InformationLog("CalculateDailyWindKPI: site <" + site + "> qrySiteFormulas <" + qrySiteFormulas + ">");
 
@@ -8997,7 +8997,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 }
 
                 //string qryFileBreakdown = "SELECT fd.site_id,fd.bd_type,fd.wtg,bd.bd_type_name, SEC_TO_TIME(SUM(TIME_TO_SEC( fd.`total_stop` ) ) ) AS totalTime FROM `uploading_file_breakdown` as fd join bd_type as bd on bd.bd_type_id=fd.bd_type where site_id = " + site_id + " AND`date` = '" + fromDate + "' group by fd.wtg, fd.bd_type";
-                string qry = @"SELECT date,t1.site_id,t1.wtg,t1.bd_type_id,t1.bd_type,SEC_TO_TIME(SUM(TIME_TO_SEC(total_stop)))  AS total_stop FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status = 1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type ";
+                string qry = @"SELECT date,t1.site_id,t1.wtg,t1.bd_type_id,t1.bd_type,CONCAT(FLOOR(SUM(DATEDIFF(SECOND, 0, total_stop)) / 3600), ':', 
+                                FORMAT(SUM(DATEDIFF(SECOND, 0, total_stop)) % 3600 / 60, '00'), ':', 
+                                FORMAT(SUM(DATEDIFF(SECOND, 0, total_stop)) % 60, '00'))  AS total_stop FROM uploading_file_breakdown t1 left join location_master t2 on t2.wtg=t1.wtg and t2.status = 1 left join site_master t3 on t3.site_master_id=t2.site_master_id left join bd_type as t4 on t4.bd_type_id=t1.bd_type ";
                 //API_InformationLog("CalculateDailyWindKPI: GetBreakdown query<" + qry + ">");
                 int iBreakdownCount = 0;
                 filter = "";
@@ -9015,7 +9017,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     qry += " where  site_id = " + filter;
                 }
                 //qry += "  AND t1.wtg = 'BD-25'";
-                qry += "  group by t1.wtg, t1.bd_type order by t1.wtg";
+                qry += "  group by t1.wtg, t1.bd_type ,date,t1.site_id,t1.bd_type_id order by t1.wtg";
                 //API_InformationLog("CalculateDailyWindKPI: GetBreakdown query<" + qry + ">");
                 List<WindFileBreakdown> _WindFileBreakdown = await Context.GetData<WindFileBreakdown>(qry).ConfigureAwait(false);
                 //API_InformationLog("CalculateDailyWindKPI: GetBreakdown data<" + _WindFileBreakdown.ToString() + ">");
@@ -9421,7 +9423,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 string info1 = "Other_hours :" + Final_OthersHour + "";
                 //LogInfo(0, 2, 6, functionName, info1, backend);
 
-                string qryUpdate = "UPDATE `uploading_file_generation` set ma_actual = " + dMA_ACT + ", ma_contractual = " + dMA_CON + ", iga = " + dIGA + ", ega = " + dEGA + ", ega_b = " + dEGA_B + ", ega_c = " + dEGA_C;
+                string qryUpdate = "UPDATE uploading_file_generation set ma_actual = " + dMA_ACT + ", ma_contractual = " + dMA_CON + ", iga = " + dIGA + ", ega = " + dEGA + ", ega_b = " + dEGA_B + ", ega_c = " + dEGA_C;
                 qryUpdate += ", unschedule_hrs = '" + Final_USMH_Time + "', schedule_hrs = '" + Final_SMH_Time + "', igbdh = '" + Final_IGBD_Time + "', egbdh = '" + Final_EGBD_Time + "', others = '" + Final_OthersHour_Time + "', load_shedding = '" + Final_LoadShedding_Time + "', unschedule_num = '" + Final_USMH + "',schedule_num = '" + Final_SMH + "',igbdh_num = '" + Final_IGBD + "', egbdh_num = '" + Final_EGBD + "',others_num = '" + Final_OthersHour + "', load_shedding_num = '" + Final_LoadShedding + "'";
                 qryUpdate += " where wtg = '" + sWTG_Name + "' and date = '" + fromDate + "'";
                 //API_InformationLog("CalculateAndUpdateKPIs: sWTG_Name <" + sWTG_Name + ">  qryUpdate <" + qryUpdate + ">");
@@ -15676,7 +15678,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             int finalRes = 1401;
             try
             {
-                string qry1 = "select * from `uploading_file_tracker_loss` where site_id = " + site + " and date between '" + fromDate + "' and '" + toDate + "' ";
+                string qry1 = "select * from uploading_file_tracker_loss where site_id = " + site + " and date between '" + fromDate + "' and '" + toDate + "' ";
                 List<InsertSolarTrackerLoss> data = new List<InsertSolarTrackerLoss>();
                 try
                 {
@@ -15767,7 +15769,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     //    throw;
 
                     //}
-                    string updQuery = " update `uploading_file_tracker_loss` set tracker_loss = " + gen_loss + ", date_of_mod = NOW(), breakdown_tra_capacity = " + breakdown_tracker_cap + ", actual_poa = " + poa + ", actual_ghi = " + ghi + ", target_aop_pr = " + prTarget + "  where uploading_file_tracker_loss_id = " + _eachRow.uploading_file_tracker_loss_id + " AND site_id = " + site;
+                    string updQuery = " update uploading_file_tracker_loss set tracker_loss = " + gen_loss + ", date_of_mod = getdate(), breakdown_tra_capacity = " + breakdown_tracker_cap + ", actual_poa = " + poa + ", actual_ghi = " + ghi + ", target_aop_pr = " + prTarget + "  where uploading_file_tracker_loss_id = " + _eachRow.uploading_file_tracker_loss_id + " AND site_id = " + site;
                     try
                     {
                         int result = await Context.ExecuteNonQry<int>(updQuery).ConfigureAwait(false);
@@ -15808,7 +15810,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 siteSplit = site.Split(',');
                 filter += " and site_id in (" + site + ") ";
             }
-            string getTemp = " select date(date_time), sum(mod_temp)/count(mod_temp) as mod_temp from `uploading_pyranometer_15_min_solar` where avg_poa>0 " + filter + " and date(date_time) >='" + fromDate + "' and date(date_time) <= '" + toDate + "' group by date(date_time) ";
+            string getTemp = " select CONVERT(DATE, date_time) as date_time, sum(mod_temp)/count(mod_temp) as mod_temp from uploading_pyranometer_15_min_solar where avg_poa>0 " + filter + " and CONVERT(DATE, date_time) >='" + fromDate + "' and CONVERT(DATE, date_time) <= '" + toDate + "' group by date_time ";
             List<SolarUploadingPyranoMeter1Min> temp_data = new List<SolarUploadingPyranoMeter1Min>();
             try
             {
@@ -16065,9 +16067,9 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 while (start <= end)
                 {
                     string datestring = start.ToString("yyyy-MM-dd");
-                    string qry = "select sum(`temp_corrected_pr`) as mod_tXavg_poa from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + datestring + "' ";
+                    string qry = "select sum(temp_corrected_pr) as mod_tXavg_poa from uploading_pyranometer_15_min_solar where site_id = " + site + " and CONVERT(DATE, date_time)='" + datestring + "' ";
 
-                    string qryPOA = "Select sum(avg_poa) as avg_poa from uploading_pyranometer_15_min_solar where site_id = " + site + " and date(date_time) = '" + datestring + "'";
+                    string qryPOA = "Select sum(avg_poa) as avg_poa from uploading_pyranometer_15_min_solar where site_id = " + site + " and CONVERT(DATE, date_time) = '" + datestring + "'";
                     List<SolarUploadingPyranoMeter1Min> _SolarUploadingPyranoMeter1Min = new List<SolarUploadingPyranoMeter1Min>();
                     try
                     {
@@ -16090,7 +16092,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     }
 
 
-                    string qry2 = "select sum(mod_temp)/count(mod_temp) as mod_temp  from `uploading_pyranometer_15_min_solar` where site_id = " + site + " and DATE(date_time)='" + datestring + "' and mod_temp>0 ";
+                    string qry2 = "select sum(mod_temp)/count(mod_temp) as mod_temp  from uploading_pyranometer_15_min_solar where site_id = " + site + " and CONVERT(DATE, date_time)='" + datestring + "' and mod_temp>0 ";
 
                     List<SolarUploadingPyranoMeter1Min> data1min = new List<SolarUploadingPyranoMeter1Min>();
                     List<SolarUploadingPyranoMeter1Min> mod_temp = new List<SolarUploadingPyranoMeter1Min>();
@@ -16116,8 +16118,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
 
                     //Hourly estimated
-                    string qry3 = "select sum(`temp_corrected_pr`) as mod_tXavg_poa, sum(glob_inc) as glob_inc from `uploading_file_estimated_hourly_loss` where site_id = " + site + " and fy_date='" + datestring + "' ";
-                    string qry4 = "select sum(t_array)/count(t_array) as t_array  from `uploading_file_estimated_hourly_loss` where site_id = " + site + " and fy_date='" + datestring + "' and t_array>0 ";
+                    string qry3 = "select sum(temp_corrected_pr) as mod_tXavg_poa, sum(glob_inc) as glob_inc from uploading_file_estimated_hourly_loss where site_id = " + site + " and fy_date='" + datestring + "' ";
+                    string qry4 = "select sum(t_array)/count(t_array) as t_array  from uploading_file_estimated_hourly_loss where site_id = " + site + " and fy_date='" + datestring + "' and t_array>0 ";
                     List<estimated1Hour> est1HourData = new List<estimated1Hour>();
                     List<estimated1Hour> est1HourDataModTemp = new List<estimated1Hour>();
                     try
@@ -16149,7 +16151,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     returnData[0].est_avg_mod_temp = est1HourData[0].t_array;
 
                     //string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site + " and t1.date = '" + datestring + "' group by t1.date ,t1.site";
-                    string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM `uploading_file_generation_solar` as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year=(t1.date)  left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site + " and t1.date = '" + fromDate + "' group by t1.date ,t1.site;";
+                    string qry5 = "SELECT t1.date,t3.site,sum(t1.plant_act)+sum(t1.total_losses) as plant_kwh,(t3.dc_capacity*1000) as dc_capacity, SUM(t1.inv_act) as act_kwh,t2.LineLoss as lineloss,(SUM(t1.inv_act)-SUM(t1.inv_act)*(t2.LineLoss/100))+sum(t1.total_losses) as act_kwh_afterloss FROM uploading_file_generation_solar as t1 left join monthly_line_loss_solar as t2 on t2.site_id= t1.site_id and month_no=MONTH(t1.date) and year=(t1.date)  left join site_master_solar as t3 on t3.site_master_solar_id = t1.site_id where t1.site_id = " + site + " and t1.date = '" + fromDate + "' group by t1.date ,t1.site;";
                     List<SolarPerformanceReports1> siteData = new List<SolarPerformanceReports1>();
                     try
                     {
@@ -16165,7 +16167,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                         return finalRes;
                     }
 
-                    string qry6 = "select * from `uploading_file_pvsyst_loss` where site_id = " + site + " and month_no >= MONTH('" + datestring + "') and month_no<= MONTH('" + datestring + "')";
+                    string qry6 = "select * from uploading_file_pvsyst_loss where site_id = " + site + " and month_no >= MONTH('" + datestring + "') and month_no<= MONTH('" + datestring + "')";
                     List<SolarPowerCalc> pvsystdata = new List<SolarPowerCalc>();
                     try
                     {
@@ -16298,7 +16300,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                 //{
 
                 //}
-                string updateQry = " update `uploading_pyranometer_15_min_solar` set `temp_corrected_pr` = avg_poa * mod_temp where site_id = " + site + " and date(date_time) = '" + datestring + "' ";
+                string updateQry = " update uploading_pyranometer_15_min_solar set temp_corrected_pr = avg_poa * mod_temp where site_id = " + site + " and date(date_time) = '" + datestring + "' ";
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry).ConfigureAwait(false);
@@ -16312,7 +16314,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                     return finalRes;
                 }
-                string updateQry1Hour = " update `uploading_file_estimated_hourly_loss` set `temp_corrected_pr` = t_array*glob_inc where site_id = " + site + " and fy_date= '" + datestring + "'";
+                string updateQry1Hour = " update uploading_file_estimated_hourly_loss set temp_corrected_pr = t_array*glob_inc where site_id = " + site + " and fy_date= '" + datestring + "'";
                 try
                 {
                     await Context.ExecuteNonQry<int>(updateQry1Hour).ConfigureAwait(false);
@@ -19730,7 +19732,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             string datefilter = " (date >= '" + fromDate + "'  and date<= '" + todate + "') ";
             string datefilterTempCorr = " t1.date >= '" + fromDate + "' AND t1.date<= '" + todate + "' ";
             string datefilter1 = " and (t1.date >= '" + fromDate + "'  and t1.date<= '" + todate + "') ";
-            string datefilter2 = "(date(date_time) >= '" + fromDate + "'  and date(date_time) <= '" + todate + "') ";
+            string datefilter2 = "(CONVERT(DATE, date_time) >= '" + fromDate + "'  and CONVERT(DATE, date_time) <= '" + todate + "') ";
             string datefilter3 = " BETWEEN '" + fromDate + "'  and '" + todate1 + "' ";
             string datefilter4 = " BETWEEN '" + fromDate1 + "'  and '" + todate + "' ";
             string expDailyFilter = $" t1.data_date >='{fromDate}' AND t1.data_date <= '{todate}'";
