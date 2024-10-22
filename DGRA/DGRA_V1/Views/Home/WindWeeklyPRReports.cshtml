@@ -928,7 +928,7 @@
                     energy_var_mn = (((act_energy_mn - tar_energy_mn) / tar_energy_mn) * 100);
                 }
                 if (avg_tar_wind_mn != 0) {
-                    wind_var_mn = ((avg_act_wind_mn.toFixed(2) - avg_tar_wind_mn.toFixed(2)) / avg_tar_wind_mn.toFixed(2)) * 100;
+                    wind_var_mn = ((avg_act_wind_mn - avg_tar_wind_mn) / avg_tar_wind_mn) * 100;
                 }
 
                 revenue.push(total_revenue_mn);
@@ -1256,7 +1256,7 @@
                     energy_var_yr = (((act_energy_yr - tar_energy_yr) / tar_energy_yr) * 100);
                 }
                 if (avg_tar_wind_yr != 0) {
-                    wind_var_yr = ((avg_act_wind_yr.toFixed(2) - avg_tar_wind_yr.toFixed(2)) / avg_tar_wind_yr.toFixed(2)) * 100;
+                    wind_var_yr = ((avg_act_wind_yr - avg_tar_wind_yr) / avg_tar_wind_yr) * 100;
                 }
 
                 revenue.push(total_revenue_yr);

@@ -1172,7 +1172,7 @@
                         avg_jmr_var = (((total_act_jmr_kwh_mu - total_tar_mu) / total_tar_mu) * 100);
                     }
                     if (avg_tar_wind != 0) {
-                        avg_wind_var = ((avg_act_wind.toFixed(2) - avg_tar_wind.toFixed(2)) / avg_tar_wind.toFixed(2)) * 100;
+                        avg_wind_var = ((avg_act_wind - avg_tar_wind) / avg_tar_wind) * 100;
                     }
                     if (total_exp_power != 0) {
                         avg_e_var = (((total_act_jmr_kwh_mu.toFixed(2) - total_exp_power.toFixed(2)) / total_exp_power.toFixed(2)) * 100);
@@ -2161,7 +2161,9 @@
                             jmr_var = ((result[i].act_jmr_kwh_mu - tar_mu) / tar_mu) * 100;
                         }
                         if (result[i].act_Wind != 0 || result[i].tar_wind != 0) {
-                            wind_var = ((result[i].act_Wind.toFixed(2) - result[i].tar_wind.toFixed(2)) / result[i].tar_wind.toFixed(2)) * 100;
+                            //wind_var = ((result[i].act_Wind.toFixed(2) - result[i].tar_wind.toFixed(2)) / result[i].tar_wind.toFixed(2)) * 100;
+                            wind_var = ((result[i].act_Wind - result[i].tar_wind) / result[i].tar_wind) * 100;
+
                         }
                         if (result[i].exp_power != 0) {
                             //e_var = ((result[i].act_jmr_kwh_mu - (result[i].exp_power /6) / 1000000) / ((result[i].exp_power /6) / 1000000)) * 100;
@@ -2387,7 +2389,7 @@
                         avg_jmr_var = (((total_act_jmr_kwh_mu - total_tar_mu) / total_tar_mu) * 100);
                     }
                     if (avg_tar_wind != 0) {
-                        avg_wind_var = ((avg_act_wind.toFixed(2) - avg_tar_wind.toFixed(2)) / avg_tar_wind.toFixed(2)) * 100;
+                        avg_wind_var = ((avg_act_wind - avg_tar_wind) / avg_tar_wind) * 100;
                     }
                     if (total_exp_power != 0) {
                         avg_e_var = (((total_act_jmr_kwh_mu.toFixed(2) - total_exp_power.toFixed(2)) / total_exp_power.toFixed(2)) * 100);
