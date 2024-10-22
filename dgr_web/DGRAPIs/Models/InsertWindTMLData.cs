@@ -179,6 +179,7 @@ namespace DGRAPIs.Models
         public double ega_a { get; set; }
         public double ega_b { get; set; }
         public double ega_c { get; set; }
+        public double wind_speed { get; set; }
     }
     public class ExpectedResult
     {

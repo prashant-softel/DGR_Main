@@ -18446,7 +18446,7 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                  
                  */
                 //string fetchLossQry = "SELECT CASE WHEN all_bd = 'Load Shedding' THEN 'loadShedding' ELSE all_bd END as all_bd, SUM(loss_kw)/1000000 as loss_kw FROM `uploading_file_tmr_data` WHERE " + tmrFilter + " GROUP BY all_bd;";
-                string AllTMLDataQuery = $"SELECT site_id, wtg_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, AVG(CASE WHEN avg_wind_speed > 0 THEN avg_wind_speed ELSE 0 END) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, AVG(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OthersHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
+                string AllTMLDataQuery = $"SELECT site_id, wtg_id, WTGs AS wtg, DATE(Time_stamp) AS data_date, AVG(CASE WHEN avg_wind_speed > 0 THEN avg_wind_speed ELSE 0 END) AS actual_wind_speed, SUM(avg_active_power) AS actual_active_power, AVG(recon_wind_speed) AS recon_wind_speed, SUM(exp_power_kw) AS expected_power, t2.controller_kwh AS controller_kwh, COUNT(*) AS tml_count, SUM(CASE WHEN all_bd = 'EGBD' THEN loss_kw ELSE 0 END)/1000000 AS `egbd_loss`, SUM(CASE WHEN all_bd = 'HealthCheck' THEN loss_kw ELSE 0 END)/1000000 AS `healthcheck_loss`, SUM(CASE WHEN all_bd = 'IGBD' THEN loss_kw ELSE 0 END)/1000000 AS `igbd_loss`, SUM(CASE WHEN all_bd = 'Initialization' THEN loss_kw ELSE 0 END)/1000000 AS `initialization_loss`, SUM(CASE WHEN all_bd = 'LoadShedding' THEN loss_kw ELSE 0 END)/1000000 AS `loadshedding_loss`, SUM(CASE WHEN all_bd = 'LULL' THEN loss_kw ELSE 0 END)/1000000 AS `lull_loss`, SUM(CASE WHEN all_bd = 'NC' THEN loss_kw ELSE 0 END)/1000000 AS `nc_loss`, SUM(CASE WHEN all_bd = 'OthersHour' THEN loss_kw ELSE 0 END)/1000000 AS `others_loss`, SUM(CASE WHEN all_bd = 'PCD' THEN loss_kw ELSE 0 END)/1000000 AS `pcd_loss`, SUM(CASE WHEN all_bd = 'Runup' THEN loss_kw ELSE 0 END)/1000000 AS `runup_loss`, SUM(CASE WHEN all_bd = 'Setup' THEN loss_kw ELSE 0 END)/1000000 AS `setup_loss`, SUM(CASE WHEN all_bd = 'SMH' THEN loss_kw ELSE 0 END)/1000000 AS `smh_loss`, SUM(CASE WHEN all_bd = 'Startup' THEN loss_kw ELSE 0 END)/1000000 AS `startup_loss`, SUM(CASE WHEN all_bd = 'USMH' THEN loss_kw ELSE 0 END)/1000000 AS `usmh_loss`, t2.ma AS ma, t2.iga AS iga, t2.ega_a AS ega_a, t2.ega_b AS ega_b, t2.ega_c AS ega_c,t2.wind_speed FROM uploading_file_tmr_data LEFT JOIN (SELECT wtg, site_id AS sid, kwh as controller_kwh, ma_actual AS ma, iga, ega AS ega_a, ega_b, ega_c,wind_speed FROM `daily_gen_summary` WHERE site_id = { site } AND date = '{ data_date }' GROUP BY wtg) AS t2 ON WTGs = t2.wtg WHERE { tmrFilter } GROUP BY WTGs;";
 
                 try
                 {
@@ -18585,6 +18585,12 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     uni.expected_power = (uni.expected_power/6)/ 1000000;
                     string dateTem = Convert.ToDateTime(uni.data_date).ToString("yyyy-MM-dd");
                     uni.data_date = dateTem;
+                    double cal_ma = 0;
+                    double cal_iga = 0;
+                    double cal_ega_a = 0;
+                    double cal_ega_b = 0;
+                    double cal_ega_c = 0;
+
 
                     //lineloss calculation.
                     double lineloss = lineloss_percentage / 100;
@@ -18606,9 +18612,27 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
                     {
                         uni.adjusted_expected = uni.expected_power + uni.lineloss_mu;
                     }
+                    if (uni.adjusted_expected > 0)
+                    {
+                        cal_ma = 100 + (((uni.usmh_loss + uni.smh_loss + uni.healthcheck_loss) / uni.adjusted_expected) * 100);
+                        cal_iga = 100 + ((uni.igbd_loss / uni.adjusted_expected) * 100);
+                        cal_ega_a = 100 + (((uni.egbd_loss + uni.loadshedding_loss) / uni.adjusted_expected) * 100);
+                        cal_ega_b = 100 + ((uni.egbd_loss / uni.adjusted_expected) * 100);
+                        cal_ega_c = 100 + ((uni.loadshedding_loss / uni.adjusted_expected) * 100);
+                    }
+                    else
+                    {
+                        cal_ma = 0;
+                        cal_iga = 0;
+                        cal_ega_a = 0;
+                        cal_ega_b = 0;
+                        cal_ega_c = 0;
+                    }
 
-                    //insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {uni.ma}, {uni.iga}, {uni.ega_a}, {uni.ega_b}, {uni.ega_c}),";
-                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {100 + (((uni.usmh_loss + uni.smh_loss + uni.healthcheck_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.igbd_loss/uni.adjusted_expected)*100)}, {100 + (((uni.egbd_loss + uni.loadshedding_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.egbd_loss / uni.adjusted_expected)*100)}, {100 + ((uni.loadshedding_loss / uni.adjusted_expected)*100)},{target_wind},{uni.actual_wind_speed}),";
+                   
+                    //insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {100 + (((uni.usmh_loss + uni.smh_loss + uni.healthcheck_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.igbd_loss/uni.adjusted_expected)*100)}, {100 + (((uni.egbd_loss + uni.loadshedding_loss) / uni.adjusted_expected)*100)}, {100 + ((uni.egbd_loss / uni.adjusted_expected)*100)}, {100 + ((uni.loadshedding_loss / uni.adjusted_expected)*100)},{target_wind},{uni.wind_speed}),";
+
+                    insertValues += $"({uni.site_id}, '{uni.data_date}', {uni.wtg_id}, '{uni.wtg}', {uni.tml_count}, {uni.actual_wind_speed}, {((uni.actual_active_power / 6) / 1000000)}, {uni.recon_wind_speed}, {uni.expected_power}, {uni.usmh_loss}, {uni.smh_loss}, {uni.others_loss}, {uni.igbd_loss}, {uni.egbd_loss}, {uni.loadshedding_loss}, {uni.pcd_loss}, {uni.lull_loss}, {uni.nc_loss}, {uni.healthcheck_loss}, {uni.setup_loss}, {uni.initialization_loss}, {uni.startup_loss}, {(uni.controller_kwh / 1000000)}, {uni.lineloss_mu}, {uni.jmr_kwh}, {(uni.target_kwh / 1000000)}, {uni.adjusted_expected}, {uni.difference_expected}, {cal_ma}, {cal_iga}, {cal_ega_a}, {cal_ega_b}, {cal_ega_c},{target_wind},{uni.wind_speed}),";
                 }
                 finalinsertQuery = insertQry + insertValues;
                 finalinsertQuery = finalinsertQuery.Substring(0, (finalinsertQuery.Length - 1)) + ";";
@@ -18934,11 +18958,40 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
 
                     foreach (var unit in AOPData)
                     {
-                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd / unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding) / unit.expected_power)*100)}, {100 - ((unit.egbd / unit.expected_power)*100)}, {100 - ((unit.loadShedding / unit.expected_power)*100)}, 0,{unit.actIR},{unit.tarIR}),";
+                        double cal_ma = 0;
+                        double cal_iga = 0;
+                        double cal_ega = 0;
+                        double cal_ega_b = 0;
+                        double cal_ega_c = 0;
+                        if (unit.expected_power > 0)
+                        {
+                            cal_ma = 100 - (((unit.usmh + unit.smh) / unit.expected_power) * 100);
+                            cal_iga = 100 - ((unit.igbd / unit.expected_power) * 100);
+                            cal_ega = 100 - (((unit.egbd + unit.loadShedding) / unit.expected_power) * 100);
+                            cal_ega_b = 100 - ((unit.egbd / unit.expected_power) * 100);
+                            cal_ega_c = 100 - ((unit.loadShedding / unit.expected_power) * 100);
+                        }
+
+                        aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {cal_ma}, {cal_iga}, {cal_ega}, {cal_ega_b}, {cal_ega_c}, 0,{unit.actIR},{unit.tarIR}),";
+                        //aopValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power) * 100)}, {100 - ((unit.igbd / unit.expected_power) * 100)}, {100 - (((unit.egbd + unit.loadShedding) / unit.expected_power) * 100)}, {100 - ((unit.egbd / unit.expected_power) * 100)}, {100 - ((unit.loadShedding / unit.expected_power) * 100)}, 0,{unit.actIR},{unit.tarIR}),";
                     }
                     foreach (var unit in TopLiningData)
                     {
-                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power)*100)}, {100 - ((unit.igbd/unit.expected_power)*100)}, {100 - (((unit.egbd + unit.loadShedding)/unit.expected_power)*100)}, {100 - ((unit.egbd /unit.expected_power)*100)}, {100 - ((unit.loadShedding/unit.expected_power)*100)}, 1,{unit.actIR},{unit.tarIR}),";
+                        double tcal_ma = 0;
+                        double tcal_iga = 0;
+                        double tcal_ega = 0;
+                        double tcal_ega_b = 0;
+                        double tcal_ega_c = 0;
+                        if (unit.expected_power > 0)
+                        {
+                            tcal_ma = 100 - (((unit.usmh + unit.smh) / unit.expected_power) * 100);
+                            tcal_iga = 100 - ((unit.igbd / unit.expected_power) * 100);
+                            tcal_ega = 100 - (((unit.egbd + unit.loadShedding) / unit.expected_power) * 100);
+                            tcal_ega_b = 100 - ((unit.egbd / unit.expected_power) * 100);
+                            tcal_ega_c = 100 - ((unit.loadShedding / unit.expected_power) * 100);
+                        }
+                        topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {tcal_ma}, {tcal_iga}, {tcal_ega}, {tcal_ega_b}, {tcal_ega_c}, 1,{unit.actIR},{unit.tarIR}),";
+                       // topliningValues += $"({unit.site_id}, '{unit.data_date.ToString("yyyy-MM-dd")}', {unit.target}, {unit.expected_power}, {unit.usmh}, {unit.smh}, {unit.others}, {unit.igbd}, {unit.egbd}, {unit.loadShedding}, {unit.pr}, {unit.inv_kwh}, {unit.lineloss}, {unit.jmr_kwh}, {100 - (((unit.usmh + unit.smh) / unit.expected_power) * 100)}, {100 - ((unit.igbd / unit.expected_power) * 100)}, {100 - (((unit.egbd + unit.loadShedding) / unit.expected_power) * 100)}, {100 - ((unit.egbd / unit.expected_power) * 100)}, {100 - ((unit.loadShedding / unit.expected_power) * 100)}, 1,{unit.actIR},{unit.tarIR}),";
                     }
                     string finalInsertQuery = insertStartingQuery + aopValues + topliningValues.Substring(0, (topliningValues.Length - 1)) + ";";
 
