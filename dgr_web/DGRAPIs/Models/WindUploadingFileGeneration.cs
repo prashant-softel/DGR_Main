@@ -71,20 +71,20 @@ namespace DGRAPIs.Models
         public dynamic date { get; set; }
         public string wtg { get; set; }
         public int wtg_id { get; set; }
-        public double wind_speed { get; set; }
-        public double grid_hrs { get; set; }
-        public double operating_hrs { get; set; }
-        public double lull_hrs { get; set; }
-        public double kwh { get; set; }
-        public double kwh_afterlineloss { get; set; }
-        public double plf { get; set; }
-        public double plf_afterlineloss { get; set; }
-        public double ma_actual { get; set; }
-        public double ma_contractual { get; set; }
-        public double iga { get; set; }
-        public double ega { get; set; }
-        public double ega_b { get; set; }
-        public double ega_c { get; set; }
+        public decimal wind_speed { get; set; }
+        public decimal grid_hrs { get; set; }
+        public decimal operating_hrs { get; set; }
+        public decimal lull_hrs { get; set; }
+        public decimal kwh { get; set; }
+        public decimal kwh_afterlineloss { get; set; }
+        public decimal plf { get; set; }
+        public decimal plf_afterlineloss { get; set; }
+        public decimal ma_actual { get; set; }
+        public decimal ma_contractual { get; set; }
+        public decimal iga { get; set; }
+        public decimal ega { get; set; }
+        public decimal ega_b { get; set; }
+        public decimal ega_c { get; set; }
         public dynamic unschedule_hrs { get; set; }
         public dynamic unschedule_num { get; set; }
         public dynamic schedule_hrs { get; set; }

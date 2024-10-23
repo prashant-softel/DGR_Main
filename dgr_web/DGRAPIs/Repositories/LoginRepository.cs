@@ -152,9 +152,18 @@ namespace DGRAPIs.Repositories
             }
             else
             {
-                string qry = "insert into login (`username`,`useremail`,`user_role`,`password`) VALUES('" + fname + "','" + useremail + "','" + role + "', MD5('" + userpass + "'))";
-                //return await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
-                return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
+                //string qry = "insert into login (`username`,`useremail`,`user_role`,`password`) VALUES('" + fname + "','" + useremail + "','" + role + "', MD5('" + userpass + "'))";
+                string qry = "insert into login (username,useremail,user_role,password) VALUES('" + fname + "','" + useremail + "','" + role + "', HASHBYTES('MD5','" + userpass + "'))";
+                try
+                {
+                    return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable to Clone :" + e.Message;
+                    return 0;
+                }
+               
             }
             
         }
@@ -389,8 +398,18 @@ namespace DGRAPIs.Repositories
         }
         internal async Task<int> UpdatePassword(int loginid, string updatepass)
         {
-            string qry = "update login set password=MD5('" + updatepass + "') where login_id=" + loginid + "";
-            return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
+            //string qry = "update login set password=MD5('" + updatepass + "') where login_id=" + loginid + "";
+            string qry = "update login set password=HASHBYTES('MD5','" + updatepass + "') where login_id=" + loginid + "";
+            try
+            {
+                return await Context.ExecuteNonQry<int>(qry).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Unable to Update :" + e.Message;
+                return 0;
+            }
+             
         }
 
         internal async Task<int> DeactivateUser(int loginid)
@@ -461,7 +480,7 @@ namespace DGRAPIs.Repositories
             }
             string qry = "";
             // qry = "SELECT login_id,username,useremail,user_role,created_on,active_user FROM `login` " + filter;
-            qry = "SELECT login_id, username,useremail,user_role,active_user  FROM `login` " + filter;
+            qry = "SELECT login_id, username,useremail,user_role,active_user  FROM login " + filter;
             // Console.WriteLine(qry);
             // var _Userinfo = await Context.GetData<UserInfomation>(qry).ConfigureAwait(false);
             // return _Userinfo.FirstOrDefault();
@@ -615,78 +634,118 @@ namespace DGRAPIs.Repositories
             var ReportList = new JavaScriptSerializer().Deserialize<dynamic>(reportList);
             int flag = 0;
             if (string.IsNullOrEmpty(site_type)) site_type = "1";
-            string delAccess ="DELETE FROM `user_access` WHERE login_id  = '" + login_id + "' AND `site_type` = '"+ site_type + "'";
-            await Context.ExecuteNonQry<int>(delAccess).ConfigureAwait(false);
-           
-            
-            string qry= "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`) VALUES";
+            //Delete Exixting Access
+            //string delAccess ="DELETE FROM `user_access` WHERE login_id  = '" + login_id + "' AND `site_type` = '"+ site_type + "'";
+            string delAccess = "DELETE FROM user_access WHERE login_id  = '" + login_id + "' AND site_type = '" + site_type + "'";
+            try
+            {
+                await Context.ExecuteNonQry<int>(delAccess).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                string msg = "Unable To Delete User:" + e.Message;
+            }
+            //string qry= "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`) VALUES";
+            string qry = "insert into user_access (login_id, site_type, category_id,[identity]) VALUES";
             string pagevalues = "";
             foreach (var page in PageList)
             {
-                //Console.WriteLine("dictionary key is {0} and value is {1}", dictionary.Key, dictionary.Value);
                 var a = page.Key;
                 var b = page.Value;
                 if(page.Value == true)
                 {
-                    string checkqry = "select login_id from `user_access` where login_id = " + login_id + " and site_type = " + site_type + " and " +
-                        "category_id = 1 and identity = " + page.Key;
-                    List<UserAccess> _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false); 
+                    string checkqry = "select login_id from user_access where login_id = " + login_id + " and site_type = " + site_type + " and " +
+                        "category_id = 1 and [identity] = " + page.Key;
+                    List<UserAccess> _accesslist = new List<UserAccess>();
+                    try
+                    {
+                        _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Unable To Select User:" + e.Message;
+                    }
                     if (_accesslist.Capacity > 0) continue;
-                    //string qry = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`) VALUES";
                     flag = 1;
                     pagevalues += "('" + login_id + "',"+site_type+",'1','" + page.Key + "'),";
                 }
             }
             if (flag == 1)
             {
-
                 qry += pagevalues;
-                await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                try
+                {
+                    await Context.ExecuteNonQry<int>(qry.Substring(0, (qry.Length - 1)) + ";").ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable To Insert User:" + e.Message;
+                }
             }
-            string qry1 = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`) VALUES";
+            string qry1 = "insert into user_access (login_id, site_type, category_id,[identity]) VALUES";
             string reportvalues = "";
             int flag2 = 0; 
             foreach (var report in ReportList)
             {
-                //Console.WriteLine("dictionary key is {0} and value is {1}", dictionary.Key, dictionary.Value);
                 var a = report.Key;
                 var b = report.Value;
                 if (report.Value == true)
                 {
-                    string checkqry = "select login_id from `user_access` where login_id = " + login_id + " and site_type = " + site_type + " and " +
-                        "category_id = 2 and identity = " + report.Key;
-                    List<UserAccess> _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false);
+                    string checkqry = "select login_id from user_access where login_id = " + login_id + " and site_type = " + site_type + " and " +
+                        "category_id = 2 and [identity] = " + report.Key;
+                    //List<UserAccess> _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false);
+                    List<UserAccess> _accesslist = new List<UserAccess>();
+                    try
+                    {
+                        _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = "Unable To Select User:" + e.Message;
+                    }
                     if (_accesslist.Capacity > 0) continue;
-                    //string qry1 = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`) VALUES";
                     flag2 = 1;
                     reportvalues += "('" + login_id + "',"+site_type+",'2','" + report.Key + "'),";
                 }
             }
             if (flag2 == 1)
             {
-
                 qry1 += reportvalues;
-                await Context.ExecuteNonQry<int>(qry1.Substring(0, (qry1.Length - 1)) + ";").ConfigureAwait(false);
+                try
+                {
+                    await Context.ExecuteNonQry<int>(qry1.Substring(0, (qry1.Length - 1)) + ";").ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable To Insert User:" + e.Message;
+                }
             }
-
-            string qry2 = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`,`upload_access`) VALUES";
+            string qry2 = "insert into user_access (login_id, site_type, category_id,[identity],upload_access) VALUES";
             string sitevalues = "";
             bool flag3 = false;
             foreach (var site in SiteList)
             {
-
                 int upload_access = 0;
                 if (site.Value == true)
                 {
                     upload_access = 1;
                 }
                 if (site.Key == "") continue;
-                string checkqry = "select login_id from `user_access` where login_id = " + login_id + " and " +
-                        "category_id = 3 and identity = " + site.Key ;
-                List<UserAccess> _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false);
+                string checkqry = "select login_id from user_access where login_id = " + login_id + " and " +
+                        "category_id = 3 and [identity] = " + site.Key ;
+                //List<UserAccess> _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false);
+                List<UserAccess> _accesslist = new List<UserAccess>();
+                try
+                {
+                    _accesslist = await Context.GetData<UserAccess>(checkqry).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable To Select User:" + e.Message;
+                 }
                 if (_accesslist.Capacity > 0) 
                 {
-                    string qry3 = "update`user_access` set `upload_access` = " + upload_access + " where login_id = " + login_id + " and indentity =" +
+                    string qry3 = "update user_access set upload_access = " + upload_access + " where login_id = " + login_id + " and [indentity] =" +
                         site.Key;
                 }
                 else
@@ -697,26 +756,53 @@ namespace DGRAPIs.Repositories
             }
             if(site_type != "1" || site_type != "2")
             {
-                string delAccess1 = "DELETE FROM `user_access` WHERE login_id  = '" + login_id + "' AND `site_type` = '0' AND 	category_id IN (4,5)";
-                await Context.ExecuteNonQry<int>(delAccess1).ConfigureAwait(false);
+                string delAccess1 = "DELETE FROM user_access WHERE login_id  = '" + login_id + "' AND site_type = '0' AND 	category_id IN (4,5)";
+                try
+                {
+                    await Context.ExecuteNonQry<int>(delAccess1).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable To Delete User:" + e.Message;
+                }
             }
             if(importapproval > 0)
             {
-                string qry4 = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`,`upload_access`) VALUES  ('" + login_id + "', 0, 4, '" + importapproval + "', '0')";
-                await Context.ExecuteNonQry<int>(qry4).ConfigureAwait(false);
+                string qry4 = "insert into user_access (login_id, site_type, category_id,[identity],upload_access) VALUES  ('" + login_id + "', 0, 4, '" + importapproval + "', '0')";
+                try
+                {
+                    await Context.ExecuteNonQry<int>(qry4).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable To Insert User:" + e.Message;
+                }
             }
             if (heatmap > 0)
             {
-                string qry5 = "insert into `user_access` (`login_id`, `site_type`, `category_id`,`identity`,`upload_access`) VALUES  ('" + login_id + "', 0, 5, '" + heatmap + "', '0')";
-                await Context.ExecuteNonQry<int>(qry5).ConfigureAwait(false);
+                string qry5 = "insert into user_access (login_id, site_type, category_id,[identity],upload_access) VALUES  ('" + login_id + "', 0, 5, '" + heatmap + "', '0')";
+                try
+                {
+                    await Context.ExecuteNonQry<int>(qry5).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable To Insert User:" + e.Message;
+                }
             }
             if (flag3 == true)
             {
                 qry2 += sitevalues;
-                return await Context.ExecuteNonQry<int>(qry2.Substring(0, (qry2.Length - 1)) + ";").ConfigureAwait(false);
+                try
+                {
+                    return await Context.ExecuteNonQry<int>(qry2.Substring(0, (qry2.Length - 1)) + ";").ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    string msg = "Unable To Insert User:" + e.Message;
+                }
             }
             return 0;
-
         }
 
 
@@ -763,7 +849,7 @@ namespace DGRAPIs.Repositories
         public async Task<List<CustomGroupAccess>> GetCustomGroupAccess(int login_id, int site_type)
         {
             string qry = "";
-            qry = "SELECT cust_group FROM user_access where login_id = " + login_id + " and site_type = " + site_type + " and category_id = 2  and cust_group=1";
+            qry = "SELECT cust_group FROM `user_access` where login_id = " + login_id + " and site_type = " + site_type + " and category_id = 2  and cust_group=1";
             List<CustomGroupAccess> _groupaccess = new List<CustomGroupAccess>();
             _groupaccess = await Context.GetData<CustomGroupAccess>(qry).ConfigureAwait(false);
             return _groupaccess;
@@ -798,7 +884,7 @@ namespace DGRAPIs.Repositories
             var GroupData = serializer.Deserialize<List<user_page_group_ca>>(group_data);
 
             int flag = 0;
-            string insertQry = "INSERT INTO user_page_group_ca (user_id, page_id, page_groups_id) VALUES ";
+            /*string insertQry = "INSERT INTO user_page_group_ca (user_id, page_id, page_groups_id) VALUES ";
             foreach (var data in GroupData)
             {
                 insertQry += $"({login_id}, {data.page_id}, {data.page_groups_id}),";
@@ -807,7 +893,18 @@ namespace DGRAPIs.Repositories
             insertQry = insertQry.Substring(0, insertQry.Length - 1); // Remove the trailing comma
 
             insertQry += " ON DUPLICATE KEY UPDATE page_groups_id = VALUES(page_groups_id);";
+            */
+   
+            string insertQry = "MERGE INTO user_page_group_ca AS target USING (VALUES";
+            foreach (var data in GroupData)
+            {
+                insertQry += $"({login_id}, {data.page_id}, {data.page_groups_id}),";
+            }
+            insertQry = insertQry.TrimEnd(',');
 
+            insertQry += " ) AS source (user_id, page_id, page_groups_id) ON(target.user_id = source.user_id AND target.page_id = source.page_id) ";
+            insertQry += " WHEN MATCHED THEN UPDATE SET target.page_groups_id = source.page_groups_id WHEN NOT MATCHED THEN ";
+            insertQry += " INSERT(user_id, page_id, page_groups_id) VALUES(source.user_id, source.page_id, source.page_groups_id);";
             try
             {
                 int res = await Context.ExecuteNonQry<int>(insertQry).ConfigureAwait(false);

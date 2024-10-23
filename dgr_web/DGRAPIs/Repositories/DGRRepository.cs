@@ -7551,7 +7551,8 @@ daily_target_kpi_solar_id desc limit 1) as tarIR from daily_gen_summary_solar t1
             }
             if (res > 0)
             {
-                string query = "UPDATE `import_batches` SET `approval_date` = NOW(),`approved_by`= " + approvedBy + ",`is_approved`=" + status + ",`approved_by_name`='" + approvedByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
+                //string query = "UPDATE `import_batches` SET `approval_date` = NOW(),`approved_by`= " + approvedBy + ",`is_approved`=" + status + ",`approved_by_name`='" + approvedByName + "' WHERE `import_batch_id` IN(" + dataId + ")";
+                string query = "UPDATE import_batches SET approval_date = GETDATE(),approved_by= " + approvedBy + ",is_approved=" + status + ",approved_by_name='" + approvedByName + "' WHERE import_batch_id IN(" + dataId + ")";
                 int Updateres = 0;
                 try
                 {
